@@ -119,7 +119,7 @@ final class ActionStorage {
             case "actionFiles":
                 JSONObject files = new JSONObject(); readWarnings = new JSONArray();
                 known = request.optJSONObject("known"); if (known == null) known = new JSONObject(); stamps = new JSONObject();
-                for (String name : new String[]{"actions", "initiatives", "topics", "revisions"}) {
+                for (String name : new String[]{"actions", "initiatives", "topics", "candidates", "revisions"}) {
                     try { if (tree == null) listLocal(new File(root, name), name + "/", files);
                     else { try { listTree(resolve(name, false), name + "/", files, 0); } catch (FileNotFoundException missing) { /* An empty collection is valid. */ } }
                     } catch (Exception error) { readWarnings.put(new JSONObject().put("path", name + "/").put("message", error.getMessage())); }
@@ -127,7 +127,7 @@ final class ActionStorage {
                 return new JSONObject().put("files", files).put("warnings", readWarnings).put("stamps", stamps);
             case "actionWrite":
                 String path = request.getString("path");
-                if (!path.matches("((?:actions|initiatives|topics)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");
+                if (!path.matches("((?:actions|initiatives|topics|candidates)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");
                 write(path, request.getString("text"), path.startsWith("revisions/")); return new JSONObject();
             case "actionIndex": case "actionQuery":
                 return new ActionIndex(activity.getFilesDir(), workspaceId, request.optString("entityType", "action")).run(request);
