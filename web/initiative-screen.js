@@ -9,7 +9,7 @@ export class InitiativeScreen {
     $('#initiative-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.list().catch(e => notice(e.message)); };
     $('#initiative-form').oninput = () => this.changed();
     $('#initiative-form').onsubmit = event => { event.preventDefault(); this.save(); };
-    $('#initiative-discard').onclick = () => { localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.previous = null; $('#initiative-editor').hidden = true; $('.app').classList.remove('editing'); };
+    $('#initiative-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#initiative-editor').hidden = true; $('.app').classList.remove('editing'); };
     $('#initiative-back').onclick = async () => { if (await this.flush()) $('.app').classList.remove('editing'); };
     $('#initiative-add-link').onclick = () => { this.addLink({path: '', quote: '', fingerprint: '', role: 'working-note'}); this.changed(); };
     $('#initiative-new-action').onclick = async () => {
@@ -19,17 +19,19 @@ export class InitiativeScreen {
     $('#initiative-new-note').onclick = async () => { if (await this.flush() && this.previous) this.createNote(this.previous.entityId); };
   }
   key() { return `initiative-draft:${this.repository.workspaceId}`; }
-  async openWorkspace() {
-    this.active = false; this.previous = null; this.dirty = false; this.retry = null; this.offset = 0;
+  async openWorkspace(cached = false) {
+    this.recoveredDraft = false;
+    this.active = false; this.previous = null; this.recoveredDraft = false; this.dirty = false; this.retry = null; this.offset = 0;
     $('#initiative-editor').hidden = true;
     const repository = new InitiativeRepository(native); this.repository = repository;
-    const result = await repository.open();
+    const result = await repository.open({cached, progress: message => { if (this.repository === repository) $('#index-state').textContent = message; }});
     if (repository !== this.repository) return;
     if (result.warnings.length) this.notice(result.warnings.join('\n'));
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
-    if (draft) { this.form(draft.fields, draft.previous); this.retry = draft.retry; this.dirty = true; $('#initiative-save-state').textContent = 'Recovered unsaved initiative; review and save.'; }
+    if (draft) { this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.retry = draft.retry; this.dirty = true; $('#initiative-save-state').textContent = 'Recovered unsaved initiative; review and save.'; }
   }
   async show() {
+    $('#library-tools').hidden = true;
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
     const wasEditing = $('.app').classList.contains('editing');
@@ -62,7 +64,7 @@ export class InitiativeScreen {
     return {title: $('#initiative-title').value, goal: $('#initiative-goal').value, progress: $('#initiative-progress').value, status: $('#initiative-status').value,
       sources: [...document.querySelectorAll('.initiative-source')].map(row => ({path: row.querySelector('input').value.trim(), quote: row.querySelector('textarea').value, role: row.querySelector('select').value, fingerprint: row.dataset.fingerprint || ''}))};
   }
-  changed() { this.dirty = true; this.retry = null; this.draft(); $('#initiative-save-state').textContent = 'Unsaved initiative draft'; }
+  changed() { this.recoveredDraft = false; this.dirty = true; this.retry = null; this.draft(); $('#initiative-save-state').textContent = 'Unsaved initiative draft'; }
   draft() { localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry})); }
   addLink(source) {
     const row = document.createElement('div'); row.className = 'initiative-source'; row.dataset.fingerprint = source.fingerprint;
@@ -140,7 +142,7 @@ export class InitiativeScreen {
           // Keep the previous revision as the parent while committing the user's fields.
           result = await endInitiative(this.repository, this.actions.repository, this.previous, decisions, fields);
         } else result = await this.repository.save(fields, this.previous, this.retry);
-        this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
+        this.recoveredDraft = false; this.recoveredDraft = false; this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
         $('#initiative-save-state').textContent = result.recovered ? 'Saved locally after recovery' : 'Saved locally'; await this.list(); await this.details(); return true;
       } catch (error) {
         const initiativeCommitted = error.revisionSaved && error.record?.entityType === 'initiative';

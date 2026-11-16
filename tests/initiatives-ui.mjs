@@ -40,10 +40,12 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
+  await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor();
+  await page.locator('[data-view=actions]').click();
   await page.getByText('No confirmed actions.', {exact: false}).waitFor();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-new').click();
@@ -72,7 +74,7 @@ try {
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /Edit retained/}).waitFor();
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
-  await page.reload();
+  await page.reload(); await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-save-state').filter({hasText: /Recovered unsaved initiative/}).waitFor();
   await page.locator('#initiative-form [type=submit]').click();
@@ -98,7 +100,7 @@ try {
   await page.locator('#action-initiative').selectOption(initiativeId);
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
   await page.locator('#action-save').click(); await page.getByText(/Your edit is retained/).waitFor();
-  await page.reload(); await page.getByText(/Recovered unsaved action/).waitFor();
+  await page.reload(); await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click(); await page.getByText(/Recovered unsaved action/).waitFor();
   assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^Saved locally$/}).waitFor();
   await page.locator('[data-view="initiatives"]').click();

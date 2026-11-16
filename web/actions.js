@@ -12,6 +12,7 @@ export function validateAction(record) {
   if (record.formatVersion !== 1 || record.entityType !== 'action' || !uuid(record.entityId) || !uuid(record.revision) || !uuid(record.workspaceId)) throw Error('Invalid or unsupported action record');
   if (!Array.isArray(record.parents) || record.parents.some(parent => !uuid(parent)) || record.parents.includes(record.revision)) throw Error('Invalid revision parents');
   if (!ACTION_STATES.includes(record.status) || typeof record.description !== 'string' || !record.description.trim()) throw Error('An action needs a description and valid state');
+  if (record.focusPosition != null && (!Number.isFinite(record.focusPosition) || !['todo', 'in-progress'].includes(record.status))) throw Error('Invalid focus selection');
   if (record.initiativeId !== null && (typeof record.initiativeId !== 'string' || !record.initiativeId.trim())) throw Error('Invalid initiative assignment');
   if (record.dueDate !== null && (!/^\d{4}-\d{2}-\d{2}$/.test(record.dueDate) || new Date(record.dueDate).toISOString().slice(0, 10) !== record.dueDate)) throw Error('Invalid due date');
   if (record.waitingOn !== null && typeof record.waitingOn !== 'string') throw Error('Invalid waiting condition');
@@ -34,18 +35,33 @@ export class ActionRepository {
     return result;
   }
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, entityType: this.entityType, ...args}); }
-  async open() {
+  async open({cached = false, progress = () => {}} = {}) {
     this.ready = false;
     const workspace = await this.adapter('workspace');
     this.workspaceId = workspace.workspaceId;
+    this.progress = progress;
+    if (cached) {
+      try { await this.request('actionQuery', {limit: 1}); this.ready = true; this.needsRefresh = true; return {...workspace, warnings: []}; }
+      catch (error) {
+        if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error;
+        await this.request('actionIndex', {records: []});
+        this.ready = true; this.needsRefresh = true;
+        this.progress?.(`Building ${this.collection} index in background…`);
+        return {...workspace, warnings: []};
+      }
+    }
     const recovery = await this.recover();
     this.ready = true;
     return {...workspace, ...recovery};
   }
   async recover() {
+    this.progress?.('Reading confirmed revisions…');
     const {files} = await this.request('actionFiles');
+    this.progress?.(`Rebuilding ${this.collection}: ${Object.keys(files).length} record files…`);
     const revisions = new Map(), currents = new Map(), warnings = [];
+    let processed = 0; const fileCount = Object.keys(files).length;
     for (const [path, text] of Object.entries(files)) {
+      if (++processed % 50 === 0) { this.progress?.(`Indexing ${this.collection}: ${processed}/${fileCount} files`); await new Promise(resolve => setTimeout(resolve, 0)); }
       try {
         const parsed = JSON.parse(text);
         if (parsed.entityType !== this.entityType) continue;
@@ -80,11 +96,12 @@ export class ActionRepository {
     for (const id of currents.keys()) if (!revisions.has(id)) warnings.push(`${id}: Current record has no committed revision; original retained`);
     await this.request('actionIndex', {records});
     this.heads = new Map(records.map(record => [record.entityId, record.revision]));
+    this.progress?.(`${this.collection} index ready`);
     return {warnings};
   }
   async query(options = {}) {
     if (!this.ready) throw Error('Workspace is not ready; reopen it');
-    try { return await this.request('actionQuery', options); }
+    try { const page = await this.request('actionQuery', options); for (const record of page.actions) if (!this.heads.has(record.entityId)) this.heads.set(record.entityId, record.revision); return page; }
     catch (error) {
       if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error;
       await this.serialize(() => this.recover());
@@ -101,12 +118,15 @@ export class ActionRepository {
     return this.serialize(async () => {
       if (!this.ready) throw Error('Workspace is not ready; reopen it');
       if ((previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
+      if (this.needsRefresh) { await this.recover(); this.needsRefresh = false; }
+      if (previous && !this.heads.has(previous.entityId)) await this.query({entityId: previous.entityId, limit: 1});
       if (!retry && previous && this.heads.get(previous.entityId) !== previous.revision) throw Error('Action changed; reopen it before editing');
       const record = retry || this.validate({
         ...fields,
         formatVersion: 1, entityType: this.entityType, workspaceId: this.workspaceId,
         entityId: previous?.entityId || this.newId(), revision: this.newId(), parents: previous ? [previous.revision] : [],
         description: (this.entityType === 'initiative' ? fields.title : fields.description || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
+        focusPosition: this.entityType === 'action' && ['todo', 'in-progress'].includes(fields.status || 'todo') ? (Object.hasOwn(fields, 'focusPosition') ? fields.focusPosition : previous?.focusPosition ?? null) : null,
         dueDate: fields.dueDate || null, waitingOn: fields.waitingOn?.trim() || null,
         sources: structuredClone(fields.sources || []), modifiedAt: this.now()
       });
