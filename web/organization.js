@@ -48,7 +48,8 @@ export function validateCandidate(record) {
       if (t.workspaceId !== record.workspaceId || t.deleted || t.syncState) throw Error('Invalid review target');
       if (t.entityType === 'initiative') validateInitiative(t);
       else validateAction({...t, entityType: 'action'});
-      if (!t.parents.length && t.entityId !== confirmationId(record.entityId)) throw Error('Invalid confirmation association');
+      const creates = t.entityType !== 'initiative' || (record.candidateType === 'initiative' && ['confirm', 'later'].includes(r.decision));
+      if (creates ? (t.parents.length || t.entityId !== confirmationId(record.entityId)) : !t.parents.length) throw Error('Invalid confirmation association');
       if (r.decision === 'later' && t.status !== 'later') throw Error('Invalid later initiative');
       if (r.decision === 'attach' && t.entityType === 'action' && !t.initiativeId) throw Error('Missing attachment');
     }
@@ -87,7 +88,7 @@ export class Organization {
           let duplicate = false;
           for (let offset = 0; ; offset += 50) {
             const page = await this.repository.query({offset, limit: 50});
-            if (page.actions.some(r => r.candidateType === candidate.candidateType && r.description === candidate.description && r.placement === candidate.placement && r.sources.length === candidate.sources.length && r.sources.every((source, index) => ['path', 'quote', 'fingerprint', 'start', 'end'].every(key => source[key] === candidate.sources[index][key])))) { duplicate = true; break; }
+            if (page.actions.flatMap(r => this.repository.conflicts?.get(r.entityId)?.versions || [r]).some(r => r.candidateType === candidate.candidateType && r.description === candidate.description && r.placement === candidate.placement && r.sources.length === candidate.sources.length && r.sources.every((source, index) => ['path', 'quote', 'fingerprint', 'start', 'end'].every(key => source[key] === candidate.sources[index][key])))) { duplicate = true; break; }
             if (!page.hasMore) break;
           }
           if (generation !== this.generation || workspaceId !== this.repository.workspaceId) throw Error('Canceled');
