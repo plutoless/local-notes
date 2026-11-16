@@ -11,7 +11,7 @@ mkdir -p "$OUT/classes" "$OUT/dex" "$OUT/assets/web" "$OUT/assets/sample" dist
 cp web/* "$OUT/assets/web/"
 cp -R sample/Notes "$OUT/assets/sample/"
 "$BT/aapt2" link -o "$OUT/base.apk" --manifest android/AndroidManifest.xml -I "$SDK/platforms/android-35/android.jar" -A "$OUT/assets"
-javac --release 17 -classpath "$SDK/platforms/android-35/android.jar" -d "$OUT/classes" android/src/dev/localnotes/MainActivity.java
+javac --release 17 -classpath "$SDK/platforms/android-35/android.jar" -d "$OUT/classes" android/src/dev/localnotes/*.java
 find "$OUT/classes" -name '*.class' > "$OUT/classes.list"
 "$BT/d8" --lib "$SDK/platforms/android-35/android.jar" --min-api 26 --output "$OUT/dex" @"$OUT/classes.list"
 cp "$OUT/base.apk" "$OUT/unsigned.apk"
