@@ -1,0 +1,1 @@
+{"name":"local-notes","version":"0.1.0","private":true,"type":"module","scripts":{"test":"node --test tests/core.test.js","build:mac":"bash scripts/build-mac.sh","build:android":"bash scripts/build-android.sh"}}

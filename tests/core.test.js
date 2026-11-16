@@ -1,0 +1,6 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {tasksOf,toggleTask,safePath,renderMarkdown,withTitle} from '../web/core.js';
+test('task writeback preserves CRLF, nesting, and surrounding text',()=>{const original='# Meeting\r\n\r\n  - [ ] Call Chen\r\n- [x] Done\r\n';assert.equal(toggleTask(original,2,true),'# Meeting\r\n\r\n  - [x] Call Chen\r\n- [x] Done\r\n');assert.equal(tasksOf(original).length,2);});
+test('code examples must never become live tasks',()=>{const text='```md\n- [ ] example\n```\n- [ ] actual';assert.deepEqual(tasksOf(text),[{line:3,done:false,text:'actual'}]);assert.throws(()=>toggleTask(text,1,true));});
+test('paths exclude traversal, hidden folders and credentials',()=>{for(const p of ['../a.md','/tmp/a.md','a/../b.md','.git/a.md','Credentials/key.md','a\\b.md','a//b.md','a.txt'])assert.equal(safePath(p),false,p);assert.equal(safePath('Work/会议.md'),true);});
+test('reading view escapes HTML and attribute injection',()=>{const html=renderMarkdown('# <img src=x onerror=alert(1)>\n- [ ] <script>bad</script>');assert.ok(!html.includes('<img'));assert.ok(!html.includes('<script>'));assert.ok(html.includes('data-line="1"'));});
+test('title update preserves dollar signs literally',()=>{assert.equal(withTitle('# Old\n\nText','$& New'),'# $& New\n\nText');});

@@ -1,0 +1,34 @@
+# Generated artifacts and signing material
+/build/
+/dist/
+/node_modules/
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.pem
+*.key
+*.mobileprovision
+*.apk
+*.aab
+*.idsig
+*.zip
+*.log
+
+# Local secrets, device settings and user content
+.env
+.env.*
+!.env.example
+local.properties
+/secrets/
+/credentials/
+/Credentials/
+/data/
+/notes/
+/History/
+/LocalNotes/
+
+# OS / editor files
+.DS_Store
+.idea/
+.vscode/

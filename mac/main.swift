@@ -1,0 +1,114 @@
+import Cocoa
+import WebKit
+
+final class Assets: NSObject, WKURLSchemeHandler {
+    let root: URL
+    init(_ root: URL) { self.root = root }
+    func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
+        let name = task.request.url!.lastPathComponent
+        let allowed = ["index.html", "style.css", "app.js", "core.js"]
+        guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
+        let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
+        task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
+    }
+    func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
+}
+func failure(_ message: String) -> NSError { NSError(domain: "LocalNotes", code: 1, userInfo: [NSLocalizedDescriptionKey: message]) }
+final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate, NSWindowDelegate {
+    var window: NSWindow!; var web: WKWebView!; var root: URL!; var support: URL!
+    let fm = FileManager.default
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        do {
+            support = try fm.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:true).appendingPathComponent("LocalNotes")
+            try fm.createDirectory(at:support,withIntermediateDirectories:true)
+            let sample = support.appendingPathComponent("Sample")
+            if !fm.fileExists(atPath:sample.path) { try fm.copyItem(at:Bundle.main.resourceURL!.appendingPathComponent("sample"),to:sample) }
+            root = UserDefaults.standard.string(forKey:"root").map { URL(fileURLWithPath:$0) } ?? sample
+        } catch { fatalError(error.localizedDescription) }
+        let config = WKWebViewConfiguration(); config.userContentController.add(self,name:"notes")
+        config.setURLSchemeHandler(Assets(Bundle.main.resourceURL!.appendingPathComponent("web")),forURLScheme:"notes")
+        web = WKWebView(frame:.zero,configuration:config); web.navigationDelegate=self
+        window = NSWindow(contentRect:NSRect(x:0,y:0,width:1180,height:800),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
+        window.title="拾记 · Local Notes"; window.minSize=NSSize(width:380,height:580); window.contentView=web; window.delegate=self; window.center(); window.makeKeyAndOrderFront(nil)
+        let menu = NSMenu(); let item=NSMenuItem(); menu.addItem(item); let submenu=NSMenu(); submenu.addItem(withTitle:"退出拾记", action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q"); item.submenu=submenu
+        let edit=NSMenuItem();menu.addItem(edit);let em=NSMenu(title:"编辑");edit.submenu=em
+        for (title,action,key) in [("撤销","undo:","z"),("剪切","cut:","x"),("复制","copy:","c"),("粘贴","paste:","v"),("全选","selectAll:","a")] { em.addItem(withTitle:title,action:Selector(action),keyEquivalent:key) }
+        NSApp.mainMenu=menu; NSApp.activate(ignoringOtherApps:true)
+        web.load(URLRequest(url:URL(string:"notes://local/index.html")!))
+    }
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {true}
+    func windowShouldClose(_ sender: NSWindow) -> Bool {
+        // JS confirmation protects unsaved edits, including failed writes.
+        web.evaluateJavaScript("document.querySelector('#save-state')?.textContent || ''") { value,_ in
+            let status=value as? String ?? ""
+            if status == "已保存到本地" || status.isEmpty { NSApp.terminate(nil) }
+            else { let alert=NSAlert();alert.messageText="还有内容未保存";alert.informativeText="请先处理保存提示，再关闭窗口。";alert.runModal() }
+        }; return false
+    }
+    func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
+        // Use same guard for Cmd+Q; response is asynchronous.
+        web.evaluateJavaScript("document.querySelector('#save-state')?.textContent || ''") { value,_ in
+            let s=value as? String ?? "";let ok=s == "已保存到本地" || s.isEmpty
+            if !ok { let a=NSAlert();a.messageText="还有内容未保存，请先处理保存提示。";a.runModal() }
+            sender.reply(toApplicationShouldTerminate:ok)
+        };return .terminateLater
+    }
+    func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" ? .allow : .cancel)}
+    func resolved(_ path:String, allowMissing:Bool=false)throws->URL {
+        let parts=path.split(separator:"/",omittingEmptySubsequences:false)
+        guard !path.hasPrefix("/"),!path.contains("\\"),path.lowercased().hasSuffix(".md"),parts.allSatisfy({!$0.isEmpty && !$0.hasPrefix(".") && $0.lowercased() != "credentials"}) else {throw failure("无效的笔记路径")}
+        let base=root.resolvingSymlinksInPath();let url=base.appendingPathComponent(path).resolvingSymlinksInPath()
+        guard url.path.hasPrefix(base.path+"/") else {throw failure("路径超出笔记目录")}
+        var cursor=base
+        for part in parts {cursor.appendPathComponent(String(part));if (try? cursor.resourceValues(forKeys:[.isSymbolicLinkKey]).isSymbolicLink)==true {throw failure("不支持符号链接")}}
+        return url
+    }
+    func snapshot(_ path:String,_ text:String)throws {
+        let dir=support.appendingPathComponent("History");try fm.createDirectory(at:dir,withIntermediateDirectories:true)
+        let name=UUID().uuidString+".md";try text.write(to:dir.appendingPathComponent(name),atomically:true,encoding:.utf8)
+        // History is app-local, never synchronized. Keep latest 200 snapshots.
+        let files=try fm.contentsOfDirectory(at:dir,includingPropertiesForKeys:[.contentModificationDateKey]).sorted { ((try? $0.resourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate) ?? .distantPast) > ((try? $1.resourceValues(forKeys:[.contentModificationDateKey]).contentModificationDate) ?? .distantPast) }
+        for file in files.dropFirst(200){try? fm.removeItem(at:file)}
+    }
+    func run(_ req:[String:Any])throws->[String:Any] {
+        let cmd=req["cmd"] as? String ?? "";let path=req["path"] as? String ?? ""
+        switch cmd {
+        case "choose":
+            let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"
+            guard panel.runModal() == .OK,let url=panel.url else{return ["cancelled":true]}
+            guard url.lastPathComponent.lowercased() != "credentials" else {throw failure("不能将 Credentials 作为笔记目录")}
+            root=url;UserDefaults.standard.set(url.path,forKey:"root");return [:]
+        case "list":
+            guard fm.fileExists(atPath:root.path) else {throw failure("笔记目录不存在，请重新选择")}
+            var notes=[[String:Any]]()
+            let enumerator=fm.enumerator(at:root,includingPropertiesForKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey],options:[.skipsHiddenFiles])!
+            for case let url as URL in enumerator {
+                let v=try url.resourceValues(forKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey])
+                if v.isSymbolicLink==true || url.lastPathComponent.lowercased()=="credentials" {enumerator.skipDescendants();continue}
+                if v.isDirectory==true {continue}
+                guard url.pathExtension.lowercased()=="md",(v.fileSize ?? 0)<=2_000_000 else {continue}
+                let text=try String(contentsOf:url,encoding:.utf8)
+                notes.append(["path":String(url.path.dropFirst(root.path.count+1)),"text":text,"modified":v.contentModificationDate?.timeIntervalSince1970 ?? 0])
+            };return ["notes":notes,"root":root.path]
+        case "read":return ["text":try String(contentsOf:resolved(path),encoding:.utf8)]
+        case "create":
+            let url=try resolved(path);guard !fm.fileExists(atPath:url.path) else{throw failure("目标文件已存在")}
+            try fm.createDirectory(at:url.deletingLastPathComponent(),withIntermediateDirectories:true)
+            try (req["text"] as? String ?? "").write(to:url,atomically:false,encoding:.utf8);return [:]
+        case "save", "move":
+            let url=try resolved(path);let old=try String(contentsOf:url,encoding:.utf8)
+            guard old == req["expected"] as? String else {throw failure("CONFLICT: 文件已被外部修改")}
+            try snapshot(path,old)
+            if cmd=="move" {let target=try resolved(req["target"] as? String ?? "");guard !fm.fileExists(atPath:target.path) else{throw failure("目标文件已存在")};try fm.createDirectory(at:target.deletingLastPathComponent(),withIntermediateDirectories:true);try fm.moveItem(at:url,to:target)}
+            else {guard try String(contentsOf:url,encoding:.utf8)==old else{throw failure("CONFLICT")};try (req["text"] as? String ?? "").write(to:url,atomically:true,encoding:.utf8)}
+            return [:]
+        default:throw failure("未知操作")
+        }
+    }
+    func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
+        guard message.frameInfo.isMainFrame,let str=message.body as? String,let data=str.data(using:.utf8),let req=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let id=req["id"] as? Int else{return}
+        let result:[String:Any];do {result=try run(req)}catch{result=["error":error.localizedDescription]}
+        if let data=try? JSONSerialization.data(withJSONObject:result),let json=String(data:data,encoding:.utf8){web.evaluateJavaScript("window.nativeReply(\(id),\(json))",completionHandler:nil)}
+    }
+}
+let app=NSApplication.shared;let delegate=App();app.delegate=delegate;app.setActivationPolicy(.regular);app.run()
