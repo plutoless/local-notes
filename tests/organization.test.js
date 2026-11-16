@@ -54,3 +54,24 @@ test('cancel during asynchronous dedup query prevents persistence and coverage c
  const org=new Organization(async cmd=>cmd==='aiAnalyze'?{text:response(batch)}:{},repository);org.batches=[batch];
  const run=org.run();await ready;await org.cancel();release();await assert.rejects(run,/Canceled/);assert.equal(saves,0);assert.equal(org.covered,0);
 });
+
+test('candidate recovery composes with merged revision recovery without changing suggested state', async()=>{
+ const f=await storageFixture();
+ try {
+  const repo=new CandidateRepository(f.adapter);await repo.open();
+  const batch=batchesFor([{path:'selected.md',text:'Historical evidence'}])[0];
+  const fields=validateResponse(response(batch),batch)[0];
+  const saved=(await repo.save({...fields,status:'suggested'})).record;
+  const manual=new (await import('../web/actions.js')).ActionRepository(f.adapter);
+  assert.deepEqual((await manual.open()).warnings,[]);
+  const fork={...saved,revision:crypto.randomUUID(),parents:[saved.revision],description:'A competing suggestion'};
+  const successor=(await repo.save({...saved,description:'Another suggestion'},saved)).record;
+  await f.adapter('actionWrite',{workspaceId:repo.workspaceId,path:`revisions/${saved.entityId}/${fork.revision}.json`,text:JSON.stringify(fork)});
+  await repo.recover();assert.equal(repo.conflicts.get(saved.entityId).tips.length,2);
+  assert.equal((await repo.query()).actions[0].status,'suggested');
+  await f.removeIndex();await repo.open();assert.equal(repo.conflicts.get(saved.entityId).tips.length,2);
+  const resolved=(await repo.resolve(saved.entityId,{...successor,description:'Resolved suggestion'})).record;
+  assert.equal(resolved.status,'suggested');assert.equal(resolved.parents.length,2);
+  assert.equal((await manual.open()).warnings.length,0);
+ }finally{await f.close();}
+});

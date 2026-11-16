@@ -19,6 +19,8 @@ final class ActionStorage {
         try fm.createDirectory(at: url, withIntermediateDirectories: true)
     }
     func workspace() throws -> String {
+        var isDirectory: ObjCBool = false
+        guard fm.fileExists(atPath: root.path, isDirectory: &isDirectory), isDirectory.boolValue, fm.isReadableFile(atPath: root.path) else { throw failure("Workspace directory unavailable") }
         try directory(data)
         let file = data.appendingPathComponent("workspace.json")
         if !fm.fileExists(atPath: file.path) {
@@ -55,16 +57,29 @@ final class ActionStorage {
         } else { try Data(text.utf8).write(to: url, options: .atomic) }
         guard try String(contentsOf: url, encoding: .utf8) == text else { throw failure("Action write verification failed") }
     }
-    func files() throws -> [String: String] {
+    var readWarnings = [[String: String]]()
+    var stamps = [String: String]()
+    func files(_ known: [String: String] = [:]) throws -> [String: String] {
+        stamps = [:]
+        readWarnings = []
         var result = [String: String]()
         for name in ["actions", "initiatives", "topics", "candidates", "revisions"] {
             let dir = data.appendingPathComponent(name)
-            try directory(dir)
-            guard let entries = fm.enumerator(atPath: dir.path) else { throw failure("Action directory unavailable") }
+            do { try directory(dir) } catch { readWarnings.append(["path": name + "/", "message": error.localizedDescription]); continue }
+            guard let entries = fm.enumerator(atPath: dir.path) else { readWarnings.append(["path": name + "/", "message": "Record directory unavailable"]); continue }
             for case let relative as String in entries {
                 let url = dir.appendingPathComponent(relative)
                 if (try? url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) == true { entries.skipDescendants(); continue }
-                if url.pathExtension == "json" { result[name + "/" + relative] = try String(contentsOf: url, encoding: .utf8) }
+                if url.pathExtension == "json" {
+                    do {
+                        let metadata = try url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
+                        let path = name + "/" + relative
+                        let stamp = "\(metadata.contentModificationDate?.timeIntervalSince1970 ?? 0):\(metadata.fileSize ?? 0)"
+                        stamps[path] = stamp
+                        if known[path] != stamp { result[path] = try String(contentsOf: url, encoding: .utf8) }
+                    }
+                    catch { readWarnings.append(["path": name + "/" + relative, "message": error.localizedDescription]) }
+                }
             }
         }
         return result
@@ -75,7 +90,7 @@ final class ActionStorage {
         if cmd == "workspace" { return ["workspaceId": id, "root": root.path] }
         guard req["workspaceId"] as? String == id else { throw failure("Workspace changed; reopen the action") }
         switch cmd {
-        case "actionFiles": return ["files": try files()]
+        case "actionFiles": let records = try files(req["known"] as? [String: String] ?? [:]); return ["files": records, "warnings": readWarnings, "stamps": stamps]
         case "actionWrite": try write(req["path"] as? String ?? "", req["text"] as? String ?? ""); return [:]
         case "actionIndex", "actionQuery":
             return try ActionIndex(privateRoot: privateRoot, workspaceId: id, entityType: req["entityType"] as? String ?? "action").run(req)

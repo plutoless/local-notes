@@ -44,7 +44,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -105,7 +105,7 @@ try {
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
   assert.equal(await readFile(sourcePath, 'utf8'), '# Synthetic reference material\n\nExternal edit');
-  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden);
+  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
   await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('');
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
