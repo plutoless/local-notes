@@ -26,7 +26,9 @@ export class ActionScreen {
     $('#action-history').onclick = async () => {
       try {
         if (!this.previous) return;
-        const records = await this.repository.history(this.previous.entityId);
+        const repository = this.repository, entityId = this.previous.entityId;
+        const records = await repository.history(entityId);
+        if (repository !== this.repository || entityId !== this.previous?.entityId) return;
         $('#action-revisions').replaceChildren();
         for (const record of records) {
           const item = document.createElement('p');
@@ -38,9 +40,13 @@ export class ActionScreen {
   }
   key() { return `action-draft:${this.repository.workspaceId}`; }
   async openWorkspace() {
-    this.previous = null; this.retry = null; this.dirty = false; this.repository.workspaceId = null;
+    this.previous = null; this.retry = null; this.dirty = false;
+    this.listRequest = (this.listRequest || 0) + 1;
+    const repository = new ActionRepository(native);
+    this.repository = repository;
     $('#action-editor').hidden = true;
-    const workspace = await this.repository.open();
+    const workspace = await repository.open();
+    if (this.repository !== repository) return null;
     this.root = workspace.root; this.previous = null; this.retry = null; this.dirty = false;
     $('#root-label').textContent = workspace.root;
     if (workspace.warnings.length) this.notice(workspace.warnings.join('\n'));
@@ -51,7 +57,8 @@ export class ActionScreen {
   }
   async show() {
     this.active = true;
-    if (!this.repository.workspaceId) await this.openWorkspace();
+    if (!this.repository.ready && !await this.openWorkspace()) return;
+    if (!this.active) return;
     $('#action-tools').hidden = false; $('#filters').hidden = true; $('#view-title').textContent = 'Confirmed actions';
     $('#search').placeholder = 'Search actions…';
     $('#editor').hidden = true;
@@ -60,9 +67,10 @@ export class ActionScreen {
     await this.list();
   }
   async list() {
+    const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
-    const page = await this.repository.query({status: this.status, search: this.search, limit: 30, offset: this.offset});
-    if (!this.active || request !== this.listRequest) return;
+    const page = await repository.query({status: this.status, search: this.search, limit: 30, offset: this.offset});
+    if (!this.active || request !== this.listRequest || repository !== this.repository) return;
     $('#items').replaceChildren();
     for (const action of page.actions) {
       const row = document.createElement('button'); row.className = 'card';
@@ -100,6 +108,7 @@ export class ActionScreen {
     $('#empty').hidden = true; $('#editor').hidden = true; $('#action-editor').hidden = false; $('.app').classList.add('editing');
   }
   async edit(action) {
+    if (action && action.workspaceId !== this.repository.workspaceId) { this.notice('Workspace changed; reopen the action'); return; }
     if (!await this.flush()) return;
     this.showForm(action || {}, action); this.state(action ? 'Saved locally' : 'Describe a next step you have confirmed.');
     if (!action) this.changed();

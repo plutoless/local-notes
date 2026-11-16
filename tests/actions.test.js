@@ -88,6 +88,7 @@ test('queries paginate and workspace IDs reject writes from another root', async
     assert.equal(new Set([...first.actions, ...second.actions, ...third.actions].map(record => record.entityId)).size, 5);
     const other = new ActionRepository(b.adapter); await other.open();
     assert.notEqual(repo.workspaceId, other.workspaceId); assert.deepEqual((await other.query()).actions, []);
+    await assert.rejects(other.save(first.actions[0], null, first.actions[0]), /Workspace changed/);
     await assert.rejects(b.adapter('actionIndex', {workspaceId: repo.workspaceId, record: first.actions[0]}), /Workspace changed/);
   } finally { await a.close(); await b.close(); }
 });
