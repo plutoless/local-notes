@@ -1,3 +1,4 @@
+import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
 import {titleOf,toggleTask,withTitle,safePath,escapeHTML as esc,renderMarkdown} from './core.js';
 import {native} from './bridge.js';
@@ -21,6 +22,7 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 });
 actions.initiatives = initiatives;
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
+new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics], notice, refresh);
 async function navigate(next) {
   if (!await flush(true)) return false;
   view = next; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
@@ -69,7 +71,7 @@ function changed(){dirty=true;localStorage.setItem(draftKey(),JSON.stringify({te
 function updateReading(){$('#reading').innerHTML=renderMarkdown(content());}
 $('#title').oninput=$('#body').oninput=changed;
 $('#search').oninput=()=>{if(view==='initiatives'){initiatives.search=$('#search').value;initiatives.offset=0;initiatives.list().catch(e=>notice(e.message));}else if(view==='actions'){actions.search=$('#search').value;actions.offset=0;actions.list().catch(e=>notice(e.message));}else {libraryScreen.search=$('#search').value;libraryScreen.offset=0;render();}};
-for(const b of document.querySelectorAll('nav button'))b.onclick=()=>navigate(b.dataset.view).catch(e=>notice(e.message));
+for(const b of document.querySelectorAll('nav button[data-view]'))b.onclick=()=>navigate(b.dataset.view).catch(e=>notice(e.message));
 for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filter=b.dataset.filter;document.querySelector('#filters .active')?.classList.remove('active');b.classList.add('active');render();};
 async function createNote(initiativeId = null) {
   try {
