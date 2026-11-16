@@ -47,6 +47,9 @@ try {
  await page.locator('#ai-selection input').waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
  await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
  await page.locator('#ai-selection input').check();await page.locator('#ai-preview').click();await page.waitForFunction(()=>!document.querySelector('#ai-send').disabled);
+ await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+ await page.waitForTimeout(200);
+ assert.equal(await page.locator('#ai-selection input').isChecked(), true, 'Revision refresh must preserve explicit selection');
  assert.ok((await page.locator('#ai-input').textContent()).includes('reference.md'));assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
  for (const viewport of [{width:1180,height:800}, {width:800,height:600}, {width:380,height:548}]) {
   await page.setViewportSize(viewport);

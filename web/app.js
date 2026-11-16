@@ -24,7 +24,10 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async path => { if (await navigate('notes')) await openNote(path); });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
-new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, refresh);
+new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
+  if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
+  else await refresh();
+});
 async function navigate(next) {
   if (!await flush(true)) return false;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
