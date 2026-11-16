@@ -47,7 +47,7 @@ export class SyncScreen {
       editor.value = JSON.stringify(conflict.tips[0] || conflict.versions[0], null, 2); article.append(editor);
       const save = document.createElement('button'); save.textContent = 'Save selected / merged resolution locally'; save.disabled = conflict.incomplete || conflict.cyclic;
       save.onclick = async () => {
-        try { save.disabled = true; await repo.resolve(id, JSON.parse(editor.value)); this.notice('Resolution saved locally; remote receipt is not verified.'); await this.refresh(true); }
+        try { save.disabled = true; await repo.resolve(id, JSON.parse(editor.value), conflict.tips.map(record => record.revision)); this.notice('Resolution saved locally; remote receipt is not verified.'); await this.refresh(true); }
         catch (error) { this.notice(error.message); } finally { save.disabled = conflict.incomplete || conflict.cyclic; }
       };
       article.append(save); this.panel.append(article);

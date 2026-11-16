@@ -22,6 +22,7 @@ export function conflictView(history, state) {
   record.deleted = false;
   record.description = `[${record.syncState === 'incomplete' ? 'Sync incomplete' : 'Conflict'}] ${record.description}`;
   if (record.entityType === 'initiative') record.title = record.description;
-  record.focusPosition = null;
+  const positions = [...history.values()].map(version => version.focusPosition).filter(Number.isFinite);
+  record.focusPosition = record.entityType === 'action' && positions.length ? Math.min(...positions) : null;
   return record;
 }

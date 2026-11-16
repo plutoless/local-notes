@@ -39,3 +39,44 @@ for (const Repository of [ActionRepository, InitiativeRepository, TopicRepositor
     await repo.recover(); assert.equal((await repo.query()).actions.length, 1);
   } finally { await fixture.close(); }
 });
+
+test('reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const base = (await repo.save({description: 'Focused', focusPosition: 1})).record;
+    const first = (await repo.save({...base, description: 'Local'}, base)).record;
+    const add = async description => {
+      const record = {...base, revision: randomUUID(), parents: [base.revision], description};
+      await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `revisions/${base.entityId}/${record.revision}.json`, text: JSON.stringify(record)}); return record;
+    };
+    await add('Remote'); await repo.recover();
+    assert.equal((await repo.query({focus: true})).actions[0].syncState, 'conflict');
+    const reviewed = repo.conflicts.get(base.entityId).tips.map(r => r.revision);
+    await add('Unseen'); await assert.rejects(repo.resolve(base.entityId, first, reviewed), /Conflict changed/);
+  } finally { await fixture.close(); }
+});
+
+test('corrupt Mac SQLite is rebuilt from synchronized revisions', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const {record} = await repo.save({description: 'Recover corruption'});
+    await writeFile(join(fixture.privateRoot, 'Workspaces', repo.workspaceId, 'actions.sqlite'), 'Not a SQLite database');
+    assert.deepEqual((await repo.query()).actions, [record]);
+  } finally { await fixture.close(); }
+});
+
+test('an incoming current-file import failure does not block unrelated records', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const good = (await repo.save({description: 'Unrelated'})).record;
+    const incoming = {...good, entityId: randomUUID(), revision: randomUUID(), parents: []};
+    await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `actions/${incoming.entityId}.json`, text: JSON.stringify(incoming)});
+    fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.includes(incoming.revision));
+    const result = await repo.recover(); assert.ok(result.warnings.some(warning => warning.includes('Injected')));
+    assert.equal((await repo.query()).actions[0].entityId, good.entityId);
+    await repo.recover(); assert.equal((await repo.query()).actions.length, 2);
+  } finally { await fixture.close(); }
+});

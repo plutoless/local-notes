@@ -45,7 +45,7 @@ export class ActionRepository {
     if (cached) {
       try { await this.request('actionQuery', {limit: 1}); this.ready = true; this.needsRefresh = true; return {...workspace, warnings: []}; }
       catch (error) {
-        if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error;
+        if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error;
         await this.request('actionIndex', {records: []});
         this.ready = true; this.needsRefresh = true;
         this.progress?.(`Building ${this.collection} index in background…`);
@@ -58,16 +58,22 @@ export class ActionRepository {
   }
   async recover() {
     this.progress?.('Reading confirmed revisions…');
-    const {files, warnings: fileWarnings = []} = await this.request('actionFiles');
+    const result = await this.request('actionFiles', {known: this.fileStamps || {}});
+    const fileWarnings = result.warnings || [];
+    const files = result.stamps ? Object.fromEntries(Object.keys(result.stamps).map(path => [path, result.files[path] ?? this.fileCache?.[path]]).filter(([,text]) => text !== undefined)) : result.files;
+    this.fileCache = files; this.fileStamps = result.stamps;
+    this.parsedFiles ||= new Map();
     this.progress?.(`Rebuilding ${this.collection}: ${Object.keys(files).length} record files…`);
-    const revisions = new Map(), currents = new Map(), warnings = [...fileWarnings];
+    const revisions = new Map(), currents = new Map(), warnings = fileWarnings.map(warning => `${warning.path}: ${warning.message}`);
     this.conflicts = new Map();
-    const damaged = new Set(fileWarnings.map(warning => warning.split(':')[0]));
+    const damaged = new Set(fileWarnings.map(warning => warning.path));
     let processed = 0; const fileCount = Object.keys(files).length;
     for (const [path, text] of Object.entries(files)) {
       if (++processed % 50 === 0) { this.progress?.(`Indexing ${this.collection}: ${processed}/${fileCount} files`); await new Promise(resolve => setTimeout(resolve, 0)); }
       try {
-        const parsed = JSON.parse(text);
+        const cached = this.parsedFiles.get(path);
+        const parsed = cached?.text === text ? cached.record : JSON.parse(text);
+        this.parsedFiles.set(path, {text, record: parsed});
         if (parsed.entityType !== this.entityType) continue;
         const record = this.validate(parsed);
         if (record.workspaceId !== this.workspaceId) throw Error('Record belongs to another workspace');
@@ -75,12 +81,12 @@ export class ActionRepository {
         const canonical = path === revisionPath || path === `${this.collection}/${record.entityId}.json`;
         const conflictCopy = path.includes('.sync-conflict-') && path.endsWith('.json');
         if (!canonical && !conflictCopy) throw Error('Record path does not match its ID');
-        if (!revisions.has(record.entityId)) revisions.set(record.entityId, new Map());
-        const history = revisions.get(record.entityId);
+        const history = revisions.get(record.entityId) || new Map();
         if (history.has(record.revision) && JSON.stringify(history.get(record.revision)) !== JSON.stringify(record)) throw Error('Revision identity has incompatible content');
         // Preserve a current file or Syncthing conflict copy before any repair can replace it.
         if (path !== revisionPath && !Object.hasOwn(files, revisionPath)) await this.request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
         history.set(record.revision, record);
+        revisions.set(record.entityId, history);
         if (path === `${this.collection}/${record.entityId}.json`) currents.set(record.entityId, record);
       } catch (error) { damaged.add(path); warnings.push(`${path}: ${error.message}`); }
     }
@@ -111,11 +117,19 @@ export class ActionRepository {
           }
           if (!page.hasMore) break;
         }
-      } catch (error) { if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error; }
+      } catch (error) { if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error; }
     }
     const snapshot = JSON.stringify(records.filter(record => !record.deleted).sort((a,b) => a.entityId.localeCompare(b.entityId)));
     if (this.indexedSnapshot !== snapshot) {
-      await this.request('actionIndex', {records: JSON.parse(snapshot)});
+      if (!this.indexedSnapshot) await this.request('actionIndex', {records: JSON.parse(snapshot)});
+      else {
+        const previous = new Map(JSON.parse(this.indexedSnapshot).map(record => [record.entityId, record]));
+        for (const record of JSON.parse(snapshot)) {
+          if (JSON.stringify(previous.get(record.entityId)) !== JSON.stringify(record)) await this.request('actionIndex', {record});
+          previous.delete(record.entityId);
+        }
+        for (const entityId of previous.keys()) await this.request('actionIndex', {record: {entityId, deleted: true}});
+      }
       this.indexedSnapshot = snapshot;
     }
     this.heads = new Map(records.map(record => [record.entityId, record.revision]));
@@ -126,7 +140,7 @@ export class ActionRepository {
     if (!this.ready) throw Error('Workspace is not ready; reopen it');
     try { const page = await this.request('actionQuery', options); for (const record of page.actions) if (!this.heads.has(record.entityId)) this.heads.set(record.entityId, record.revision); return page; }
     catch (error) {
-      if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error;
+      if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error;
       this.indexedSnapshot = null;
       await this.serialize(() => this.recover());
       return this.request('actionQuery', options);
@@ -138,21 +152,22 @@ export class ActionRepository {
       try { return [this.validate(JSON.parse(text))]; } catch { return []; }
     });
   }
-  async resolve(entityId, fields) {
+  async resolve(entityId, fields, reviewedHeads = this.conflicts?.get(entityId)?.tips.map(record => record.revision)) {
     // save() owns the queue; the parent set is checked again inside its serialized operation.
-    return this.save(fields, {entityId, workspaceId: this.workspaceId, revision: fields.revision}, null, true);
+    return this.save(fields, {entityId, workspaceId: this.workspaceId, revision: fields.revision}, null, reviewedHeads || []);
   }
   remove(previous) { return this.save({...previous, deleted: true}, previous); }
   save(fields, previous = null, retry = null, resolution = false) {
     return this.serialize(async () => {
       if (!this.ready) throw Error('Workspace is not ready; reopen it');
       if ((previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
-      await this.recover(); this.needsRefresh = false;
+      if (previous || this.needsRefresh) await this.recover(); this.needsRefresh = false;
       this.resolving = null;
       if (resolution) {
         const conflict = this.conflicts?.get(previous.entityId);
         if (!conflict || conflict.incomplete || conflict.cyclic) throw Error('Wait for complete valid history before resolving');
         this.resolving = conflict.tips.map(record => record.revision);
+        if (JSON.stringify([...resolution].sort()) !== JSON.stringify([...this.resolving].sort())) throw Error('Conflict changed; refresh and review all versions again');
       }
       if (previous && this.conflicts?.has(previous.entityId) && !this.resolving) throw Error('Resolve synchronization conflict before editing');
       if (previous && !this.heads.has(previous.entityId)) await this.query({entityId: previous.entityId, limit: 1});
