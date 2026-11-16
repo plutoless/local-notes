@@ -12,6 +12,7 @@ import java.util.*;
 // Synchronized JSON and immutable revisions are the authoritative action storage.
 final class ActionStorage {
     private final MainActivity activity;
+    private JSONArray readWarnings = new JSONArray();
     private final Uri tree;
     private final File root;
     ActionStorage(MainActivity activity) {
@@ -75,6 +76,10 @@ final class ActionStorage {
         if (record.getInt("formatVersion") != 1) throw new IOException("Unsupported workspace format");
         String id = record.getString("workspaceId"); UUID.fromString(id); return id;
     }
+    private void readRecord(String path, JSONObject files) {
+        try { files.put(path, read(path)); }
+        catch (Exception error) { readWarnings.put(path + ": " + error.getMessage()); }
+    }
     private void listLocal(File directory, String prefix, JSONObject files) throws Exception {
         if (!directory.exists()) return;
         File[] children = directory.listFiles(); if (children == null) throw new IOException("Action directory unavailable");
@@ -82,7 +87,7 @@ final class ActionStorage {
             if (!file.getCanonicalPath().startsWith(root.getCanonicalPath() + "/")) throw new IOException("Action path escapes workspace");
             String path = prefix + file.getName();
             if (file.isDirectory()) listLocal(file, path + "/", files);
-            else if (path.endsWith(".json")) files.put(path, read(path));
+            else if (path.endsWith(".json")) readRecord(path, files);
         }
     }
     private void listTree(Uri directory, String prefix, JSONObject files, int depth) throws Exception {
@@ -94,7 +99,7 @@ final class ActionStorage {
                 String path = prefix + cursor.getString(1);
                 Uri uri = DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(0));
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(cursor.getString(2))) listTree(uri, path + "/", files, depth + 1);
-                else if (path.endsWith(".json")) files.put(path, read(path));
+                else if (path.endsWith(".json")) readRecord(path, files);
             }
         }
     }
@@ -104,12 +109,12 @@ final class ActionStorage {
         if (!workspaceId.equals(request.optString("workspaceId"))) throw new IOException("Workspace changed; reopen the action");
         switch (cmd) {
             case "actionFiles":
-                JSONObject files = new JSONObject();
+                JSONObject files = new JSONObject(); readWarnings = new JSONArray();
                 for (String name : new String[]{"actions", "initiatives", "topics", "revisions"}) {
                     if (tree == null) listLocal(new File(root, name), name + "/", files);
                     else { try { listTree(resolve(name, false), name + "/", files, 0); } catch (FileNotFoundException missing) { /* An empty collection is valid. */ } }
                 }
-                return new JSONObject().put("files", files);
+                return new JSONObject().put("files", files).put("warnings", readWarnings);
             case "actionWrite":
                 String path = request.getString("path");
                 if (!path.matches("((?:actions|initiatives|topics)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");

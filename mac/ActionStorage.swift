@@ -55,7 +55,9 @@ final class ActionStorage {
         } else { try Data(text.utf8).write(to: url, options: .atomic) }
         guard try String(contentsOf: url, encoding: .utf8) == text else { throw failure("Action write verification failed") }
     }
+    var readWarnings = [String]()
     func files() throws -> [String: String] {
+        readWarnings = []
         var result = [String: String]()
         for name in ["actions", "initiatives", "topics", "revisions"] {
             let dir = data.appendingPathComponent(name)
@@ -64,7 +66,10 @@ final class ActionStorage {
             for case let relative as String in entries {
                 let url = dir.appendingPathComponent(relative)
                 if (try? url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) == true { entries.skipDescendants(); continue }
-                if url.pathExtension == "json" { result[name + "/" + relative] = try String(contentsOf: url, encoding: .utf8) }
+                if url.pathExtension == "json" {
+                    do { result[name + "/" + relative] = try String(contentsOf: url, encoding: .utf8) }
+                    catch { readWarnings.append(name + "/" + relative + ": " + error.localizedDescription) }
+                }
             }
         }
         return result
@@ -75,7 +80,7 @@ final class ActionStorage {
         if cmd == "workspace" { return ["workspaceId": id, "root": root.path] }
         guard req["workspaceId"] as? String == id else { throw failure("Workspace changed; reopen the action") }
         switch cmd {
-        case "actionFiles": return ["files": try files()]
+        case "actionFiles": let records = try files(); return ["files": records, "warnings": readWarnings]
         case "actionWrite": try write(req["path"] as? String ?? "", req["text"] as? String ?? ""); return [:]
         case "actionIndex", "actionQuery":
             return try ActionIndex(privateRoot: privateRoot, workspaceId: id, entityType: req["entityType"] as? String ?? "action").run(req)
