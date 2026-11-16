@@ -26,7 +26,7 @@ export function isOverdue(action, today = new Date().toLocaleDateString('en-CA')
 // The adapter is the file/index boundary. All commits on this device are serialized here.
 export class ActionRepository {
   constructor(adapter, {newId = newUUID, now = () => new Date().toISOString()} = {}) {
-    this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map();
+    this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
   }
   serialize(operation) {
     const result = this.queue.then(operation);
@@ -35,9 +35,11 @@ export class ActionRepository {
   }
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   async open() {
+    this.ready = false;
     const workspace = await this.adapter('workspace');
     this.workspaceId = workspace.workspaceId;
     const recovery = await this.recover();
+    this.ready = true;
     return {...workspace, ...recovery};
   }
   async recover() {
@@ -79,6 +81,7 @@ export class ActionRepository {
     return {warnings};
   }
   async query(options = {}) {
+    if (!this.ready) throw Error('Workspace is not ready; reopen it');
     try { return await this.request('actionQuery', options); }
     catch (error) {
       if (!error.message.includes('INDEX_REBUILD_REQUIRED')) throw error;
@@ -94,6 +97,8 @@ export class ActionRepository {
   }
   save(fields, previous = null, retry = null) {
     return this.serialize(async () => {
+      if (!this.ready) throw Error('Workspace is not ready; reopen it');
+      if ((previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
       if (!retry && previous && this.heads.get(previous.entityId) !== previous.revision) throw Error('Action changed; reopen it before editing');
       const record = retry || validateAction({
         formatVersion: 1, entityType: 'action', workspaceId: this.workspaceId,

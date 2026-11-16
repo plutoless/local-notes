@@ -6,6 +6,7 @@ import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 const otherFixture = await storageFixture();
 let activeFixture = fixture;
+let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -17,8 +18,12 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
-      if (request.cmd === 'choose') { activeFixture = otherFixture; return {}; }
-      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) return await activeFixture.adapter(request.cmd, request);
+      if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
+      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) {
+        const result = await activeFixture.adapter(request.cmd, request);
+        if (request.cmd === 'actionQuery' && holdActionQuery) { heldQueryStartedResolve(); await new Promise(resolve => { releaseHeldQuery = resolve; }); }
+        return result;
+      }
       const workspace = await activeFixture.adapter('workspace');
       if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
       const path = join(activeFixture.root, request.path || '');
@@ -35,7 +40,7 @@ try {
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js'].includes(name)) return route.abort();
@@ -129,6 +134,32 @@ try {
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);
   assert.equal(await readFile(sourcePath, 'utf8'), oldSource);
+  // Existing pre-workspace-ID note drafts must survive the key change.
+  await writeFile(join(otherFixture.root, 'legacy.md'), '# Legacy note\n\nOriginal body');
+  await page.evaluate(root => localStorage.setItem(`draft:${root}:legacy.md`, JSON.stringify({text: '# Legacy note\n\nRecovered old editor draft', base: '# Legacy note\n\nOriginal body'})), otherFixture.root);
+  await page.locator('[data-view="notes"]').click();
+  await page.getByRole('heading', {name: 'Legacy note', exact: true}).click();
+  await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地' && document.querySelector('#body').value.includes('Recovered old editor draft'));
+  assert.match(await readFile(join(otherFixture.root, 'legacy.md'), 'utf8'), /Recovered old editor draft/);
+  // A delayed query from B cannot repopulate the list after failed initialization of A.
+  await page.locator('[data-view="actions"]').click();
+  await page.locator('#action-new').click(); await page.locator('#action-description').fill('Only in workspace B');
+  await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
+  const bWorkspace = (await otherFixture.adapter('workspace')).workspaceId;
+  const bAction = (await otherFixture.adapter('actionQuery', {workspaceId: bWorkspace})).actions[0];
+  const heldQueryStarted = new Promise(resolve => { heldQueryStartedResolve = resolve; });
+  holdActionQuery = true; await page.locator('#search').fill('Only in workspace B'); await heldQueryStarted;
+  fixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('#choose').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor();
+  holdActionQuery = false; releaseHeldQuery();
+  await page.waitForFunction(() => window.__heldQueryDelivered === true);
+  await page.waitForFunction(() => document.querySelector('#root-label').textContent === 'Opening workspace…');
+  assert.equal(await page.locator('.card').count(), 0); assert.equal(await page.locator('#action-editor').isVisible(), false);
+  const aWorkspace = (await fixture.adapter('workspace')).workspaceId;
+  const aActions = (await fixture.adapter('actionQuery', {workspaceId: aWorkspace})).actions;
+  assert.ok(aActions.every(action => action.entityId !== bAction.entityId));
+  await page.locator('#search').fill(''); await page.locator('[data-view="actions"]').click();
+  await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).waitFor();
   assert.deepEqual(errors, []);
   console.log('PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).');
 } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
