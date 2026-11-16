@@ -1,5 +1,5 @@
 import {ActionRepository, validateAction, newUUID} from './actions.js';
-import {fingerprint, allRecords, InitiativeRepository} from './initiatives.js';
+import {fingerprint, allRecords, InitiativeRepository, validateInitiative} from './initiatives.js';
 import {TopicRepository} from './library.js';
 import {safePath} from './core.js';
 export const CANDIDATE_TYPES = ['initiative', 'topic', 'relationship', 'progress', 'action'];
@@ -39,7 +39,19 @@ export function validateCandidate(record) {
   if (record.review) {
     const r = record.review;
     if (!['pending', 'done'].includes(r.state) || !['confirm', 'ignore', 'later', 'reference', 'attach'].includes(r.decision) || typeof r.targetFingerprint !== 'string' || typeof r.candidateType !== 'string' || !Array.isArray(r.sourceFingerprints)) throw Error('Invalid review decision');
-    if (r.target && (!['action', 'initiative', 'topic'].includes(r.target.entityType) || r.target.workspaceId !== record.workspaceId)) throw Error('Invalid review target');
+    if (r.candidateType !== record.candidateType || r.sourceFingerprints.length !== record.sources.length || r.sourceFingerprints.some(s => !s || !safePath(s.path) || !nonempty(s.quote) || !nonempty(s.fingerprint))) throw Error('Invalid review evidence');
+    const expectedType = r.decision === 'ignore' || (r.decision === 'later' && record.candidateType !== 'initiative') ? null
+      : r.decision === 'reference' || (r.decision === 'attach' && record.candidateType !== 'action') || ['progress', 'relationship'].includes(record.candidateType) ? 'initiative' : record.candidateType;
+    if ((r.target?.entityType || null) !== expectedType) throw Error('Decision does not match review target');
+    if (r.target) {
+      const t = r.target;
+      if (t.workspaceId !== record.workspaceId || t.deleted || t.syncState) throw Error('Invalid review target');
+      if (t.entityType === 'initiative') validateInitiative(t);
+      else validateAction({...t, entityType: 'action'});
+      if (!t.parents.length && t.entityId !== confirmationId(record.entityId)) throw Error('Invalid confirmation association');
+      if (r.decision === 'later' && t.status !== 'later') throw Error('Invalid later initiative');
+      if (r.decision === 'attach' && t.entityType === 'action' && !t.initiativeId) throw Error('Missing attachment');
+    }
   }
   return record;
 }
@@ -75,7 +87,7 @@ export class Organization {
           let duplicate = false;
           for (let offset = 0; ; offset += 50) {
             const page = await this.repository.query({offset, limit: 50});
-            if (page.actions.some(r => r.candidateType === candidate.candidateType && r.description === candidate.description && r.placement === candidate.placement && r.sources.length === candidate.sources.length && r.sources.every((source, index) => ['path', 'quote', 'fingerprint', 'fragmentId', 'start', 'end'].every(key => source[key] === candidate.sources[index][key])))) { duplicate = true; break; }
+            if (page.actions.some(r => r.candidateType === candidate.candidateType && r.description === candidate.description && r.placement === candidate.placement && r.sources.length === candidate.sources.length && r.sources.every((source, index) => ['path', 'quote', 'fingerprint', 'start', 'end'].every(key => source[key] === candidate.sources[index][key])))) { duplicate = true; break; }
             if (!page.hasMore) break;
           }
           if (generation !== this.generation || workspaceId !== this.repository.workspaceId) throw Error('Canceled');
@@ -91,6 +103,7 @@ export class Organization {
 
 // Review intent is committed before its target. Replaying the exact target revision is
 // safe after interruption; later user edits are never overwritten during recovery.
+const confirmationId = id => id.replace(/^./, digit => (parseInt(digit, 16) ^ 8).toString(16));
 export class CandidateReview {
   constructor(adapter, candidates) {
     this.adapter = adapter; this.candidates = candidates; this.queue = Promise.resolve();
@@ -111,7 +124,7 @@ export class CandidateReview {
     }
     return sources;
   }
-  decide(candidate, decision, {description = candidate.description, targetId = ''} = {}) {
+  decide(candidate, decision, {description = candidate.review?.suggestion ?? candidate.description, targetId = ''} = {}) {
     return this.serialize(async () => {
       await this.candidates.recover();
       if (this.candidates.conflicts.has(candidate.entityId)) throw Error('Resolve candidate synchronization conflict first');
@@ -125,7 +138,9 @@ export class CandidateReview {
       let repo, fields, previous;
       if (decision !== 'ignore') {
         const needsInitiative = ['attach', 'reference'].includes(decision) || ['progress', 'relationship'].includes(current.candidateType);
-        if (needsInitiative) {
+        if (decision === 'later' && current.candidateType !== 'initiative') {
+          repo = null;
+        } else if (needsInitiative) {
           repo = this.targets.initiative; await repo.recover();
           previous = (await allRecords(repo)).find(r => r.entityId === targetId && !r.syncState);
           if (!previous) throw Error('Choose an existing initiative');
@@ -147,14 +162,14 @@ export class CandidateReview {
       if (repo) {
         // Stable per-candidate identity across devices, separate from the candidate's
         // revision namespace. Existing-target updates retain their reviewed parent.
-        const id = current.entityId.replace(/^./, digit => (parseInt(digit, 16) ^ 8).toString(16));
+        const id = confirmationId(current.entityId);
         target = repo.validate({...fields, formatVersion: 1, entityType: repo.entityType, workspaceId: current.workspaceId,
           entityId: previous?.entityId || id, revision: newUUID(), parents: previous ? [previous.revision] : [],
           description: (fields.title || fields.description).trim(), initiativeId: fields.initiativeId || null,
           focusPosition: previous?.focusPosition ?? null, dueDate: previous?.dueDate ?? null, waitingOn: previous?.waitingOn ?? null,
           sources: fields.sources || [], modifiedAt: new Date().toISOString()});
       }
-      const review = {state: 'pending', decision, candidateType: current.candidateType,
+      const review = {state: 'pending', decision, suggestion: description.trim(), candidateType: current.candidateType,
         sourceFingerprints: current.sources.map(s => ({path: s.path, fingerprint: s.fingerprint, quote: s.quote})),
         targetFingerprint: fingerprint(JSON.stringify({description: current.description, placement: current.placement})),
         approvedFingerprint: fingerprint(JSON.stringify({description: description.trim(), targetId, decision})), target};
