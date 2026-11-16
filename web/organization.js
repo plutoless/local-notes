@@ -39,7 +39,7 @@ export function validateCandidate(record) {
   if (record.review) {
     const r = record.review;
     if (!['pending', 'done'].includes(r.state) || !['confirm', 'ignore', 'later', 'reference', 'attach'].includes(r.decision) || typeof r.targetFingerprint !== 'string' || typeof r.candidateType !== 'string' || !Array.isArray(r.sourceFingerprints)) throw Error('Invalid review decision');
-    if (r.candidateType !== record.candidateType || r.sourceFingerprints.length !== record.sources.length || r.sourceFingerprints.some(s => !s || !safePath(s.path) || !nonempty(s.quote) || !nonempty(s.fingerprint))) throw Error('Invalid review evidence');
+    if (r.candidateType !== record.candidateType || r.sourceFingerprints.length !== record.sources.length || r.sourceFingerprints.some(s => !s || typeof s.path !== 'string' || !safePath(s.path) || !nonempty(s.quote) || !nonempty(s.fingerprint))) throw Error('Invalid review evidence');
     const expectedType = r.decision === 'ignore' || (r.decision === 'later' && record.candidateType !== 'initiative') ? null
       : r.decision === 'reference' || (r.decision === 'attach' && record.candidateType !== 'action') || ['progress', 'relationship'].includes(record.candidateType) ? 'initiative' : record.candidateType;
     if ((r.target?.entityType || null) !== expectedType) throw Error('Decision does not match review target');
@@ -151,9 +151,6 @@ export class CandidateReview {
           else if (current.candidateType === 'action') { repo = this.targets.action; fields = {description, status: 'todo', initiativeId: targetId, sources}; previous = null; }
         } else if (current.candidateType === 'initiative') {
           repo = this.targets.initiative; fields = {title: description.trim(), goal: '', progress: '', status: decision === 'later' ? 'later' : 'active', sources: []};
-        } else if (decision === 'later') {
-          // Non-initiative candidates can be held without making a commitment.
-          repo = null;
         } else {
           repo = this.targets[current.candidateType]; fields = {description, status: 'todo', sources};
         }
