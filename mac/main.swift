@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -17,6 +17,15 @@ func failure(_ message: String) -> NSError { NSError(domain: "LocalNotes", code:
 final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate, NSWindowDelegate {
     var window: NSWindow!; var web: WKWebView!; var root: URL!; var support: URL!
     let fm = FileManager.default
+    var watch: DispatchSourceFileSystemObject?
+    func observeRoot() {
+        watch?.cancel()
+        let descriptor = open(root.path, O_EVTONLY)
+        guard descriptor >= 0 else { return }
+        let source = DispatchSource.makeFileSystemObjectSource(fileDescriptor: descriptor, eventMask: [.write, .rename, .delete], queue: .main)
+        source.setEventHandler { [weak self] in self?.web.evaluateJavaScript("window.dispatchEvent(new Event('reference-change'))", completionHandler: nil) }
+        source.setCancelHandler { close(descriptor) }; watch = source; source.resume()
+    }
     let worker = DispatchQueue(label: "dev.localnotes.storage", qos: .userInitiated)
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
@@ -41,6 +50,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         let edit=NSMenuItem();menu.addItem(edit);let em=NSMenu(title:"编辑");edit.submenu=em
         for (title,action,key) in [("撤销","undo:","z"),("剪切","cut:","x"),("复制","copy:","c"),("粘贴","paste:","v"),("全选","selectAll:","a")] { em.addItem(withTitle:title,action:Selector(action),keyEquivalent:key) }
         NSApp.mainMenu=menu; NSApp.activate(ignoringOtherApps:true)
+        observeRoot()
         web.load(URLRequest(url:URL(string:"notes://local/index.html")!))
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {true}
@@ -83,24 +93,28 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         if cmd != "choose" {
             guard req["workspaceId"] as? String == (try ActionStorage(root: root, privateRoot: support).workspace()) else { throw failure("Workspace changed; reopen the note") }
         }
+        if cmd.hasPrefix("reference") { return try ReferenceIndex(privateRoot: support, workspaceId: req["workspaceId"] as! String).run(req) }
         switch cmd {
         case "choose":
             let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"
             guard panel.runModal() == .OK,let url=panel.url else{return ["cancelled":true]}
             guard url.lastPathComponent.lowercased() != "credentials" else {throw failure("不能将 Credentials 作为笔记目录")}
-            root=url;UserDefaults.standard.set(url.path,forKey:"root");return [:]
-        case "list":
-            guard fm.fileExists(atPath:root.path) else {throw failure("笔记目录不存在，请重新选择")}
-            var notes=[[String:Any]]()
-            let enumerator=fm.enumerator(at:root,includingPropertiesForKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey],options:[.skipsHiddenFiles])!
+            root=url;observeRoot();UserDefaults.standard.set(url.path,forKey:"root");return [:]
+        case "list", "metadata":
+            guard fm.fileExists(atPath: root.path) else { throw failure("Note directory unavailable") }
+            var notes = [[String: Any]](), warnings = [String]()
+            let keys: Set<URLResourceKey> = [.isDirectoryKey, .isSymbolicLinkKey, .contentModificationDateKey, .fileSizeKey]
+            guard let enumerator = fm.enumerator(at: root, includingPropertiesForKeys: Array(keys), options: [.skipsHiddenFiles], errorHandler: { url, error in warnings.append("\(url.path): \(error.localizedDescription)"); return true }) else { throw failure("Note directory unavailable") }
             for case let url as URL in enumerator {
-                let v=try url.resourceValues(forKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey])
-                if v.isSymbolicLink==true || ["credentials", "localnotesdata"].contains(url.lastPathComponent.lowercased()) {enumerator.skipDescendants();continue}
-                if v.isDirectory==true {continue}
-                guard url.pathExtension.lowercased()=="md",(v.fileSize ?? 0)<=2_000_000 else {continue}
-                let text=try String(contentsOf:url,encoding:.utf8)
-                notes.append(["path":String(url.path.dropFirst(root.path.count+1)),"text":text,"modified":v.contentModificationDate?.timeIntervalSince1970 ?? 0])
-            };return ["notes":notes,"root":root.path]
+                do {
+                    let v = try url.resourceValues(forKeys: keys)
+                    if v.isSymbolicLink == true || ["credentials", "localnotesdata"].contains(url.lastPathComponent.lowercased()) { enumerator.skipDescendants(); continue }
+                    if v.isDirectory == true { continue }
+                    guard url.pathExtension.lowercased() == "md", (v.fileSize ?? 0) <= 2_000_000 else { continue }
+                    notes.append(["path": String(url.path.dropFirst(root.path.count + 1)), "modified": v.contentModificationDate?.timeIntervalSince1970 ?? 0, "size": v.fileSize ?? 0])
+                } catch { warnings.append("\(url.path): \(error.localizedDescription)") }
+            }
+            return ["notes": notes, "root": root.path, "warnings": warnings]
         case "read":return ["text":try String(contentsOf:resolved(path),encoding:.utf8)]
         case "create":
             let url=try resolved(path);guard !fm.fileExists(atPath:url.path) else{throw failure("目标文件已存在")}
