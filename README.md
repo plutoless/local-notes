@@ -1,28 +1,28 @@
-# 拾记 · Local Notes 0.1
+# Local Notes 0.1
 
-Mac 和 Android 的本地 Markdown 笔记、待办工具。应用不提供同步服务，Syncthing 负责设备间文件同步。默认使用隔离的 Sample 样本目录。
+A local Markdown notes and tasks app for Mac and Android. The app does not provide a synchronization service; Syncthing synchronizes files between devices. It starts with an isolated Sample directory by default.
 
-## 运行
+## Run
 
-- Mac：打开 `dist/LocalNotes.app`。这是本机临时签名的 Apple Silicon 构建，未做 Apple 公证。
-- Android：安装 `dist/LocalNotes-debug.apk`，要求 Android 8 或以上。这是开发签名包，尚未真机验证。
-- 首次运行不需要选择目录；先在样本里体验。后续选择各端同步目录中同一专用笔记子目录。不要选择包含其他私人资料的上层目录。
+- Mac: open `dist/LocalNotes.app`. This is an ad hoc signed Apple Silicon build and has not been notarized by Apple.
+- Android: install `dist/LocalNotes-debug.apk`. Android 8 or later is required. This is a development-signed package and has not yet been verified on a physical device.
+- No directory selection is required on first launch; try the samples first. Later, select the same dedicated notes subdirectory within each device's synchronized folder. Do not select a parent directory containing unrelated private data.
 
-## 已实现
+## Implemented features
 
-本地自动保存、未保存草稿恢复、全文搜索、最近编辑、按路径排序、收藏、Markdown 简易阅读、待办汇总和写回、移动/改名、外部修改检测、冲突另存。收藏和索引不跨端同步。原文件保留 Markdown 形式。
+Local autosave, unsaved draft recovery, full-text search, recently edited and path-sorted lists, favorites, basic Markdown reading, aggregated tasks with write-back, move/rename, external change detection, and saving conflicts as copies. Favorites and indexes do not synchronize across devices. Source files remain Markdown.
 
-读取时跳过隐藏目录与 Credentials，仅列出 2 MB 以内的 Markdown。附件目前不展示，尚无到期日期、提醒、标签和富文本。阅读模式仅支持基本标题、粗体、代码、任务，不是完整 Markdown 渲染器。按目录目前是路径排序，不是目录树。
+Scanning skips hidden directories and Credentials and lists only Markdown files up to 2 MB. Attachments are not displayed. Due dates, reminders, tags, and rich text are not supported yet. Reading mode supports basic headings, bold text, code, and tasks; it is not a complete Markdown renderer. The directory option currently sorts paths rather than displaying a directory tree.
 
-## 文件保护及限制
+## File protection and limitations
 
-保存前比较磁盘内容；发现外部修改时停止覆盖，允许将编辑另存为副本。每次修改前将旧内容保存在应用私有 History，保留最近 200 份。Android 使用系统目录授权（SAF）并持久保留授权，不申请全盘访问或网络权限。
+Before saving, the app compares the current file contents with the loaded version. If an external change is detected, it stops overwriting and allows the edit to be saved as a separate copy. Before each modification, the previous contents are saved in the app-private History directory, retaining the latest 200 snapshots. Android uses the Storage Access Framework (SAF) with persisted directory authorization and does not request full-disk access or network permission.
 
-外部编辑器和 Syncthing 不遵循本应用的锁协议，保存前比较无法消除极短的并发竞争窗口；Android 文件提供者也不保证原子替换。请先用样本文件测试，启用 Syncthing 版本历史，再连接真实笔记。若系统目录选择器无法访问 Syncthing 所用目录，需真机确认可用的共享目录。
+External editors and Syncthing do not follow the app's locking protocol. Comparing contents before saving cannot eliminate a very short concurrent-write race, and Android file providers do not guarantee atomic replacement. Test with sample files first and enable Syncthing version history before connecting real notes. If the system directory picker cannot access Syncthing's directory, a suitable shared directory must be verified on a physical device.
 
-## 开发
+## Development
 
-无第三方运行依赖。界面使用 HTML/CSS/JS，Mac 外壳为 Swift/WKWebView，Android 为 Java/WebView，通过独立本地文件桥读写。
+There are no third-party runtime dependencies. The interface uses HTML/CSS/JS, with a Swift/WKWebView shell on Mac and a Java/WebView shell on Android. Each platform uses its own local file bridge.
 
 ```sh
 npm test
@@ -30,12 +30,12 @@ npm run build:mac
 npm run build:android
 ```
 
-Mac 需要 Xcode 工具链。Android 脚本支持 ANDROID_HOME/JAVA_HOME，默认使用 Homebrew Android SDK 35、Build Tools 35.0.0 和 OpenJDK 21，无需 Gradle 或联网。开发签名密钥保存在 build/，请自行保留以便未来覆盖安装。
+Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_HOME and defaults to Homebrew Android SDK 35, Build Tools 35.0.0, and OpenJDK 21. It does not require Gradle or a network connection. The development signing key is stored in build/; retain it to allow future installation updates.
 
-## 验证记录
+## Recorded validation
 
-- Mac 与 Android 构建完成；APK 开发签名验证通过。
-- 5 项核心测试通过：CRLF/嵌套任务写回、代码块任务排除、路径边界、HTML 转义、标题特殊字符。
-- Mac 实际打开，笔记列表正常；样本编辑自动保存、任务汇总、勾选写回原 Markdown 已验证。
-- 自动浏览器交互脚本位于 tests/ui.mjs；本会话环境限制启动浏览器子进程，未执行通过。可先安装 Playwright 并下载 Chromium，再用 node tests/ui.mjs 运行；也可用 CHROME_PATH 指定浏览器路径。
-- Android 尚未安装到设备；目录授权、杀进程后恢复、移动端键盘和三端同步仍需真机验证。
+- Mac and Android builds completed, and APK development-signature verification passed.
+- Five core tests passed: CRLF/nested task write-back, excluding tasks in fenced code, path boundaries, HTML escaping, and special characters in headings.
+- The Mac app was opened and the notes list worked. Sample editing with autosave, task aggregation, and checking a task with write-back to the original Markdown were verified.
+- The browser interaction script is tests/ui.mjs. Browser subprocess launch restrictions prevented a successful run in the session that recorded these results. Install Playwright and Chromium, then run node tests/ui.mjs; CHROME_PATH can also select a browser executable.
+- Android has not yet been installed on a physical device. Directory authorization, recovery after process termination, the mobile keyboard, and three-way synchronization still require physical-device verification.

@@ -1,17 +1,17 @@
-# 留一点空间，给想法
+# Leave some room for ideas
 
-这是样本目录，与你的真实笔记完全分开。
+This sample directory is completely separate from your real notes.
 
-## 先试这三件事
+## Try these three things
 
-- [ ] 写一段笔记，关闭后重新打开
-- [ ] 去待办页，完成一项任务
-- [ ] 搜索一句刚刚写下的话
+- [ ] Write a note, close the app, and reopen it
+- [ ] Open the tasks view and complete a task
+- [ ] Search for a sentence you just wrote
 
-用 Markdown 记录，文件可以由其他编辑器打开。
+Notes are stored as Markdown files that other editors can open.
 
-## 同步怎么工作
+## How synchronization works
 
-应用只读写当前设备上的文件。之后连接真实目录时，由 Syncthing 负责在设备之间同步。
+The app only reads and writes files on the current device. When you connect a real directory later, Syncthing handles synchronization between devices.
 
-现在不用联网，也可以记录。
+You can take notes without a network connection.

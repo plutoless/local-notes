@@ -1,185 +1,185 @@
-# 拾记：围绕事项组织内容的设计
+# Local Notes: Organizing Content Around Initiatives
 
-日期：2026-11-15
+Date: 2026-11-15
 
-状态：对话方案已确认，本文待用户审阅。本文描述目标行为，不代表已经实现或验证。
+Status: The design has been approved in conversation; this written specification is awaiting user review. This document describes intended behavior, not completed implementation or validation.
 
-## 1. 问题与目标
+## 1. Problem and goals
 
-用户的使用优先级是：先决定下一步做什么，再恢复正在推进的事情的上下文，最后深入阅读和研究资料。
+The user's priorities are to decide what to do next, recover the context of ongoing work, and then read or research reference material.
 
-现有产品将 Markdown 文件平铺为笔记，将复选框平铺为待办。实际检查时，所选目录有 373 篇 Markdown，解析器识别出 1,481 个复选框，其中 1,315 个未勾选。这里混有战略方向、OKR 指标、判断条件、流程检查和资料步骤，不能解释为用户承诺执行的任务。这些数字只是此次检查的快照。
+The current product lists Markdown files as notes and aggregates checkboxes as tasks. At inspection time, the selected directory contained 373 Markdown files and 1,481 parsed checkboxes, including 1,315 unchecked items. These include strategic directions, OKR metrics, evaluation conditions, process checklists, and instructional steps. They cannot be interpreted as actions the user has committed to perform. These counts are a snapshot from that inspection.
 
-现有 `web/app.js` 每 4 秒请求全库，Mac 的 `list` 会读取全部符合条件的 Markdown 正文；前端再次解析并全量渲染列表。这是需要移除的开销，尚未通过性能测量认定为卡顿的唯一原因。
+The current `web/app.js` requests the entire collection every four seconds. On Mac, `list` reads the full contents of every eligible Markdown file, and the frontend parses and renders the entire list again. This overhead must be removed, but measurements have not established it as the only cause of the reported lag.
 
-第一版目标：
+First-version goals:
 
-- 默认入口呈现可信、有限的当前关注内容。
-- 以事项串联目标、进展、行动、记录和资料。
-- 正式待办独立管理，从空开始，不迁移原复选框汇总。
-- Mac 和 Android 都能离线读写，通过现有 Syncthing 同步文件。
-- 在线 AI 按需辅助整理，日常操作不等待模型或全库扫描。
+- Make a small, trustworthy set of current priorities the default entry point.
+- Connect goals, progress, actions, working notes, and reference material through initiatives.
+- Manage confirmed actions independently, starting empty without migrating the old checkbox aggregation.
+- Support offline reading and writing on Mac and Android, synchronizing files through the existing Syncthing setup.
+- Offer online AI assistance on demand without making everyday use wait for a model or a full collection scan.
 
-原笔记保留位置和正文。取消旧汇总不等于删除笔记、勾选复选框或批量清理源目录。
+Keep existing notes in their current locations with their contents intact. Removing the old aggregation does not mean deleting notes, checking their checkboxes, or bulk-cleaning the source directory.
 
-## 2. 选择的组织方式
+## 2. Content organization
 
-选择“围绕正在推进的事组织”，时间和主题作为辅助维度。
+Organize primarily around ongoing initiatives, with time and topics as supporting dimensions.
 
-比较过的替代方案：围绕日期组织便于记录，但长期上下文容易散落；围绕主题组织适合阅读，但不能单独回答下一步做什么；继续强化笔记和待办两个全量列表则无法解决内容角色混淆。
+Alternatives considered: organizing by date makes capture convenient but scatters long-running context; organizing by topic supports reading but does not answer what to do next; improving the two flat lists of notes and tasks would not resolve the confusion between content roles.
 
-### 2.1 事项
+### 2.1 Initiatives
 
-事项是一件有目标和进展、需要持续跟进的事情，可以是工作项目，也可以是家庭安排。事项包含标题、目标、当前进展、状态，以及关联的行动、记录和资料。
+An initiative is an ongoing undertaking with a goal and progress to track. It may concern work or personal arrangements. It has a title, goal, current progress, status, and links to actions, working notes, and references.
 
-状态为正在推进、以后再做、已结束。已结束可重新开启；未完成行动不会随事项结束被自动完成，结束时必须提示并让用户逐条决定完成、取消、移出或保留为独立行动。
+Statuses are Active, Later, and Ended. An ended initiative can be reopened. Ending it does not automatically complete its unfinished actions. The user must explicitly choose how to handle each one: complete, cancel, move, or retain it as an independent action.
 
-系统只能建议事项，用户确认后才进入正式事项集合。确认时可以加入已有事项，避免为同一件事重复建档。
+The system may suggest initiatives, but only user confirmation adds them to the confirmed collection. Confirmation can attach a suggestion to an existing initiative to avoid duplicate entries for the same undertaking.
 
-### 2.2 行动
+### 2.2 Actions
 
-行动是用户确认要做的一步，可以属于一个事项，也可以独立存在。第一版不建立子任务树。
+An action is a concrete next step the user has confirmed. It can belong to one initiative or stand alone. The first version does not introduce a subtask tree.
 
-字段包括稳定 ID、描述、可选事项 ID、状态、可选截止日期、可选等待对象或条件，以及零到多个来源引用。状态为待做、进行中、等待、完成、取消。完成和取消保留历史，可重新开启。
+Fields include a stable ID, description, optional initiative ID, status, optional due date, optional person or condition being waited on, and zero or more source references. Statuses are To do, In progress, Waiting, Completed, and Canceled. Completed and canceled actions retain their history and can be reopened.
 
-当前关注是对正式行动的选取与排序，不复制行动。需要决定的问题也作为行动表达，例如“决定采用哪个学校方案”。截止日期为空时不显示逾期，系统不根据措辞擅自设置日期或优先级。
+Current Focus selects and orders confirmed actions without copying them. Decisions can also be actions, such as choosing between school options. An action without a due date must not appear overdue. The system must not infer dates or priorities from wording.
 
-勾选原笔记复选框和改变正式行动状态互不联动。来源修改或删除不删除行动，只标记引用已变化或不可用。
+Checking a source note's checkbox and changing a confirmed action's status are independent operations. Changing or deleting a source does not delete the action; its reference is marked as changed or unavailable.
 
-### 2.3 记录、资料和主题
+### 2.3 Working notes, references, and topics
 
-正文继续使用 Markdown。一篇笔记可关联多个事项、多个主题，并在不同事项中注明用途为过程记录或参考资料；不要求搬动或复制正文。
+Bodies remain Markdown. A note can belong to multiple initiatives and topics, serving as a working note or reference in each initiative. Linking does not require moving or copying the body.
 
-主题有稳定 ID 和名称，由用户创建，AI 可以建议。主题服务于跨事项阅读，不强制每篇笔记分类，不自动把目录等同于主题。关联从任一入口修改后，其他入口显示同一份结果。
+Topics have stable IDs and names. Users create them, and AI can suggest them. Topics support reading across initiatives. Notes are not required to have a topic, and directories do not automatically become topics. Editing a link from any entry point updates the same underlying relationship.
 
-新建笔记时可选择事项或主题；从事项内新建默认关联该事项。无归属的记录可先保存，之后整理，不阻塞快速记录。
+When creating a note, users can choose an initiative or topic. A note created inside an initiative is linked to it by default. Unassigned notes can be saved and organized later without interrupting quick capture.
 
-## 3. 页面与阅读路径
+## 3. Screens and reading paths
 
-### 3.1 当前关注：默认首页
+### 3.1 Current Focus: the default home screen
 
-- 当前关注：用户主动选入并排序的未完成行动，含需要做的决定。
-- 等待与跟进：等待状态的行动，显示等待对象或条件；没有日期时不暗示已逾期。
-- 继续推进：正在推进的事项及其进展摘要，提供恢复上下文的入口。
+- Current Focus: unfinished actions explicitly selected and ordered by the user, including decisions to make.
+- Waiting and Follow-up: waiting actions with the relevant person or condition; a missing date must not imply lateness.
+- Continue Working: active initiatives with progress summaries and an entry point for recovering context.
 
-当前关注默认只展开前 7 条，其余可展开查看，不限制实际存储数量。首页不以原文件数、复选框数或候选数作为日常压力计数。首次正式行动为空时提供新建行动、新建事项和整理资料入口，不自动补入旧任务。
+Show the first seven focused actions by default, with the remainder expandable. This does not limit how many actions can be stored. Do not turn source file, checkbox, or candidate counts into an everyday backlog counter. When no confirmed actions exist, offer creation and organization entry points without automatically populating old tasks.
 
-### 3.2 正在推进：事项详情
+### 3.2 Active initiatives: initiative details
 
-先显示目标、当前进展和未完成行动，再展示过程记录和参考资料；已完成行动折叠但可回看。摘要由用户维护，AI 改写必须经过确认，不因后台重新分析直接覆盖。
+Present the goal, current progress, and unfinished actions first, followed by working notes and reference material. Completed actions are collapsed but remain accessible. Users maintain the summary; an AI rewrite requires confirmation and cannot overwrite it during background analysis.
 
-行动和资料都能返回所属事项。独立行动可在行动列表中管理并补充归属；首页提供进入完整行动列表的入口，支持按状态、事项筛选。
+Actions and references can navigate back to their initiative. Independent actions can be managed in the full action list and assigned later. The home screen links to that list, which supports filtering by status and initiative.
 
-### 3.3 资料库
+### 3.3 Library
 
-按主题浏览，支持标题与正文搜索，提供未归类和按目录查找入口。目录是定位辅助，不再只对全库路径排序。列表只加载标题、短摘要和必要元数据，点击后读取正文。
+Browse by topic and search titles and bodies, with additional entry points for uncategorized notes and directory navigation. Directories assist navigation rather than merely sorting the entire collection by path. Lists load only titles, short excerpts, and necessary metadata; opening a note reads its body.
 
-沿用现有基本 Markdown 阅读和编辑能力，不把本次设计扩大为完整富文本编辑器或完整 Markdown 引擎。现有自动保存、草稿恢复、外部修改保护在重构后保留。
+Retain the existing basic Markdown reading and editing capabilities. A complete rich-text editor or Markdown engine is outside this change. Preserve autosave, draft recovery, and protection against overwriting external edits.
 
-### 3.4 整理入口
+### 3.4 Organize
 
-整理与日常首页分开。用户选定目录或笔记集合后启动 AI 分析；可分小批处理，可取消，不自动上传整个目录。
+Keep organization separate from the everyday home screen. Users select directories or notes before starting AI analysis. They can work in small batches and cancel; the app does not automatically upload the entire collection.
 
-候选显示建议内容、建议归属、解释及可打开的原文依据。用户可以确认、修改后确认、归入已有事项、留作以后或仅作资料，也可以忽略候选。关联、进展摘要和行动建议都必须确认后才写入正式数据；事项确认不连带确认其全部行动。
+Candidates display suggested content, suggested placement, explanations, and source evidence that can be opened. Users can confirm, edit before confirming, attach to an existing initiative, keep for later, treat as reference material, or ignore. Links, progress summaries, and action suggestions become confirmed data only after approval. Confirming an initiative does not confirm all of its suggested actions.
 
-系统不批量将旧复选框导入候选。AI 仅根据用户选定内容提出有依据的建议，不把过去的计划当成当前承诺，不能判断有效性时明确说明。
+Do not bulk-import old checkboxes as candidates. AI suggests only from selected content, does not interpret historical plans as current commitments, and explicitly states when current relevance cannot be established.
 
-## 4. 持久化与数据边界
+## 4. Persistence and data boundaries
 
-采用“同步文件作为主数据，各端 SQLite 作为本地查询索引”。
+Use synchronized files as the source of truth and a separate SQLite query index on each device.
 
-| 数据 | 主存储 | 是否由 Syncthing 同步 |
+| Data | Source of truth | Synchronized by Syncthing |
 | --- | --- | --- |
-| 笔记、资料正文 | 原有 Markdown | 是 |
-| 事项、行动、主题、关联 | 每条记录一个 JSON | 是 |
-| 当前关注顺序、已保存候选及处理决定 | JSON 记录 | 是 |
-| 查询、全文搜索、列表摘要 | 本机 SQLite | 否，可重建 |
-| AI 服务设置和凭证 | 本机应用私有存储 | 否 |
+| Notes and reference bodies | Existing Markdown | Yes |
+| Initiatives, actions, topics, and links | One JSON file per record | Yes |
+| Focus order, saved candidates, and review decisions | JSON records | Yes |
+| Queries, full-text search, and list excerpts | Device-local SQLite | No; rebuildable |
+| AI service settings and credentials | App-private storage on each device | No |
 
-专用目录定为所选同步根目录下的 `LocalNotesData/`，记录按类型分目录，以稳定 ID 为文件名。该目录不进入普通资料扫描。记录包含格式版本、实体 ID、修订 ID、父修订引用及更新时间；时间只用于展示，不能作为冲突覆盖的唯一依据。
+Use `LocalNotesData/` beneath the selected synchronization root for app-managed records, organized by type and named by stable ID. Exclude this directory from normal library scanning. Records include a format version, entity ID, revision ID, parent revision references, and modification time. Time is for display, not the sole basis for resolving conflicts.
 
-每次提交的完整修订另存到 `revisions/<实体ID>/<修订ID>.json`，创建后不改写，并随 Syncthing 同步。类型目录下的实体文件保存当前版本，历史修订用于识别分叉和恢复，不是另一套可独立编辑的数据。第一版不自动清理修订；不能在没有跨设备确认协议时删除仍可能被离线设备引用的历史。
+Also save each committed revision in full at `revisions/<entity-id>/<revision-id>.json`. Revisions are immutable and synchronize through Syncthing. The entity file in its type directory holds the current version; historical revisions identify branches and enable recovery rather than forming another independently editable data set. The first version does not automatically prune revisions. Do not delete history an offline device may still reference without a cross-device acknowledgment protocol.
 
-SQLite 放在各端应用私有存储，不位于同步目录。正式数据不能仅存在于数据库或 WebView localStorage；删除索引后，当前关注、事项、待办和候选处理结果都可从同步文件恢复。首次启用生成同步工作区 ID，隔离不同目录的数据、索引和草稿。
+SQLite resides in app-private device storage outside the synchronization directory. Confirmed data must not exist only in SQLite or WebView localStorage. Removing the index must not prevent recovery of focus order, initiatives, actions, or candidate decisions from synchronized files. Generate a synchronization workspace ID on first use to isolate data, indexes, and drafts across selected directories.
 
-来源引用保存工作区相对路径、原文片段和内容指纹；行号仅作定位提示。应用内移动笔记时更新引用；外部移动后可尝试用指纹定位，不能唯一匹配时交给用户重新关联，不擅自绑定同名文件。
+Source references contain workspace-relative paths, quoted fragments, and content fingerprints; line numbers only assist navigation. Moving a note within the app updates references. After an external move, a fingerprint may locate the source, but ambiguous matches require the user to relink it rather than silently attaching to a same-named file.
 
-选择 JSON 而非带元数据的任务 Markdown，是因为正式行动不要求外部文本编辑，固定字段更适合校验和演进。选择 SQLite 作为查询层，是为了避免每次操作解析全库；不把运行中的数据库文件当成跨设备合并单位。
+JSON is preferred over task Markdown with metadata because confirmed actions do not require external text editing and fixed fields are easier to validate and evolve. SQLite supports queries without reparsing the collection on every operation. The running database file is not the cross-device merge unit.
 
-## 5. 本地写入、同步和异常
+## 5. Local writes, synchronization, and failures
 
-### 5.1 正常写入
+### 5.1 Normal writes
 
-本机变更先校验并持久化完整修订文件，再更新当前实体 JSON 和 SQLite，最后向界面报告成功。修订文件保存成功即有可恢复的提交；当前实体文件或索引更新失败时，从该修订恢复并显示恢复状态，不丢弃已提交数据。修订文件写入失败时保留编辑并提示重试。接收同步时同样校验修订，不能仅依据当前实体文件的到达顺序选定状态。
+Validate a local change and persist its full revision before updating the current entity JSON and SQLite, then report success. A persisted revision is a recoverable commit. If updating the current entity or index fails, recover from that revision and show recovery status rather than losing committed data. If revision persistence fails, preserve the edit and offer a retry. Incoming revisions must also be validated; current entity file arrival order does not determine the winning state.
 
-文件读写适配层分别处理 Mac 文件系统和 Android SAF。耗时 I/O 和索引工作离开 UI 主线程；同一记录本机写入串行执行。尽可能使用临时文件和安全替换；Android 提供者不能保证原子替换时，必须保留可恢复版本并验证写后读取结果。
+Platform file adapters handle the Mac file system and Android SAF separately. Move expensive I/O and indexing off the UI thread, and serialize local writes to the same record. Use temporary files and safe replacement where supported. When an Android provider cannot guarantee atomic replacement, retain a recoverable version and verify the result by reading it back.
 
-### 5.2 接收变更与冲突
+### 5.2 Incoming changes and conflicts
 
-文件变化后按记录 ID 和修订导入索引，不把所有变化重建为整库刷新。识别 Syncthing 冲突副本以及不兼容的修订分支，保留各版本。无法证明新版本是已知版本后继时，不按时间戳静默选择胜者。
+Import changed records by ID and revision without converting every change into a full collection refresh. Detect Syncthing conflict copies and incompatible revision branches, retaining every version. Do not select a winner by timestamp when a revision cannot be established as a successor of the known version.
 
-冲突记录在界面中明确标识，不因接收某一版本就自动完成或消失。用户比较后选择或合并；解决结果保存为关联双方修订的新版本。未解决版本以专用冲突记录持久保存并可同步，不只存在于 SQLite。索引重建后仍能恢复冲突。
+Identify conflicted records in the UI. Receiving one version must not silently complete or hide an action. Users compare and select or merge versions; the resolution becomes a new revision referencing both branches. Persist unresolved versions in synchronized conflict records rather than SQLite alone so index rebuilding preserves the conflict.
 
-这里使用完整修订历史、冲突副本检测和保留版本，不宣称 Syncthing 自身提供记录级合并。父修订暂未到达时先标记为同步未完整，收到祖先后再判断分叉；当前实体文件即使被文件同步覆盖，也可从不可变修订恢复双方变更。实施中必须用两端分叉编辑、延迟到达和乱序文件验证该协议。
+This design uses complete revision history, conflict-copy detection, and retained versions. It does not claim that Syncthing provides record-level merging. When parent revisions have not arrived, mark synchronization as incomplete and determine branching after ancestors arrive. Even if file synchronization overwrites the current entity file, immutable revisions preserve both branches. Implementation must verify offline divergent edits, delayed delivery, and out-of-order arrivals on two devices.
 
-### 5.3 删除与损坏
+### 5.3 Deletion and corruption
 
-第一版行动的主要退出方式为完成或取消，事项为结束。正式实体删除采用可同步的删除标记，避免离线旧副本直接复活；删除资料关联不删除原文。
+The primary ways to retire an action are completion and cancellation; initiatives can be ended. Entity deletion uses synchronized tombstones so stale offline copies do not directly resurrect deleted records. Removing a reference link does not delete source content.
 
-损坏 JSON、未知格式版本、失效引用和单个无权访问的文件都单独报告，不阻断整个应用，也不覆盖原文件。目录不可用时保留已加载内容，说明暂不可读写，不把它显示成“所有内容已删除”。
+Report malformed JSON, unsupported format versions, unavailable references, and individual inaccessible files separately. Do not block the whole app or overwrite the originals. If a directory is temporarily unavailable, retain loaded content and indicate that reading or writing is unavailable instead of interpreting it as deletion of the whole collection.
 
-Syncthing 提供文件传输，不能把本机保存成功表述为另一端已收到。现有原文版本保护继续保留；SQLite 索引可重建不等于正式同步文件可丢弃。
+Syncthing handles file transfer. Local save success does not prove another device has received the change. Preserve existing source-file version protection. Rebuildable SQLite indexes do not make synchronized source records disposable.
 
-## 6. AI 整理边界
+## 6. AI organization boundaries
 
-第一版支持一个由用户配置的在线 AI 服务连接；服务地址、模型和凭证在本机设置中配置。请求由原生网络适配层执行，不把密钥暴露给正文、模型或同步文件。Android 需增加联网能力，取代当前“无网络权限”的产品说明。
+The first version supports one user-configured online AI service connection, with its address, model, and credentials configured on the device. Send requests through a native network adapter. Do not expose keys in note bodies, model input, or synchronized files. Android requires network capability, replacing the current product description that states no network permission is requested.
 
-调用前展示所选范围和实际发送的正文片段；Markdown 内容只作为待分析数据，不可作为执行指令。AI 无权自行读其他路径、修改文件、调用工具或改变正式状态。默认无需后台调用；离线或未配置服务时，仍可手动建立和维护全部正式内容。
+Before a request, show the selected scope and the actual text fragments to be sent. Treat Markdown as input data, not executable instructions. AI cannot independently read other paths, modify files, call tools, or change confirmed states. There are no required background calls. Users can manually create and maintain all confirmed content when offline or without a configured service.
 
-模型返回结构化候选，应用验证格式、来源是否存在以及引用是否来自本次输入；缺乏来源的事实性摘要或行动建议不能直接确认入库。长文件按可追溯片段分批，不静默截断后宣称分析了全文。
+The model returns structured candidates. Validate the format, source existence, and whether quoted evidence comes from the actual input. Factual summaries and action suggestions without evidence cannot be directly confirmed. Split long files into traceable batches rather than silently truncating them and claiming full coverage.
 
-已忽略或已确认的候选保存源片段指纹、候选类型和目标内容指纹；相同候选不反复建议。相关原文变化后可标记为可重新分析，不自动重新激活旧行动。仅因措辞相似不能自动合并正式待办。
+Save the source-fragment fingerprint, candidate type, and target-content fingerprint for ignored and confirmed candidates. Do not repeatedly suggest the same candidate. Relevant source changes may make it eligible for renewed analysis, but must not automatically reactivate an old action. Similar wording alone does not justify automatically merging confirmed actions.
 
-超时、离线、限流、响应无效和取消都有明确状态；不会无限自动重试。确认前检查来源是否变化，变化时要求重新核对依据。重试或重复点击确认不能创建重复实体。
+Timeouts, offline operation, rate limits, invalid responses, and cancellation have explicit states. Do not retry indefinitely. Check for changed sources before confirmation and require renewed review if the evidence changed. Retries or repeated confirmation must not create duplicate entities.
 
-## 7. 模块职责
+## 7. Module responsibilities
 
-| 模块 | 职责与依赖 |
+| Module | Responsibility and dependencies |
 | --- | --- |
-| 领域规则 | 定义事项、行动、状态、关联和候选确认；不直接访问文件或 DOM |
-| 文件存储与修订 | 通过平台文件适配器校验、保存主记录，保留和处理冲突 |
-| 本地索引 | 从 Markdown 和 JSON 增量建立 SQLite，提供分页和搜索查询 |
-| 整理服务 | 读取选定片段，经原生 AI 连接生成和校验候选；不能直接改正式数据 |
-| 页面与原生桥 | 展示当前关注、事项、资料和整理结果，调用有限的查询与变更接口 |
+| Domain rules | Define initiatives, actions, states, relationships, and candidate confirmation without directly accessing files or the DOM |
+| File storage and revisions | Use platform adapters to validate and persist source records and retain and resolve conflicts |
+| Local index | Incrementally index Markdown and JSON in SQLite and provide paginated queries and search |
+| Organization service | Read selected fragments and generate and validate candidates through the native AI connection without directly changing confirmed data |
+| Screens and native bridge | Present focus, initiatives, the library, and organization results through bounded query and mutation interfaces |
 
-现有 `web/app.js` 同时承担状态、数据读取、解析和全量渲染，需要按上述职责拆分。只做支撑本次行为所需的拆分，不引入无关框架或重写整个原生外壳。
+The current `web/app.js` combines state, reading, parsing, and full rendering. Separate responsibilities as required by this design. Avoid unrelated refactoring, unnecessary frameworks, or rewriting the entire native shell.
 
-## 8. 性能行为与验收
+## 8. Performance behavior and acceptance
 
-取消固定 4 秒全正文读取。Mac 使用文件变更通知配合元数据校验；Android 在恢复前台和手动刷新时增量校验元数据，正文仅在新建或变化时读取。没有可靠通知的提供者可以轮询元数据，但不能退回持续读取全部正文。首次建索引在后台进行，显示进度和部分结果。
+Remove the fixed four-second full-body scan. On Mac, combine file-change notifications with metadata validation. On Android, incrementally validate metadata on foreground resume and manual refresh; read bodies only for new or changed files. Providers without reliable notifications may use metadata polling, but must not fall back to continuously reading all bodies. Build the initial index in the background with progress and partial results.
 
-所有集合使用有界分页，默认每批 50 条；首页只查询所需摘要。正常打开首页不调用 AI、不等待全量索引完成；索引已有时不先重新读取全部 Markdown。打开笔记只读取该篇正文。
+All collections use bounded pagination, with 50 records per batch by default. The home screen queries only required summaries. Opening it does not call AI or wait for a complete index rebuild. With an existing index, it does not first reread all Markdown. Opening a note reads only that note's body.
 
-验证既检查结果，也检查实际工作量，不能仅因使用 SQLite 就宣布卡顿解决：
+Verify both outcomes and actual work performed. Using SQLite alone does not prove the lag has been resolved:
 
-1. 使用含 OKR、判断条件、流程检查和历史任务的合成资料，确认正式行动初始为零，原文不变。
-2. 验证行动状态、当前关注排序、事项结束处理、来源变化以及完成后回看。
-3. 删除 SQLite 后重建，确认事项、行动、关联、关注顺序、候选处理和冲突均恢复。
-4. 验证离线新增与修改、重复事件、乱序修订、双端同记录冲突、删除标记、坏文件和写入中断。
-5. 验证 AI 的范围限制、来源核对、无效响应、取消、幂等确认和候选去重。
-6. 用至少 500 篇笔记和 2,000 条正式行动的固定测试集，记录冷启动、热启动、搜索、列表和打开正文的耗时及读取次数。热启动首页在参考 Mac 上以可交互不超过 1 秒为目标；未达到需定位和报告，不能将后台全库读取排除在测量之外。
-7. 自动化覆盖共享规则和平台适配器契约；在实际 Mac 应用验证交互，在 Android 真机验证 SAF、前后台恢复和离线读写，再用实际 Syncthing 做两端同步验证。未运行的设备验证必须单列为剩余门槛。
+1. Use synthetic references containing OKRs, evaluation criteria, process checklists, and historical tasks. Confirm that the initial action collection is empty and source content is unchanged.
+2. Verify action states, focus order, handling unfinished actions when ending an initiative, source changes, and completed-action history.
+3. Delete SQLite and rebuild. Recover initiatives, actions, links, focus order, candidate decisions, and conflicts.
+4. Verify offline creation and editing, duplicate events, out-of-order revisions, divergent edits on two devices, tombstones, malformed files, and interrupted writes.
+5. Verify AI scope boundaries, evidence checking, invalid responses, cancellation, idempotent confirmation, and candidate deduplication.
+6. Use a fixed test set of at least 500 notes and 2,000 confirmed actions. Record cold and warm startup, search, list, and note-opening times and read counts. Target an interactive warm home screen within one second on the reference Mac. Investigate and report failures; do not omit background collection reads from measurement.
+7. Automate shared rules and platform adapter contracts. Verify interaction in the actual Mac app, SAF, foreground recovery, and offline writes on a physical Android device, and two-device synchronization through actual Syncthing. List device checks that have not run as remaining gates.
 
-## 9. 第一版边界和交付顺序
+## 9. First-version scope and delivery order
 
-这是一个完整的内容组织改造，实施按可验证的纵向阶段推进：先完成正式数据、手动事项与行动、索引和同步恢复，再接入资料关联、AI 候选和整理流程；最终验收包含全部已确认范围。具体任务和依赖在本文获审阅后进入实施计划。
+This is a complete content-organization change delivered through verifiable vertical stages. Establish confirmed data, manual initiatives and actions, indexing, and synchronization recovery first; then add reference relationships, AI candidates, and the organization flow. Final acceptance covers the entire approved scope. Detailed tasks and dependencies follow review of this specification.
 
-第一版不包含自动导入旧待办、批量搬动或改写资料、自动执行行动、日历及提醒、团队协作、自建同步服务器、通用 CRDT、富文本编辑器或全库持续 AI 分析。
+The first version excludes automatic import of old tasks, bulk relocation or rewriting of references, automatic action execution, calendars and reminders, team collaboration, a custom synchronization server, a general-purpose CRDT, a rich-text editor, and continuous AI analysis of the full collection.
 
-## 10. 技术依据
+## 10. Technical references
 
-- [SQLite WAL 文档](https://www.sqlite.org/wal.html)：WAL 涉及额外日志文件及共享内存机制，数据库运行和复制需遵守一致性约束。
-- [SQLite Backup API](https://www.sqlite.org/backup.html)：运行中数据库的一致快照需要合适的备份机制；备份不等同于双向记录合并。
-- [Syncthing 同步与冲突机制](https://docs.syncthing.net/users/syncing.html?highlight=conflict)：传输和冲突处理以文件为单位。
+- [SQLite WAL documentation](https://www.sqlite.org/wal.html): WAL involves additional log files and shared-memory mechanisms, with consistency requirements for database operation and copying.
+- [SQLite Backup API](https://www.sqlite.org/backup.html): consistent snapshots of running databases require appropriate backup mechanisms; backup is not bidirectional record merging.
+- [Syncthing synchronization and conflicts](https://docs.syncthing.net/users/syncing.html?highlight=conflict): transfer and conflict handling operate on files.
 
-据上述机制，本设计选择同步实体文件、各端独立查询数据库，而非直接双向同步运行中的 SQLite 文件。这是应用架构选择。
+Based on these mechanisms, the application synchronizes entity files and maintains a separate query database on each device rather than directly synchronizing a running SQLite database in both directions. This is an application architecture choice.

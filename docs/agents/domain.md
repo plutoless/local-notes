@@ -1,23 +1,23 @@
 # Domain docs
 
-本仓库采用 single-context 领域文档结构：
+This repository uses a single-context domain documentation layout:
 
-- GLOSSARY.md：位于仓库根目录，记录领域术语。
-- docs/adr/：记录架构决策。
+- GLOSSARY.md at the repository root defines domain terminology.
+- docs/adr/ records architecture decisions.
 
-## 阅读规则
+## Reading rules
 
-探索代码前，读取已有的 GLOSSARY.md，
-并阅读与当前工作相关的 ADR。
+Before exploring the code, read GLOSSARY.md if it exists
+and read any ADRs relevant to the current work.
 
-文件不存在时直接继续，不因缺失而阻塞，
-也不提前创建空文件。
-由 domain-modeling 在实际明确术语或决策时按需创建。
+If these files do not exist, proceed silently without blocking
+or creating empty files in advance.
+The domain-modeling skill creates them as terms or decisions are resolved.
 
-## 使用规则
+## Usage rules
 
-命名、需求、测试和设计说明应沿用术语表中的定义。
-发现术语缺口时，交由 domain-modeling 处理。
+Use the glossary's definitions in naming, requirements, tests, and design documents.
+Refer terminology gaps to domain-modeling.
 
-提案与已有 ADR 冲突时，明确指出对应决策和重新讨论的理由，
-不能静默覆盖。
+If a proposal conflicts with an existing ADR, identify the decision explicitly
+and explain why it should be reopened. Do not silently override it.

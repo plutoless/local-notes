@@ -1,34 +1,36 @@
 # Issue tracker: GitHub
 
-本仓库通过 GitHub Issues 跟踪需求、问题和实施任务。
-目标仓库固定为 plutoless/local-notes，使用 gh CLI 操作。
+Track requirements, problems, and implementation tasks in GitHub Issues.
+The target repository is plutoless/local-notes. Use the gh CLI.
+Write issue titles, bodies, and comments in English.
 
-## 操作约定
+## Conventions
 
-- 创建：gh issue create --repo plutoless/local-notes --title "标题" --body-file <文件>
-- 阅读：gh issue view <编号> --repo plutoless/local-notes --json number,title,body,labels,comments
-- 列表：gh issue list --repo plutoless/local-notes --state open
-- 标签：gh issue edit <编号> --repo plutoless/local-notes --add-label <标签>
-- 评论：gh issue comment <编号> --repo plutoless/local-notes --body-file <文件>
-- 关闭：先提交结果说明，再执行 gh issue close <编号> --repo plutoless/local-notes。
+- Create: gh issue create --repo plutoless/local-notes --title "Title" --body-file <file>
+- Read: gh issue view <number> --repo plutoless/local-notes --json number,title,body,labels,comments
+- List: gh issue list --repo plutoless/local-notes --state open
+- Label: gh issue edit <number> --repo plutoless/local-notes --add-label <label>
+- Comment: gh issue comment <number> --repo plutoless/local-notes --body-file <file>
+- Close: post the result first, then run gh issue close <number> --repo plutoless/local-notes.
 
-多行正文使用 UTF-8 文件，通过 --body-file 提交。
+Write multiline bodies to UTF-8 files and submit them with --body-file.
 
-首次创建 issue 前，使用 gh repo view 核对目标仓库。
-不得向技能来源仓库 mattpocock/skills 创建本项目的 issue。
+Before creating the first issue, use gh repo view to verify the target repository.
+Never file this project's issues in mattpocock/skills, the source of these skills.
 
-父子任务优先使用 GitHub 原生子 issue；
-无法使用时，在子任务正文中注明 Part of #<父任务编号>。
+Prefer native GitHub sub-issues for parent-child relationships.
+If unavailable, add Part of #<parent-number> to the child issue body.
 
-依赖优先使用 GitHub 原生 issue dependencies；
-无法使用时，在正文中注明 Blocked by: #<编号>。
-所有阻塞任务关闭后，任务才可视为解除阻塞。
+Prefer native GitHub issue dependencies for blockers.
+If unavailable, add Blocked by: #<number> to the issue body.
+An issue is unblocked only after all blocking issues are closed.
 
-## 技能语义
+## Skill terminology
 
-“发布到任务跟踪器”表示创建 GitHub issue。
-“读取相关任务”表示读取对应 GitHub issue。
-本地设计文档可以作为 issue 的详细依据，无需重复搬迁正文。
+"Publish to the issue tracker" means create a GitHub issue.
+"Fetch the relevant ticket" means read the corresponding GitHub issue.
+Local design documents may provide the detailed specification for an issue;
+their full contents do not need to be duplicated.
 
 ## Pull requests as a triage surface
 

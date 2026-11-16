@@ -1,11 +1,11 @@
-# 周末的小计划
+# A small plan for the weekend
 
-想把零碎的事情放在一个简单的地方。
+Keep the little things together in one simple place.
 
-- [ ] 整理书桌
-- [ ] 记录下周想做的三件事
-- [x] 留一个不用分类的记录入口
+- [ ] Tidy the desk
+- [ ] Write down three things to do next week
+- [x] Keep a place to capture notes without categorizing them first
 
-## 一个想法
+## An idea
 
-先写下来，之后再整理。
+Write it down first. Organize it later.

@@ -1,16 +1,20 @@
+## Writing language
+
+Write all repository documentation and GitHub issue titles, bodies, and comments in English.
+
 ## Agent skills
 
 ### Issue tracker
 
-使用 plutoless/local-notes 的 GitHub Issues 跟踪工作。
-详见 docs/agents/issue-tracker.md。
+Track work in GitHub Issues for plutoless/local-notes.
+See docs/agents/issue-tracker.md.
 
 ### Triage labels
 
-使用五个默认 triage 标签。
-详见 docs/agents/triage-labels.md。
+Use the five default triage labels.
+See docs/agents/triage-labels.md.
 
 ### Domain docs
 
-采用 single-context：根目录 GLOSSARY.md 与 docs/adr/。
-详见 docs/agents/domain.md。
+Use a single-context layout: GLOSSARY.md at the repository root and docs/adr/.
+See docs/agents/domain.md.
