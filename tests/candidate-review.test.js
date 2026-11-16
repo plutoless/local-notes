@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {CandidateRepository, CandidateReview, Organization, batchesFor, validateResponse} from '../web/organization.js';
-import {allRecords} from '../web/initiatives.js';
+import {CandidateRepository, CandidateReview, Organization, batchesFor, validateResponse, validateCandidate} from '../web/organization.js';
+import {allRecords, moveReferences} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const text = 'Evidence for a real next step.';
 const batch = batchesFor([{path: 'reference.md', text}])[0];
@@ -26,6 +26,10 @@ test('individual edited decisions, initiative separation, later state, reference
  await s.review.decide(await s.candidate('progress'), 'confirm', {targetId: target.entityId, description: 'Approved progress'});
  assert.equal((await allRecords(s.review.targets.initiative))[0].progress, 'Approved progress');
  await s.review.decide(await s.candidate('topic'), 'confirm'); assert.equal((await allRecords(s.review.targets.topic)).length, 1);
+ for (const type of ['progress', 'relationship']) {
+  const hold = await s.review.decide(await s.candidate(type), 'later', {targetId: target.entityId}); assert.equal(hold.review.target, null);
+ }
+ assert.equal((await allRecords(s.review.targets.initiative))[0].progress, 'Approved progress');
  const held = await s.review.decide(await s.candidate('action'), 'later'); assert.equal(held.review.decision, 'later'); assert.equal(held.review.target, null);
  await s.review.decide(await s.candidate('relationship'), 'confirm', {targetId: target.entityId});
  } finally {await s.f.close();}
@@ -70,5 +74,28 @@ test('two-device review and target disagreements retain branches through rebuild
  await repo.save({...target, progress: 'Local progress'}, target); await s.adapter('actionWrite', {workspaceId: target.workspaceId, path: `revisions/${target.entityId}/${divergent.revision}.json`, text: JSON.stringify(divergent)});
  await repo.open(); assert.equal(repo.conflicts.get(target.entityId).tips.length, 2);
  assert.equal((await allRecords(repo)).length, 1);
+ } finally {await s.f.close();}
+});
+
+test('invalid synchronized approval intents are rejected before replay', async () => {
+ const s = await setup(); try {
+  const candidate = await s.candidate('action');
+  const confirmed = await s.review.decide(candidate, 'confirm');
+  assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, decision: 'ignore'}}), /Decision/);
+  assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, sourceFingerprints: [{}]}}), /evidence/);
+  assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, target: {...confirmed.review.target, entityId: crypto.randomUUID()}}}), /association/);
+  const held = await s.review.decide(await s.candidate('progress'), 'later', {description: 'Edited held progress'});
+  assert.equal(held.review.suggestion, 'Edited held progress');
+  await s.candidates.open(); assert.equal((await allRecords(s.candidates)).find(c => c.entityId === held.entityId).review.suggestion, 'Edited held progress');
+ } finally {await s.f.close();}
+});
+
+test('rename and repeated analysis recognize a processed candidate by content fingerprints', async () => {
+ const s = await setup(); try {
+  const candidate = await s.candidate('action'); await s.review.decide(candidate, 'ignore');
+  await moveReferences([s.candidates], 'reference.md', 'renamed.md');
+  const adapter = (cmd, args) => cmd === 'aiAnalyze' ? Promise.resolve({text: response('action').replace(batch.fragmentId, JSON.parse(args.messages[1].content).fragmentId)}) : s.adapter(cmd, args);
+  const org = new Organization(adapter, s.candidates); await org.preview(['renamed.md']); await org.run();
+  assert.equal((await allRecords(s.candidates)).length, 1);
  } finally {await s.f.close();}
 });

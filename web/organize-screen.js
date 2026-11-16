@@ -53,7 +53,7 @@ export class OrganizeScreen {
       state.textContent = record.syncState ? 'Synchronization conflict: open Sync review / Refresh.' : record.review ? `Decision: ${record.review.decision} (${record.review.state})${record.review.target ? ' · Target: ' + record.review.target.entityId : ''}` : 'Awaiting your decision';
       card.append(state);
       if (!record.syncState && (!record.review || (record.review.decision === 'later' && !record.review.target && record.review.state === 'done'))) {
-        const edit = document.createElement('textarea'); edit.setAttribute('aria-label', 'Edit suggestion'); edit.value = this.drafts.get(record.entityId) ?? record.description;
+        const edit = document.createElement('textarea'); edit.setAttribute('aria-label', 'Edit suggestion'); edit.value = this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description;
         edit.oninput = () => this.drafts.set(record.entityId, edit.value); card.append(edit);
         const target = document.createElement('select'); target.setAttribute('aria-label', 'Existing initiative');
         target.append(Object.assign(document.createElement('option'), {value: '', textContent: 'Choose existing initiative (for attach, reference, progress or link)'}));
