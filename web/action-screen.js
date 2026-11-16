@@ -53,7 +53,7 @@ export class ActionScreen {
     const repository = new ActionRepository(native);
     this.repository = repository;
     $('#action-editor').hidden = true;
-    const workspace = await repository.open({cached, progress: message => { $('#index-state').textContent = message; }});
+    const workspace = await repository.open({cached, progress: message => { if (this.repository === repository) $('#index-state').textContent = message; }});
     if (this.repository !== repository) return null;
     this.root = workspace.root; this.previous = null; this.retry = null; this.dirty = false;
     $('#root-label').textContent = workspace.root;
@@ -167,7 +167,7 @@ export class ActionScreen {
           if (source.quote && !result.text.includes(source.quote)) throw Error(`Quoted fragment was not found in ${source.path}`);
         }
         const result = await this.repository.save(fields, this.previous, this.retry);
-        this.previous = result.record; this.retry = null; this.dirty = false; localStorage.removeItem(this.key());
+        this.previous = result.record; this.retry = null; this.recoveredDraft = false; this.dirty = false; localStorage.removeItem(this.key());
         this.showForm(result.record, result.record);
         this.state(result.recovered ? 'Saved locally after recovery' : 'Saved locally');
         await this.list(); return true;

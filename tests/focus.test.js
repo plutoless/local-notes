@@ -33,3 +33,41 @@ test('focus uses the same actions, preserves explicit order and rebuilds; retire
     assert.equal((await warm.query({focus: true})).actions.length, 0);
   } finally { await fixture.close(); }
 });
+
+test('failed cached recovery prevents stale revision writes and remains retryable', async () => {
+  const fixture = await storageFixture();
+  try {
+    const first = new ActionRepository(fixture.adapter); await first.open();
+    const original = (await first.save({description: 'Original', focusPosition: 1})).record;
+    const cached = new ActionRepository(fixture.adapter); await cached.open({cached: true});
+    await cached.query({focus: true});
+    await first.save({...original, description: 'New committed description'}, original);
+    fixture.fail(cmd => cmd === 'actionFiles');
+    const before = fixture.calls.filter(c => c.cmd === 'actionWrite').length;
+    await assert.rejects(cached.save({...original, focusPosition: null}, original), /Injected storage failure/);
+    assert.equal(cached.needsRefresh, true);
+    assert.equal(fixture.calls.filter(c => c.cmd === 'actionWrite').length, before);
+    await assert.rejects(cached.save({...original, focusPosition: null}, original), /Action changed/);
+    const latest = (await cached.query({entityId: original.entityId})).actions[0];
+    await cached.save({...latest, focusPosition: null}, latest);
+  } finally { await fixture.close(); }
+});
+
+test('Mac index upgrades legacy and partially migrated query columns from confirmed JSON', async () => {
+  const fixture = await storageFixture();
+  try {
+    const {execFileSync} = await import('node:child_process');
+    const {join} = await import('node:path');
+    const repository = new ActionRepository(fixture.adapter); await repository.open();
+    const action = (await repository.save({description: 'Preserve selection', focusPosition: 1, initiativeId: 'initiative-a'})).record;
+    const path = join(fixture.privateRoot, 'Workspaces', repository.workspaceId, 'actions.sqlite');
+    for (const sql of [
+      'DROP INDEX focus_order; DROP INDEX initiative_filter; ALTER TABLE actions DROP COLUMN focus; ALTER TABLE actions DROP COLUMN initiative;',
+      'DROP INDEX focus_order; ALTER TABLE actions DROP COLUMN focus;'
+    ]) {
+      execFileSync('/usr/bin/sqlite3', [path, sql]);
+      const reopened = new ActionRepository(fixture.adapter); await reopened.open({cached: true});
+      assert.equal((await reopened.query({focus: true, initiativeId: 'initiative-a'})).actions[0].entityId, action.entityId);
+    }
+  } finally { await fixture.close(); }
+});

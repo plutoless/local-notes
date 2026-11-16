@@ -29,19 +29,23 @@ final class ActionIndex {
         else if (!databaseFile.exists()) throw new IOException("INDEX_REBUILD_REQUIRED: Local action index is missing");
         try (SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(databaseFile, null)) {
             db.execSQL("CREATE TABLE IF NOT EXISTS actions (id TEXT PRIMARY KEY, status TEXT NOT NULL, description TEXT NOT NULL, record TEXT NOT NULL)");
-            boolean hasFocus = false;
+            boolean hasFocus = false, hasInitiative = false;
             try (Cursor columns = db.rawQuery("PRAGMA table_info(actions)", null)) {
-                while (columns.moveToNext()) if (columns.getString(1).equals("focus")) hasFocus = true;
+                while (columns.moveToNext()) { if (columns.getString(1).equals("focus")) hasFocus = true; if (columns.getString(1).equals("initiative")) hasInitiative = true; }
             }
-            if (!hasFocus) {
-                db.execSQL("ALTER TABLE actions ADD COLUMN initiative TEXT NOT NULL DEFAULT ''");
-                db.execSQL("ALTER TABLE actions ADD COLUMN focus REAL");
+            if (!hasFocus || !hasInitiative) {
+                db.beginTransaction();
+                try {
+                if (!hasInitiative) db.execSQL("ALTER TABLE actions ADD COLUMN initiative TEXT NOT NULL DEFAULT ''");
+                if (!hasFocus) db.execSQL("ALTER TABLE actions ADD COLUMN focus REAL");
                 // Populate new query columns from existing confirmed records once.
                 JSONArray existing = new JSONArray();
                 try (Cursor rows = db.rawQuery("SELECT record FROM actions", null)) {
                     while (rows.moveToNext()) existing.put(new JSONObject(rows.getString(0)));
                 }
                 for (int i = 0; i < existing.length(); i++) index(db, existing.getJSONObject(i));
+                db.setTransactionSuccessful();
+                } finally { db.endTransaction(); }
             }
             db.execSQL("CREATE INDEX IF NOT EXISTS focus_order ON actions(status, focus, id)");
             db.execSQL("CREATE INDEX IF NOT EXISTS initiative_filter ON actions(initiative, status, id)");

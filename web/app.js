@@ -25,11 +25,10 @@ async function navigate(next) {
 async function refreshBackground() {
   for (const repository of [actions.repository, initiatives.repository]) {
     if (!repository.needsRefresh) continue;
-    repository.needsRefresh = false;
-    try { const result = await repository.serialize(() => repository.recover()); if (result.warnings.length) notice(result.warnings.join('\n')); }
+    try { const result = await repository.serialize(() => repository.recover()); repository.needsRefresh = false; if (result.warnings.length) notice(result.warnings.join('\n')); }
     catch (error) { notice('Index refresh pending: ' + error.message); }
   }
-  if (view === 'focus' && !window.hasUnsavedChanges()) await focus.show();
+  if (view === 'focus') await focus.show();
 }
 $('#action-open-initiative').onclick = async () => {
   if (!await flush()) return;
