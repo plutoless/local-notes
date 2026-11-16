@@ -60,3 +60,12 @@ These checks validate a shared UI plus the native Mac storage boundary. Browser 
 Before closing #1, use only synthetic folders: create and edit each action state offline in the Mac app, close/relaunch and verify; install the Android APK, select a dedicated synthetic SAF directory, disable networking, create/edit, force-stop/relaunch, and verify both JSON revisions and visible state. Switch roots and verify index/draft separation. Record the actual device, OS/provider, and results.
 
 Divergent or incomplete revision histories are retained and warned about; this slice does not provide branch comparison/merge interaction. Initiatives are only optional assignments here; initiative management, Current Focus, broader Library redesign, and the remaining approved slices are outside #1.
+
+## Code review
+
+Independent Standards and Spec reviewers compared the implementation with baseline `c5aac3ce3195809483f68b40d849a899c4ca88c0` and then rechecked the fixes through `6847f56`.
+
+- Standards: no documented-standard violations. Two non-blocking responsibility/duplication findings were resolved by sharing the path validator and extracting platform-local `ActionIndex` components. Final re-review: no outstanding material findings.
+- Spec: three reproduced P1 failure paths were fixed: further edits after a recoverable commit, stale note writes after failed root initialization, and delayed action-query results crossing workspace boundaries. Regression coverage exercises all three. The reviewer reran the expanded UI suite and focused repository tests and reported no remaining material findings.
+
+The implementation is committed on `feat/issue-1-confirmed-actions`. Issue #1 remains open for the native interaction gates above; no implementation of #2–#7, publication, push, or merge is included.
