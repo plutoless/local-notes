@@ -21,7 +21,7 @@ export class Library {
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   async open() {
     const workspace = await this.adapter('workspace');
-    if (this.workspaceId === workspace.workspaceId) return;
+    if (this.workspaceId === workspace.workspaceId && this.topics.ready) return;
     this.generation++; this.workspaceId = workspace.workspaceId; this.running = null;
     const recovery = await this.topics.open(); this.warnings = recovery.warnings; this.records = await allRecords(this.topics);
   }
@@ -41,6 +41,7 @@ export class Library {
     const previous = new Map((await this.inventory()).map(note => [note.path, note]));
     const result = await call('metadata');
     if (generation !== this.generation) return;
+    this.directories = [...new Set(result.notes.filter(n => safePath(n.path)).map(n => n.path.includes('/') ? n.path.slice(0,n.path.lastIndexOf('/')) : ''))];
     this.root = result.root; this.warnings = result.warnings || [];
     await this.topics.serialize(() => this.topics.recover()); this.records = await allRecords(this.topics);
     const seen = new Set(); let reads = 0;

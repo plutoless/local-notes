@@ -9,7 +9,7 @@ func failure(_ message: String) -> NSError { NSError(domain: "LocalNotesTests", 
                 let request = try JSONSerialization.jsonObject(with: Data(line.utf8)) as! [String: Any]
                 let command = request["cmd"] as? String ?? ""
                 let result: [String: Any]
-                if command.hasPrefix("reference") {
+                if command == "metadata" { result = try referenceMetadata(storage.root) } else if command.hasPrefix("reference") {
                     guard request["workspaceId"] as? String == (try storage.workspace()) else { throw failure("Workspace changed") }
                     result = try ReferenceIndex(privateRoot: storage.privateRoot, workspaceId: request["workspaceId"] as! String).run(request)
                 } else { result = try storage.run(request) }

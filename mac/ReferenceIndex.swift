@@ -27,6 +27,8 @@ final class ReferenceIndex {
                 let directory = request["directory"] as? String ?? "*", topic = request["topic"] as? String ?? ""
                 values = [request["search"] as? String ?? "", directory, directory, topic, topic, topic]
             }
+            if let path = request["exactPath"] as? String { sql += inventory ? " WHERE path=?" : " AND path=?"; values.append(path) }
+            if let paths = request["paths"] as? [String] { sql += paths.isEmpty ? " AND 0" : " AND path IN (" + Array(repeating: "?", count: paths.count).joined(separator: ",") + ")"; values += paths }
             sql += " ORDER BY path LIMIT ? OFFSET ?"
             let limit = min(100, max(1, request["limit"] as? Int ?? 50))
             values += [String(limit + 1), String(max(0, request["offset"] as? Int ?? 0))]

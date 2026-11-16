@@ -7,7 +7,7 @@ let compiled = false;
 export async function storageFixture() {
   if (!compiled) {
     await mkdir('build', {recursive: true});
-    execFileSync('swiftc', ['-module-cache-path', 'build/swift-cache', 'tests/StorageHarness.swift', 'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', '-lsqlite3', '-o', 'build/storage-harness']); compiled = true;
+    execFileSync('swiftc', ['-module-cache-path', 'build/swift-cache', 'tests/StorageHarness.swift', 'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-o', 'build/storage-harness']); compiled = true;
   }
   const directory = await mkdtemp(join(tmpdir(), 'localnotes-actions-'));
   const root = join(directory, 'Sync'), privateRoot = join(directory, 'Private');

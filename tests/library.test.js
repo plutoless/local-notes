@@ -48,3 +48,17 @@ test('500-note incremental SQLite library with 2,000 confirmed actions', async (
     console.log(JSON.stringify({fixture: '500 notes / 2000 actions', coldMs: cold, warmMs: warm, openingMs: opening, coldReads: 500, warmReads: 0, editMoveReads: 2}));
   } finally { await fixture.close(); }
 });
+
+test('production Mac traversal excludes protected ranges and returns only metadata', async () => {
+  const {mkdir, writeFile, symlink, rm} = await import('node:fs/promises');
+  const {join} = await import('node:path');
+  const fixture = await storageFixture();
+  try {
+    for (const directory of ['Credentials', '.hidden', 'LocalNotesData', 'Research/Sub']) { await mkdir(join(fixture.root, directory), {recursive: true}); await writeFile(join(fixture.root, directory, 'note.md'), '# Secret or note'); }
+    await symlink(join(fixture.root, 'Research'), join(fixture.root, 'linked'));
+    const result = await fixture.adapter('metadata');
+    assert.deepEqual(result.notes.map(n => n.path).sort(), ['Research/Sub/note.md', 'reference.md']);
+    assert.ok(result.notes.every(n => !('text' in n) && typeof n.size === 'number'));
+    await rm(fixture.root, {recursive: true}); await assert.rejects(fixture.adapter('metadata'), /unavailable/);
+  } finally { await fixture.close(); }
+});
