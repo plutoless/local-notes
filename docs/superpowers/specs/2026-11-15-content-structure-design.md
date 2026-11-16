@@ -156,6 +156,8 @@ The current `web/app.js` combines state, reading, parsing, and full rendering. S
 
 ## 8. Performance behavior and acceptance
 
+Validation policy update (2026-11-16): the user deferred standalone Syncthing synchronization tests and Android-specific tests until explicitly requested. These checks do not block merging. The [project validation policy](../../agents/validation.md) supersedes the corresponding testing gates below; product behavior requirements remain unchanged.
+
 Remove the fixed four-second full-body scan. On Mac, combine file-change notifications with metadata validation. On Android, incrementally validate metadata on foreground resume and manual refresh; read bodies only for new or changed files. Providers without reliable notifications may use metadata polling, but must not fall back to continuously reading all bodies. Build the initial index in the background with progress and partial results.
 
 All collections use bounded pagination, with 50 records per batch by default. The home screen queries only required summaries. Opening it does not call AI or wait for a complete index rebuild. With an existing index, it does not first reread all Markdown. Opening a note reads only that note's body.

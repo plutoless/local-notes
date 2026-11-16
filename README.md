@@ -41,10 +41,10 @@ Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_
 
 ## Recorded validation
 
-See [Issue #2 implementation and validation](docs/validation/issue-2.md) for initiative tests, recovery behavior and remaining native interaction gates.
+See [Issue #2 implementation and validation](docs/validation/issue-2.md) for initiative tests, recovery behavior and the current validation decision.
 
 
-See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and outstanding native interaction gates. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
+See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and recorded validation limits. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
 
 The browser interaction suite requires Playwright and a Chromium installation:
 
@@ -53,4 +53,4 @@ npm install --no-save --package-lock=false playwright
 CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui
 ```
 
-The Mac and Android builds pass. Automated shared-UI and Mac storage integration checks pass, and the issue #2 follow-up verified native Mac creation, editing, linked-note autosave, restart/index recovery and explicit handling of unfinished actions before ending. Sequential Syncthing transfer passed between two isolated instances on one Mac in both directions. Android physical-device SAF/offline/restart/keyboard checks are deferred; transfer between two physical devices and divergent-edit/conflict interactions remain unverified. See the validation notes for the exact scope and evidence.
+The Mac and Android builds pass. Automated shared-UI and Mac storage integration checks pass, and the issue #2 follow-up verified native Mac creation, editing, linked-note autosave, restart/index recovery and explicit handling of unfinished actions before ending. Sequential Syncthing transfer passed between two isolated instances on one Mac in both directions. Under the [project validation policy](docs/agents/validation.md), standalone Syncthing tests and Android-specific tests are deferred until the user requests them and do not block merging. Unexecuted physical-device and divergent-edit/conflict checks remain unverified. See the validation notes for the exact scope and evidence.

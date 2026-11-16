@@ -43,8 +43,10 @@ Sequential transfer passed in both directions. After resuming the paused folders
 
 Evidence retained locally under `build/native-followup/` includes native accessibility snapshots, isolated Syncthing logs, and `syncthing-evidence.json` with final per-file SHA-256 hashes. Both isolated Syncthing instances and the test app were stopped after validation.
 
-## Remaining gates
+## Deferred validation and merge decision
 
-Android physical-device SAF/offline/restart/keyboard checks are deferred at the user's request. These checks have not passed by implication.
+On 2026-11-16 the user confirmed that standalone Syncthing synchronization tests and Android-specific tests are not required for the current merge and must only be run when explicitly requested later. They are not merge blockers. See the [project validation policy](../agents/validation.md).
 
-The Syncthing checks used two real instances on one Mac, not two physical devices or a Mac/Android pair. Physical-device transfer, offline divergent edits, delayed/out-of-order delivery and conflict-resolution interactions remain unverified. The broader synchronization-conflict feature belongs to a later slice. No overall physical-device end-to-end acceptance is claimed.
+Android physical-device SAF/offline/restart/keyboard checks remain unexecuted and are deferred by that decision; they are not recorded as passed.
+
+The Syncthing checks used two real instances on one Mac, not two physical devices or a Mac/Android pair. Physical-device transfer, offline divergent edits, delayed/out-of-order delivery and conflict-resolution interactions remain unverified. The broader synchronization-conflict feature belongs to a later slice. These unexecuted Syncthing checks are deferred under the same policy and do not block merging. No overall physical-device end-to-end acceptance is claimed.
