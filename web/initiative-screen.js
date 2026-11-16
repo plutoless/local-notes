@@ -111,7 +111,7 @@ export class InitiativeScreen {
       const source = record.sources.find(s => s.path === row.querySelector('input').value);
       if (!source) continue;
       try {
-        const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), async () => (await native('list', {workspaceId: this.repository.workspaceId})).notes);
+        const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), async () => { const notes = []; for (let offset = 0;; offset += 50) { const page = await native('referenceInventory', {workspaceId: this.repository.workspaceId, offset}); notes.push(...page.notes); if (!page.hasMore) return notes; } });
         if (record !== this.previous) return;
         row.querySelector('.source-state').textContent = result.state === 'moved' ? `Moved to ${result.path}; review and save the updated link.` : result.state;
         if (result.state === 'moved') { row.querySelector('input').value = result.path; this.changed(); }
