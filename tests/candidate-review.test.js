@@ -19,8 +19,8 @@ test('individual edited decisions, initiative separation, later state, reference
  const initiative = await s.candidate('initiative'); await s.review.decide(initiative, 'later', {description: 'Edited undertaking'});
  const target = (await allRecords(s.review.targets.initiative))[0]; assert.equal(target.status, 'later'); assert.equal(target.title, 'Edited undertaking'); assert.equal(target.progress, ''); assert.deepEqual(target.sources, []);
  assert.equal((await allRecords(s.review.targets.action)).length, 0);
- const action = await s.candidate('action'); await s.review.decide(action, 'attach', {targetId: target.entityId, description: 'Edited next step'});
- const confirmed = (await allRecords(s.review.targets.action))[0]; assert.equal(confirmed.description, 'Edited next step'); assert.equal(confirmed.initiativeId, target.entityId);
+ let action = await s.candidate('action'); action = (await s.candidates.save({...action, sources: [...action.sources, {...action.sources[0], path: 'second.md'}]}, action)).record; await s.review.decide(action, 'attach', {targetId: target.entityId, description: 'Edited next step'});
+ const confirmed = (await allRecords(s.review.targets.action))[0]; assert.equal(confirmed.description, 'Edited next step'); assert.equal(confirmed.initiativeId, target.entityId); assert.equal(confirmed.sources.length, 2);
  const reference = await s.candidate('action'); await s.review.decide(reference, 'reference', {targetId: target.entityId});
  assert.equal((await allRecords(s.review.targets.action)).length, 1); assert.equal((await allRecords(s.review.targets.initiative))[0].sources[0].role, 'reference');
  await s.review.decide(await s.candidate('progress'), 'confirm', {targetId: target.entityId, description: 'Approved progress'});
@@ -74,6 +74,8 @@ test('two-device review and target disagreements retain branches through rebuild
  await repo.save({...target, progress: 'Local progress'}, target); await s.adapter('actionWrite', {workspaceId: target.workspaceId, path: `revisions/${target.entityId}/${divergent.revision}.json`, text: JSON.stringify(divergent)});
  await repo.open(); assert.equal(repo.conflicts.get(target.entityId).tips.length, 2);
  assert.equal((await allRecords(repo)).length, 1);
+ const org = new Organization((cmd,args) => cmd === 'aiAnalyze' ? Promise.resolve({text: response('initiative')}) : s.adapter(cmd,args), device);
+ await org.preview(['reference.md']); await org.run(); assert.equal((await allRecords(device)).length, 1);
  } finally {await s.f.close();}
 });
 
@@ -84,6 +86,7 @@ test('invalid synchronized approval intents are rejected before replay', async (
   assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, decision: 'ignore'}}), /Decision/);
   assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, sourceFingerprints: [{}]}}), /evidence/);
   assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, target: {...confirmed.review.target, entityId: crypto.randomUUID()}}}), /association/);
+  assert.throws(() => validateCandidate({...confirmed, review: {...confirmed.review, target: {...confirmed.review.target, entityId: crypto.randomUUID(), parents: [crypto.randomUUID()]}}}), /association/);
   const held = await s.review.decide(await s.candidate('progress'), 'later', {description: 'Edited held progress'});
   assert.equal(held.review.suggestion, 'Edited held progress');
   await s.candidates.open(); assert.equal((await allRecords(s.candidates)).find(c => c.entityId === held.entityId).review.suggestion, 'Edited held progress');
