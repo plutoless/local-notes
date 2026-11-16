@@ -13,6 +13,9 @@ test('initiative assignments, multiple links, explicit ending and index/restart 
     const original = await readFile(join(fixture.root, 'reference.md'), 'utf8');
     const source = {path: 'reference.md', quote: 'Run the sample command', fingerprint: fingerprint(original), role: 'reference'};
     let a = (await initiatives.save({title: 'First', goal: 'A goal', progress: 'User maintained', status: 'active', sources: [source]})).record;
+    a = (await initiatives.save({...a, title: 'Renamed first'}, a)).record;
+    assert.equal((await initiatives.query({search: 'Renamed'})).actions[0].entityId, a.entityId);
+    assert.equal((await initiatives.query({search: 'First'})).actions.length, 0);
     const b = (await initiatives.save({title: 'Second', goal: '', progress: '', status: 'later', sources: [{...source, role: 'working-note'}]})).record;
     let action = (await actions.save({description: 'Independent'})).record;
     action = (await actions.save({...action, initiativeId: a.entityId}, action)).record;

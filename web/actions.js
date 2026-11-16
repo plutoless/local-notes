@@ -106,7 +106,7 @@ export class ActionRepository {
         ...fields,
         formatVersion: 1, entityType: this.entityType, workspaceId: this.workspaceId,
         entityId: previous?.entityId || this.newId(), revision: this.newId(), parents: previous ? [previous.revision] : [],
-        description: (fields.description || fields.title || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
+        description: (this.entityType === 'initiative' ? fields.title : fields.description || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
         dueDate: fields.dueDate || null, waitingOn: fields.waitingOn?.trim() || null,
         sources: structuredClone(fields.sources || []), modifiedAt: this.now()
       });

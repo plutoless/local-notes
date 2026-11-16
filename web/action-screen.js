@@ -1,14 +1,9 @@
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
-import {allRecords, sourceState} from './initiatives.js';
+import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
 const labels = {'todo': 'To do', 'in-progress': 'In progress', waiting: 'Waiting', completed: 'Completed', canceled: 'Canceled'};
 const $ = selector => document.querySelector(selector);
-const fingerprint = text => {
-  let hash = 2166136261;
-  for (const byte of new TextEncoder().encode(text)) hash = Math.imul(hash ^ byte, 16777619) >>> 0;
-  return `fnv1a32:${hash.toString(16).padStart(8, '0')}`;
-};
 export class ActionScreen {
   constructor(notice) {
     this.repository = new ActionRepository(native); this.notice = notice; this.dirty = false; this.active = false;
@@ -82,7 +77,7 @@ export class ActionScreen {
     $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
     $('#action-page').textContent = `Page ${this.offset / 30 + 1}`;
   }
-  async assignments(selected = this.previous?.initiativeId || '') {
+  async assignments(selected = $('#action-initiative').value || '') {
     if (!this.initiatives?.repository.ready) return;
     const records = await allRecords(this.initiatives.repository);
     const select = $('#action-initiative'); select.replaceChildren(new Option('Independent action', ''));

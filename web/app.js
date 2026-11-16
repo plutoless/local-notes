@@ -44,7 +44,8 @@ async function createNote(initiativeId = null) {
     await note('create', {path, text});
     if (initiativeId) {
       const initiative = (await allRecords(initiatives.repository)).find(i => i.entityId === initiativeId);
-      await initiatives.repository.save({...initiative, sources: [...initiative.sources, {path, quote: '# Untitled', fingerprint: fingerprint(text), role: 'working-note'}]}, initiative);
+      const linked = await initiatives.repository.save({...initiative, sources: [...initiative.sources, {path, quote: '# Untitled', fingerprint: fingerprint(text), role: 'working-note'}]}, initiative);
+      if (initiatives.previous?.entityId === initiativeId) initiatives.previous = linked.record;
     }
     view = 'notes'; actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
@@ -57,7 +58,7 @@ $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(curre
 $('#back').onclick=async()=>{if(await flush())$('.app').classList.remove('editing');};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').disabled=readMode;$('#mode').textContent=readMode?'编辑':'阅读';updateReading();};
 $('#reading').onchange=async e=>{if(!e.target.matches('input[data-line]'))return;try{const text=toggleTask(content(),Number(e.target.dataset.line),e.target.checked);$('#body').value=text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');changed();await save();updateReading();}catch(err){notice(err.message);}};
-$('#rename').onclick=async()=>{try{if(!await flush())return;const path=prompt('输入相对于笔记目录的路径（以 .md 结尾）',current);if(!path||path===current)return;if(!safePath(path))throw Error('请使用有效的相对 Markdown 路径');await note('move',{path:current,target:path,expected:base,workspaceId:currentWorkspace});await prepareInitiatives();await moveReferences([actions.repository,initiatives.repository],current,path);if(stars.delete(current)){stars.add(path);localStorage.setItem('stars',JSON.stringify([...stars]));}await refresh();await load(path);}catch(e){notice(e.message);}};
+$('#rename').onclick=async()=>{try{if(!await flush())return;await repairMovedLinks();const path=prompt('输入相对于笔记目录的路径（以 .md 结尾）',current);if(!path||path===current)return;if(!safePath(path))throw Error('请使用有效的相对 Markdown 路径');await note('move',{path:current,target:path,expected:base,workspaceId:currentWorkspace});localStorage.setItem('pending-note-move:'+rootKey,JSON.stringify({from:current,to:path}));let linkError=null;try{await repairMovedLinks();}catch(error){linkError=error;} if(stars.delete(current)){stars.add(path);localStorage.setItem('stars',JSON.stringify([...stars]));}await refresh();await load(path);if(linkError)notice('Note moved; link updates pending. Use Retry link updates. '+linkError.message);}catch(e){notice(e.message);}};
 $('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await refresh();await load(path);}catch(e){notice(e.message);}};
 $('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
 window.hasUnsavedChanges=()=>dirty||actions.dirty||initiatives.dirty||Boolean(initiatives.saving)||Boolean(saving)||Boolean(actions.saving);
@@ -67,6 +68,7 @@ setInterval(async()=>{try{if(view==='actions'||view==='initiatives'||dirty||savi
 refresh().catch(e=>notice(e.message));
 
 async function noteInitiatives(path) {
+  $('#repair-links').hidden = !localStorage.getItem('pending-note-move:'+rootKey);
   await prepareInitiatives();
   const records = await allRecords(initiatives.repository);
   if (current !== path) return;
@@ -77,3 +79,12 @@ async function noteInitiatives(path) {
     $('#note-initiatives').append(button);
   }
 }
+
+async function repairMovedLinks() {
+  const intent = JSON.parse(localStorage.getItem('pending-note-move:'+rootKey) || 'null');
+  if (!intent) return;
+  await prepareInitiatives();
+  await moveReferences([actions.repository, initiatives.repository], intent.from, intent.to);
+  localStorage.removeItem('pending-note-move:'+rootKey); $('#repair-links').hidden = true;
+}
+$('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('Moved links updated.'); } } catch (error) { notice('Link updates pending: '+error.message); } };

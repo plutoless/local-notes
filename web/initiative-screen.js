@@ -32,6 +32,10 @@ export class InitiativeScreen {
   async show() {
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
+    if (this.previous && !this.dirty) {
+      const latest = (await allRecords(this.repository)).find(i => i.entityId === this.previous.entityId);
+      if (latest) { this.form(latest, latest); await this.details(); }
+    }
     $('#view-title').textContent = 'Initiatives'; $('#search').placeholder = 'Search initiatives…';
     $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = false;
     $('#editor').hidden = true; $('#action-editor').hidden = true;
@@ -137,7 +141,8 @@ export class InitiativeScreen {
         this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
         $('#initiative-save-state').textContent = result.recovered ? 'Saved locally after recovery' : 'Saved locally'; await this.list(); await this.details(); return true;
       } catch (error) {
-        this.retry = error.revisionSaved ? error.record : null; if (error.revisionSaved) this.previous = error.record;
+        const initiativeCommitted = error.revisionSaved && error.record?.entityType === 'initiative';
+        this.retry = initiativeCommitted ? error.record : null; if (initiativeCommitted) this.previous = error.record;
         this.dirty = true; this.draft(); $('#initiative-save-state').textContent = `${error.message} · Edit retained; retry Save.`; return false;
       } finally { this.saving = null; $('#initiative-form').inert = false; }
     })(); return this.saving;
