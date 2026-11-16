@@ -90,7 +90,16 @@ try {
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /^Saved locally$/}).waitFor();
   assert.equal(await page.locator('.initiative-source').count(), 2);
-  await page.reload();
+  await page.locator('[data-view="actions"]').click();
+  await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
+  const workspaceId = (await fixture.adapter('workspace')).workspaceId;
+  const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
+  await page.locator('#action-initiative').selectOption(initiativeId);
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
+  await page.locator('#action-save').click(); await page.getByText(/Your edit is retained/).waitFor();
+  await page.reload(); await page.getByText(/Recovered unsaved action/).waitFor();
+  assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
+  await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^Saved locally$/}).waitFor();
   await page.locator('[data-view="initiatives"]').click();
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');

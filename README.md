@@ -18,6 +18,8 @@ Confirmed action JSON and full immutable revisions live in `LocalNotesData/` und
 
 Scanning skips hidden directories and Credentials and lists only Markdown files up to 2 MB. Attachments are not displayed. Reminders, tags, and rich text are not supported yet. Due dates belong to confirmed actions. Reading mode supports basic headings, bold text, code, and tasks; it is not a complete Markdown renderer. The directory option currently sorts paths rather than displaying a directory tree.
 
+Initiatives organize an undertaking's title, goal, current progress and Active, Later or Ended state. Link existing Markdown as working notes or references without moving or copying it, create a linked note inside an initiative, and assign the same confirmed actions from either entry point. Ending requires an explicit choice for each unfinished action. Changed and missing sources remain visible; ambiguous external moves require manual relinking. Failed link updates after an in-app move expose a retry in the note editor.
+
 ## File protection and limitations
 
 Before saving, the app compares the current file contents with the loaded version. If an external change is detected, it stops overwriting and allows the edit to be saved as a separate copy. Before each modification, the previous contents are saved in the app-private History directory, retaining the latest 200 snapshots. Android uses the Storage Access Framework (SAF) with persisted directory authorization and does not request full-disk access or network permission.
@@ -38,6 +40,9 @@ npm run build:android
 Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_HOME and defaults to Homebrew Android SDK 35, Build Tools 35.0.0, and OpenJDK 21. It does not require Gradle or a network connection. The development signing key is stored in build/; retain it to allow future installation updates.
 
 ## Recorded validation
+
+See [Issue #2 implementation and validation](docs/validation/issue-2.md) for initiative tests, recovery behavior and remaining native interaction gates.
+
 
 See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and outstanding native interaction gates. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
 
