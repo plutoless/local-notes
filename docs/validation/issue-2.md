@@ -21,8 +21,30 @@ Moving a note updates confirmed links. An interrupted relationship update retain
 - `npm run build:android`: passed, development APK produced and signature verified. The existing deprecated-API compiler note remains.
 - Standards and Spec code reviews ran independently against the starting SHA. Findings about stale title search, duplicated fingerprints, unused test fixture code, failed-ending drafts, stale selection, recovered assignment drafts and interrupted move recovery were fixed and covered by targeted regression checks.
 
-## Native interaction and remaining gates
+## Native Mac follow-up validation
 
-A test Mac process was launched using isolated `LOCAL_NOTES_TEST_ROOT` and `LOCAL_NOTES_TEST_PRIVATE` directories under this worktree's ignored build directory. Orca computer-use returned `window_not_found` for both the bundle and the exact test PID; no native interactions could be verified. Its permissions report showed Accessibility granted and Screen Recording not granted. The isolated test process was stopped; the pre-existing app from another checkout was untouched.
+Tested application code: `2f3d9847aea6df0a07cd91dc0d4e0694bf80dfdd`. After Orca restarted, Accessibility and Screen Recording were both granted. The earlier `window_not_found` limitation was resolved. A copied, ad hoc signed app used the unique bundle ID `dev.localnotes.validation.issue2` to avoid focus collisions with another running checkout; its executable and web assets were unchanged. All test roots and private storage were under this worktree's ignored `build/native-followup/` directory.
 
-`adb devices` reported no attached devices. Android SAF provider writes, physical keyboard behavior, foreground recovery, offline creation/edit/restart and index rebuild on Android remain unrun. Native WKWebView interaction on Mac also remains unrun. Browser viewport checks are not Android or native Mac end-to-end evidence. Actual two-device Syncthing checks were not performed; conflict resolution and broader indexing behavior belong to later slices. These are remaining acceptance gates, not passing checks.
+The real Cocoa/WKWebView app was operated using native accessibility actions and verified keyboard input, with UI state and saved files checked after actions. The following checks passed:
+
+- Create and save an initiative, edit its goal and progress, and create an assigned action from inside it.
+- Stop the test process, remove both test SQLite files, and relaunch. The action ID/assignment and initiative goal/progress were recovered from synchronized records and displayed in the native app.
+- Pause synchronization on both test peers, edit and save initiative progress, create a linked note, and verify note title/body autosave. The local revision advanced while the peer retained its previous revision. This proves operation without synchronization; the Mac's general network connection was not disabled.
+- Restart while synchronization remained paused. The native app displayed the saved progress, assigned action and working-note link. Opening that source displayed the saved title/body and initiative backlink. The edited source was marked changed without removing the link.
+- Try ending an initiative with an unfinished action: saving was rejected with `Choose how to handle every unfinished action`. Explicitly select `Retain independently` and save: the initiative became Ended, while the same action remained To do with a null initiative assignment.
+
+This follow-up covers the listed native flows. The broader state/assignment/link permutations remain covered by the existing automated suites rather than every permutation being repeated manually on Mac.
+
+## Actual Syncthing transport checks
+
+Two isolated Syncthing v2.1.6 instances used separate device identities, configurations, synchronization roots, and local query indexes. They connected over loopback TCP/TLS with discovery, NAT traversal and relays disabled. Existing Syncthing processes and settings were untouched.
+
+Sequential transfer passed in both directions. After resuming the paused folders, the peers became idle with zero required items and identical SHA-256 hashes for all 10 current-record/revision/metadata/Markdown files. The native app then opened the receiving root with fresh private indexes, recovered the transferred initiative/action/link, and edited progress there. That new revision synchronized back; reopening the original root displayed the peer's progress. After the final explicit-ending operation, all 13 files converged identically. No SQLite file entered either synchronized root, and the original reference fixture was byte-identical to its original contents.
+
+Evidence retained locally under `build/native-followup/` includes native accessibility snapshots, isolated Syncthing logs, and `syncthing-evidence.json` with final per-file SHA-256 hashes. Both isolated Syncthing instances and the test app were stopped after validation.
+
+## Remaining gates
+
+Android physical-device SAF/offline/restart/keyboard checks are deferred at the user's request. These checks have not passed by implication.
+
+The Syncthing checks used two real instances on one Mac, not two physical devices or a Mac/Android pair. Physical-device transfer, offline divergent edits, delayed/out-of-order delivery and conflict-resolution interactions remain unverified. The broader synchronization-conflict feature belongs to a later slice. No overall physical-device end-to-end acceptance is claimed.
