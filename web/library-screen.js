@@ -3,14 +3,17 @@ import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
 const $ = selector => document.querySelector(selector);
 export class LibraryScreen {
-  constructor(openNote, notice, isActive) {
-    this.openNote = openNote; this.notice = notice; this.isActive = isActive;
+  constructor(openNote, notice, isActive, favoritePaths = () => undefined) {
+    this.favoritePaths = favoritePaths; this.openNote = openNote; this.notice = notice; this.isActive = isActive;
     this.library = new Library(native, () => { if (isActive()) this.render().catch(error => notice(error.message)); });
     this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
     $('#library-refresh').onclick = () => this.library.sync().catch(error => notice(error.message));
     $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
-    $('#library-create-topic').onclick = async () => { try { const name = prompt('Topic name'); if (name) await this.library.saveTopic(name); } catch (error) { notice(error.message); } };
-    $('#library-rename-topic').onclick = async () => { try { const topic = this.library.records.find(t => t.entityId === this.topic); if (!topic) return; const name = prompt('Rename topic', topic.description); if (name) await this.library.saveTopic(name, topic); } catch (error) { notice(error.message); } };
+    const editTopic = topic => { this.editingTopic = topic; $('#topic-name').value = topic?.description || ''; $('#topic-form').hidden = false; $('#topic-name').focus(); };
+    $('#library-create-topic').onclick = () => editTopic(null);
+    $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) editTopic(topic); };
+    $('#topic-cancel').onclick = () => { $('#topic-form').hidden = true; };
+    $('#topic-form').onsubmit = async event => { event.preventDefault(); try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; } catch (error) { notice(error.message); } };
     $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
     $('#library-next').onclick = () => { this.offset += 50; this.render(); };
     $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
@@ -23,7 +26,7 @@ export class LibraryScreen {
   async render() {
     if (!this.isActive()) return;
     const sequence = ++this.sequence;
-    const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset});
+    const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()});
     if (sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = 'Reference library';
     $('#root-label').textContent = this.library.root || 'Local reference index';
@@ -37,7 +40,7 @@ export class LibraryScreen {
     $('#library-previous').disabled = this.offset === 0; $('#library-next').disabled = !result.hasMore;
     const list = $('#items'); list.replaceChildren();
     if (!this.search && this.offset === 0) {
-      const inventory = await this.library.inventory();
+      const inventory = (this.library.directories || []).map(directory => ({path: directory + '/_'}));
       if (sequence !== this.sequence || !this.isActive()) return;
       const prefix = this.directory === '*' || this.directory === '' ? '' : this.directory + '/';
       const directories = new Set(inventory.filter(n => n.path.startsWith(prefix)).map(n => n.path.slice(prefix.length)).filter(p => p.includes('/')).map(p => prefix + p.split('/')[0]));
@@ -46,13 +49,13 @@ export class LibraryScreen {
     }
     for (const note of result.notes) {
       const card = document.createElement('button'); card.className = 'card';
-      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt)}</p><small>${esc(note.path)}</small>`;
+      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt)}</p><small>${esc(note.path)} · ${new Date(note.modified * 1000).toLocaleDateString()}</small>`;
       card.onclick = () => this.openNote(note.path); list.append(card);
     }
   }
   async noteTopics(path) {
     await this.library.open();
-    const note = (await this.library.inventory()).find(n => n.path === path);
+    const note = (await this.library.query({exactPath: path})).notes[0];
     const container = $('#note-topics'); container.replaceChildren();
     if (!note) return;
     for (const topic of this.library.records) {

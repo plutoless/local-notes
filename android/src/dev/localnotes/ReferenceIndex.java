@@ -29,6 +29,8 @@ final class ReferenceIndex {
                     String directory = r.optString("directory", "*"), topic = r.optString("topic");
                     Collections.addAll(args, r.optString("search"), directory, directory, topic, topic, topic);
                 }
+                if (r.has("exactPath")) { sql += command.equals("referenceInventory") ? " WHERE path=?" : " AND path=?"; args.add(r.getString("exactPath")); }
+                if (r.has("paths")) { JSONArray paths = r.getJSONArray("paths"); sql += paths.length() == 0 ? " AND 0" : " AND path IN (" + String.join(",", Collections.nCopies(paths.length(), "?")) + ")"; for (int i = 0; i < paths.length(); i++) args.add(paths.getString(i)); }
                 sql += " ORDER BY path LIMIT ? OFFSET ?";
                 Collections.addAll(args, String.valueOf(limit + 1), String.valueOf(Math.max(0, r.optInt("offset"))));
                 JSONArray notes = new JSONArray(); boolean more;

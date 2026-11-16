@@ -6,7 +6,7 @@ import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {ActionScreen} from './action-screen.js';
 const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,notes=[],current=null,base='',dirty=false,view='actions',filter='recent',timer,saving=null,blocked=false,readMode=false;const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 function notice(msg){$('#notice').textContent=msg;$('#notice').hidden=false;setTimeout(()=>$('#notice').hidden=true,5000);}
-const libraryScreen = new LibraryScreen(openNote, notice, () => view !== 'actions' && view !== 'initiatives');
+const libraryScreen = new LibraryScreen(openNote, notice, () => view !== 'actions' && view !== 'initiatives', () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if (!await flush()) return;
@@ -25,7 +25,7 @@ async function prepareInitiatives() { if (!initiatives.repository.ready || initi
 function note(cmd,args={}){return native(cmd,{workspaceId:rootKey,...args});}
 function content(){return withTitle($('#body').value,$('#title').value||'无标题');}
 function state(msg){$('#save-state').textContent=msg;}
-async function refresh(){const generation=workspaceGeneration;if(view==='initiatives'){await actions.show();actions.active=false;await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;await libraryScreen.show();}
+async function refresh(){const generation=workspaceGeneration;if(view==='initiatives'){await actions.show();actions.active=false;await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;legacyRoot=workspace.root||'';await libraryScreen.show();}
 function render(){if(view!=='actions'&&view!=='initiatives')libraryScreen.render().catch(e=>notice(e.message));}
 async function load(path){const workspaceId=rootKey;const r=await note('read',{path});if(workspaceId!==rootKey)return;currentWorkspace=workspaceId;current=path;base=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;$('#title').value=titleOf(r.text,path);$('#body').value=r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');$('#file-path').textContent=path;$('#star').textContent=stars.has(path)?'★':'☆';$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');const draft=readDraft();if(draft){$('#title').value=titleOf(draft.text,path);$('#body').value=draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');dirty=true;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');timer=setTimeout(save,650);}}updateReading();render();await noteInitiatives(path);await libraryScreen.noteTopics(path);}
 async function openNote(path){try{if(await flush())await load(path);}catch(e){notice(e.message);}}
