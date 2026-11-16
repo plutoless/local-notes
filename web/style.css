@@ -15,3 +15,7 @@
 [aria-label="Synchronization review"] article { border-top: 1px solid #888; margin-top: 16px; padding-top: 16px; }
 [aria-label="Synchronization review"] textarea { width: 100%; }
 [aria-label="Synchronization review"] pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Review controls stay inside the native organization scroll column. */
+#ai-results select, #ai-results textarea { max-width: 100%; box-sizing: border-box; }
+#ai-results textarea { width: 100%; min-height: 5em; }
