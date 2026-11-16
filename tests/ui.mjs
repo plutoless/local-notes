@@ -1,13 +1,165 @@
-import {createServer} from 'node:http';import {readFile,mkdtemp,writeFile,readdir,stat} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import assert from 'node:assert/strict';import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url);const {chromium}=require('playwright');
-const root=await mkdtemp(join(tmpdir(),'localnotes-test-'));await writeFile(join(root,'a.md'),'# Sample\n\n- [ ] Check writeback\n');
-const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{})});
-try{const page=await browser.newPage({viewport:{width:1180,height:800}});const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.exposeFunction('bridge',async r=>{try{const p=join(root,r.path||'');if(r.cmd==='list'){const notes=[];for(const f of await readdir(root)){notes.push({path:f,text:await readFile(join(root,f),'utf8'),modified:(await stat(join(root,f))).mtimeMs/1000});}return {notes,root:'Test Sample'};}if(r.cmd==='read')return {text:await readFile(p,'utf8')};if(r.cmd==='save'){if(await readFile(p,'utf8')!==r.expected)throw Error('CONFLICT');await writeFile(p,r.text);return {};}if(r.cmd==='create'){await writeFile(p,r.text,{flag:'wx'});return {};}throw Error('unhandled');}catch(e){return {error:e.message};}});
-await page.addInitScript(()=>{window.NotesNative={request:async message=>{const r=JSON.parse(message);window.nativeReply(r.id,await window.bridge(r));}};});
-await page.route('https://notes.test/**', async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';if(!['index.html','style.css','app.js','core.js'].includes(name))return route.abort();await route.fulfill({body:await readFile(new URL('../web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});await page.goto('https://notes.test/');await page.getByRole('heading',{name:'Sample',exact:true}).click();await page.locator('#body').fill('A new offline thought\n\n- [ ] Check writeback');await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');assert.match(await readFile(join(root,'a.md'),'utf8'),/A new offline thought/);
-await page.locator('[data-view="tasks"]').click();await page.locator('.task-row input').check();await page.waitForTimeout(300);assert.match(await readFile(join(root,'a.md'),'utf8'),/- \[x\] Check writeback/);
-await page.locator('[data-view="notes"]').click();await page.getByRole('heading',{name:'Sample',exact:true}).click();await page.locator('#body').fill('Unsaved local edit');await writeFile(join(root,'a.md'),'# Sample\n\nExternal edit');await page.locator('#conflict').waitFor({state:'visible'});assert.equal(await readFile(join(root,'a.md'),'utf8'),'# Sample\n\nExternal edit');assert.equal(await page.locator('#body').inputValue(),'Unsaved local edit');
-await page.locator('#copy').click();await page.waitForFunction(()=>document.querySelector('#conflict').hidden);const names=await readdir(root);assert.equal(names.length,2);assert.equal(await readFile(join(root,'a.md'),'utf8'),'# Sample\n\nExternal edit');
-await page.reload();await page.locator('.card').first().waitFor();await page.locator('#search').fill('Unsaved local edit');assert.equal(await page.locator('.card').count(),1);
-await page.screenshot({path:new URL('../build/mac-ui.png',import.meta.url).pathname});await page.setViewportSize({width:393,height:852});await page.screenshot({path:new URL('../build/mobile-list.png',import.meta.url).pathname});await page.locator('.card').click();await page.screenshot({path:new URL('../build/mobile-editor.png',import.meta.url).pathname});assert.equal(await page.locator('#body').isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);assert.deepEqual(errors,[]);console.log('PASS: disk autosave, task writeback, conflict preservation, conflict copy, reload/search, mobile layout');
-}finally{await browser.close();}
+import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {storageFixture} from './action-adapter.js';
+const fixture = await storageFixture();
+const otherFixture = await storageFixture();
+let activeFixture = fixture;
+let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
+const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
+await mkdir('build', {recursive: true});
+try {
+  const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  const bridgeCalls = [];
+  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  const sourcePath = join(fixture.root, 'reference.md');
+  const original = await readFile(sourcePath, 'utf8');
+  await page.exposeFunction('bridge', async request => {
+    try {
+      bridgeCalls.push(request.cmd);
+      if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
+      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) {
+        const result = await activeFixture.adapter(request.cmd, request);
+        if (request.cmd === 'actionQuery' && holdActionQuery) { heldQueryStartedResolve(); await new Promise(resolve => { releaseHeldQuery = resolve; }); }
+        return result;
+      }
+      const workspace = await activeFixture.adapter('workspace');
+      if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
+      const path = join(activeFixture.root, request.path || '');
+      switch (request.cmd) {
+        case 'list': {
+          const notes = [];
+          for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, text: await readFile(join(activeFixture.root, name), 'utf8'), modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
+          return {notes, root: activeFixture.root};
+        }
+        case 'read': return {text: await readFile(path, 'utf8')};
+        case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
+        case 'create': await writeFile(path, request.text, {flag: 'wx'}); return {};
+        default: throw Error('Unhandled bridge command');
+      }
+    } catch (error) { return {error: error.message}; }
+  });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
+  await page.route('https://notes.test/**', async route => {
+    const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
+    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js'].includes(name)) return route.abort();
+    await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+  });
+  await page.goto('https://notes.test/');
+  await page.getByText('No confirmed actions.', {exact: false}).waitFor();
+  assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
+  await page.locator('#action-new').click();
+  await page.locator('#action-description').fill('Follow up with the reviewer');
+  await page.locator('#action-status').selectOption('waiting');
+  await page.locator('#action-waiting').fill('Reviewer feedback');
+  await page.locator('#action-initiative').fill('initiative-example');
+  await page.locator('#action-add-source').click();
+  await page.locator('.source-path').fill('reference.md');
+  await page.locator('.source-quote').fill('Run the sample command');
+  await page.locator('#action-save').click();
+  await page.getByText('Saved locally', {exact: true}).waitFor();
+  assert.equal(await readFile(sourcePath, 'utf8'), original);
+  assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
+  await page.reload();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  assert.equal(await page.locator('#action-status').inputValue(), 'waiting');
+  assert.equal(await page.locator('#action-waiting').inputValue(), 'Reviewer feedback');
+  await page.locator('#action-status').selectOption('completed'); await page.locator('#action-save').click();
+  await page.getByText('Saved locally', {exact: true}).waitFor();
+  await page.locator('#action-filter').selectOption('todo'); await page.getByText('No confirmed actions.', {exact: false}).waitFor(); assert.equal(await page.locator('.card').count(), 0);
+  await page.locator('#action-filter').selectOption('completed');
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
+  await page.getByText('Saved locally', {exact: true}).waitFor();
+  await page.locator('#action-history').click(); await page.waitForFunction(() => document.querySelectorAll('#action-revisions p').length === 3);
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#mode').click(); await page.locator('#reading input').first().check();
+  await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
+  await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('todo');
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  assert.equal(await page.locator('#action-status').inputValue(), 'todo');
+  assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
+  await page.locator('#action-description').fill('Draft retained after a failed save');
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
+  await page.locator('#action-save').click(); await page.getByText(/Your edit is retained/).waitFor();
+  await page.reload(); await page.getByText(/Recovered unsaved action/).waitFor();
+  assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
+  await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
+  // A committed but unrecovered edit remains the parent of subsequent user edits.
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
+  await page.locator('#action-description').fill('Committed during a current-record failure');
+  await page.locator('#action-save').click(); await page.getByText(/Your edit is retained/).waitFor();
+  await page.locator('#action-description').fill('Draft retained after a failed save');
+  await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
+  const actionWorkspace = await fixture.adapter('workspace');
+  const actionPage = await fixture.adapter('actionQuery', {workspaceId: actionWorkspace.workspaceId});
+  assert.equal(actionPage.actions.length, 1);
+  await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#editor').waitFor({state: 'visible'}); if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await page.locator('#body').fill('Unsaved local edit');
+  await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
+  await page.locator('#conflict').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
+  assert.equal(await readFile(sourcePath, 'utf8'), '# Synthetic reference material\n\nExternal edit');
+  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden);
+  await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('');
+  await page.screenshot({path: 'build/actions-desktop.png'});
+  await page.setViewportSize({width: 393, height: 852});
+  await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).click();
+  await page.screenshot({path: 'build/actions-mobile.png'});
+  assert.equal(await page.locator('#action-description').isVisible(), true);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  // Failed initialization of B must hide A's editors before any further edit can be made.
+  await page.setViewportSize({width: 1180, height: 800});
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#editor').waitFor({state: 'visible'});
+  const oldWorkspace = (await fixture.adapter('workspace')).workspaceId;
+  const oldSource = await readFile(sourcePath, 'utf8');
+  const otherSource = join(otherFixture.root, 'reference.md'); await writeFile(otherSource, oldSource);
+  otherFixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('#choose').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor();
+  assert.equal(await page.locator('#editor').isVisible(), false);
+  assert.equal(await page.locator('#action-editor').isVisible(), false);
+  assert.equal(await page.locator('#root-label').textContent(), 'Opening workspace…');
+  const stale = await page.evaluate(async args => window.bridge(args), {cmd: 'save', workspaceId: oldWorkspace, path: 'reference.md', expected: oldSource, text: 'Wrong workspace'});
+  assert.match(stale.error, /Workspace changed/);
+  assert.equal(await readFile(otherSource, 'utf8'), oldSource);
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#editor').waitFor({state: 'visible'});
+  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
+  await page.locator('#body').fill('An intentional edit in the new workspace');
+  await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
+  assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);
+  assert.equal(await readFile(sourcePath, 'utf8'), oldSource);
+  // Existing pre-workspace-ID note drafts must survive the key change.
+  await writeFile(join(otherFixture.root, 'legacy.md'), '# Legacy note\n\nOriginal body');
+  await page.evaluate(root => localStorage.setItem(`draft:${root}:legacy.md`, JSON.stringify({text: '# Legacy note\n\nRecovered old editor draft', base: '# Legacy note\n\nOriginal body'})), otherFixture.root);
+  await page.locator('[data-view="notes"]').click();
+  await page.getByRole('heading', {name: 'Legacy note', exact: true}).click();
+  await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地' && document.querySelector('#body').value.includes('Recovered old editor draft'));
+  assert.match(await readFile(join(otherFixture.root, 'legacy.md'), 'utf8'), /Recovered old editor draft/);
+  // A delayed query from B cannot repopulate the list after failed initialization of A.
+  await page.locator('[data-view="actions"]').click();
+  await page.locator('#action-new').click(); await page.locator('#action-description').fill('Only in workspace B');
+  await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
+  const bWorkspace = (await otherFixture.adapter('workspace')).workspaceId;
+  const bAction = (await otherFixture.adapter('actionQuery', {workspaceId: bWorkspace})).actions[0];
+  const heldQueryStarted = new Promise(resolve => { heldQueryStartedResolve = resolve; });
+  holdActionQuery = true; await page.locator('#search').fill('Only in workspace B'); await heldQueryStarted;
+  fixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('#choose').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor();
+  holdActionQuery = false; releaseHeldQuery();
+  await page.waitForFunction(() => window.__heldQueryDelivered === true);
+  await page.waitForFunction(() => document.querySelector('#root-label').textContent === 'Opening workspace…');
+  assert.equal(await page.locator('.card').count(), 0); assert.equal(await page.locator('#action-editor').isVisible(), false);
+  const aWorkspace = (await fixture.adapter('workspace')).workspaceId;
+  const aActions = (await fixture.adapter('actionQuery', {workspaceId: aWorkspace})).actions;
+  assert.ok(aActions.every(action => action.entityId !== bAction.entityId));
+  await page.locator('#search').fill(''); await page.locator('[data-view="actions"]').click();
+  await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).waitFor();
+  assert.deepEqual(errors, []);
+  console.log('PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).');
+} finally { await browser.close(); await fixture.close(); await otherFixture.close(); }

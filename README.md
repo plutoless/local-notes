@@ -1,6 +1,6 @@
 # Local Notes 0.1
 
-A local Markdown notes and tasks app for Mac and Android. The app does not provide a synchronization service; Syncthing synchronizes files between devices. It starts with an isolated Sample directory by default.
+A local Markdown notes and confirmed actions app for Mac and Android. The app does not provide a synchronization service; Syncthing synchronizes files between devices. It starts with an isolated Sample directory by default.
 
 ## Run
 
@@ -10,9 +10,13 @@ A local Markdown notes and tasks app for Mac and Android. The app does not provi
 
 ## Implemented features
 
-Local autosave, unsaved draft recovery, full-text search, recently edited and path-sorted lists, favorites, basic Markdown reading, aggregated tasks with write-back, move/rename, external change detection, and saving conflicts as copies. Favorites and indexes do not synchronize across devices. Source files remain Markdown.
+Confirmed actions start empty and are independent of Markdown checkboxes. Create and edit actions offline with To do, In progress, Waiting, Completed, and Canceled states; filter by state, reopen retired actions, and inspect immutable history. Actions have stable IDs, descriptions, optional initiative IDs, due dates and waiting conditions, and source references. A date is required before an unfinished action can appear overdue.
 
-Scanning skips hidden directories and Credentials and lists only Markdown files up to 2 MB. Attachments are not displayed. Due dates, reminders, tags, and rich text are not supported yet. Reading mode supports basic headings, bold text, code, and tasks; it is not a complete Markdown renderer. The directory option currently sorts paths rather than displaying a directory tree.
+The note editor retains local autosave, unsaved draft recovery, full-text search, recently edited and path-sorted lists, favorites, basic Markdown reading and checkbox editing, move/rename, external change detection, and saving conflicts as copies. Favorites and indexes do not synchronize across devices. Source files remain Markdown.
+
+Confirmed action JSON and full immutable revisions live in `LocalNotesData/` under the selected root. A workspace ID separates data, local indexes, and drafts across roots. SQLite lives in app-private storage outside the synchronized directory and is rebuilt from JSON. No old checkbox aggregation is migrated, and action state changes never check source Markdown boxes.
+
+Scanning skips hidden directories and Credentials and lists only Markdown files up to 2 MB. Attachments are not displayed. Reminders, tags, and rich text are not supported yet. Due dates belong to confirmed actions. Reading mode supports basic headings, bold text, code, and tasks; it is not a complete Markdown renderer. The directory option currently sorts paths rather than displaying a directory tree.
 
 ## File protection and limitations
 
@@ -25,6 +29,7 @@ External editors and Syncthing do not follow the app's locking protocol. Compari
 There are no third-party runtime dependencies. The interface uses HTML/CSS/JS, with a Swift/WKWebView shell on Mac and a Java/WebView shell on Android. Each platform uses its own local file bridge.
 
 ```sh
+npm run check
 npm test
 npm run build:mac
 npm run build:android
@@ -34,8 +39,13 @@ Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_
 
 ## Recorded validation
 
-- Mac and Android builds completed, and APK development-signature verification passed.
-- Five core tests passed: CRLF/nested task write-back, excluding tasks in fenced code, path boundaries, HTML escaping, and special characters in headings.
-- The Mac app was opened and the notes list worked. Sample editing with autosave, task aggregation, and checking a task with write-back to the original Markdown were verified.
-- The browser interaction script is tests/ui.mjs. Browser subprocess launch restrictions prevented a successful run in the session that recorded these results. Install Playwright and Chromium, then run node tests/ui.mjs; CHROME_PATH can also select a browser executable.
-- Android has not yet been installed on a physical device. Directory authorization, recovery after process termination, the mobile keyboard, and three-way synchronization still require physical-device verification.
+See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and outstanding native interaction gates. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
+
+The browser interaction suite requires Playwright and a Chromium installation:
+
+```sh
+npm install --no-save --package-lock=false playwright
+CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui
+```
+
+The Mac and Android builds pass. The automated shared-UI and native Mac storage integration checks pass. Native Mac create/edit/restart interaction is unverified because computer-use Accessibility access was denied. No Android device was attached; SAF offline writes, restart recovery, and physical-device keyboard behavior remain unverified. Two-device Syncthing synchronization has not been tested. Keep real notes separate until those checks are recorded.
