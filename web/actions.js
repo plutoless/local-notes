@@ -78,12 +78,15 @@ export class ActionRepository {
         const cached = this.parsedFiles.get(path);
         const parsed = cached?.text === text ? cached.record : JSON.parse(text);
         this.parsedFiles.set(path, {text, record: parsed});
-        if (parsed.entityType !== this.entityType) continue;
+        if (parsed?.entityType !== this.entityType) {
+          if (path.startsWith(`${this.collection}/`) || !['action', 'initiative', 'topic'].includes(parsed?.entityType)) throw Error('Unsupported record type; source retained');
+          continue;
+        }
         const record = this.validate(parsed);
         if (record.workspaceId !== this.workspaceId) throw Error('Record belongs to another workspace');
         const revisionPath = `revisions/${record.entityId}/${record.revision}.json`;
         const canonical = path === revisionPath || path === `${this.collection}/${record.entityId}.json`;
-        const conflictCopy = path.includes('.sync-conflict-') && path.endsWith('.json');
+        const conflictCopy = path.endsWith('.json') && (path.startsWith(`${this.collection}/`) || path.startsWith(`revisions/${record.entityId}/`));
         if (!canonical && !conflictCopy) throw Error('Record path does not match its ID');
         const history = revisions.get(record.entityId) || new Map();
         if (history.has(record.revision) && JSON.stringify(history.get(record.revision)) !== JSON.stringify(record)) throw Error('Revision identity has incompatible content');

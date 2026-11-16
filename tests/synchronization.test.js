@@ -119,3 +119,19 @@ test('an unavailable topic collection does not prevent action commits', async ()
     assert.equal(result.record.description, 'Still editable');
   } finally { await fixture.close(); }
 });
+
+test('unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const {record} = await repo.save({description: 'Keep history'});
+    const path = join(fixture.root, 'LocalNotesData/actions', `${record.entityId}.json`);
+    const unsupported = JSON.stringify({formatVersion: 99, entityType: 'future-action', entityId: record.entityId});
+    await writeFile(path, unsupported);
+    const recovery = await repo.recover(); assert.ok(recovery.warnings.some(w => w.includes('Unsupported')));
+    const {readFile} = await import('node:fs/promises'); assert.equal(await readFile(path, 'utf8'), unsupported);
+    await writeFile(path, JSON.stringify(record));
+    await writeFile(join(fixture.root, 'LocalNotesData/actions/renamed-copy.json'), JSON.stringify(record));
+    await repo.recover(); assert.equal((await repo.query()).actions.length, 1);
+  } finally { await fixture.close(); }
+});
