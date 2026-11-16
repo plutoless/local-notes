@@ -18,6 +18,7 @@ export async function allRecords(repository) {
 }
 export const unfinished = action => !['completed', 'canceled'].includes(action.status);
 export async function endInitiative(repository, actions, initiative, decisions, fields = initiative) {
+  await actions.serialize(() => actions.recover());
   // Each action is an independent commit. A retry only needs to handle those still unfinished.
   for (const action of (await allRecords(actions)).filter(a => a.initiativeId === initiative.entityId && unfinished(a))) {
     const decision = decisions[action.entityId];

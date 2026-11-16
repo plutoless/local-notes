@@ -4,9 +4,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
-const otherFixture = await storageFixture();
 let activeFixture = fixture;
-let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -18,10 +16,8 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
-      if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
       if (request.cmd === 'workspace' || request.cmd.startsWith('action')) {
         const result = await activeFixture.adapter(request.cmd, request);
-        if (request.cmd === 'actionQuery' && holdActionQuery) { heldQueryStartedResolve(); await new Promise(resolve => { releaseHeldQuery = resolve; }); }
         return result;
       }
       const workspace = await activeFixture.adapter('workspace');
@@ -71,6 +67,13 @@ try {
   await page.getByText(/Choose how to handle every unfinished action/).waitFor();
   await page.locator('summary').filter({hasText: 'Handle unfinished actions'}).click();
   await page.locator('[data-action]').selectOption('independent');
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
+  await page.locator('#initiative-form [type=submit]').click();
+  await page.locator('#initiative-save-state').filter({hasText: /Edit retained/}).waitFor();
+  assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
+  await page.reload();
+  await page.locator('[data-view="initiatives"]').click();
+  await page.locator('#initiative-save-state').filter({hasText: /Recovered unsaved initiative/}).waitFor();
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /^Saved locally$/}).waitFor();
   assert.equal(await page.locator('#initiative-actions button').count(), 0);
@@ -82,16 +85,18 @@ try {
   await page.locator('#title').fill('Working log');
   await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
-  await page.locator('#note-initiatives button').click();
-  await page.locator('.initiative-source').filter({has: page.locator('input[value]')}).count();
+  await page.locator('[data-view="initiatives"]').click();
+  await page.locator('#initiative-progress').fill('Progress after capture');
+  await page.locator('#initiative-form [type=submit]').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^Saved locally$/}).waitFor();
   assert.equal(await page.locator('.initiative-source').count(), 2);
   await page.reload();
   await page.locator('[data-view="initiatives"]').click();
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
-  assert.equal(await page.locator('#initiative-progress').inputValue(), 'Validation in progress');
+  assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
   await page.setViewportSize({width: 393, height: 852});
   await page.screenshot({path: 'build/initiatives-mobile.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   assert.deepEqual(errors, []);
   console.log('PASS: initiatives create/edit/restart, source links, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).');
-} finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
+} finally { await browser.close(); await fixture.close(); }
