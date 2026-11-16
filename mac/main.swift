@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "core.js"]
+        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -17,6 +17,7 @@ func failure(_ message: String) -> NSError { NSError(domain: "LocalNotes", code:
 final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate, NSWindowDelegate {
     var window: NSWindow!; var web: WKWebView!; var root: URL!; var support: URL!
     let fm = FileManager.default
+    let worker = DispatchQueue(label: "dev.localnotes.storage", qos: .userInitiated)
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
             support = try fm.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:true).appendingPathComponent("LocalNotes")
@@ -24,6 +25,12 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
             let sample = support.appendingPathComponent("Sample")
             if !fm.fileExists(atPath:sample.path) { try fm.copyItem(at:Bundle.main.resourceURL!.appendingPathComponent("sample"),to:sample) }
             root = UserDefaults.standard.string(forKey:"root").map { URL(fileURLWithPath:$0) } ?? sample
+            // Explicit test roots keep interaction checks away from the user's notes and preferences.
+            if let testRoot = ProcessInfo.processInfo.environment["LOCAL_NOTES_TEST_ROOT"],
+               let testPrivate = ProcessInfo.processInfo.environment["LOCAL_NOTES_TEST_PRIVATE"] {
+                root = URL(fileURLWithPath: testRoot); support = URL(fileURLWithPath: testPrivate)
+                try fm.createDirectory(at: support, withIntermediateDirectories: true)
+            }
         } catch { fatalError(error.localizedDescription) }
         let config = WKWebViewConfiguration(); config.userContentController.add(self,name:"notes")
         config.setURLSchemeHandler(Assets(Bundle.main.resourceURL!.appendingPathComponent("web")),forURLScheme:"notes")
@@ -39,16 +46,16 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {true}
     func windowShouldClose(_ sender: NSWindow) -> Bool {
         // JS confirmation protects unsaved edits, including failed writes.
-        web.evaluateJavaScript("document.querySelector('#save-state')?.textContent || ''") { value,_ in
-            let status=value as? String ?? ""
-            if status == "已保存到本地" || status.isEmpty { NSApp.terminate(nil) }
+        web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
+            let unsaved = value as? Bool ?? true
+            if !unsaved { NSApp.terminate(nil) }
             else { let alert=NSAlert();alert.messageText="还有内容未保存";alert.informativeText="请先处理保存提示，再关闭窗口。";alert.runModal() }
         }; return false
     }
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
         // Use same guard for Cmd+Q; response is asynchronous.
-        web.evaluateJavaScript("document.querySelector('#save-state')?.textContent || ''") { value,_ in
-            let s=value as? String ?? "";let ok=s == "已保存到本地" || s.isEmpty
+        web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
+            let ok = !(value as? Bool ?? true)
             if !ok { let a=NSAlert();a.messageText="还有内容未保存，请先处理保存提示。";a.runModal() }
             sender.reply(toApplicationShouldTerminate:ok)
         };return .terminateLater
@@ -56,7 +63,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" ? .allow : .cancel)}
     func resolved(_ path:String, allowMissing:Bool=false)throws->URL {
         let parts=path.split(separator:"/",omittingEmptySubsequences:false)
-        guard !path.hasPrefix("/"),!path.contains("\\"),path.lowercased().hasSuffix(".md"),parts.allSatisfy({!$0.isEmpty && !$0.hasPrefix(".") && $0.lowercased() != "credentials"}) else {throw failure("无效的笔记路径")}
+        guard !path.hasPrefix("/"),!path.contains("\\"),path.lowercased().hasSuffix(".md"),parts.allSatisfy({!$0.isEmpty && !$0.hasPrefix(".") && !["credentials", "localnotesdata"].contains($0.lowercased())}) else {throw failure("无效的笔记路径")}
         let base=root.resolvingSymlinksInPath();let url=base.appendingPathComponent(path).resolvingSymlinksInPath()
         guard url.path.hasPrefix(base.path+"/") else {throw failure("路径超出笔记目录")}
         var cursor=base
@@ -72,6 +79,10 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     func run(_ req:[String:Any])throws->[String:Any] {
         let cmd=req["cmd"] as? String ?? "";let path=req["path"] as? String ?? ""
+        if cmd == "workspace" || cmd.hasPrefix("action") { return try ActionStorage(root: root, privateRoot: support).run(req) }
+        if cmd != "choose" {
+            guard req["workspaceId"] as? String == (try ActionStorage(root: root, privateRoot: support).workspace()) else { throw failure("Workspace changed; reopen the note") }
+        }
         switch cmd {
         case "choose":
             let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"
@@ -84,7 +95,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
             let enumerator=fm.enumerator(at:root,includingPropertiesForKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey],options:[.skipsHiddenFiles])!
             for case let url as URL in enumerator {
                 let v=try url.resourceValues(forKeys:[.isDirectoryKey,.isSymbolicLinkKey,.contentModificationDateKey,.fileSizeKey])
-                if v.isSymbolicLink==true || url.lastPathComponent.lowercased()=="credentials" {enumerator.skipDescendants();continue}
+                if v.isSymbolicLink==true || ["credentials", "localnotesdata"].contains(url.lastPathComponent.lowercased()) {enumerator.skipDescendants();continue}
                 if v.isDirectory==true {continue}
                 guard url.pathExtension.lowercased()=="md",(v.fileSize ?? 0)<=2_000_000 else {continue}
                 let text=try String(contentsOf:url,encoding:.utf8)
@@ -107,8 +118,15 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
         guard message.frameInfo.isMainFrame,let str=message.body as? String,let data=str.data(using:.utf8),let req=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let id=req["id"] as? Int else{return}
-        let result:[String:Any];do {result=try run(req)}catch{result=["error":error.localizedDescription]}
-        if let data=try? JSONSerialization.data(withJSONObject:result),let json=String(data:data,encoding:.utf8){web.evaluateJavaScript("window.nativeReply(\(id),\(json))",completionHandler:nil)}
+        let perform = {
+            let result: [String: Any]
+            do { result = try self.run(req) } catch { result = ["error": error.localizedDescription] }
+            if let data = try? JSONSerialization.data(withJSONObject: result), let json = String(data: data, encoding: .utf8) {
+                DispatchQueue.main.async { self.web.evaluateJavaScript("window.nativeReply(\(id),\(json))", completionHandler: nil) }
+            }
+        }
+        if req["cmd"] as? String == "choose" { worker.async { DispatchQueue.main.sync(execute: perform) } }
+        else { worker.async(execute: perform) }
     }
 }
 let app=NSApplication.shared;let delegate=App();app.delegate=delegate;app.setActivationPolicy(.regular);app.run()
