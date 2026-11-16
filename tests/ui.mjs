@@ -43,7 +43,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -53,7 +53,7 @@ try {
   await page.locator('#action-description').fill('Follow up with the reviewer');
   await page.locator('#action-status').selectOption('waiting');
   await page.locator('#action-waiting').fill('Reviewer feedback');
-  await page.locator('#action-initiative').fill('initiative-example');
+  await page.locator('#action-initiative').selectOption('');
   await page.locator('#action-add-source').click();
   await page.locator('.source-path').fill('reference.md');
   await page.locator('.source-quote').fill('Run the sample command');

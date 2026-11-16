@@ -32,7 +32,7 @@ final class ActionStorage {
         return id
     }
     func file(_ path: String) throws -> URL {
-        let pattern = "^(actions/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
+        let pattern = "^((?:actions|initiatives)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
         guard path.range(of: pattern, options: .regularExpression) != nil else { throw failure("Invalid action record path") }
         let url = data.appendingPathComponent(path)
         try directory(url.deletingLastPathComponent())
@@ -57,7 +57,7 @@ final class ActionStorage {
     }
     func files() throws -> [String: String] {
         var result = [String: String]()
-        for name in ["actions", "revisions"] {
+        for name in ["actions", "initiatives", "revisions"] {
             let dir = data.appendingPathComponent(name)
             try directory(dir)
             guard let entries = fm.enumerator(atPath: dir.path) else { throw failure("Action directory unavailable") }
@@ -78,7 +78,7 @@ final class ActionStorage {
         case "actionFiles": return ["files": try files()]
         case "actionWrite": try write(req["path"] as? String ?? "", req["text"] as? String ?? ""); return [:]
         case "actionIndex", "actionQuery":
-            return try ActionIndex(privateRoot: privateRoot, workspaceId: id).run(req)
+            return try ActionIndex(privateRoot: privateRoot, workspaceId: id, entityType: req["entityType"] as? String ?? "action").run(req)
         default: throw failure("Unknown action storage command")
         }
     }

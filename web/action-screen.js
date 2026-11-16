@@ -1,4 +1,5 @@
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
+import {allRecords, sourceState} from './initiatives.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
 const labels = {'todo': 'To do', 'in-progress': 'In progress', waiting: 'Waiting', completed: 'Completed', canceled: 'Canceled'};
@@ -81,6 +82,14 @@ export class ActionScreen {
     $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
     $('#action-page').textContent = `Page ${this.offset / 30 + 1}`;
   }
+  async assignments(selected = this.previous?.initiativeId || '') {
+    if (!this.initiatives?.repository.ready) return;
+    const records = await allRecords(this.initiatives.repository);
+    const select = $('#action-initiative'); select.replaceChildren(new Option('Independent action', ''));
+    for (const record of records.filter(i => i.status !== 'ended' || i.entityId === selected)) select.add(new Option(record.title, record.entityId));
+    if (selected && !records.some(i => i.entityId === selected)) select.add(new Option(`Unavailable initiative: ${selected}`, selected));
+    select.value = selected;
+  }
   fields() {
     return {description: $('#action-description').value, status: $('#action-status').value, initiativeId: $('#action-initiative').value,
       dueDate: $('#action-due').value, waitingOn: $('#action-waiting').value,
@@ -102,6 +111,7 @@ export class ActionScreen {
   showForm(fields, previous) {
     this.previous = previous; this.retry = null;
     $('#action-description').value = fields.description || ''; $('#action-status').value = fields.status || 'todo';
+    if (fields.initiativeId && ![...$('#action-initiative').options].some(o => o.value === fields.initiativeId)) $('#action-initiative').add(new Option(fields.initiativeId, fields.initiativeId));
     $('#action-initiative').value = fields.initiativeId || ''; $('#action-due').value = fields.dueDate || ''; $('#action-waiting').value = fields.waitingOn || '';
     $('#action-sources').replaceChildren(); for (const source of fields.sources || []) this.addSource(source);
     $('#action-revisions').replaceChildren(); $('#action-id').textContent = previous?.entityId || 'New action'; $('#action-history').disabled = !previous;
@@ -110,7 +120,16 @@ export class ActionScreen {
   async edit(action) {
     if (action && action.workspaceId !== this.repository.workspaceId) { this.notice('Workspace changed; reopen the action'); return; }
     if (!await this.flush()) return;
-    this.showForm(action || {}, action); this.state(action ? 'Saved locally' : 'Describe a next step you have confirmed.');
+    this.showForm(action || {}, action);
+    await this.assignments(action?.initiativeId || '');
+    for (const row of document.querySelectorAll('.action-source')) {
+      const source = action?.sources.find(s => s.path === row.querySelector('.source-path').value);
+      if (!source) continue;
+      const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), async () => (await native('list', {workspaceId: this.repository.workspaceId})).notes);
+      const status = document.createElement('p'); status.textContent = result.state; row.append(status);
+      if (result.state === 'moved') { row.querySelector('.source-path').value = result.path; this.changed(); }
+      if (result.path && this.initiatives) { const open = document.createElement('button'); open.type = 'button'; open.textContent = 'Open source'; open.onclick = async () => { if (await this.flush()) this.initiatives.openNote(result.path); }; row.append(open); }
+    } this.state(action ? 'Saved locally' : 'Describe a next step you have confirmed.');
     if (!action) this.changed();
     $('#action-description').focus();
   }
@@ -121,6 +140,10 @@ export class ActionScreen {
       this.state('Saving…'); $('#action-save').disabled = true; $('#action-form').inert = true;
       try {
         const fields = this.fields();
+        if (fields.initiativeId && fields.initiativeId !== this.previous?.initiativeId) {
+          const target = (await allRecords(this.initiatives.repository)).find(i => i.entityId === fields.initiativeId && i.status !== 'ended');
+          if (!target) throw Error('Choose an active or later initiative');
+        }
         for (const source of fields.sources) if (!source.fingerprint) {
           const result = await native('read', {path: source.path, workspaceId: this.repository.workspaceId}); source.fingerprint = fingerprint(result.text);
           if (source.quote && !result.text.includes(source.quote)) throw Error(`Quoted fragment was not found in ${source.path}`);

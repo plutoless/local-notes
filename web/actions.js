@@ -1,6 +1,6 @@
 import {safePath} from './core.js';
 export const ACTION_STATES = ['todo', 'in-progress', 'waiting', 'completed', 'canceled'];
-const newUUID = () => {
+export const newUUID = () => {
   if (crypto.randomUUID) return crypto.randomUUID();
   const bytes = crypto.getRandomValues(new Uint8Array(16));
   bytes[6] = (bytes[6] & 15) | 64; bytes[8] = (bytes[8] & 63) | 128;
@@ -25,15 +25,15 @@ export function isOverdue(action, today = new Date().toLocaleDateString('en-CA')
 
 // The adapter is the file/index boundary. All commits on this device are serialized here.
 export class ActionRepository {
-  constructor(adapter, {newId = newUUID, now = () => new Date().toISOString()} = {}) {
-    this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
+  constructor(adapter, {newId = newUUID, now = () => new Date().toISOString(), entityType = 'action', validate = validateAction} = {}) {
+    this.entityType = entityType; this.validate = validate; this.collection = entityType === 'action' ? 'actions' : 'initiatives'; this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
   }
   serialize(operation) {
     const result = this.queue.then(operation);
     this.queue = result.catch(() => {});
     return result;
   }
-  request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
+  request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, entityType: this.entityType, ...args}); }
   async open() {
     this.ready = false;
     const workspace = await this.adapter('workspace');
@@ -47,13 +47,15 @@ export class ActionRepository {
     const revisions = new Map(), currents = new Map(), warnings = [];
     for (const [path, text] of Object.entries(files)) {
       try {
-        const record = validateAction(JSON.parse(text));
+        const parsed = JSON.parse(text);
+        if (parsed.entityType !== this.entityType) continue;
+        const record = this.validate(parsed);
         if (record.workspaceId !== this.workspaceId) throw Error('Record belongs to another workspace');
         const revisionPath = `revisions/${record.entityId}/${record.revision}.json`;
         if (path === revisionPath) {
           if (!revisions.has(record.entityId)) revisions.set(record.entityId, new Map());
           revisions.get(record.entityId).set(record.revision, record);
-        } else if (path === `actions/${record.entityId}.json`) currents.set(record.entityId, record);
+        } else if (path === `${this.collection}/${record.entityId}.json`) currents.set(record.entityId, record);
         else throw Error('Record path does not match its ID');
       } catch (error) { warnings.push(`${path}: ${error.message}`); }
     }
@@ -71,7 +73,7 @@ export class ActionRepository {
       }
       const record = tips[0];
       if (currents.get(id)?.revision !== record.revision || JSON.stringify(currents.get(id)) !== JSON.stringify(record)) {
-        await this.request('actionWrite', {path: `actions/${id}.json`, text: JSON.stringify(record)});
+        await this.request('actionWrite', {path: `${this.collection}/${id}.json`, text: JSON.stringify(record)});
       }
       records.push(record);
     }
@@ -92,7 +94,7 @@ export class ActionRepository {
   async history(entityId) {
     const {files} = await this.request('actionFiles');
     return Object.entries(files).filter(([path]) => path.startsWith(`revisions/${entityId}/`)).flatMap(([, text]) => {
-      try { return [validateAction(JSON.parse(text))]; } catch { return []; }
+      try { return [this.validate(JSON.parse(text))]; } catch { return []; }
     });
   }
   save(fields, previous = null, retry = null) {
@@ -100,20 +102,21 @@ export class ActionRepository {
       if (!this.ready) throw Error('Workspace is not ready; reopen it');
       if ((previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
       if (!retry && previous && this.heads.get(previous.entityId) !== previous.revision) throw Error('Action changed; reopen it before editing');
-      const record = retry || validateAction({
-        formatVersion: 1, entityType: 'action', workspaceId: this.workspaceId,
+      const record = retry || this.validate({
+        ...fields,
+        formatVersion: 1, entityType: this.entityType, workspaceId: this.workspaceId,
         entityId: previous?.entityId || this.newId(), revision: this.newId(), parents: previous ? [previous.revision] : [],
-        description: fields.description.trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
+        description: (fields.description || fields.title || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
         dueDate: fields.dueDate || null, waitingOn: fields.waitingOn?.trim() || null,
         sources: structuredClone(fields.sources || []), modifiedAt: this.now()
       });
-      validateAction(record);
+      this.validate(record);
       let revisionSaved = false;
       try {
         await this.request('actionWrite', {path: `revisions/${record.entityId}/${record.revision}.json`, text: JSON.stringify(record)});
         revisionSaved = true;
         this.heads.set(record.entityId, record.revision);
-        await this.request('actionWrite', {path: `actions/${record.entityId}.json`, text: JSON.stringify(record)});
+        await this.request('actionWrite', {path: `${this.collection}/${record.entityId}.json`, text: JSON.stringify(record)});
         await this.request('actionIndex', {record});
         return {record, recovered: false};
       } catch (cause) {
