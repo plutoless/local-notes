@@ -13,6 +13,7 @@ import java.util.*;
 final class ActionStorage {
     private final MainActivity activity;
     private JSONArray readWarnings = new JSONArray();
+    private JSONObject known = new JSONObject(), stamps = new JSONObject();
     private final Uri tree;
     private final File root;
     ActionStorage(MainActivity activity) {
@@ -78,7 +79,7 @@ final class ActionStorage {
     }
     private void readRecord(String path, JSONObject files) {
         try { files.put(path, read(path)); }
-        catch (Exception error) { readWarnings.put(path + ": " + error.getMessage()); }
+        catch (Exception error) { try { readWarnings.put(new JSONObject().put("path", path).put("message", error.getMessage())); } catch (JSONException ignored) { /* String fields are JSON-safe. */ } }
     }
     private void listLocal(File directory, String prefix, JSONObject files) throws Exception {
         if (!directory.exists()) return;
@@ -87,19 +88,26 @@ final class ActionStorage {
             if (!file.getCanonicalPath().startsWith(root.getCanonicalPath() + "/")) throw new IOException("Action path escapes workspace");
             String path = prefix + file.getName();
             if (file.isDirectory()) listLocal(file, path + "/", files);
-            else if (path.endsWith(".json")) readRecord(path, files);
+            else if (path.endsWith(".json")) {
+                String stamp = file.lastModified() + ":" + file.length(); stamps.put(path, stamp);
+                if (!stamp.equals(known.optString(path))) readRecord(path, files);
+            }
         }
     }
     private void listTree(Uri directory, String prefix, JSONObject files, int depth) throws Exception {
         if (depth > 3) throw new IOException("Invalid action directory depth");
         Uri children = DocumentsContract.buildChildDocumentsUriUsingTree(tree, DocumentsContract.getDocumentId(directory));
-        try (Cursor cursor = activity.getContentResolver().query(children, new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE}, null, null, null)) {
+        try (Cursor cursor = activity.getContentResolver().query(children, new String[]{DocumentsContract.Document.COLUMN_DOCUMENT_ID, DocumentsContract.Document.COLUMN_DISPLAY_NAME, DocumentsContract.Document.COLUMN_MIME_TYPE, DocumentsContract.Document.COLUMN_LAST_MODIFIED, DocumentsContract.Document.COLUMN_SIZE}, null, null, null)) {
             if (cursor == null) throw new IOException("Action directory unavailable");
             while (cursor.moveToNext()) {
                 String path = prefix + cursor.getString(1);
                 Uri uri = DocumentsContract.buildDocumentUriUsingTree(tree, cursor.getString(0));
                 if (DocumentsContract.Document.MIME_TYPE_DIR.equals(cursor.getString(2))) listTree(uri, path + "/", files, depth + 1);
-                else if (path.endsWith(".json")) readRecord(path, files);
+                else if (path.endsWith(".json")) {
+                    String stamp = cursor.getString(3) + ":" + cursor.getString(4); stamps.put(path, stamp);
+                    // Providers without timestamps cannot safely cache reads.
+                    if (cursor.isNull(3) || cursor.getLong(3) == 0 || !stamp.equals(known.optString(path))) readRecord(path, files);
+                }
             }
         }
     }
@@ -110,11 +118,12 @@ final class ActionStorage {
         switch (cmd) {
             case "actionFiles":
                 JSONObject files = new JSONObject(); readWarnings = new JSONArray();
+                known = request.optJSONObject("known"); if (known == null) known = new JSONObject(); stamps = new JSONObject();
                 for (String name : new String[]{"actions", "initiatives", "topics", "revisions"}) {
                     if (tree == null) listLocal(new File(root, name), name + "/", files);
                     else { try { listTree(resolve(name, false), name + "/", files, 0); } catch (FileNotFoundException missing) { /* An empty collection is valid. */ } }
                 }
-                return new JSONObject().put("files", files).put("warnings", readWarnings);
+                return new JSONObject().put("files", files).put("warnings", readWarnings).put("stamps", stamps);
             case "actionWrite":
                 String path = request.getString("path");
                 if (!path.matches("((?:actions|initiatives|topics)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");

@@ -71,7 +71,7 @@ function changed(){dirty=true;localStorage.setItem(draftKey(),JSON.stringify({te
 function updateReading(){$('#reading').innerHTML=renderMarkdown(content());}
 $('#title').oninput=$('#body').oninput=changed;
 $('#search').oninput=()=>{if(view==='initiatives'){initiatives.search=$('#search').value;initiatives.offset=0;initiatives.list().catch(e=>notice(e.message));}else if(view==='actions'){actions.search=$('#search').value;actions.offset=0;actions.list().catch(e=>notice(e.message));}else {libraryScreen.search=$('#search').value;libraryScreen.offset=0;render();}};
-for(const b of document.querySelectorAll('nav button'))b.onclick=()=>navigate(b.dataset.view).catch(e=>notice(e.message));
+for(const b of document.querySelectorAll('nav button[data-view]'))b.onclick=()=>navigate(b.dataset.view).catch(e=>notice(e.message));
 for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filter=b.dataset.filter;document.querySelector('#filters .active')?.classList.remove('active');b.classList.add('active');render();};
 async function createNote(initiativeId = null) {
   try {
