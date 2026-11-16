@@ -14,7 +14,11 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   focus.active = false; $('#search').hidden = false; view = 'notes'; actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); await openNote(path);
-}, id => createNote(id));
+}, id => createNote(id), async () => {
+  // Explicit missing-source recovery may build the reference index without visiting Notes.
+  await libraryScreen.library.open(); await libraryScreen.library.sync();
+  return libraryScreen.library.inventory();
+});
 actions.initiatives = initiatives;
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
 async function navigate(next) {

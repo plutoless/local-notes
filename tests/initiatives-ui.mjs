@@ -1,4 +1,4 @@
-import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -133,6 +133,15 @@ try {
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-back').click();
   await page.waitForFunction(() => document.querySelector('#library-location').textContent === '/');
+  // Explicit initiative lookup must recover an external move before visiting the library.
+  await rename(sourcePath, join(fixture.root, 'moved-reference.md'));
+  await rm(join(fixture.privateRoot, 'Workspaces', workspaceId, 'references.sqlite'));
+  await page.reload();
+  await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor();
+  await page.locator('[data-view="initiatives"]').click();
+  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('.source-state').filter({hasText: 'Moved to moved-reference.md'}).waitFor();
+  assert.equal(await readFile(join(fixture.root, 'moved-reference.md'), 'utf8'), original);
   await page.setViewportSize({width: 393, height: 852});
   await page.screenshot({path: 'build/initiatives-mobile.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);

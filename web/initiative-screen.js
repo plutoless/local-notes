@@ -2,8 +2,8 @@ import {InitiativeRepository, allRecords, endInitiative, unfinished, fingerprint
 import {native} from './bridge.js';
 const $ = selector => document.querySelector(selector);
 export class InitiativeScreen {
-  constructor(actions, notice, openNote, createNote) {
-    this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = '';
+  constructor(actions, notice, openNote, createNote, listReferences) {
+    this.listReferences = listReferences; this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = '';
     $('#initiative-new').onclick = () => this.edit(null);
     $('#initiative-next').onclick = () => { this.offset += 50; this.list().catch(e => notice(e.message)); };
     $('#initiative-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.list().catch(e => notice(e.message)); };
@@ -113,7 +113,7 @@ export class InitiativeScreen {
       const source = record.sources.find(s => s.path === row.querySelector('input').value);
       if (!source) continue;
       try {
-        const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), async () => { const notes = []; for (let offset = 0;; offset += 50) { const page = await native('referenceInventory', {workspaceId: this.repository.workspaceId, offset}); notes.push(...page.notes); if (!page.hasMore) return notes; } });
+        const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.listReferences);
         if (record !== this.previous) return;
         row.querySelector('.source-state').textContent = result.state === 'moved' ? `Moved to ${result.path}; review and save the updated link.` : result.state;
         if (result.state === 'moved') { row.querySelector('input').value = result.path; this.changed(); }
