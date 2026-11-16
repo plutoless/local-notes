@@ -24,7 +24,7 @@ export class InitiativeScreen {
     this.active = false; this.previous = null; this.recoveredDraft = false; this.dirty = false; this.retry = null; this.offset = 0;
     $('#initiative-editor').hidden = true;
     const repository = new InitiativeRepository(native); this.repository = repository;
-    const result = await repository.open({cached, progress: message => { $('#index-state').textContent = message; }});
+    const result = await repository.open({cached, progress: message => { if (this.repository === repository) $('#index-state').textContent = message; }});
     if (repository !== this.repository) return;
     if (result.warnings.length) this.notice(result.warnings.join('\n'));
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');

@@ -19,11 +19,17 @@ final class ActionIndex {
             sqlite3_prepare_v2(opened, "PRAGMA table_info(actions)", -1, &info, nil)
             while sqlite3_step(info) == SQLITE_ROW { columns.insert(String(cString: sqlite3_column_text(info, 1))) }
             sqlite3_finalize(info)
-            if !columns.contains("initiative") { try execute(opened, "ALTER TABLE actions ADD COLUMN initiative TEXT NOT NULL DEFAULT ''") }
-            if !columns.contains("focus") { try execute(opened, "ALTER TABLE actions ADD COLUMN focus REAL") }
+            if !columns.contains("initiative") || !columns.contains("focus") {
+                try execute(opened, "BEGIN IMMEDIATE")
+                do {
+                    if !columns.contains("initiative") { try execute(opened, "ALTER TABLE actions ADD COLUMN initiative TEXT NOT NULL DEFAULT ''") }
+                    if !columns.contains("focus") { try execute(opened, "ALTER TABLE actions ADD COLUMN focus REAL") }
+                    try execute(opened, "UPDATE actions SET initiative=coalesce(json_extract(record,'$.initiativeId'),''), focus=json_extract(record,'$.focusPosition')")
+                    try execute(opened, "COMMIT")
+                } catch { try? execute(opened, "ROLLBACK"); throw error }
+            }
             try execute(opened, "CREATE INDEX IF NOT EXISTS focus_order ON actions(status, focus, id)")
             try execute(opened, "CREATE INDEX IF NOT EXISTS initiative_filter ON actions(initiative, status, id)")
-            if !columns.contains("initiative") { try execute(opened, "UPDATE actions SET initiative=coalesce(json_extract(record,'$.initiativeId'),''), focus=json_extract(record,'$.focusPosition') WHERE initiative='' AND json_extract(record,'$.initiativeId') IS NOT NULL") }
             return opened
         } catch { sqlite3_close(opened); throw error }
     }

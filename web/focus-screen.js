@@ -29,8 +29,11 @@ export class FocusScreen {
       this.button('New initiative', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
       this.button('Organize — AI not connected', () => this.notice('AI organization is not connected yet. Create actions and initiatives manually, including offline.')),
       this.button('Refresh confirmed data', async () => {
-        await repository.serialize(() => repository.recover());
-        await this.initiatives.repository.serialize(() => this.initiatives.repository.recover()); await this.show();
+        const actionResult = await repository.serialize(() => repository.recover());
+        const initiativeResult = await this.initiatives.repository.serialize(() => this.initiatives.repository.recover());
+        const warnings = [...actionResult.warnings, ...initiativeResult.warnings];
+        if (warnings.length) this.notice(warnings.join('\n'));
+        await this.show();
       }));
     const section = title => { const node = document.createElement('section'); const heading = document.createElement('h2'); heading.textContent = title; node.append(heading); list.append(node); return node; };
     const focus = section('Current Focus');
@@ -58,7 +61,7 @@ export class FocusScreen {
     const followUp = section('Waiting and Follow-up');
     if (!waiting.actions.length) followUp.append('No waiting actions.');
     for (const action of waiting.actions) followUp.append(this.actionRow(action));
-    if (waiting.hasMore) followUp.append(this.button('More waiting actions', async () => { this.actions.status = 'waiting'; await this.navigate('actions'); $('#action-filter').value = 'waiting'; }));
+    if (waiting.hasMore) followUp.append(this.button('More waiting actions', async () => { this.actions.status = 'waiting'; this.actions.offset = 0; this.actions.search = ''; this.actions.initiativeFilter = ''; $('#search').value = ''; await this.navigate('actions'); $('#action-filter').value = 'waiting'; }));
     const work = section('Continue Working');
     if (!initiatives.actions.length) work.append('No active initiatives. Create one to save a goal and progress.');
     for (const initiative of initiatives.actions) {
