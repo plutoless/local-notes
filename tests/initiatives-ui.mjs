@@ -16,7 +16,7 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
-      if (request.cmd === 'workspace' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
+      if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
       }
@@ -130,7 +130,7 @@ try {
   await page.getByRole('button', {name: '📁 Notes', exact: true}).click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-back').click();
-  assert.equal(await page.locator('#library-location').textContent(), '/');
+  await page.waitForFunction(() => document.querySelector('#library-location').textContent === '/');
   await page.setViewportSize({width: 393, height: 852});
   await page.screenshot({path: 'build/initiatives-mobile.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);

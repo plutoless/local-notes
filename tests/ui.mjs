@@ -19,7 +19,7 @@ try {
     try {
       bridgeCalls.push(request.cmd);
       if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
-      if (request.cmd === 'workspace' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
+      if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         if (request.cmd === 'actionQuery' && holdActionQuery) { heldQueryStartedResolve(); await new Promise(resolve => { releaseHeldQuery = resolve; }); }
         return result;
