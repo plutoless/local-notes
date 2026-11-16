@@ -27,3 +27,8 @@ See docs/agents/triage-labels.md.
 
 Use a single-context layout: GLOSSARY.md at the repository root and docs/adr/.
 See docs/agents/domain.md.
+
+### Validation
+
+Syncthing standalone tests and Android-specific tests are deferred until explicitly requested by the user and do not block merging.
+See docs/agents/validation.md.
