@@ -10,7 +10,8 @@ import java.io.*;
 final class ActionIndex {
     private final File privateRoot;
     private final String workspaceId;
-    ActionIndex(File privateRoot, String workspaceId) { this.privateRoot = privateRoot; this.workspaceId = workspaceId; }
+    private final String entityType;
+    ActionIndex(File privateRoot, String workspaceId, String entityType) { this.privateRoot = privateRoot; this.workspaceId = workspaceId; this.entityType = entityType.equals("initiative") ? "initiative" : "action"; }
     private void index(SQLiteDatabase db, JSONObject record) throws Exception {
         ContentValues values = new ContentValues();
         values.put("id", record.getString("entityId")); values.put("status", record.getString("status"));
@@ -21,7 +22,7 @@ final class ActionIndex {
         String cmd = request.getString("cmd");
         File directory = new File(privateRoot, "Workspaces/" + workspaceId);
         if (!directory.isDirectory() && !directory.mkdirs()) throw new IOException("Cannot create local index directory");
-        File databaseFile = new File(directory, "actions.sqlite");
+        File databaseFile = new File(directory, entityType + "s.sqlite");
         if (cmd.equals("actionIndex") && request.has("records")) { if (databaseFile.exists() && !SQLiteDatabase.deleteDatabase(databaseFile)) throw new IOException("Cannot rebuild local action index"); }
         else if (!databaseFile.exists()) throw new IOException("INDEX_REBUILD_REQUIRED: Local action index is missing");
         try (SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(databaseFile, null)) {
