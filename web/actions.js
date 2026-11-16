@@ -1,3 +1,4 @@
+import {safePath} from './core.js';
 export const ACTION_STATES = ['todo', 'in-progress', 'waiting', 'completed', 'canceled'];
 const newUUID = () => {
   if (crypto.randomUUID) return crypto.randomUUID();
@@ -14,7 +15,7 @@ export function validateAction(record) {
   if (record.initiativeId !== null && (typeof record.initiativeId !== 'string' || !record.initiativeId.trim())) throw Error('Invalid initiative assignment');
   if (record.dueDate !== null && (!/^\d{4}-\d{2}-\d{2}$/.test(record.dueDate) || new Date(record.dueDate).toISOString().slice(0, 10) !== record.dueDate)) throw Error('Invalid due date');
   if (record.waitingOn !== null && typeof record.waitingOn !== 'string') throw Error('Invalid waiting condition');
-  if (!Array.isArray(record.sources) || record.sources.some(source => !source || typeof source.path !== 'string' || !source.path || source.path.startsWith('/') || source.path.includes('\\') || source.path.split('/').some(part => !part || part.startsWith('.') || ['credentials', 'localnotesdata'].includes(part.toLowerCase())) || !/\.md$/i.test(source.path) || typeof source.quote !== 'string' || typeof source.fingerprint !== 'string')) throw Error('Invalid source reference');
+  if (!Array.isArray(record.sources) || record.sources.some(source => !source || typeof source.path !== 'string' || !safePath(source.path) || typeof source.quote !== 'string' || typeof source.fingerprint !== 'string')) throw Error('Invalid source reference');
   if (typeof record.modifiedAt !== 'string' || !Number.isFinite(Date.parse(record.modifiedAt))) throw Error('Invalid modification time');
   return record;
 }
@@ -106,9 +107,9 @@ export class ActionRepository {
       try {
         await this.request('actionWrite', {path: `revisions/${record.entityId}/${record.revision}.json`, text: JSON.stringify(record)});
         revisionSaved = true;
+        this.heads.set(record.entityId, record.revision);
         await this.request('actionWrite', {path: `actions/${record.entityId}.json`, text: JSON.stringify(record)});
         await this.request('actionIndex', {record});
-        this.heads.set(record.entityId, record.revision);
         return {record, recovered: false};
       } catch (cause) {
         // A verified immutable revision is a recoverable commit. Recovery must finish before success.

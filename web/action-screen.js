@@ -38,6 +38,8 @@ export class ActionScreen {
   }
   key() { return `action-draft:${this.repository.workspaceId}`; }
   async openWorkspace() {
+    this.previous = null; this.retry = null; this.dirty = false; this.repository.workspaceId = null;
+    $('#action-editor').hidden = true;
     const workspace = await this.repository.open();
     this.root = workspace.root; this.previous = null; this.retry = null; this.dirty = false;
     $('#root-label').textContent = workspace.root;
@@ -111,7 +113,7 @@ export class ActionScreen {
       try {
         const fields = this.fields();
         for (const source of fields.sources) if (!source.fingerprint) {
-          const result = await native('read', {path: source.path}); source.fingerprint = fingerprint(result.text);
+          const result = await native('read', {path: source.path, workspaceId: this.repository.workspaceId}); source.fingerprint = fingerprint(result.text);
           if (source.quote && !result.text.includes(source.quote)) throw Error(`Quoted fragment was not found in ${source.path}`);
         }
         const result = await this.repository.save(fields, this.previous, this.retry);
@@ -120,12 +122,14 @@ export class ActionScreen {
         this.state(result.recovered ? 'Saved locally after recovery' : 'Saved locally');
         await this.list(); return true;
       } catch (error) {
-        this.retry = error.revisionSaved ? error.record : null; this.dirty = true;
+        this.retry = error.revisionSaved ? error.record : null;
+        if (error.revisionSaved) this.previous = error.record;
+        this.dirty = true;
         localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry}));
         this.state(error.message + ' · Your edit is retained. Retry Save.'); return false;
       } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; }
     })();
     return this.saving;
   }
-  flush() { return this.dirty ? this.save() : Promise.resolve(true); }
+  flush() { return this.saving || (this.dirty ? this.save() : Promise.resolve(true)); }
 }

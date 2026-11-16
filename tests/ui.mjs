@@ -4,6 +4,8 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
+const otherFixture = await storageFixture();
+let activeFixture = fixture;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -15,13 +17,16 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
-      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) return await fixture.adapter(request.cmd, request);
-      const path = join(fixture.root, request.path || '');
+      if (request.cmd === 'choose') { activeFixture = otherFixture; return {}; }
+      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) return await activeFixture.adapter(request.cmd, request);
+      const workspace = await activeFixture.adapter('workspace');
+      if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
+      const path = join(activeFixture.root, request.path || '');
       switch (request.cmd) {
         case 'list': {
           const notes = [];
-          for (const name of await readdir(fixture.root)) if (name.endsWith('.md')) notes.push({path: name, text: await readFile(join(fixture.root, name), 'utf8'), modified: (await stat(join(fixture.root, name))).mtimeMs / 1000});
-          return {notes, root: fixture.root};
+          for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, text: await readFile(join(activeFixture.root, name), 'utf8'), modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
+          return {notes, root: activeFixture.root};
         }
         case 'read': return {text: await readFile(path, 'utf8')};
         case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
@@ -64,7 +69,7 @@ try {
   await page.getByText('Saved locally', {exact: true}).waitFor();
   await page.locator('#action-history').click(); await page.waitForFunction(() => document.querySelectorAll('#action-revisions p').length === 3);
   await page.locator('[data-view="notes"]').click();
-  await page.getByRole('heading', {name: 'Synthetic reference material', exact: true}).click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
   await page.locator('#mode').click(); await page.locator('#reading input').first().check();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('todo');
@@ -77,7 +82,16 @@ try {
   await page.reload(); await page.getByText(/Recovered unsaved action/).waitFor();
   assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
   await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
-  await page.locator('[data-view="notes"]').click(); await page.getByRole('heading', {name: 'Synthetic reference material', exact: true}).click();
+  // A committed but unrecovered edit remains the parent of subsequent user edits.
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
+  await page.locator('#action-description').fill('Committed during a current-record failure');
+  await page.locator('#action-save').click(); await page.getByText(/Your edit is retained/).waitFor();
+  await page.locator('#action-description').fill('Draft retained after a failed save');
+  await page.locator('#action-save').click(); await page.getByText('Saved locally', {exact: true}).waitFor();
+  const actionWorkspace = await fixture.adapter('workspace');
+  const actionPage = await fixture.adapter('actionQuery', {workspaceId: actionWorkspace.workspaceId});
+  assert.equal(actionPage.actions.length, 1);
+  await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'}); if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await page.locator('#body').fill('Unsaved local edit');
   await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
   await page.locator('#conflict').waitFor({state: 'visible'});
@@ -91,6 +105,30 @@ try {
   await page.screenshot({path: 'build/actions-mobile.png'});
   assert.equal(await page.locator('#action-description').isVisible(), true);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  // Failed initialization of B must hide A's editors before any further edit can be made.
+  await page.setViewportSize({width: 1180, height: 800});
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#editor').waitFor({state: 'visible'});
+  const oldWorkspace = (await fixture.adapter('workspace')).workspaceId;
+  const oldSource = await readFile(sourcePath, 'utf8');
+  const otherSource = join(otherFixture.root, 'reference.md'); await writeFile(otherSource, oldSource);
+  otherFixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('#choose').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor();
+  assert.equal(await page.locator('#editor').isVisible(), false);
+  assert.equal(await page.locator('#action-editor').isVisible(), false);
+  assert.equal(await page.locator('#root-label').textContent(), 'Opening workspace…');
+  const stale = await page.evaluate(async args => window.bridge(args), {cmd: 'save', workspaceId: oldWorkspace, path: 'reference.md', expected: oldSource, text: 'Wrong workspace'});
+  assert.match(stale.error, /Workspace changed/);
+  assert.equal(await readFile(otherSource, 'utf8'), oldSource);
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('#editor').waitFor({state: 'visible'});
+  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
+  await page.locator('#body').fill('An intentional edit in the new workspace');
+  await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
+  assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);
+  assert.equal(await readFile(sourcePath, 'utf8'), oldSource);
   assert.deepEqual(errors, []);
   console.log('PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).');
-} finally { await browser.close(); await fixture.close(); }
+} finally { await browser.close(); await fixture.close(); await otherFixture.close(); }

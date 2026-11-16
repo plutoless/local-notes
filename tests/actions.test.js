@@ -101,3 +101,19 @@ test('a missing live SQLite index is rebuilt before returning query results', as
     assert.deepEqual((await repo.query()).actions, [record]);
   } finally { await fixture.close(); }
 });
+
+test('editing after a recoverable commit extends the committed revision without branching or duplicating the action', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const original = (await repo.save({description: 'Before failure'})).record;
+    fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
+    let committed;
+    try { await repo.save({...original, description: 'Committed during failure'}, original); } catch (error) { assert.equal(error.revisionSaved, true); committed = error.record; }
+    assert.ok(committed);
+    const latest = (await repo.save({...committed, description: 'Edited after failure'}, committed)).record;
+    assert.equal(latest.entityId, original.entityId); assert.deepEqual(latest.parents, [committed.revision]);
+    const restarted = new ActionRepository(fixture.adapter); assert.deepEqual((await restarted.open()).warnings, []);
+    assert.deepEqual((await restarted.query()).actions, [latest]); assert.equal((await restarted.history(latest.entityId)).length, 3);
+  } finally { await fixture.close(); }
+});

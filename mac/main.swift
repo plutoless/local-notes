@@ -80,6 +80,9 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     func run(_ req:[String:Any])throws->[String:Any] {
         let cmd=req["cmd"] as? String ?? "";let path=req["path"] as? String ?? ""
         if cmd == "workspace" || cmd.hasPrefix("action") { return try ActionStorage(root: root, privateRoot: support).run(req) }
+        if cmd != "choose" {
+            guard req["workspaceId"] as? String == (try ActionStorage(root: root, privateRoot: support).workspace()) else { throw failure("Workspace changed; reopen the note") }
+        }
         switch cmd {
         case "choose":
             let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"
