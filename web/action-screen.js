@@ -55,9 +55,11 @@ export class ActionScreen {
     this.active = true;
     if (!this.repository.ready && !await this.openWorkspace()) return;
     if (!this.active) return;
+    const wasEditing = $('.app').classList.contains('editing');
     if (this.previous && !this.dirty) {
       const latest = (await allRecords(this.repository)).find(a => a.entityId === this.previous.entityId);
       if (latest) this.showForm(latest, latest);
+      if (!wasEditing) $('.app').classList.remove('editing');
     }
     $('#action-tools').hidden = false; $('#filters').hidden = true; $('#view-title').textContent = 'Confirmed actions';
     $('#search').placeholder = 'Search actions…';
