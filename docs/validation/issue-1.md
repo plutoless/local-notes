@@ -1,6 +1,6 @@
 # Issue #1: independent confirmed actions
 
-Status: implemented for review; issue remains open pending native interaction checks.
+Status: implemented; Mac native create/edit/relaunch verified. The maintainer deferred Android device verification on 2026-11-16, so it does not block merging this implementation. Issue #1 remains open to track the incomplete acceptance checks.
 
 ## Scope and responsibilities
 
@@ -51,13 +51,19 @@ These checks validate a shared UI plus the native Mac storage boundary. Browser 
 
 | Check | Actual result |
 | --- | --- |
-| Mac isolated native launch | Launched with `LOCAL_NOTES_TEST_ROOT` and `LOCAL_NOTES_TEST_PRIVATE` pointing to generated synthetic directories. Closed only that test process afterward. |
-| Mac native create/edit/close/relaunch | Not run. Orca Computer Use returned `permission_denied` for Accessibility, including a retry without screenshot. Its permission status helper reported granted, but the operation remained denied. No native interaction success is claimed. |
+| Mac isolated native launch | On 2026-11-16, compiled and signed an isolated temporary app bundle from the current source. Launched with `LOCAL_NOTES_TEST_ROOT` and `LOCAL_NOTES_TEST_PRIVATE` pointing to synthetic directories. Left the user's original running instance and selected root untouched. |
+| Mac native create/edit/close/relaunch | Passed on macOS 26.5.2 (25F84), using the alternate native computer-use provider after the user authorized main Orca. Created a confirmed action, edited its description and optional initiative/waiting fields, and saved transitions through To do, In progress, Waiting, Completed, Canceled, and back to To do. Every save was read back as Saved locally. Quit through Cmd+Q, confirmed the process exited, then relaunched the same isolated bundle and directories. The UI retained the stable ID, edited fields, final To do state, and all six revisions. Disk inspection independently confirmed one current action, six revisions covering all five states, and an unchanged synthetic Markdown source. Closed only the test instance afterward. |
 | Android device availability | `adb devices` reported no attached devices. |
-| Android SAF offline write, permission persistence, force-stop/relaunch, keyboard | Not run; requires a device/provider. APK compilation and signature verification do not validate SAF behavior. |
+| Android SAF offline write, permission persistence, force-stop/relaunch, keyboard | Deferred at the maintainer's request on 2026-11-16; requires a device/provider. APK compilation and signature verification do not validate SAF behavior. |
 | Two-device Syncthing delivery | Not run. Stable IDs and complete revision graphs are present, but cross-device conflict interaction belongs to the later synchronization slice. |
 
-Before closing #1, use only synthetic folders: create and edit each action state offline in the Mac app, close/relaunch and verify; install the Android APK, select a dedicated synthetic SAF directory, disable networking, create/edit, force-stop/relaunch, and verify both JSON revisions and visible state. Switch roots and verify index/draft separation. Record the actual device, OS/provider, and results.
+Before closing #1, complete the remaining device checks using only synthetic folders: install the Android APK, select a dedicated synthetic SAF directory, disable networking, create/edit, force-stop/relaunch, and verify both JSON revisions and visible state. Switch roots and verify index/draft separation. Record the actual device, OS/provider, and results. The Mac interaction run verified local persistence without relying on a remote service; it did not disable the machine's network or exercise the native directory picker.
+
+### Accessibility diagnosis follow-up
+
+The native interaction failure was reproduced on 2026-11-16 with `orca computer get-app-state --app dev.localnotes.mac --no-screenshot --json`, which returned `permission_denied`. The permission helper reported Accessibility as granted, but it checks the standalone `com.stablyai.orca.computer-use` identity. macOS TCC logs showed that the actual operation was attributed to the responsible application `com.stablyai.orca`, whose Accessibility request was denied. Restarting only the operation provider reproduced the denial with a new process, ruling out a stale provider as the fix.
+
+The user unlocked the Mac and enabled Accessibility for the main Orca application. The exact no-screenshot probe then stopped returning `permission_denied`, but Orca's window enumeration returned `window_not_found`, including for an isolated test process and after restarting only the operation provider. That remaining Orca window-discovery limitation is not claimed as fixed. The alternate native computer-use provider could now read and operate the isolated app window; the visible root was checked against the synthetic directory before editing. It completed the create/edit/Cmd+Q/relaunch checks recorded above. No TCC database edits, permission bypasses, main Orca restart, or product-code changes were needed. Screen Recording remains a separate permission; no additional grant was requested for this run.
 
 Divergent or incomplete revision histories are retained and warned about; this slice does not provide branch comparison/merge interaction. Initiatives are only optional assignments here; initiative management, Current Focus, broader Library redesign, and the remaining approved slices are outside #1.
 
@@ -68,4 +74,4 @@ Independent Standards and Spec reviewers compared the implementation with baseli
 - Standards: no documented-standard violations. Two non-blocking responsibility/duplication findings were resolved by sharing the path validator and extracting platform-local `ActionIndex` components. Final re-review: no outstanding material findings.
 - Spec: three reproduced P1 failure paths were fixed: further edits after a recoverable commit, stale note writes after failed root initialization, and delayed action-query results crossing workspace boundaries. Regression coverage exercises all three. The reviewer reran the expanded UI suite and focused repository tests and reported no remaining material findings.
 
-The implementation is committed on `feat/issue-1-confirmed-actions`. Issue #1 remains open for the native interaction gates above; no implementation of #2–#7, publication, push, or merge is included.
+The implementation was developed on `feat/issue-1-confirmed-actions` and is limited to #1. Issue #1 remains open for the deferred Android interaction checks above. No implementation of #2–#7 is included.
