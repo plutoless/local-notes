@@ -7,7 +7,7 @@ final class ActionIndex {
     let id: String
     let entityType: String
     let fm = FileManager.default
-    init(privateRoot: URL, workspaceId: String, entityType: String = "action") { self.privateRoot = privateRoot; self.id = workspaceId; self.entityType = ["initiative", "topic"].contains(entityType) ? entityType : "action" }
+    init(privateRoot: URL, workspaceId: String, entityType: String = "action") { self.privateRoot = privateRoot; self.id = workspaceId; self.entityType = ["initiative", "topic", "candidate"].contains(entityType) ? entityType : "action" }
     func database() throws -> OpaquePointer {
         let dir = privateRoot.appendingPathComponent("Workspaces/\(id)")
         try fm.createDirectory(at: dir, withIntermediateDirectories: true)
