@@ -32,9 +32,11 @@ export class InitiativeScreen {
   async show() {
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
+    const wasEditing = $('.app').classList.contains('editing');
     if (this.previous && !this.dirty) {
       const latest = (await allRecords(this.repository)).find(i => i.entityId === this.previous.entityId);
       if (latest) { this.form(latest, latest); await this.details(); }
+      if (!wasEditing) $('.app').classList.remove('editing');
     }
     $('#view-title').textContent = 'Initiatives'; $('#search').placeholder = 'Search initiatives…';
     $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = false;
