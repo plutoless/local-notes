@@ -22,7 +22,7 @@ Initiatives organize an undertaking's title, goal, current progress and Active, 
 
 ## File protection and limitations
 
-Before saving, the app compares the current file contents with the loaded version. If an external change is detected, it stops overwriting and allows the edit to be saved as a separate copy. Before each modification, the previous contents are saved in the app-private History directory, retaining the latest 200 snapshots. Android uses the Storage Access Framework (SAF) with persisted directory authorization and does not request full-disk access or network permission.
+Before saving, the app compares the current file contents with the loaded version. If an external change is detected, it stops overwriting and allows the edit to be saved as a separate copy. Before each modification, the previous contents are saved in the app-private History directory, retaining the latest 200 snapshots. Android uses the Storage Access Framework (SAF) with persisted directory authorization and does not request full-disk access. Android requests Internet permission for explicit AI analysis.
 
 External editors and Syncthing do not follow the app's locking protocol. Comparing contents before saving cannot eliminate a very short concurrent-write race, and Android file providers do not guarantee atomic replacement. Test with sample files first and enable Syncthing version history before connecting real notes. If the system directory picker cannot access Syncthing's directory, a suitable shared directory must be verified on a physical device.
 
@@ -54,3 +54,13 @@ CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm r
 ```
 
 The Mac and Android builds pass. Automated shared-UI and Mac storage integration checks pass, and the issue #2 follow-up verified native Mac creation, editing, linked-note autosave, restart/index recovery and explicit handling of unfinished actions before ending. Sequential Syncthing transfer passed between two isolated instances on one Mac in both directions. Under the [project validation policy](docs/agents/validation.md), standalone Syncthing tests and Android-specific tests are deferred until the user requests them and do not block merging. Unexecuted physical-device and divergent-edit/conflict checks remain unverified. See the validation notes for the exact scope and evidence.
+
+## AI suggestions (issue 6)
+
+Organize supports one OpenAI-compatible Chat Completions endpoint (`POST`, Bearer authorization, non-streaming `choices[0].message.content` containing JSON). Configure the full HTTPS endpoint, model and API key on each device. Mac also accepts HTTP at `127.0.0.1` for a controlled local service. Redirects are refused. Network failures and invalid responses require explicit retry; requests have finite timeouts. No real provider is bundled or called automatically.
+
+Select 1–20 notes from a directory page, preview the exact system and user messages, then start. Long notes are sent in complete, sequential 6,000-character fragments with offsets, progress and completed coverage. Cancel stops the active native request; completed suggestions remain saved, and explicit retry resumes incomplete fragments. Previewing again starts new coverage. Repeated equivalent suggestions from the same evidence are deduplicated. Source text is treated as untrusted input; no tools, file writes or confirmed-state changes are exposed to the service.
+
+Evidence-backed initiative, topic, relationship, progress and action suggestions are saved in `LocalNotesData/candidates/` with immutable revisions and a rebuildable private SQLite index. Quotes must occur in the fragment sent. Suggested placement and relevance are model claims, not confirmed facts. Open evidence to read the original note; confirmation and review decisions belong to a later issue. Existing notes and confirmed records are unchanged by generation.
+
+Credentials and service settings stay in app-private device storage (Mac Application Support with owner-only settings-file permissions; Android private preferences with backup disabled), outside synchronized JSON, notes and model messages. Saved credentials are never returned to the WebView; password entry is cleared after saving. These files are not an encrypted secret vault. Service response bodies and credentials are not logged. Manual features remain available without configuration or connectivity. See [issue 6 validation](docs/validation/issue-6.md) for executed checks and deferred checks.

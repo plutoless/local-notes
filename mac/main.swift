@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "organization.js", "organize-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -26,6 +26,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         source.setEventHandler { [weak self] in self?.web.evaluateJavaScript("window.dispatchEvent(new Event('reference-change'))", completionHandler: nil) }
         source.setCancelHandler { close(descriptor) }; watch = source; source.resume()
     }
+    lazy var ai = AIService(support)
     let worker = DispatchQueue(label: "dev.localnotes.storage", qos: .userInitiated)
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
@@ -89,6 +90,8 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     func run(_ req:[String:Any])throws->[String:Any] {
         let cmd=req["cmd"] as? String ?? "";let path=req["path"] as? String ?? ""
+        if cmd == "aiSettings" || cmd == "aiConfigure" { return try ai.configure(req) }
+        if cmd == "aiCancel" { ai.cancel(); return [:] }
         if cmd == "workspace" || cmd.hasPrefix("action") { return try ActionStorage(root: root, privateRoot: support).run(req) }
         if cmd != "choose" {
             guard req["workspaceId"] as? String == (try ActionStorage(root: root, privateRoot: support).workspace()) else { throw failure("Workspace changed; reopen the note") }
@@ -119,6 +122,13 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
         guard message.frameInfo.isMainFrame,let str=message.body as? String,let data=str.data(using:.utf8),let req=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let id=req["id"] as? Int else{return}
+        if req["cmd"] as? String == "aiAnalyze" {
+            ai.analyze(req) { result in
+                if let data = try? JSONSerialization.data(withJSONObject: result), let json = String(data: data, encoding: .utf8) {
+                    DispatchQueue.main.async { self.web.evaluateJavaScript("window.nativeReply(\(id),\(json))", completionHandler: nil) }
+                }
+            }; return
+        }
         let perform = {
             let result: [String: Any]
             do { result = try self.run(req) } catch { result = ["error": error.localizedDescription] }
