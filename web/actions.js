@@ -61,7 +61,11 @@ export class ActionRepository {
     const result = await this.request('actionFiles', {known: this.fileStamps || {}});
     const fileWarnings = result.warnings || [];
     const files = result.stamps ? Object.fromEntries(Object.keys(result.stamps).map(path => [path, result.files[path] ?? this.fileCache?.[path]]).filter(([,text]) => text !== undefined)) : result.files;
+    for (const warning of fileWarnings) if (warning.path.endsWith('/')) {
+      for (const [path, text] of Object.entries(this.fileCache || {})) if (path.startsWith(warning.path)) files[path] = text;
+    }
     this.fileCache = files; this.fileStamps = result.stamps;
+    for (const warning of fileWarnings) if (this.fileStamps) delete this.fileStamps[warning.path];
     this.parsedFiles ||= new Map();
     this.progress?.(`Rebuilding ${this.collection}: ${Object.keys(files).length} record files…`);
     const revisions = new Map(), currents = new Map(), warnings = fileWarnings.map(warning => `${warning.path}: ${warning.message}`);
@@ -93,7 +97,7 @@ export class ActionRepository {
     const records = [];
     for (const [id, history] of revisions) {
       const state = revisionState(history);
-      if ([...damaged].some(path => path.startsWith(`revisions/${id}/`) || path.startsWith(`${this.collection}/${id}`))) state.incomplete = true;
+      if ([...damaged].some(path => path.startsWith(`revisions/${id}/`) || path.startsWith(`${this.collection}/${id}`) || (path.endsWith('/') && (`${this.collection}/${id}.json`.startsWith(path) || `revisions/${id}/`.startsWith(path))))) state.incomplete = true;
       if (state.incomplete || state.cyclic || state.tips.length !== 1) {
         warnings.push(`${id}: ${state.incomplete ? 'Incomplete revision history' : 'Divergent or cyclic revisions retained; synchronization resolution is required'}`);
         this.conflicts.set(id, {...state, versions: [...history.values()]});

@@ -19,6 +19,8 @@ final class ActionStorage {
         try fm.createDirectory(at: url, withIntermediateDirectories: true)
     }
     func workspace() throws -> String {
+        var isDirectory: ObjCBool = false
+        guard fm.fileExists(atPath: root.path, isDirectory: &isDirectory), isDirectory.boolValue, fm.isReadableFile(atPath: root.path) else { throw failure("Workspace directory unavailable") }
         try directory(data)
         let file = data.appendingPathComponent("workspace.json")
         if !fm.fileExists(atPath: file.path) {
@@ -63,8 +65,8 @@ final class ActionStorage {
         var result = [String: String]()
         for name in ["actions", "initiatives", "topics", "revisions"] {
             let dir = data.appendingPathComponent(name)
-            try directory(dir)
-            guard let entries = fm.enumerator(atPath: dir.path) else { throw failure("Action directory unavailable") }
+            do { try directory(dir) } catch { readWarnings.append(["path": name + "/", "message": error.localizedDescription]); continue }
+            guard let entries = fm.enumerator(atPath: dir.path) else { readWarnings.append(["path": name + "/", "message": "Record directory unavailable"]); continue }
             for case let relative as String in entries {
                 let url = dir.appendingPathComponent(relative)
                 if (try? url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink) == true { entries.skipDescendants(); continue }

@@ -120,7 +120,7 @@ def instrument():
     generated = OUT / 'main.swift'
     generated.write_text(instrumented)
     run('swiftc', '-module-cache-path', str(REPO / 'build/swift-cache'), str(generated),
-        'mac/ActionStorage.swift', 'mac/ActionIndex.swift', '-lsqlite3', '-o',
+        'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-o',
         str(APP / 'Contents/MacOS/LocalNotes'), '-framework', 'Cocoa', '-framework', 'WebKit')
     run('codesign', '--force', '--deep', '--sign', '-', str(APP))
     # Native launcher and app use the same DispatchTime monotonic clock. Timestamp precedes Process.run().
