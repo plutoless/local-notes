@@ -40,6 +40,14 @@ final class ActionIndex {
         sqlite3_bind_text(statement, position, value, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
     }
     func index(_ db: OpaquePointer, _ record: [String: Any]) throws {
+        if record["deleted"] as? Bool == true {
+            var deletion: OpaquePointer?
+            guard sqlite3_prepare_v2(db, "DELETE FROM actions WHERE id=?", -1, &deletion, nil) == SQLITE_OK, let stmt = deletion else { throw failure("Cannot delete local index row") }
+            defer { sqlite3_finalize(stmt) }
+            bind(stmt, 1, record["entityId"] as? String ?? "")
+            guard sqlite3_step(stmt) == SQLITE_DONE else { throw failure("Cannot delete local index row") }
+            return
+        }
         var statement: OpaquePointer?
         guard sqlite3_prepare_v2(db, "INSERT OR REPLACE INTO actions (id,status,description,record,initiative,focus) VALUES (?,?,?,?,?,?)", -1, &statement, nil) == SQLITE_OK, let stmt = statement else { throw failure("Cannot prepare action index update") }
         defer { sqlite3_finalize(stmt) }
