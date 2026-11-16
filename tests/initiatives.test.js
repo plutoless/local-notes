@@ -13,8 +13,8 @@ test('initiative assignments, multiple links, explicit ending and index/restart 
     const original = await readFile(join(fixture.root, 'reference.md'), 'utf8');
     const source = {path: 'reference.md', quote: 'Run the sample command', fingerprint: fingerprint(original), role: 'reference'};
     let a = (await initiatives.save({title: 'First', goal: 'A goal', progress: 'User maintained', status: 'active', sources: [source]})).record;
-    a = (await initiatives.save({...a, title: 'Renamed first'}, a)).record;
-    assert.equal((await initiatives.query({search: 'Renamed'})).actions[0].entityId, a.entityId);
+    a = (await initiatives.save({...a, title: 'Updated initiative'}, a)).record;
+    assert.equal((await initiatives.query({search: 'Updated'})).actions[0].entityId, a.entityId);
     assert.equal((await initiatives.query({search: 'First'})).actions.length, 0);
     const b = (await initiatives.save({title: 'Second', goal: '', progress: '', status: 'later', sources: [{...source, role: 'working-note'}]})).record;
     let action = (await actions.save({description: 'Independent'})).record;
@@ -40,7 +40,10 @@ test('initiative assignments, multiple links, explicit ending and index/restart 
     const reopened = new InitiativeRepository(fixture.adapter); assert.deepEqual((await reopened.open()).warnings, []);
     assert.equal((await allRecords(reopened)).find(i => i.entityId === a.entityId).progress, 'User maintained');
     await rename(join(fixture.root, 'reference.md'), join(fixture.root, 'moved.md'));
+    fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('initiatives/'), 2);
+    await assert.rejects(moveReferences([actions, initiatives], 'reference.md', 'moved.md'), /recovery pending/);
     await moveReferences([actions, initiatives], 'reference.md', 'moved.md');
+    await initiatives.open();
     assert.ok((await allRecords(initiatives)).every(i => i.sources[0].path === 'moved.md'));
     assert.equal(await readFile(join(fixture.root, 'moved.md'), 'utf8'), original);
   } finally { await fixture.close(); }

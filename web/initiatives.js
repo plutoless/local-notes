@@ -57,7 +57,10 @@ export async function sourceState(source, read, list) {
 }
 // Moving in the app updates every confirmed reference, preserving action and initiative IDs.
 export async function moveReferences(repositories, from, to) {
-  for (const repository of repositories) for (const record of await allRecords(repository)) {
+  for (const repository of repositories) {
+    await repository.serialize(() => repository.recover());
+    for (const record of await allRecords(repository)) {
     if (record.sources.some(source => source.path === from)) await repository.save({...record, sources: record.sources.map(source => source.path === from ? {...source, path: to} : source)}, record);
+    }
   }
 }
