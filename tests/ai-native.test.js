@@ -7,11 +7,12 @@ import {mkdtemp,rm,readFile,stat} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {SYSTEM_PROMPT,batchesFor,validateResponse} from '../web/organization.js';
-test('Mac URLSession controlled service: scope, auth isolation, invalid response, failure, redirect, cancellation, recovery', async()=>{
+test('Mac URLSession controlled service: scope, auth isolation, invalid response, failure, redirect, cancellation, recovery', {timeout:60000}, async()=>{
  execFileSync('swiftc',['-module-cache-path','build/swift-cache','tests/AIHarness.swift','mac/AIService.swift','-o','build/ai-harness']);
  const dir=await mkdtemp(join(tmpdir(),'localnotes-ai-'));let mode='ok',seen=[],received;
  const server=createServer(async(req,res)=>{let data='';for await(const part of req)data+=part;seen.push({headers:req.headers,body:JSON.parse(data)});received?.();
   if(mode==='hold')return;
+  if(mode==='large'){res.end('x'.repeat(2100000));return;}
   if(mode==='rate'){res.writeHead(429);res.end('sensitive-provider-error');return;}
   if(mode==='redirect'){res.writeHead(302,{Location:'http://127.0.0.1:1/leak'});res.end();return;}
   if(mode==='invalid'){res.end('{}');return;}
@@ -29,9 +30,10 @@ test('Mac URLSession controlled service: scope, auth isolation, invalid response
   assert.equal((await stat(join(dir,'ai-service.json'))).mode & 0o777,0o600);
   const result=await call('aiAnalyze',args);assert.equal(validateResponse(result.text,batch).length,1);
   assert.equal(seen[0].headers.authorization,'Bearer test-private-token-123');assert.deepEqual(seen[0].body.messages,args.messages);assert.equal(JSON.stringify(seen[0].body).includes('test-private-token'),false);assert.equal(seen[0].body.tools,undefined);
-  for(const [state,pattern] of [['rate',/Rate limited/],['invalid',/Invalid response/],['redirect',/HTTP 302/]]){mode=state;assert.match((await call('aiAnalyze',args)).error,pattern);}
+  for(const [state,pattern] of [['rate',/Rate limited/],['invalid',/Invalid response/],['large',/Invalid response/],['redirect',/HTTP 302/]]){mode=state;assert.match((await call('aiAnalyze',args)).error,pattern);}
   mode='hold';const arrived=new Promise(r=>received=r);const active=call('aiAnalyze',args);await arrived;await call('aiCancel');assert.match((await active).error,/Canceled/);
   mode='ok';assert.ok((await call('aiAnalyze',args)).text);
+  mode='hold';assert.match((await call('aiAnalyze',args)).error,/Timeout/);mode='ok';
   const count=seen.length;assert.match((await call('aiAnalyze',{messages:[{role:'system',content:'test-private-token-123'},{role:'user',content:'data'}]})).error,/credential/);assert.equal(seen.length,count);
   server.closeAllConnections();await new Promise(r=>server.close(r));assert.match((await call('aiAnalyze',args)).error,/Offline/);
   assert.ok((await readFile(join(dir,'ai-service.json'),'utf8')).includes('test-private-token-123'));

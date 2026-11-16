@@ -28,7 +28,7 @@ export class FocusScreen {
     list.append(this.button('Full action list', () => this.navigate('actions')),
       this.button('New action', async () => { await this.navigate('actions'); await this.actions.edit(null); }),
       this.button('New initiative', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
-      this.button('Organize — AI not connected', () => this.notice('AI organization is not connected yet. Create actions and initiatives manually, including offline.')),
+      this.button('Organize selected notes', () => this.navigate('organize')),
       this.button('Refresh confirmed data', async () => {
         const actionResult = await repository.serialize(() => repository.recover());
         const initiativeResult = await this.initiatives.repository.serialize(() => this.initiatives.repository.recover());

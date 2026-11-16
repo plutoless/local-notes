@@ -4,16 +4,17 @@ import {join} from 'node:path';
 import {spawn, execFileSync} from 'node:child_process';
 import {createInterface} from 'node:readline';
 let compiled = false;
+const harnessPath = `build/storage-harness-${process.pid}`;
 export async function storageFixture() {
   if (!compiled) {
     await mkdir('build', {recursive: true});
-    execFileSync('swiftc', ['-module-cache-path', 'build/swift-cache', 'tests/StorageHarness.swift', 'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-o', 'build/storage-harness']); compiled = true;
+    execFileSync('swiftc', ['-module-cache-path', 'build/swift-cache', 'tests/StorageHarness.swift', 'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-o', harnessPath]); compiled = true;
   }
   const directory = await mkdtemp(join(tmpdir(), 'localnotes-actions-'));
   const root = join(directory, 'Sync'), privateRoot = join(directory, 'Private');
   await mkdir(root); await mkdir(privateRoot);
   await writeFile(join(root, 'reference.md'), await readFile('tests/fixtures/reference.md'));
-  const child = spawn('build/storage-harness', [root, privateRoot]);
+  const child = spawn(harnessPath, [root, privateRoot]);
   const pending = []; const calls = []; const failures = [];
   createInterface({input: child.stdout}).on('line', line => {
     const {resolve, reject} = pending.shift();

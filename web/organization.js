@@ -72,8 +72,10 @@ export class Organization {
             if (page.actions.some(r => r.candidateType === candidate.candidateType && r.description === candidate.description && r.placement === candidate.placement && r.sources.length === candidate.sources.length && r.sources.every((source, index) => ['path', 'quote', 'fingerprint', 'fragmentId', 'start', 'end'].every(key => source[key] === candidate.sources[index][key])))) { duplicate = true; break; }
             if (!page.hasMore) break;
           }
+          if (generation !== this.generation || workspaceId !== this.repository.workspaceId) throw Error('Canceled');
           if (!duplicate) await this.repository.save({...candidate, status: 'suggested'});
         }
+        if (generation !== this.generation || workspaceId !== this.repository.workspaceId) throw Error('Canceled');
         this.covered++;
       }
       progress(`Complete: ${this.covered}/${this.batches.length} fragments. Suggestions only; current relevance remains uncertain.`);

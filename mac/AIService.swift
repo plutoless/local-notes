@@ -28,15 +28,16 @@ final class AIService: NSObject, URLSessionTaskDelegate {
         guard let address = value["address"], let url = URL(string: address), let model = value["model"], let token = value["token"], !token.isEmpty else { completion(["error": "Missing configuration"]); return }
         guard let messages = req["messages"] as? [[String: String]], messages.count == 2,
               !messages.contains(where: { ($0["content"] ?? "").contains(token) }),
-              let body = try? JSONSerialization.data(withJSONObject: ["model": model, "messages": messages, "stream": false]), body.count < 100000 else { completion(["error": "Invalid or credential-containing input"]); return }
+              let body = try? JSONSerialization.data(withJSONObject: ["model": model, "messages": messages, "stream": false]), body.count < 100000, !(String(data: body, encoding: .utf8) ?? "").contains(token) else { completion(["error": "Invalid or credential-containing input"]); return }
         var request = URLRequest(url: url); request.httpMethod = "POST"; request.timeoutInterval = 45
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization"); request.setValue("application/json", forHTTPHeaderField: "Content-Type"); request.httpBody = body
         let config = URLSessionConfiguration.ephemeral; config.timeoutIntervalForResource = 45; config.urlCache = nil
-        let session = URLSession(configuration: config, delegate: self, delegateQueue: nil)
+        let receiver = AIResponseReceiver()
+        let session = URLSession(configuration: config, delegate: receiver, delegateQueue: nil)
         lock.lock()
         if task != nil { lock.unlock(); session.invalidateAndCancel(); completion(["error": "Analysis already running"]); return }
         let requestId = UUID(); activeId = requestId
-        let active = session.dataTask(with: request) { data, response, error in
+        receiver.completion = { data, response, error in
             defer { session.finishTasksAndInvalidate() }
             self.lock.lock(); if self.activeId == requestId { self.task = nil }; self.lock.unlock()
             if let error = error as? URLError { completion(["error": error.code == .cancelled ? "Canceled" : error.code == .timedOut ? "Timeout; retry explicitly" : "Offline or connection failed; retry explicitly"]); return }
@@ -45,7 +46,24 @@ final class AIService: NSObject, URLSessionTaskDelegate {
             guard let data = data, data.count <= 2000000, let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let choices = object["choices"] as? [[String: Any]], let message = choices.first?["message"] as? [String: Any], message["tool_calls"] == nil, let text = message["content"] as? String, !text.contains(token) else { completion(["error": "Invalid response"]); return }
             completion(["text": text])
         }
+        let active = session.dataTask(with: request)
         task = active; lock.unlock(); active.resume()
+    }
+    func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
+}
+
+// Bound response allocation while receiving bytes, before parsing provider output.
+final class AIResponseReceiver: NSObject, URLSessionDataDelegate {
+    var bytes = Data()
+    var tooLarge = false
+    var completion: ((Data?, URLResponse?, Error?) -> Void)?
+    func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+        if bytes.count + data.count > 2000000 { tooLarge = true; dataTask.cancel() }
+        else { bytes.append(data) }
+    }
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        completion?(tooLarge ? nil : bytes, task.response, tooLarge ? nil : error)
+        completion = nil
     }
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) { completionHandler(nil) }
 }
