@@ -1,3 +1,4 @@
+import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
 import {titleOf,toggleTask,withTitle,safePath,escapeHTML as esc,renderMarkdown} from './core.js';
 import {native} from './bridge.js';
@@ -21,6 +22,7 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 });
 actions.initiatives = initiatives;
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
+new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics], notice, refresh);
 async function navigate(next) {
   if (!await flush(true)) return false;
   view = next; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
