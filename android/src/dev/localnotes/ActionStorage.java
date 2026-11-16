@@ -105,17 +105,17 @@ final class ActionStorage {
         switch (cmd) {
             case "actionFiles":
                 JSONObject files = new JSONObject();
-                for (String name : new String[]{"actions", "revisions"}) {
+                for (String name : new String[]{"actions", "initiatives", "revisions"}) {
                     if (tree == null) listLocal(new File(root, name), name + "/", files);
                     else { try { listTree(resolve(name, false), name + "/", files, 0); } catch (FileNotFoundException missing) { /* An empty collection is valid. */ } }
                 }
                 return new JSONObject().put("files", files);
             case "actionWrite":
                 String path = request.getString("path");
-                if (!path.matches("(actions/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");
+                if (!path.matches("((?:actions|initiatives)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json")) throw new IOException("Invalid action record path");
                 write(path, request.getString("text"), path.startsWith("revisions/")); return new JSONObject();
             case "actionIndex": case "actionQuery":
-                return new ActionIndex(activity.getFilesDir(), workspaceId).run(request);
+                return new ActionIndex(activity.getFilesDir(), workspaceId, request.optString("entityType", "action")).run(request);
             default: throw new IOException("Unknown action storage command");
         }
     }

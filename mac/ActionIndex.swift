@@ -5,13 +5,14 @@ import SQLite3
 final class ActionIndex {
     let privateRoot: URL
     let id: String
+    let entityType: String
     let fm = FileManager.default
-    init(privateRoot: URL, workspaceId: String) { self.privateRoot = privateRoot; self.id = workspaceId }
+    init(privateRoot: URL, workspaceId: String, entityType: String = "action") { self.privateRoot = privateRoot; self.id = workspaceId; self.entityType = entityType == "initiative" ? "initiative" : "action" }
     func database() throws -> OpaquePointer {
         let dir = privateRoot.appendingPathComponent("Workspaces/\(id)")
         try fm.createDirectory(at: dir, withIntermediateDirectories: true)
         var db: OpaquePointer?
-        guard sqlite3_open(dir.appendingPathComponent("actions.sqlite").path, &db) == SQLITE_OK, let opened = db else { if let db = db { sqlite3_close(db) }; throw failure("Cannot open local action index") }
+        guard sqlite3_open(dir.appendingPathComponent("\(entityType)s.sqlite").path, &db) == SQLITE_OK, let opened = db else { if let db = db { sqlite3_close(db) }; throw failure("Cannot open local action index") }
         do {
             try execute(opened, "CREATE TABLE IF NOT EXISTS actions (id TEXT PRIMARY KEY, status TEXT NOT NULL, description TEXT NOT NULL, record TEXT NOT NULL)")
             return opened
@@ -35,7 +36,7 @@ final class ActionIndex {
     }
     func run(_ req: [String: Any]) throws -> [String: Any] {
         let cmd = req["cmd"] as? String ?? ""
-        let indexURL = privateRoot.appendingPathComponent("Workspaces/\(id)/actions.sqlite")
+        let indexURL = privateRoot.appendingPathComponent("Workspaces/\(id)/\(entityType)s.sqlite")
         if cmd == "actionIndex", req["records"] != nil {
             if fm.fileExists(atPath: indexURL.path) { try fm.removeItem(at: indexURL) }
         } else if !fm.fileExists(atPath: indexURL.path) { throw failure("INDEX_REBUILD_REQUIRED: Local action index is missing") }
