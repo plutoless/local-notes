@@ -105,7 +105,7 @@ try {
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
   assert.equal(await readFile(sourcePath, 'utf8'), '# Synthetic reference material\n\nExternal edit');
-  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden);
+  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
   await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('');
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
