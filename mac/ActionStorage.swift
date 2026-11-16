@@ -32,7 +32,7 @@ final class ActionStorage {
         return id
     }
     func file(_ path: String) throws -> URL {
-        let pattern = "^((?:actions|initiatives)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
+        let pattern = "^((?:actions|initiatives|topics)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
         guard path.range(of: pattern, options: .regularExpression) != nil else { throw failure("Invalid action record path") }
         let url = data.appendingPathComponent(path)
         try directory(url.deletingLastPathComponent())
@@ -57,7 +57,7 @@ final class ActionStorage {
     }
     func files() throws -> [String: String] {
         var result = [String: String]()
-        for name in ["actions", "initiatives", "revisions"] {
+        for name in ["actions", "initiatives", "topics", "revisions"] {
             let dir = data.appendingPathComponent(name)
             try directory(dir)
             guard let entries = fm.enumerator(atPath: dir.path) else { throw failure("Action directory unavailable") }

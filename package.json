@@ -8,6 +8,6 @@
     "build:mac": "bash scripts/build-mac.sh",
     "build:android": "bash scripts/build-android.sh",
     "test:ui": "node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs",
-    "check": "node --check web/app.js && node --check web/actions.js && node --check web/action-screen.js && node --check web/bridge.js && node --check web/core.js && node --check web/initiatives.js && node --check web/initiative-screen.js && node --check web/focus-screen.js"
+    "check": "node --check web/library.js && node --check web/library-screen.js && node --check web/app.js && node --check web/actions.js && node --check web/action-screen.js && node --check web/bridge.js && node --check web/core.js && node --check web/initiatives.js && node --check web/initiative-screen.js && node --check web/focus-screen.js"
   }
 }

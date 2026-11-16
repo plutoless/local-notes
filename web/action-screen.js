@@ -64,6 +64,7 @@ export class ActionScreen {
     return workspace;
   }
   async show() {
+    $('#library-tools').hidden = true;
     this.active = true;
     if (!this.repository.ready && !await this.openWorkspace()) return;
     if (!this.active) return;

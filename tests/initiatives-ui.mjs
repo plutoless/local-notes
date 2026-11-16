@@ -1,4 +1,4 @@
-import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -16,7 +16,7 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
-      if (request.cmd === 'workspace' || request.cmd.startsWith('action')) {
+      if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
       }
@@ -24,9 +24,10 @@ try {
       if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
       const path = join(activeFixture.root, request.path || '');
       switch (request.cmd) {
+        case 'metadata':
         case 'list': {
           const notes = [];
-          for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, text: await readFile(join(activeFixture.root, name), 'utf8'), modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
+          for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, size: (await stat(join(activeFixture.root, name))).size, modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
           return {notes, root: activeFixture.root};
         }
         case 'read': return {text: await readFile(path, 'utf8')};
@@ -39,7 +40,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -105,9 +106,45 @@ try {
   await page.locator('[data-view="initiatives"]').click();
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
+  await page.locator('[data-view="notes"]').click();
+  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
+  await page.locator('#library-create-topic').click();
+  await page.locator('#topic-name').fill('Research topic');
+  await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#library-topic option', {hasText: 'Research topic'}).waitFor({state: 'attached'});
+  await page.locator('#library-topic').selectOption({label: 'Research topic'});
+  await page.locator('#library-rename-topic').click();
+  await page.locator('#topic-name').fill('Renamed topic');
+  await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#library-topic option', {hasText: 'Renamed topic'}).waitFor({state: 'attached'});
+  await page.locator('#library-topic').selectOption('');
+  await page.getByRole('heading', {name: 'Working log', exact: true}).click();
+  await page.locator('#note-topics input').check();
+  await page.waitForFunction(() => document.querySelector('#note-topics input')?.checked && !document.querySelector('#note-topics input')?.disabled);
+  await page.locator('#star').click();
+  await page.locator('[data-view="favorites"]').click();
+  await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 1);
+  await page.locator('[data-view="notes"]').click();
+  await page.locator('#search').fill('Manual research update');
+  await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 1);
+  await page.locator('#search').fill('');
+  await page.getByRole('button', {name: 'Browse directories', exact: true}).click();
+  await page.getByRole('button', {name: '📁 Notes', exact: true}).click();
+  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
+  await page.locator('#library-back').click();
+  await page.waitForFunction(() => document.querySelector('#library-location').textContent === '/');
+  // Explicit initiative lookup must recover an external move before visiting the library.
+  await rename(sourcePath, join(fixture.root, 'moved-reference.md'));
+  await rm(join(fixture.privateRoot, 'Workspaces', workspaceId, 'references.sqlite'));
+  await page.reload();
+  await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor();
+  await page.locator('[data-view="initiatives"]').click();
+  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('.source-state').filter({hasText: 'Moved to moved-reference.md'}).waitFor();
+  assert.equal(await readFile(join(fixture.root, 'moved-reference.md'), 'utf8'), original);
   await page.setViewportSize({width: 393, height: 852});
   await page.screenshot({path: 'build/initiatives-mobile.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   assert.deepEqual(errors, []);
-  console.log('PASS: initiatives create/edit/restart, source links, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).');
+  console.log('PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).');
 } finally { await browser.close(); await fixture.close(); }
