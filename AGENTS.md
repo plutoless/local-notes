@@ -1,6 +1,15 @@
 ## Writing language
 
-Write all repository documentation and GitHub issue titles, bodies, and comments in English.
+Communication with the user may use any language.
+
+Use English by default for all written project material, including:
+
+- Repository documentation, READMEs, requirements, specifications, and plans.
+- Code comments and docstrings.
+- GitHub issue titles, bodies, and comments.
+
+Apply this rule to all new or edited project material, regardless of the language
+used in the conversation. Do not require the user to request English each time.
 
 ## Agent skills
 

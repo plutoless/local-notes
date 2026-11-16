@@ -3,6 +3,8 @@
 Track requirements, problems, and implementation tasks in GitHub Issues.
 The target repository is plutoless/local-notes. Use the gh CLI.
 Write issue titles, bodies, and comments in English.
+This is the project default regardless of the language used in the conversation;
+see the writing language policy in AGENTS.md.
 
 ## Conventions
 
