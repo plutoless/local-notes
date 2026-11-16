@@ -18,6 +18,8 @@ Confirmed action JSON and full immutable revisions live in `LocalNotesData/` und
 
 Scanning skips hidden directories and Credentials and lists only Markdown files up to 2 MB. Attachments are not displayed. Reminders, tags, and rich text are not supported yet. Due dates belong to confirmed actions. Reading mode supports basic headings, bold text, code, and tasks; it is not a complete Markdown renderer. The directory option currently sorts paths rather than displaying a directory tree.
 
+Initiatives organize an undertaking's title, goal, current progress and Active, Later or Ended state. Link existing Markdown as working notes or references without moving or copying it, create a linked note inside an initiative, and assign the same confirmed actions from either entry point. Ending requires an explicit choice for each unfinished action. Changed and missing sources remain visible; ambiguous external moves require manual relinking. Failed link updates after an in-app move expose a retry in the note editor.
+
 ## File protection and limitations
 
 Before saving, the app compares the current file contents with the loaded version. If an external change is detected, it stops overwriting and allows the edit to be saved as a separate copy. Before each modification, the previous contents are saved in the app-private History directory, retaining the latest 200 snapshots. Android uses the Storage Access Framework (SAF) with persisted directory authorization and does not request full-disk access or network permission.
@@ -39,7 +41,10 @@ Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_
 
 ## Recorded validation
 
-See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and outstanding native interaction gates. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
+See [Issue #2 implementation and validation](docs/validation/issue-2.md) for initiative tests, recovery behavior and the current validation decision.
+
+
+See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and recorded validation limits. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
 
 The browser interaction suite requires Playwright and a Chromium installation:
 
@@ -48,4 +53,4 @@ npm install --no-save --package-lock=false playwright
 CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui
 ```
 
-The Mac and Android builds pass. The automated shared-UI and native Mac storage integration checks pass. Native Mac create/edit/restart interaction is unverified because computer-use Accessibility access was denied. No Android device was attached; SAF offline writes, restart recovery, and physical-device keyboard behavior remain unverified. Two-device Syncthing synchronization has not been tested. Keep real notes separate until those checks are recorded.
+The Mac and Android builds pass. Automated shared-UI and Mac storage integration checks pass, and the issue #2 follow-up verified native Mac creation, editing, linked-note autosave, restart/index recovery and explicit handling of unfinished actions before ending. Sequential Syncthing transfer passed between two isolated instances on one Mac in both directions. Under the [project validation policy](docs/agents/validation.md), standalone Syncthing tests and Android-specific tests are deferred until the user requests them and do not block merging. Unexecuted physical-device and divergent-edit/conflict checks remain unverified. See the validation notes for the exact scope and evidence.
