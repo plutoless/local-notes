@@ -53,7 +53,9 @@ JS = r'''
   const emit = event => { if (sent.has(event)) return; sent.add(event);
     requestAnimationFrame(() => requestAnimationFrame(() => window.webkit.messageHandlers.startupBenchmark.postMessage(event)));
   };
+  window.addEventListener('error', event => window.webkit.messageHandlers.startupBenchmark.postMessage('error:' + event.message));
   let readyAt = null;
+  window.__startupDiagnostics = () => ({sent: [...sent], readyAt, now: performance.now(), index: document.querySelector('#index-state')?.textContent});
   const timer = setInterval(() => {
     const sections = document.querySelectorAll('#items section');
     const organize = [...document.querySelectorAll('#items > button')].find(b => b.textContent.startsWith('Organize'));
@@ -87,11 +89,9 @@ final class StartupProbe: NSObject, WKScriptMessageHandler {
         lock.lock(); milestones[event] = elapsed
         let result: [String: Any] = ["milliseconds": milestones, "counts": counts]
         lock.unlock()
-        if event == "finished" {
-            do { try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]).write(to: URL(fileURLWithPath: output)) }
+        do { try JSONSerialization.data(withJSONObject: result, options: [.prettyPrinted, .sortedKeys]).write(to: URL(fileURLWithPath: output)) }
             catch { fputs("Benchmark output failed: \(error)\n", stderr); exit(2) }
-            exit(0)
-        }
+        if event == "finished" { exit(0) }
     }
 }
 let startupProbe = StartupProbe()
@@ -117,10 +117,12 @@ def instrument():
     anchor = 'case "read":return ["text":try String(contentsOf:resolved(path),encoding:.utf8)]'
     assert source.count(anchor) == 1
     instrumented = instrumented.replace(anchor, 'case "read":let text=try String(contentsOf:resolved(path),encoding:.utf8);startupProbe.count("markdownBodiesRead");return ["text":text]')
+    instrumented = instrumented.replace('guard allowed.contains(name), let data', r'if !allowed.contains(name) { fputs("Denied native asset: \(name)\n", stderr) }; guard allowed.contains(name), let data')
+    instrumented = instrumented.replace('web.load(URLRequest(url:URL(string:"notes://local/index.html")!))', 'web.load(URLRequest(url:URL(string:"notes://local/index.html")!)); DispatchQueue.main.asyncAfter(deadline: .now() + 10) { self.web.evaluateJavaScript("JSON.stringify(window.__startupDiagnostics?.())") { value, error in fputs("Startup diagnostic: " + String(describing: value) + " error: " + String(describing: error) + "\\n", stderr) } }')
     generated = OUT / 'main.swift'
     generated.write_text(instrumented)
     run('swiftc', '-module-cache-path', str(REPO / 'build/swift-cache'), str(generated),
-        'mac/ActionStorage.swift', 'mac/ActionIndex.swift', '-lsqlite3', '-o',
+        'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-o',
         str(APP / 'Contents/MacOS/LocalNotes'), '-framework', 'Cocoa', '-framework', 'WebKit')
     run('codesign', '--force', '--deep', '--sign', '-', str(APP))
     # Native launcher and app use the same DispatchTime monotonic clock. Timestamp precedes Process.run().
@@ -134,6 +136,7 @@ let epoch = DispatchTime.now().uptimeNanoseconds
  environment["NATIVE_STARTUP_EPOCH"] = String(epoch)
 process.environment = environment
 try process.run()
+try String(process.processIdentifier).write(toFile: environment["NATIVE_STARTUP_OUTPUT"]! + ".pid", atomically: true, encoding: .utf8)
 process.waitUntilExit()
 exit(process.terminationStatus)
 ''')
@@ -155,8 +158,17 @@ def main():
                 if process.wait(timeout=60) != 0:
                     raise RuntimeError(f'Native app failed; inspect {log.name}')
             except subprocess.TimeoutExpired:
-                # The launcher and app have their own group; never terminate another checkout's app.
-                os.killpg(process.pid, signal.SIGTERM)
+                # Foundation Process creates a separate child group; launcher-group signals alone leak the app.
+                child_pid = int(Path(str(output) + '.pid').read_text())
+                try:
+                    os.kill(child_pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                # Only terminate this invocation's launcher, never another checkout's app.
+                try:
+                    os.killpg(process.pid, signal.SIGTERM)
+                except ProcessLookupError:
+                    pass
                 try:
                     process.wait(timeout=5)
                 except subprocess.TimeoutExpired:
