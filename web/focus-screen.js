@@ -12,6 +12,7 @@ export class FocusScreen {
     return button;
   }
   async show() {
+    $('#library-tools').hidden = true;
     const request = this.request = (this.request || 0) + 1;
     const repository = this.actions.repository;
     $('#view-title').textContent = 'Current Focus'; $('#search').hidden = true;

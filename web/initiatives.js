@@ -50,7 +50,7 @@ export async function sourceState(source, read, list) {
     if (fingerprint(text) === source.fingerprint) return {state: 'available', path: source.path};
     return {state: 'changed', path: source.path};
   } catch {
-    const matches = (await list()).filter(note => fingerprint(note.text) === source.fingerprint && note.text.includes(source.quote));
+    const matches = (await list()).filter(note => (note.fingerprint || (note.text && fingerprint(note.text))) === source.fingerprint && (!note.text || note.text.includes(source.quote)));
     if (matches.length === 1) return {state: 'moved', path: matches[0].path};
     return {state: matches.length ? 'ambiguous' : 'unavailable', path: null};
   }
