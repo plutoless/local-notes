@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {join} from 'node:path';
+import {moveReferences} from '../web/initiatives.js';
 import {batchesFor, validateResponse, CandidateRepository, Organization} from '../web/organization.js';
 import {storageFixture} from './action-adapter.js';
 const response = batch => JSON.stringify({candidates: [{type: 'action', content: 'Check the proposal', placement: 'Independent suggestion', reasoning: 'An explicit step is described', relevance: 'Historical; current relevance unknown', sources: [{fragmentId: batch.fragmentId, quote: batch.text.slice(0, 20)}]}]});
@@ -36,10 +37,20 @@ test('explicit selected scope, persisted candidates, restart/index recovery, par
   const rows=(await repository.query()).actions;assert.equal(rows.length,2);assert.ok(rows.every(r=>r.status==='suggested'));
   assert.equal((await f.adapter('actionQuery',{workspaceId,entityType:'action'}).catch(()=>({actions:[]}))).actions.length,0);
   await f.removeIndex();const reopened=new CandidateRepository(f.adapter);await reopened.open();assert.deepEqual((await reopened.query()).actions.map(r=>r.entityId),rows.map(r=>r.entityId));
+  await moveReferences([repository], 'selected.md', 'moved.md');
+  assert.ok((await repository.query()).actions.every(r=>r.sources[0].path==='moved.md'));
+  await moveReferences([repository], 'moved.md', 'selected.md');
   const files=await f.adapter('actionFiles',{workspaceId});assert.ok(Object.keys(files.files).some(p=>p.startsWith('candidates/')));
   org.covered=0;await org.run();assert.equal((await repository.query()).actions.length,2);
   await org.preview(['selected.md']);hold=true;const pending=org.run();while(!release)await new Promise(r=>setTimeout(r,1));await org.cancel();await assert.rejects(pending,/Canceled/);assert.equal(org.covered,0);
   await assert.rejects(org.preview([]),/Select/);await assert.rejects(org.preview(['../outside.md']),/Invalid/);
   const current=JSON.parse(await readFile(join(f.root,'LocalNotesData/candidates',rows[0].entityId+'.json'),'utf8'));assert.equal(current.entityType,'candidate');
  }finally{await f.close();}
+});
+
+test('cancel during asynchronous dedup query prevents persistence and coverage changes', async()=>{
+ const batch=batchesFor([{path:'one.md',text:'Selected evidence'}])[0];let release,started;const ready=new Promise(r=>started=r);let saves=0;
+ const repository={workspaceId:'workspace',query:async()=>{started();await new Promise(r=>release=r);return {actions:[],hasMore:false};},save:async()=>{saves++;}};
+ const org=new Organization(async cmd=>cmd==='aiAnalyze'?{text:response(batch)}:{},repository);org.batches=[batch];
+ const run=org.run();await ready;await org.cancel();release();await assert.rejects(run,/Canceled/);assert.equal(saves,0);assert.equal(org.covered,0);
 });

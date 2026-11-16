@@ -128,7 +128,8 @@ async function repairMovedLinks() {
   if (!intent) return;
   await prepareInitiatives();
   await libraryScreen.library.open();
-  await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics], intent.from, intent.to);
+  if (!organize.repository.ready || organize.repository.workspaceId !== rootKey) await organize.repository.open();
+  await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], intent.from, intent.to);
   localStorage.removeItem('pending-note-move:'+rootKey); $('#repair-links').hidden = true;
 }
 $('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('Moved links updated.'); } } catch (error) { notice('Link updates pending: '+error.message); } };
