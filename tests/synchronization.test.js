@@ -80,3 +80,42 @@ test('an incoming current-file import failure does not block unrelated records',
     await repo.recover(); assert.equal((await repo.query()).actions.length, 2);
   } finally { await fixture.close(); }
 });
+
+test('a transient incoming read failure retries even when file metadata is unchanged', async () => {
+  const fixture = await storageFixture();
+  try {
+    let unreadable = null;
+    const adapter = async (cmd, args) => {
+      const result = await fixture.adapter(cmd, args);
+      if (cmd === 'actionFiles' && unreadable) {
+        delete result.files[unreadable];
+        result.warnings.push({path: unreadable, message: 'Temporarily inaccessible'});
+        unreadable = null;
+      }
+      return result;
+    };
+    const repo = new ActionRepository(adapter); await repo.open();
+    const base = (await repo.save({description: 'Before delivery'})).record;
+    await repo.recover();
+    const incoming = {...base, revision: randomUUID(), parents: [base.revision], description: 'Delivered'};
+    unreadable = `actions/${base.entityId}.json`;
+    await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: unreadable, text: JSON.stringify(incoming)});
+    assert.ok((await repo.recover()).warnings.length);
+    assert.equal((await repo.recover()).warnings.length, 0);
+    assert.equal((await repo.query()).actions[0].description, 'Delivered');
+    assert.ok((await repo.history(base.entityId)).some(record => record.revision === incoming.revision));
+  } finally { await fixture.close(); }
+});
+
+test('an unavailable topic collection does not prevent action commits', async () => {
+  const fixture = await storageFixture();
+  try {
+    const repo = new ActionRepository(fixture.adapter); await repo.open();
+    const first = (await repo.save({description: 'Unrelated action'})).record;
+    const {rm} = await import('node:fs/promises');
+    await rm(join(fixture.root, 'LocalNotesData/topics'), {recursive: true});
+    await writeFile(join(fixture.root, 'LocalNotesData/topics'), 'Unavailable directory fixture');
+    const result = await repo.save({...first, description: 'Still editable'}, first);
+    assert.equal(result.record.description, 'Still editable');
+  } finally { await fixture.close(); }
+});

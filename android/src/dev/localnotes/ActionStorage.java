@@ -120,8 +120,9 @@ final class ActionStorage {
                 JSONObject files = new JSONObject(); readWarnings = new JSONArray();
                 known = request.optJSONObject("known"); if (known == null) known = new JSONObject(); stamps = new JSONObject();
                 for (String name : new String[]{"actions", "initiatives", "topics", "revisions"}) {
-                    if (tree == null) listLocal(new File(root, name), name + "/", files);
+                    try { if (tree == null) listLocal(new File(root, name), name + "/", files);
                     else { try { listTree(resolve(name, false), name + "/", files, 0); } catch (FileNotFoundException missing) { /* An empty collection is valid. */ } }
+                    } catch (Exception error) { readWarnings.put(new JSONObject().put("path", name + "/").put("message", error.getMessage())); }
                 }
                 return new JSONObject().put("files", files).put("warnings", readWarnings).put("stamps", stamps);
             case "actionWrite":
