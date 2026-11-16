@@ -11,7 +11,7 @@ final class ActionIndex {
     private final File privateRoot;
     private final String workspaceId;
     private final String entityType;
-    ActionIndex(File privateRoot, String workspaceId, String entityType) { this.privateRoot = privateRoot; this.workspaceId = workspaceId; this.entityType = (entityType.equals("initiative") || entityType.equals("topic")) ? entityType : "action"; }
+    ActionIndex(File privateRoot, String workspaceId, String entityType) { this.privateRoot = privateRoot; this.workspaceId = workspaceId; this.entityType = (entityType.equals("initiative") || entityType.equals("topic") || entityType.equals("candidate")) ? entityType : "action"; }
     private void index(SQLiteDatabase db, JSONObject record) throws Exception {
         if (record.optBoolean("deleted")) { db.delete("actions", "id=?", new String[]{record.getString("entityId")}); return; }
         ContentValues values = new ContentValues();

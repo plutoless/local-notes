@@ -1,3 +1,4 @@
+import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
 import {titleOf,toggleTask,withTitle,safePath,escapeHTML as esc,renderMarkdown} from './core.js';
@@ -21,10 +22,16 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   return libraryScreen.library.inventory();
 });
 actions.initiatives = initiatives;
+const organize = new OrganizeScreen(async path => { if (await navigate('notes')) await openNote(path); });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
-new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics], notice, refresh);
+new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
+  if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
+  else await refresh();
+});
 async function navigate(next) {
   if (!await flush(true)) return false;
+  if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
+  $('#organize-tools').hidden = next !== 'organize';
   view = next; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active;
   document.querySelector('nav .active')?.classList.remove('active'); document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
@@ -49,6 +56,7 @@ function note(cmd,args={}){return native(cmd,{workspaceId:rootKey,...args});}
 function content(){return withTitle($('#body').value,$('#title').value||'无标题');}
 function state(msg){$('#save-state').textContent=msg;}
 async function refresh(){const generation=workspaceGeneration;
+if(view==='organize'){await organize.show(libraryScreen.library);return;}
 if(view==='focus'){
   if(!actions.repository.ready) await actions.openWorkspace(true);
   if(generation!==workspaceGeneration)return;
@@ -89,7 +97,7 @@ async function createNote(initiativeId = null) {
   } catch (error) { notice(error.message); }
 }
 $('#new').onclick = () => createNote();
-$('#choose').onclick=async()=>{try{if(!await flush())return;const r=await native('choose');if(r.cancelled)return;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='Opening workspace…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='Opening workspace…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));$('#star').textContent=stars.has(current)?'★':'☆';render();};
 $('#back').onclick=async()=>{if(await flush())$('.app').classList.remove('editing');};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').disabled=readMode;$('#mode').textContent=readMode?'编辑':'阅读';updateReading();};
@@ -125,7 +133,8 @@ async function repairMovedLinks() {
   if (!intent) return;
   await prepareInitiatives();
   await libraryScreen.library.open();
-  await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics], intent.from, intent.to);
+  if (!organize.repository.ready || organize.repository.workspaceId !== rootKey) await organize.repository.open();
+  await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], intent.from, intent.to);
   localStorage.removeItem('pending-note-move:'+rootKey); $('#repair-links').hidden = true;
 }
 $('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('Moved links updated.'); } } catch (error) { notice('Link updates pending: '+error.message); } };

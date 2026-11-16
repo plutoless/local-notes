@@ -18,7 +18,7 @@ export function conflictView(history, state) {
   // Show a deterministic review placeholder; never expose a completed/ended branch as resolved.
   const record = structuredClone([...history.values()].sort((a, b) => a.revision.localeCompare(b.revision))[0]);
   record.syncState = state.incomplete ? 'incomplete' : 'conflict';
-  record.status = record.entityType === 'initiative' ? 'active' : 'todo';
+  record.status = record.entityType === 'initiative' ? 'active' : record.entityType === 'candidate' ? 'suggested' : 'todo';
   record.deleted = false;
   record.description = `[${record.syncState === 'incomplete' ? 'Sync incomplete' : 'Conflict'}] ${record.description}`;
   if (record.entityType === 'initiative') record.title = record.description;

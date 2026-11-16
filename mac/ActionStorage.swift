@@ -34,7 +34,7 @@ final class ActionStorage {
         return id
     }
     func file(_ path: String) throws -> URL {
-        let pattern = "^((?:actions|initiatives|topics)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
+        let pattern = "^((?:actions|initiatives|topics|candidates)/[a-fA-F0-9-]{36}|revisions/[a-fA-F0-9-]{36}/[a-fA-F0-9-]{36})\\.json$"
         guard path.range(of: pattern, options: .regularExpression) != nil else { throw failure("Invalid action record path") }
         let url = data.appendingPathComponent(path)
         try directory(url.deletingLastPathComponent())
@@ -63,7 +63,7 @@ final class ActionStorage {
         stamps = [:]
         readWarnings = []
         var result = [String: String]()
-        for name in ["actions", "initiatives", "topics", "revisions"] {
+        for name in ["actions", "initiatives", "topics", "candidates", "revisions"] {
             let dir = data.appendingPathComponent(name)
             do { try directory(dir) } catch { readWarnings.append(["path": name + "/", "message": error.localizedDescription]); continue }
             guard let entries = fm.enumerator(atPath: dir.path) else { readWarnings.append(["path": name + "/", "message": "Record directory unavailable"]); continue }

@@ -29,7 +29,7 @@ export function isOverdue(action, today = new Date().toLocaleDateString('en-CA')
 // The adapter is the file/index boundary. All commits on this device are serialized here.
 export class ActionRepository {
   constructor(adapter, {newId = newUUID, now = () => new Date().toISOString(), entityType = 'action', validate = validateAction} = {}) {
-    this.entityType = entityType; this.validate = validate; this.collection = entityType === 'action' ? 'actions' : entityType === 'topic' ? 'topics' : 'initiatives'; this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
+    this.entityType = entityType; this.validate = validate; this.collection = entityType === 'action' ? 'actions' : entityType === 'topic' ? 'topics' : entityType === 'candidate' ? 'candidates' : 'initiatives'; this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
   }
   serialize(operation) {
     const result = this.queue.then(operation);
@@ -79,7 +79,7 @@ export class ActionRepository {
         const parsed = cached?.text === text ? cached.record : JSON.parse(text);
         this.parsedFiles.set(path, {text, record: parsed});
         if (parsed?.entityType !== this.entityType) {
-          if (path.startsWith(`${this.collection}/`) || !['action', 'initiative', 'topic'].includes(parsed?.entityType)) throw Error('Unsupported record type; source retained');
+          if (path.startsWith(`${this.collection}/`) || !['action', 'initiative', 'topic', 'candidate'].includes(parsed?.entityType)) throw Error('Unsupported record type; source retained');
           continue;
         }
         const record = this.validate(parsed);
