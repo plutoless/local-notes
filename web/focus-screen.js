@@ -27,7 +27,7 @@ export class FocusScreen {
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
     const title = sectionHeading('当前重点'); tools.append(title);
     const utilities = disclosure('更多操作', [], 'home-utilities'); tools.append(utilities);
-    tools.append(this.button('新建行动', async () => { await this.navigate('actions'); await this.actions.edit(null); }, {primary: true}),
+    tools.append(this.button('新建行动', () => this.openAction(null), {primary: true}),
       this.button('全部行动', () => this.navigate('actions')));
     utilities.append(this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
       this.button('整理所选笔记', () => this.navigate('organize')),
@@ -84,9 +84,21 @@ export class FocusScreen {
     try { await this.show(); }
     catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
   }
+  async openAction(action) {
+    const scroll = $('.collection').scrollTop;
+    if (!await this.navigate('actions')) return;
+    await this.actions.edit(action);
+    this.actions.returnToFocus = async () => {
+      if (!await this.navigate('focus')) return;
+      const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
+      (opener || $('.home-tools .primary')).focus({preventScroll: true});
+      $('.collection').scrollTop = scroll;
+    };
+  }
   actionRow(action) {
     const row = document.createElement('div'); row.className = 'card focus-row';
-    const open = selectionRow('', async () => { try { if (await this.navigate('actions')) await this.actions.edit(action); } catch (error) { this.notice(error.message); } });
+    const open = selectionRow('', async () => { try { await this.openAction(action); } catch (error) { this.notice(error.message); } });
+    open.dataset.entityId = action.entityId;
     open.classList.add('focus-row-open'); open.setAttribute('aria-label', `打开行动：${action.description}`);
     open.innerHTML = `<span class="action-marker" aria-hidden="true"></span><span><h3>${esc(action.description)}</h3><span class="row-meta">${esc(statusLabel(action.status))}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ''}</span>${action.waitingOn ? `<span class="waiting-condition">${esc(action.waitingOn)}</span>` : ''}</span>`;
     row.append(open); return row;

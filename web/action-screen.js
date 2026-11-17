@@ -38,6 +38,7 @@ export class ActionScreen {
     $('#action-back').onclick = async () => {
       if (!await this.flush()) return;
       try {
+        if (this.returnToFocus) { await this.returnToFocus(); return; }
         if ($('.app').classList.contains('workspace')) {
           await this.initiatives.edit(this.initiatives.previous);
           this.initiatives.restoreContext();
@@ -107,7 +108,7 @@ export class ActionScreen {
       if (latest) this.showForm(latest, latest);
       if (!wasEditing) $('.app').classList.remove('editing');
     }
-    $('#action-tools').hidden = false; $('#filters').hidden = true; $('#view-title').textContent = '已确认行动';
+    $('#action-tools').hidden = false; $('#filters').hidden = true; $('#view-title').textContent = '行动';
     $('#search').placeholder = '搜索行动…';
     $('#editor').hidden = true;
     $('#action-editor').hidden = !this.dirty && !this.previous;
@@ -131,7 +132,7 @@ export class ActionScreen {
       row.innerHTML = `<h3>${esc(action.description)}</h3><p>${labels[action.status]}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ' · 未设日期'}</p><small>${esc(this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动'))}${action.waitingOn ? ` · 等待：${esc(action.waitingOn)}` : ''}</small>`;
       $('#items').append(row);
     }
-    if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有已确认行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
+    if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
     $('#items').scrollTop = scroll;
     $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
     $('#action-page').textContent = `第 ${this.offset / 30 + 1} 页`;
