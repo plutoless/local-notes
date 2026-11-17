@@ -46,6 +46,7 @@ try {
  await page.goto('https://notes.test/');await page.locator('[data-view=organize]').click();
  await page.locator('#ai-selection input').waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
  await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
+ assert.equal(await page.locator('#index-state').textContent(), '');
  await page.locator('#ai-selection input').check();await page.locator('#ai-preview').click();await page.waitForFunction(()=>!document.querySelector('#ai-send').disabled);
  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
  await page.waitForTimeout(200);
@@ -63,9 +64,9 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'No horizontal overflow');
  }
  const send = await wheelReach('#ai-send');
- await page.mouse.click(send.x + send.width / 2, send.y + send.height / 2);await page.waitForFunction(()=>document.querySelector('#ai-status').textContent.startsWith('Complete:'));
- await page.getByText('action: Inspect evidence',{exact:true}).waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,1);
- await page.reload();await page.locator('[data-view=organize]').click();await page.getByText('action: Inspect evidence',{exact:true}).waitFor();
+ await page.mouse.click(send.x + send.width / 2, send.y + send.height / 2);await page.waitForFunction(()=>document.querySelector('#ai-status').textContent.startsWith('已完成 '));
+ await page.getByText('行动：Inspect evidence',{exact:true}).waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,1);
+ await page.reload();await page.locator('[data-view=organize]').click();await page.getByText('行动：Inspect evidence',{exact:true}).waitFor();
  for (const viewport of [{width:1180,height:800}, {width:800,height:600}, {width:380,height:548}]) {
   await page.setViewportSize(viewport);
   await page.locator('#organize-tools').evaluate(element => { element.scrollTop = 0; });

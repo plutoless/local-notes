@@ -1,3 +1,4 @@
+import {feedback, errorFeedback, bindDialog} from './presentation.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -8,7 +9,7 @@ import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {FocusScreen} from './focus-screen.js';
 import {ActionScreen} from './action-screen.js';
 const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,blocked=false,readMode=false;const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
-function notice(msg){$('#notice').textContent=msg;$('#notice').hidden=false;setTimeout(()=>$('#notice').hidden=true,5000);}
+function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=document.createElement('button');close.textContent='关闭提示';close.onclick=()=>$('#notice').hidden=true;$('#notice').append(close);}
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
@@ -32,8 +33,8 @@ async function navigate(next) {
   if (!await flush(true)) return false;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
   $('#organize-tools').hidden = next !== 'organize';
-  view = next; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
-  hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active;
+  view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
+  hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
   document.querySelector('nav .active')?.classList.remove('active'); document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
   $('.app').classList.remove('editing'); await refresh(); return true;
 }
@@ -41,7 +42,7 @@ async function refreshBackground() {
   for (const repository of [actions.repository, initiatives.repository]) {
     if (!repository.needsRefresh) continue;
     try { const result = await repository.serialize(() => repository.recover()); repository.needsRefresh = false; if (result.warnings.length) notice(result.warnings.join('\n')); }
-    catch (error) { notice('Index refresh pending: ' + error.message); }
+    catch (error) { notice('记录尚未刷新：' + error.message); }
   }
   if (view === 'focus') await focus.show();
 }
@@ -55,7 +56,7 @@ async function prepareInitiatives(cached = false) { if (!initiatives.repository.
 function note(cmd,args={}){return native(cmd,{workspaceId:rootKey,...args});}
 function content(){return withTitle($('#body').value,$('#title').value||'无标题');}
 function state(msg){$('#save-state').textContent=msg;}
-async function refresh(){const generation=workspaceGeneration;
+async function refresh(){const generation=workspaceGeneration;$('.app').classList.toggle('home', view === 'focus');
 if(view==='organize'){await organize.show(libraryScreen.library);return;}
 if(view==='focus'){
   if(!actions.repository.ready) await actions.openWorkspace(true);
@@ -84,11 +85,11 @@ for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filte
 async function createNote(initiativeId = null) {
   try {
     if (!await flush()) return;
-    const path = `Notes/note-${Date.now()}.md`, text = '# Untitled\n\n';
+    const path = `Notes/note-${Date.now()}.md`, text = '# 无标题\n\n';
     await note('create', {path, text});
     if (initiativeId) {
       const initiative = (await allRecords(initiatives.repository)).find(i => i.entityId === initiativeId);
-      const linked = await initiatives.repository.save({...initiative, sources: [...initiative.sources, {path, quote: '# Untitled', fingerprint: fingerprint(text), role: 'working-note'}]}, initiative);
+      const linked = await initiatives.repository.save({...initiative, sources: [...initiative.sources, {path, quote: '# 无标题', fingerprint: fingerprint(text), role: 'working-note'}]}, initiative);
       if (initiatives.previous?.entityId === initiativeId) initiatives.previous = linked.record;
     }
     focus.active = false; $('#search').hidden = false; view = 'notes'; actions.active = false; initiatives.active = false; hideInitiatives();
@@ -97,18 +98,18 @@ async function createNote(initiativeId = null) {
   } catch (error) { notice(error.message); }
 }
 $('#new').onclick = () => createNote();
-$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='Opening workspace…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));$('#star').textContent=stars.has(current)?'★':'☆';render();};
 $('#back').onclick=async()=>{if(await flush())$('.app').classList.remove('editing');};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').disabled=readMode;$('#mode').textContent=readMode?'编辑':'阅读';updateReading();};
 $('#reading').onchange=async e=>{if(!e.target.matches('input[data-line]'))return;try{const text=toggleTask(content(),Number(e.target.dataset.line),e.target.checked);$('#body').value=text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');changed();await save();updateReading();}catch(err){notice(err.message);}};
-$('#rename').onclick=async()=>{try{if(!await flush())return;await repairMovedLinks();const path=prompt('输入相对于笔记目录的路径（以 .md 结尾）',current);if(!path||path===current)return;if(!safePath(path))throw Error('请使用有效的相对 Markdown 路径');await note('move',{path:current,target:path,expected:base,workspaceId:currentWorkspace});localStorage.setItem('pending-note-move:'+rootKey,JSON.stringify({from:current,to:path}));let linkError=null;try{await repairMovedLinks();}catch(error){linkError=error;} if(stars.delete(current)){stars.add(path);localStorage.setItem('stars',JSON.stringify([...stars]));}await validateReferences();await refresh();await load(path);if(linkError)notice('Note moved; link updates pending. Use Retry link updates. '+linkError.message);}catch(e){notice(e.message);}};
+$('#rename').onclick=async()=>{try{if(!await flush())return;await repairMovedLinks();const path=prompt('输入相对于笔记目录的路径（以 .md 结尾）',current);if(!path||path===current)return;if(!safePath(path))throw Error('请使用有效的相对 Markdown 路径');await note('move',{path:current,target:path,expected:base,workspaceId:currentWorkspace});localStorage.setItem('pending-note-move:'+rootKey,JSON.stringify({from:current,to:path}));let linkError=null;try{await repairMovedLinks();}catch(error){linkError=error;} if(stars.delete(current)){stars.add(path);localStorage.setItem('stars',JSON.stringify([...stars]));}await validateReferences();await refresh();await load(path);if(linkError)notice('笔记已移动，关联尚未更新，请点击「重试更新关联」。'+linkError.message);}catch(e){notice(e.message);}};
 $('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
 $('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
 window.hasUnsavedChanges=()=>dirty||actions.dirty||initiatives.dirty||Boolean(initiatives.saving)||Boolean(saving)||Boolean(actions.saving);
 window.addEventListener('beforeunload',e=>{if(window.hasUnsavedChanges()){e.preventDefault();e.returnValue='';}});
 window.addEventListener('blur',()=>{if(dirty)save();});
-async function validateReferences(){if(!['notes','favorites'].includes(view))return;try{await libraryScreen.library.open();await libraryScreen.library.sync();}catch(e){state('References unavailable · '+e.message);}}
+async function validateReferences(){if(!['notes','favorites'].includes(view))return;try{await libraryScreen.library.open();await libraryScreen.library.sync();}catch(e){feedback($('#save-state'), '参考资料暂不可用，请检查目录后重试。', e.message);}}
 window.addEventListener('reference-change',validateReferences);
 window.addEventListener('focus',validateReferences);
 // Mac metadata fallback also catches nested changes missed by the root notification.
@@ -122,7 +123,7 @@ async function noteInitiatives(path) {
   if (current !== path) return;
   $('#note-initiatives').replaceChildren();
   for (const record of records.filter(i => i.sources.some(source => source.path === path))) {
-    const button = document.createElement('button'); button.textContent = `Initiative: ${record.title}`;
+    const button = document.createElement('button'); button.textContent = `事项：${record.title}`;
     button.onclick = async () => { if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; await initiatives.show(); await initiatives.edit(record); } };
     $('#note-initiatives').append(button);
   }
@@ -137,4 +138,11 @@ async function repairMovedLinks() {
   await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], intent.from, intent.to);
   localStorage.removeItem('pending-note-move:'+rootKey); $('#repair-links').hidden = true;
 }
-$('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('Moved links updated.'); } } catch (error) { notice('Link updates pending: '+error.message); } };
+$('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('已更新移动后的关联。', true); } } catch (error) { notice('关联尚未更新：'+error.message); } };
+
+// Chinese validation messages are presentation only; domain validation remains authoritative.
+document.addEventListener('invalid', event => {
+  if (event.target.matches('input, textarea, select')) event.target.setCustomValidity('请填写有效内容后重试。');
+}, true);
+document.addEventListener('input', event => event.target.setCustomValidity?.(''));
+bindDialog($('#conflict'));
