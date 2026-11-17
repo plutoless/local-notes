@@ -172,7 +172,8 @@ try {
   assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-open-initiative').click();
-  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  await page.locator('#workspace-overview').waitFor({state:'visible'});
+  await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
   await page.locator('[data-view="notes"]').click();
@@ -200,7 +201,7 @@ try {
   await page.locator('#search').fill('');
   await page.getByRole('button', {name: '浏览目录', exact: true}).click();
   await page.getByRole('button', {name: '目录：Notes', exact: true}).click();
-  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
+  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor().catch(async error=>{console.log(await page.evaluate(()=>({classes:document.querySelector('.app').className,drawer:document.querySelector('#initiative-drawer').open,toolsHidden:document.querySelector('#library-tools').hidden,search:document.querySelector('#search').value,items:document.querySelector('#items').innerText,save:document.querySelector('#initiative-save-state').textContent})));throw error;});
   await page.locator('#library-back').click();
   await page.waitForFunction(() => document.querySelector('#library-location').textContent === '/');
   // Explicit initiative lookup must recover an external move before visiting the library.

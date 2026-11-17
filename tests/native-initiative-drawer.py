@@ -69,6 +69,19 @@ try:
   w("document.querySelector('#initiative-drawer').open")
   c("document.querySelector('#initiative-discard').click()")
   assert len(list((m.OUT/'Sync/LocalNotesData/initiatives').glob('*.json')))==1
+ if phase=='after':
+  # Combined initiative/action journey exercises the integrated navigation contract.
+  c("document.querySelector('#initiative-new-action').click()")
+  w("!document.querySelector('#action-editor').hidden")
+  c("const n=document.querySelector('#action-description');n.value='事项抽屉联动行动';n.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#action-form').requestSubmit()")
+  w("document.querySelector('#action-save-state').textContent==='已保存到本地'")
+  c("document.querySelector('#workspace-overview').click()")
+  w("document.querySelector('#initiative-drawer').open")
+  c("document.querySelector('#initiative-discard').click()")
+  assert c("return !document.querySelector('#action-editor').hidden && document.querySelector('#action-description').value==='事项抽屉联动行动'")
+  c("document.querySelector('#action-back').click()")
+  w("!document.querySelector('.app').classList.contains('detail-open')")
+  assert not c("return !!document.querySelector('nav [data-view=actions]')")
  (Path('docs/validation/issue47')/(phase+'-native.json')).write_text(json.dumps({'engine':'Cocoa/WKWebView','phase':phase,'pointerOpen':True,'trustedEscapeGuard':phase=='after','createEditReopenCleanCancel':phase=='after','width':393},indent=2))
  print('PASS native '+phase+' pointer, layouts and real persistence assertions')
 finally:
