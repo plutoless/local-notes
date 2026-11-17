@@ -486,7 +486,7 @@ summary {
 }
 .home #items > section:first-of-type {
   grid-column: 1;
-  grid-row: 2 / span 2;
+  grid-row: 2;
 }
 .home #items > section h2 {
   margin: 8px 0 16px;
@@ -673,3 +673,5 @@ aside > #new {
     flex-basis: 100%;
   }
 }
+
+.home-side{grid-column:2;grid-row:2;align-self:start;display:grid;gap:24px;min-width:0}.home-side section{border-top:1px solid var(--line);padding-top:12px}@media(max-width:1000px){.home-side{grid-column:1;grid-row:auto}}@media(max-width:700px){.home-side{width:100%}}

@@ -64,6 +64,7 @@ export class FocusScreen {
     for (const action of waiting.actions) followUp.append(this.actionRow(action));
     if (waiting.hasMore) followUp.append(this.button('全部等待行动', async () => { this.actions.status = 'waiting'; this.actions.offset = 0; this.actions.search = ''; this.actions.initiativeFilter = ''; $('#search').value = ''; await this.navigate('actions'); $('#action-filter').value = 'waiting'; }));
     const work = section('继续推进');
+    const side = document.createElement('div'); side.className = 'home-side'; side.append(followUp, work); list.append(side);
     if (!initiatives.actions.length) work.append('还没有进行中的事项。新建事项，记录目标和进展。', this.button('创建第一个事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }));
     for (const initiative of initiatives.actions) {
       const row = document.createElement('div'); row.className = 'card';
