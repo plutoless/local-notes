@@ -14,7 +14,7 @@ const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favor
 const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if (!await flush()) return;
-  focus.active = false; $('#search').hidden = false; view = 'notes'; actions.active = false; initiatives.active = false; hideInitiatives();
+  focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); await openNote(path);
 }, id => createNote(id), async () => {
@@ -49,7 +49,11 @@ async function refreshBackground() {
 $('#action-open-initiative').onclick = async () => {
   if (!await flush()) return;
   const record = (await allRecords(initiatives.repository)).find(i => i.entityId === $('#action-initiative').value);
-  if (record) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; await initiatives.show(); await initiatives.edit(record); }
+  if (record) {
+    $('#initiative-form').inert = true;
+    try { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; await initiatives.show(); await initiatives.edit(record); }
+    finally { $('#initiative-form').inert = false; }
+  }
 };
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
@@ -93,7 +97,7 @@ async function createNote(initiativeId = null) {
       const linked = await initiatives.repository.save({...initiative, sources: [...initiative.sources, {path, quote: '# 无标题', fingerprint: fingerprint(text), role: 'working-note'}]}, initiative);
       if (initiatives.previous?.entityId === initiativeId) initiatives.previous = linked.record;
     }
-    focus.active = false; $('#search').hidden = false; view = 'notes'; actions.active = false; initiatives.active = false; hideInitiatives();
+    focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
     await validateReferences();await refresh(); await load(path); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
