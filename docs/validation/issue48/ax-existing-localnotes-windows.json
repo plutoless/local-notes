@@ -1,0 +1,41 @@
+{
+  "id": "24d166f4-7414-416d-b53d-69be48a1c7de",
+  "ok": true,
+  "result": {
+    "windows": [
+      {
+        "index": 0,
+        "screenIndex": 0,
+        "id": 11034,
+        "isMinimized": false,
+        "height": 832,
+        "isMain": null,
+        "app": {
+          "pid": 51122,
+          "name": "LocalNotes",
+          "bundleId": "dev.localnotes.mac"
+        },
+        "platform": {
+          "layer": 0,
+          "alpha": 1
+        },
+        "title": "[redacted external window title]",
+        "width": 1180,
+        "y": 47,
+        "x": 166,
+        "isOffscreen": false
+      }
+    ],
+    "app": {
+      "isRunning": true,
+      "useCount": null,
+      "bundleId": "dev.localnotes.mac",
+      "lastUsedAt": null,
+      "name": "LocalNotes",
+      "pid": 51122
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

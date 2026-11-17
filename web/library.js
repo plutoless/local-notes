@@ -75,8 +75,15 @@ export class Library {
   async link(topic, note, linked) {
     const sources = topic.sources.filter(source => source.path !== note.path);
     if (linked) sources.push({path: note.path, quote: '', fingerprint: note.fingerprint});
-    await this.topics.save({...topic, sources}, topic); this.records = await allRecords(this.topics);
-    await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
-    this.changed();
+    let committed = false;
+    try {
+      await this.topics.save({...topic, sources}, topic); committed = true;
+      this.records = await allRecords(this.topics);
+      await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      this.changed();
+    } catch (error) {
+      // A persisted association needs index recovery, not another stale-parent save.
+      error.associationSaved = committed || Boolean(error.revisionSaved); throw error;
+    }
   }
 }

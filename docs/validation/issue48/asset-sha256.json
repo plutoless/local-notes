@@ -1,0 +1,26 @@
+{
+  "startingSHA": "ed75811831d42690606844352b3f8fced72dffe9",
+  "browserFunctionalEngine": "system Chrome",
+  "browserVisualEngine": "Chromium headless shell 1234",
+  "nativeBuildAssetsMatch": true,
+  "nativeRuntimeAcceptance": false,
+  "sha256": {
+    "web/action-screen.js": "079358de6957085e3caf54c82cbd1491c6a767ef76bba83276c217695a38f972",
+    "web/actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
+    "web/app.js": "3b88af9cd07428c751267e2b1959e1fb87c84315f859f6370fc89be3bccf8bfc",
+    "web/bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "web/core.js": "e1b033ae3a5bba3fd43fb96daa65b12b698e8e9f78e817de7e042f3c3ea547b1",
+    "web/focus-screen.js": "0df3e015737f1c58056309a5424fdd692d940f2ad83bd76487d759b3cb90bf9b",
+    "web/index.html": "525db42f93f8734600a10081c1949474c3d734fa4d138d27c9a065f6269a9885",
+    "web/initiative-screen.js": "e1ec572f4532124e846ba1d5ec639254a715c0b152064483318432fbaf4ef46e",
+    "web/initiatives.js": "009b47661d6f8b392f428446cd4fe60f36fd5103c9096d5a9326ef99c6fd3370",
+    "web/library-screen.js": "26688fab4698263333a685bb4ee0fe7dea847954358e0bd6658e2d627ee34fd6",
+    "web/library.js": "14c535ab7b4e29232a7e37c6d536e2ab2904e464258026f1d909c2adc3f63cc4",
+    "web/organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
+    "web/organize-screen.js": "9817637f9dc4f3e4c288ece4ea7fcae427f6ebe2711f76b4bedc0cab36d91e32",
+    "web/presentation.js": "7b30c8091d6cc802589680834462732cc7b1b0c1e33f2edd609c6564d2dcedb4",
+    "web/revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "web/style.css": "291d072374e177446974c094e83771bd6406113a219665bec3608153f34d7f72",
+    "web/sync-screen.js": "7aa1ef6a4a284b97b16f1834b630d555935019928f5af5f99cb8c3848f3c24eb"
+  }
+}

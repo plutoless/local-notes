@@ -1,0 +1,63 @@
+{
+  "id": "60abfa82-a22d-416b-b9fd-dee30ca3edf4",
+  "ok": true,
+  "result": {
+    "windows": [
+      {
+        "index": 0,
+        "screenIndex": 0,
+        "id": 86,
+        "isMinimized": false,
+        "height": 436,
+        "isMain": null,
+        "app": {
+          "name": "Finder",
+          "pid": 604,
+          "bundleId": "com.apple.finder"
+        },
+        "platform": {
+          "layer": 0,
+          "alpha": 1
+        },
+        "title": "[redacted external window title]",
+        "width": 920,
+        "y": 43,
+        "x": 592,
+        "isOffscreen": false
+      },
+      {
+        "app": {
+          "pid": 604,
+          "name": "Finder",
+          "bundleId": "com.apple.finder"
+        },
+        "screenIndex": 0,
+        "title": "[redacted external window title]",
+        "platform": {
+          "alpha": 1,
+          "layer": 0
+        },
+        "y": 276,
+        "isMain": null,
+        "id": 87,
+        "index": 1,
+        "isOffscreen": false,
+        "x": 472,
+        "width": 920,
+        "height": 436,
+        "isMinimized": false
+      }
+    ],
+    "app": {
+      "isRunning": true,
+      "useCount": null,
+      "bundleId": "com.apple.finder",
+      "lastUsedAt": null,
+      "name": "Finder",
+      "pid": 604
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

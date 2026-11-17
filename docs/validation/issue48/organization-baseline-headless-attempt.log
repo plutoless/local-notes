@@ -1,0 +1,16 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Organization panel needs a bounded visible viewport: {"x":0,"y":164.390625,"width":380,"height":32}
+    at wheelReach (file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/.issue48-org-probe.mjs:13:10)
+    at async file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/.issue48-org-probe.mjs:58:19 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v25.1.0

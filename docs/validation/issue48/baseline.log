@@ -1,0 +1,2 @@
+PASS baseline real-storage browser captures at starting SHA
+PASS remaining forms: real persistence, invalid, dirty close, retry, recovery, desktop/393/reduced height
