@@ -741,7 +741,7 @@ aside > #new {
 .organization-view #search { display: none; }
 #organize-tools { padding: 24px 32px; }
 #organize-tools section { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 16px; }
-#organize-tools h3 { font-size: 17px; line-height: 1.6; margin: 8px 0; }
+#organize-tools h3 { font-size: 15px; line-height: 1.6; margin: 8px 0; }
 #organize-tools pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 #ai-readable pre { background: var(--canvas); padding: 16px; font: inherit; }
 .organization-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
