@@ -49,8 +49,14 @@ try {
   });
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
-  await page.locator('[data-view=actions]').click();
-  await page.getByText('还没有已确认行动。', {exact: false}).waitFor();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
+  await page.getByText('还没有行动。', {exact: false}).waitFor();
+  assert.equal(await page.locator('nav [data-view=actions]').count(), 0);
+  assert.equal(await page.locator('nav [aria-current=page]').count(), 0);
+  assert.equal(await page.locator('#view-title').textContent(), '行动');
+  assert.equal(await page.locator('#view-title').evaluate(node => node === document.activeElement), true);
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#search').evaluate(node => node === document.activeElement), true);
   assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
   await page.locator('#action-new').click();
   await page.locator('#action-description').fill('Follow up with the reviewer');
@@ -66,7 +72,7 @@ try {
   await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   assert.equal(await readFile(sourcePath, 'utf8'), original);
   assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
   assert.equal(await page.locator('#action-status').inputValue(), 'waiting');
   assert.equal(await page.locator('#action-waiting').inputValue(), 'Reviewer feedback');
@@ -93,7 +99,7 @@ try {
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click(); await page.getByRole('button', {name: '加入当前重点', exact: true}).waitFor();
   await page.locator('#action-description').fill('Unsaved navigation is saved before leaving');
   await page.locator('[data-view="notes"]').click();
-  await page.locator('[data-view="actions"]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByRole('button', {name: /^打开来源：/}).waitFor();
   await page.getByRole('heading', {name: 'Unsaved navigation is saved before leaving', exact: true}).click();
   await page.locator('#action-description').fill('Follow up with the reviewer');
@@ -106,7 +112,7 @@ try {
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
   await page.locator('#mode').click(); await page.locator('#reading input').first().check();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
-  await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('todo');
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('todo');
   await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
   assert.equal(await page.locator('#action-status').inputValue(), 'todo');
   assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
@@ -137,7 +143,7 @@ try {
   await page.getByRole('button', {name: /^打开来源：/}).click();
   await page.waitForFunction(() => document.querySelector('#file-path').textContent === 'relocated.md');
   await rename(join(fixture.root, 'relocated.md'), sourcePath);
-  await page.locator('[data-view="actions"]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
   await page.getByText('来源已移动', {exact: true}).waitFor();
   await page.locator('#action-save').click();
@@ -151,7 +157,7 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
   assert.equal(await page.locator('#action-editor').isVisible(), true);
   await page.screenshot({path: 'build/actions-failed.png'});
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click(); await page.getByText(/已恢复行动草稿/).waitFor();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
   assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
   await page.locator('#action-save').click(); await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   // A committed but unrecovered edit remains the parent of subsequent user edits.
@@ -179,7 +185,7 @@ try {
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
   assert.equal(await readFile(sourcePath, 'utf8'), '# Synthetic reference material\n\nExternal edit');
   await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
-  await page.locator('[data-view="actions"]').click(); await page.locator('#action-filter').selectOption('');
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('');
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
   await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).click();
@@ -227,7 +233,7 @@ try {
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地' && document.querySelector('#body').value.includes('Recovered old editor draft'));
   assert.match(await readFile(join(otherFixture.root, 'legacy.md'), 'utf8'), /Recovered old editor draft/);
   // A delayed query from B cannot repopulate the list after failed initialization of A.
-  await page.locator('[data-view="actions"]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.locator('#action-new').click(); await page.locator('#action-description').fill('Only in workspace B');
   await page.locator('#action-save').click(); await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   const bWorkspace = (await otherFixture.adapter('workspace')).workspaceId;
@@ -245,7 +251,7 @@ try {
   const aWorkspace = (await fixture.adapter('workspace')).workspaceId;
   const aActions = (await fixture.adapter('actionQuery', {workspaceId: aWorkspace})).actions;
   assert.ok(aActions.every(action => action.entityId !== bAction.entityId));
-  await page.locator('#search').fill(''); await page.locator('[data-view="actions"]').click();
+  await page.locator('#search').fill(''); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).waitFor();
   assert.deepEqual(errors, []);
   console.log('PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).');

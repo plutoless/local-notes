@@ -217,7 +217,7 @@ try {
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');delayFiles=false;
   assert.equal(await readFile(sourcePath,'utf8'),original);
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
-  await page.locator('nav [data-view=actions]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.locator('#action-new').click();
   await page.locator('#action-description').fill('保留原任务的中文草稿');
   const mainScroll=await page.locator('main').evaluate(el=>{el.scrollTop=120;return el.scrollTop;});

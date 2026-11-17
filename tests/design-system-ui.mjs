@@ -64,7 +64,7 @@ try {
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue31/home-after.png'});
 
-  await page.locator('[data-view=actions]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.locator('#items .card').first().click();
   const pagingFailure = await page.evaluate(async () => {
     const {FocusScreen} = await import('/focus-screen.js');
