@@ -228,6 +228,24 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(),'保留原任务的中文草稿');
   assert.equal(await page.locator('main').evaluate(el=>el.scrollTop),mainScroll);
   assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),true);
+  // Modal close must preserve each editor family, including unsaved values.
+  await page.locator('nav [data-view=initiatives]').click();
+  await page.locator('#initiative-new').click();
+  await page.locator('#initiative-title').fill('冲突检查返回事项草稿');
+  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
+  await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+  assert.equal(await page.locator('#initiative-title').inputValue(),'冲突检查返回事项草稿');
+  await page.locator('nav [data-view=notes]').click();
+  if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
+  await page.locator('#items [data-path="reference.md"]').click();
+  await page.locator('#editor').waitFor({state:'visible'});
+  if (await page.locator('#body').evaluate(node=>node.hidden)) await page.locator('#mode').click();
+  await page.locator('#body').fill('冲突检查返回笔记编辑');
+  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
+  await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+  assert.equal(await page.locator('#body').inputValue(),'冲突检查返回笔记编辑');
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
 } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
