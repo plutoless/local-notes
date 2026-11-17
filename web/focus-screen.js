@@ -8,7 +8,7 @@ export class FocusScreen {
     this.limit = 7; this.waitingLimit = 50; this.initiativeLimit = 50;
   }
   button(text, run, options = {}) {
-    return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, options);
+    return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, {density: 'compact', ...options});
   }
   async show() {
     $('.app').classList.remove('workspace'); $('#workspace-context').hidden = true; $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
