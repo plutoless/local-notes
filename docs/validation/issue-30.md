@@ -14,11 +14,11 @@ Only this Orca worktree was edited. No existing application or agent was stopped
 
 The integration combines both test registrations and adds local synchronization UI to the shared UI command. `app.js` retains organization mode and the workspace/context refresh branch. The sync opener receives the workspace icon while all current-main dirty/save/history guards, capture-phase Escape handling, dialog focus handling, and recovery remain intact. CSS retains organization and synchronization flow rules alongside the approved neutral/light workspace styles, without selecting either stylesheet wholesale. Native and domain/storage implementations remain unchanged.
 
-A full UI run exposed a fixture assumption in the pagination test: after inserting 51 initiatives, clearing search does not guarantee the older target is in the first 50 records. The test now searches its exact fixture title before selecting it. The targeted rerun and subsequent full run pass.
+A full UI run exposed a fixture assumption in the pagination test: after inserting 51 initiatives, clearing search does not guarantee the older target is in the first 50 records. The test now searches its exact fixture title before selecting it. The targeted rerun and subsequent full run pass. A later final-head rerun also exposed the keyboard check racing the asynchronous editor-open focus assignment. The test now waits until the title actually receives initial focus before entering the long title and checking Tab navigation; no product behavior or keyboard assertion was weakened. The initial failure is retained in `issue30/focus-readiness-red.txt`.
 
 ## Executed validation
 
-Code under test is the integration merge plus the one-line pagination-test correction. The final-head SHA is recorded in PR #27 and the issue #26 premerge evidence, avoiding a self-referential commit identifier here. Logs and screenshots are in `docs/validation/issue30/`.
+Code under test is the integration merge plus the pagination fixture selection and editor-focus readiness test corrections. The final-head SHA is recorded in PR #27 and the issue #26 premerge evidence, avoiding a self-referential commit identifier here. Logs and screenshots are in `docs/validation/issue30/`.
 
 - `npm run check` and `node --check web/sync-screen.js`: passed.
 - `npm test`: 45 passed, zero failures, including production Swift/SQLite storage, revisions, recovery, source protection, and workspace isolation.
@@ -63,7 +63,7 @@ Executed in actual WKWebView using only isolated sample data:
 
 The first restarted process (PID 28582) later exited; the isolated app was explicitly reopened through LaunchServices with the same environment roots to capture persisted readback again. The final preserved preview is PID 29802. `native-resume.*`, `native-saved-overview.*`, `native-restarted-home.*`, `native-restart-readback.*`, and `native-storage-readback.json` retain actual native evidence. Initial permission failures remain as historical troubleshooting evidence; they are no longer an open acceptance blocker.
 
-The follow-up commit changes evidence only; it does not alter any application resources exercised natively. The final exact reviewed/tested head and readiness are recorded in PR #27. Merge and postmerge validation still belong to the coordinator.
+The follow-up commits change evidence and test readiness only; they do not alter any application resources exercised natively. The final exact reviewed/tested head and readiness are recorded in PR #27. Merge and postmerge validation still belong to the coordinator.
 
 ## Deferred and ownership boundaries
 

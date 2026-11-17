@@ -200,6 +200,8 @@ try {
   await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
   await page.locator('#search').fill('Release planning');
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  // Opening awaits source/context queries before assigning initial keyboard focus.
+  await page.waitForFunction(() => document.querySelector('#initiative-title') === document.activeElement);
   await page.locator('#initiative-title').fill('很长的中文事项标题用于检查换行与键盘焦点。'.repeat(6));
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
