@@ -26,8 +26,7 @@ export class InitiativeScreen {
     $('#initiative-new-action').onclick = async () => {
       this.rememberContext();
       if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush() || !this.previous || this.previous.status === 'ended') return;
-      this.detailKind = 'action'; $('.app').classList.add('detail-open');
-      await this.actions.edit(null); $('#action-initiative').value = this.previous.entityId; this.actions.changed(); $('#initiative-editor').hidden = true;
+      await this.actions.edit(null); $('#action-initiative').value = this.previous.entityId;
     };
     $('#initiative-new-note').onclick = async () => { this.rememberContext(); if (await this.beforeEdit() && await this.flush() && await this.actions.flush() && this.previous) { this.rememberContext(); await this.createNote(this.previous.entityId); } };
   }
@@ -303,7 +302,6 @@ export class InitiativeScreen {
       const button = selectionRow(`${action.description} · ${statusLabel(action.status)}`, async () => {
         this.rememberContext();
         if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) {
-          this.detailKind = 'action'; $('.app').classList.add('detail-open'); $('#initiative-editor').hidden = true;
           await this.actions.edit(action); this.selectContext(action.entityId);
         }
       }); button.dataset.actionId = action.entityId;

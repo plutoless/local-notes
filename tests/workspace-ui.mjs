@@ -1,3 +1,4 @@
+import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -69,11 +70,11 @@ try {
   await page.screenshot({path: 'docs/validation/issue37/home-desktop.png'});
   // Cross-page return must survive note editing and preserve the originating action.
   await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
-  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.locator('#action-drawer').waitFor({state: 'visible'});
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
   await page.locator('#back').waitFor({state: 'visible'});
-  await page.locator('#back').click();
+  await closeNoteInfo(page); await page.locator('#back').click();
   await page.locator('#action-description').waitFor({state: 'visible'});
   await page.locator('#action-back').click();
   await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开行动：确定本周最重要的两件事');
@@ -83,11 +84,10 @@ try {
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
   await rm(sourcePath);
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
-  await page.locator('#notice').waitFor({state: 'visible'});
-  assert.equal(await page.locator('#action-editor').isVisible(), true, 'Unavailable source must retain the originating action');
-  assert.equal(await page.locator('nav [aria-current=page]').count(), 0);
+  await page.locator('#action-save-state').filter({hasText:/操作未完成/}).waitFor();
+  assert.equal(await page.locator('#action-drawer').isVisible(), true, 'Unavailable source must retain the originating action');
+  assert.equal(await page.locator('nav [data-view=focus]').getAttribute('aria-current'), 'page');
   await writeFile(sourcePath, original);
-  await page.getByRole('button', {name: '关闭提示'}).click();
   await page.locator('#action-open-initiative').click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   assert.equal(await page.locator('nav [data-view=initiatives]').getAttribute('aria-current'), 'page');
@@ -95,9 +95,9 @@ try {
   await page.locator('#action-open-initiative').click();
   await page.locator('#workspace-context').waitFor({state:'visible'});
   assert.equal(await page.locator('#workspace-return-action').isHidden(), false, 'Nested context action retains outer origin');
-  await page.locator('#workspace-references button').click();
+  await closeSavedAction(page); await page.locator('#workspace-references button').click();
   await page.locator('#reading').waitFor({state: 'visible'});
-  await page.locator('#back').click();
+  await closeNoteInfo(page); await page.locator('#back').click();
   await page.screenshot({path: 'docs/validation/issue37/initiative-return-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
   await page.screenshot({path: 'docs/validation/issue37/initiative-return-393.png'});
@@ -110,7 +110,7 @@ try {
   await page.setViewportSize({width: 1180, height: 800});
   await page.waitForFunction(()=>document.activeElement.id === 'action-open-initiative' && document.querySelector('#action-description').value === '确定本周最重要的两件事');
   assert.equal(await page.locator('#action-description').inputValue(), '确定本周最重要的两件事');
-  assert.equal(await page.locator('nav [aria-current=page]').count(), 0);
+  assert.equal(await page.locator('nav [data-view=focus]').getAttribute('aria-current'), 'page');
   assert.equal(await page.locator('#action-open-initiative').evaluate(node => node === document.activeElement), true);
   await page.locator('#action-back').click();
   await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开行动：确定本周最重要的两件事');
@@ -120,40 +120,36 @@ try {
   assert.equal(await page.locator('#initiative-title').inputValue(), '整理工作资料');
   await page.screenshot({path: 'docs/validation/issue33/workspace-initiative.png'});
   await page.locator('#initiative-actions button', {hasText: '确定本周最重要'}).click();
-  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.locator('#action-drawer').waitFor({state: 'visible'});
   assert.equal(await page.locator('#workspace-context').isVisible(), true);
   assert.equal(await page.locator(`#items [data-initiative-id="${first.entityId}"]`).getAttribute('aria-current'), 'true');
   await page.locator('#action-description').fill('确定本周最重要的两件事，并安排时间');
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
-  await page.locator('#items .card', {hasText: '准备下次评审'}).click();
+  await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
   assert.equal(await page.locator('#workspace-title').textContent(), '整理工作资料');
   assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
   await page.evaluate(() => window.dispatchEvent(new Event('focus')));
   await page.waitForFunction(() => document.querySelector('#index-state').textContent === '');
-  assert.equal(await page.locator('#action-editor').isVisible(), true, 'Background refresh must preserve action detail and draft');
+  assert.equal(await page.locator('#action-drawer').isVisible(), true, 'Background refresh must preserve action detail and draft');
   assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
   await page.locator('#action-initiative').selectOption(second.entityId);
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
-  await page.locator('#initiative-new-action').click();
+  await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
   assert.equal(await page.locator('#action-initiative').inputValue(), second.entityId, 'Failed save must preserve assignment when New action is requested');
   await page.locator('#action-initiative').selectOption(first.entityId);
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
-  // A successful save must not hide the origin if the return query fails.
-  fixture.fail((cmd, args) => cmd === 'actionQuery' && args.entityType === 'initiative');
-  await page.locator('#action-back').click();
-  await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
-  assert.equal(await page.locator('#action-editor').isVisible(), true);
-  assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
-  assert.equal(await page.locator('#action-initiative').inputValue(), first.entityId);
+  // Returning to retained context needs no new query and restores the selected action.
   await page.locator('#action-back').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#action-drawer').isHidden(),true);
+  assert.equal(await page.locator('#workspace-title').textContent(),'整理工作资料');
   await page.locator('#initiative-actions button', {hasText: '确定本周最重要'}).click();
   await page.locator('#workspace-detail').evaluate(node => node.scrollTop = 0);
   await page.screenshot({path: 'docs/validation/issue33/workspace-action.png'});
-  await page.locator('#workspace-references button').click();
+  await closeSavedAction(page); await page.locator('#workspace-references button').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   assert.equal(await page.locator('#workspace-context').isVisible(), true);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
@@ -162,13 +158,13 @@ try {
   // Integration of library Back must preserve the initiative context return contract.
   assert.equal(await page.locator('#workspace-references [data-path="reference.md"]').getAttribute('aria-current'), 'true');
   const contextScroll = await page.locator('#workspace-context').evaluate(node => node.scrollTop);
-  await page.locator('#back').click();
+  await closeNoteInfo(page); await page.locator('#back').click();
   await page.waitForFunction(() => document.activeElement.dataset.path === 'reference.md' && !document.querySelector('#initiative-editor').hidden);
   assert.equal(await page.locator('#workspace-context').evaluate(node => node.scrollTop), contextScroll);
   await page.locator('#workspace-references [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
-  await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
+  await closeNoteInfo(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
   await page.locator('#initiative-new-action').click();
   await page.locator('#notice').filter({hasText: /操作未完成/}).waitFor();
@@ -182,7 +178,7 @@ try {
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-discard').click();
   await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#back').click();
+  await closeNoteInfo(page); await page.locator('#back').click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   await page.screenshot({path: 'docs/validation/issue33/workspace-mobile-context.png'});
   await rm(sourcePath);
@@ -192,7 +188,7 @@ try {
   await page.getByRole('button', {name: '关闭提示'}).click();
   await writeFile(sourcePath, original);
   await page.locator('#initiative-actions button').first().click();
-  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.locator('#action-drawer').waitFor({state: 'visible'});
   await page.screenshot({path: 'docs/validation/issue33/workspace-mobile-detail.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   await page.locator('#action-back').click();
@@ -208,6 +204,7 @@ try {
   await page.evaluate(()=>window.__readDelivered = false);
   const started = new Promise(resolve => readStarted = resolve); holdRead = true;
   await sourceOpen.click(); await started;
+  await closeSavedAction(page);
   await page.locator('.directory-details summary').click();
   await page.locator('#choose').click();
   await page.waitForFunction(()=>document.querySelector('#index-state').textContent === '');
