@@ -21,7 +21,7 @@ The `:root` declarations in `web/style.css` are the implemented source of truth.
 
 Typography uses system UI with PingFang SC / Microsoft YaHei fallback. Body 14px/1.6, note body 16px/1.9, page title 23–28px/1.4, section heading 18px/1.5, row title 14–15px/1.65, secondary metadata 12–13px. Use weight 500–650, not letterspaced Chinese slogans. User text wraps anywhere when needed; do not truncate the only actionable title. Textarea resizing and reading scroll remain available. SVG icons are 19px, stroke 1.6, aligned at the text center; narrow navigation uses 16px icons, retaining 44px targets. Icons supplement labels; icon-only actions require an explicit Chinese accessible name.
 
-Controls have 44px minimum hit height. Default density is comfortable, not compact. Hover uses `--hover`, press uses a restrained blue fill. Disabled controls remain visible and explain prerequisites near the control. Motion is limited to 120ms feedback; reduced-motion disables transitions, animation and smooth scrolling. No idle animation or automatic rearrangement.
+Controls have 44px minimum hit height. Issue #45 supersedes the earlier blanket comfortable-density direction: density follows the control role. Home actions use compact 32px visible surfaces inside reserved 44px targets; navigation, row openers, disclosures, icons and fields retain their own geometry. Other existing consumers retain their current density until their task adopts this contract. Hover uses `--hover`, press uses a restrained blue fill. Disabled controls remain visible and explain prerequisites near the control. Motion is limited to 120ms feedback; reduced-motion disables transitions, animation and smooth scrolling. No idle animation or automatic rearrangement.
 
 ## Implemented primitives and state contract
 
@@ -95,3 +95,41 @@ The demonstrated `.ui-selection` extension supports multi-selection, where `sele
 ## Integrated journeys (#37)
 
 Use the [screen/state/content inventory and contributor checklist](journeys.md) for cross-page changes. It maps real shared primitives and catalogue states to maintained journey suites, including unavailable-source recovery and the quiet return-to-original-action control. Visible navigation selection and accessible current-page announcements must change together.
+
+
+## Selected C contextual forms (issue #45)
+
+This is the authoritative reconciliation of the maintainer-selected C structure with the older comfortable-density baseline. C governs contextual creation and short editing forms; its dimensions remain proposed defaults until demonstrated by the dependent real flows (#46–#48). Issue #45 implements home controls and catalogue examples only, not drawer primitives or topic/initiative journeys. The content and persistence boundaries in [the content structure design](../superpowers/specs/2026-11-15-content-structure-design.md) remain authoritative.
+
+Open a single modal task from the right edge of its current content surface, keeping the list/workspace visible and inert behind a restrained backdrop and subtle left divider/shadow. Never insert form fields into browsing toolbars, shift the list vertically, or stack drawers. Preserve search, filters, selection, pagination and scroll across save/cancel; expose a newly created record without resetting unrelated browsing state. Long-form notes retain their document surface; conflicts and AI review retain specialized protected layouts.
+
+| Element | Proposed default / rule |
+| --- | --- |
+| Short topic form | About 390px, clamped to available surface width |
+| Multi-field form | About 460px; full width if readable background context cannot remain |
+| Header | 20–24px vertical / 24px horizontal; one task title, optional parent context, accessible close |
+| Body | 24px horizontal, 20px field-group gaps; consistent label/field/disclosure/feedback left edge |
+| Footer | 12–16px vertical / 24px horizontal, 8px action gaps; reachable while body scrolls, never covering final fields/errors |
+| Button | `--button-surface: 32px`; `--target-height: 44px`, `--control-inset: 6px` |
+| Single-line field | `--field-surface: 40px`; label target reserves at least 44px |
+| Labels / shape | 8px label gap, subordinate optional marker; existing 8px radius and semantic tokens |
+
+The production `button(..., {density: 'compact'})` opts into the compact treatment; home is its first screen consumer. Its pseudo-element paints only the surface and receives no pointer events; the actual button reserves all target space in normal flow and keeps its focus outline. Wrapped labels increase both target and surface height. No negative margins or overlapping invisible hit extensions. Row openers remain full text targets, aligned with management summaries; navigation and icon actions remain at least 44px. `field(..., {density: 'compact'})` demonstrates a native 40px field in a padded, associated label click area in the catalogue. This is presentation only; constructors never own storage/index operations.
+
+Use vertically arranged labeled fields, not placeholder-only names. Optional metadata/source links use disclosures unless hiding them would conceal an actionable warning. Long Chinese text, paths and validation wrap without horizontal scrolling. Footer Cancel is quiet and precedes the sole primary Create/Save action; save/error feedback has a separate readable region. Destructive discard is not an equal primary beside Save.
+
+Opening captures the opener and focuses the first meaningful field or heading. Tab/Shift+Tab stay within the drawer; closing restores the opener or a meaningful surviving replacement. Close, Cancel, Escape, backdrop, navigation and native termination share existing unsaved guards. Backdrop never silently discards. Dirty forms offer keep editing, save or explicit discard where supported. Clean cancellation creates no record; repeated submission creates no duplicates; reopening reads saved data. Recovery stays scoped to workspace/entity. Preserve source guards, serialized writes, immutable revisions and conflicts.
+
+| State | Required behavior and text evidence |
+| --- | --- |
+| Normal | One task title, concise labels and appropriate Create/Save verb |
+| Dirty | Retain inputs and show editing status; all exits honor guards |
+| Saving | Disable duplicate submission, retain values, show saving status |
+| Invalid | Explain beside field; focus first invalid input and keep values |
+| Failed | Keep form/input intact, readable retryable error; no success receipt |
+| Saved | Announce local success only after persistence; preserve browsing context |
+| Recovered | Distinguish recovered draft from saved data, sources and conflicts |
+
+Around 700px and below, or whenever context becomes unreadable, use a full-width task surface with visible close/back. Verify 393px and reduced-height windows directly. Scroll the body independently and keep the footer reachable; on-screen keyboards must not cover active fields, errors or final actions. These drawer interaction and responsive requirements are contracts for dependent implementations, not claims that a drawer ships here.
+
+Application copy/accessibility labels remain Simplified Chinese; user text, enums, paths and quotations remain intact. Retain privacy, source, unsaved, recovery and conflict evidence. Remove slogans, duplicate instructions, blanket promises and implementation explanations from normal flow. Catalogue state fixtures demonstrate shared primitives, not simulated persistence acceptance.

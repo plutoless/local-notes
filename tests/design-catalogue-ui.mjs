@@ -12,6 +12,12 @@ try {
  });
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
  await page.locator('#states [data-state=recovered]').waitFor();
+ const input=page.locator('#fields input').first();
+ assert.equal(await input.evaluate(n=>n.getBoundingClientRect().height),40);
+ assert.equal(await input.evaluate(n=>n.parentElement.getBoundingClientRect().height),44);
+ await input.evaluate(n=>n.blur());
+ await page.locator('.ui-field-target').first().click({position:{x:1,y:1}});
+ assert.ok(await input.evaluate(n=>document.activeElement===n));
  const ratios=await page.evaluate(()=>{
   const css=getComputedStyle(document.documentElement);
   const luminance=hex=>{const c=hex.trim().slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
@@ -22,10 +28,10 @@ try {
  await page.getByRole('button',{name:'打开核对面板',exact:true}).click();
  await page.getByRole('button',{name:'关闭',exact:true}).click();
  assert.equal(await page.evaluate(()=>document.activeElement.textContent),'打开核对面板');
- await page.screenshot({path:'docs/validation/issue31/catalogue-desktop.png',fullPage:true});
+ await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-desktop.png` : 'docs/validation/issue31/catalogue-desktop.png',fullPage:true});
  await page.setViewportSize({width:393,height:852});
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- await page.screenshot({path:'docs/validation/issue31/catalogue-393.png',fullPage:true});
+ await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-393.png` : 'docs/validation/issue31/catalogue-393.png',fullPage:true});
  await page.emulateMedia({reducedMotion:'reduce'});
  assert.equal(await page.locator('#actions button').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');
  assert.equal(errors.length,0,errors.join('\n'));
