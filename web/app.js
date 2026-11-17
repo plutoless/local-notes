@@ -80,7 +80,7 @@ $('#action-open-initiative').onclick = async () => {
     const record = (await allRecords(initiatives.repository)).find(i => i.entityId === $('#action-initiative').value);
     if (!record) { notice('关联事项暂不可用，请刷新后重试。'); return; }
     const origin = {view, action: actions.previous, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop};
-    if (!await navigate('initiatives')) return;
+    if (view !== 'initiatives' && !await navigate('initiatives')) return;
     await initiatives.edit(record);
     if (origin.view !== 'initiatives') { actionOrigin = origin; $('#workspace-return-action').hidden = false; }
   } catch (error) { notice(error.message); }
