@@ -1,0 +1,7 @@
+Organization review UI passed: exact preview, invalidation, partial retry, edited confirmation, later, attachment, reference, ignore, pending recovery, persistence, source-change rejection, cancellation, invalid response, offline retention, 393px, keyboard focus; contrast ratios on white: [
+  15.146446697729223,
+  5.650066807645137,
+  6.250978759757422,
+  4.278605097267699,
+  5.969564700266222
+]
