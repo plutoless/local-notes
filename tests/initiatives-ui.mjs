@@ -97,6 +97,7 @@ try {
   await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
   const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
+  await page.locator('#action-options').evaluate(node => node.open = true);
   await page.locator('#action-initiative').selectOption(initiativeId);
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
   await page.locator('#action-save').click(); await page.getByText(/未保存的编辑仍保留/).waitFor();

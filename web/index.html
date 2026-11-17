@@ -166,7 +166,7 @@
               <span id="action-id"></span>
             </details>
           </div>
-          <form id="action-form" class="document">
+          <form id="action-form" class="document" novalidate>
             <h2>已确认行动</h2>
             <label
               >行动描述<textarea
@@ -175,21 +175,21 @@
                 rows="3"
               ></textarea></label
             ><label>状态<select id="action-status"></select></label
-            ><label
+            ><details id="action-options"><summary>事项、日期与等待条件（可选）</summary><label
               >事项<select id="action-initiative">
                 <option value="">独立行动</option>
               </select></label
             ><button type="button" id="action-open-initiative">打开事项</button
             ><label>截止日期（可选）<input id="action-due" type="date" /></label
             ><label>等待的人或条件（可选）<input id="action-waiting" /></label>
-            <h3>来源引用</h3>
+            </details><details id="action-source-options"><summary>来源引用（可选）</summary>
             <div id="action-sources"></div>
             <button id="action-add-source" type="button">添加来源引用</button>
-            <div id="action-save-state" role="status"></div>
+            </details><div id="action-save-state" role="status" aria-live="polite"></div><div class="action-save-controls">
             <button id="action-save" type="submit" class="primary">
               保存行动</button
             ><button id="action-discard" type="button">放弃未保存的草稿</button>
-            <p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p>
+            </div><section class="action-utilities" aria-label="行动管理"><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p>
             <button
               aria-describedby="focus-help"
               id="action-focus"
@@ -205,7 +205,7 @@
             >
               查看历史
             </button>
-            <div id="action-revisions"></div>
+            <div id="action-revisions" aria-live="polite"></div></section>
           </form>
         </div>
         <div id="initiative-editor" hidden>

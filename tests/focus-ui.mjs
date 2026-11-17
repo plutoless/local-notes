@@ -74,6 +74,7 @@ try {
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.getByRole('button', {name: '打开行动', exact: true}).click();
   await page.locator('#action-status').selectOption('waiting');
+  await page.locator('#action-options').evaluate(node => node.open = true);
   await page.locator('#action-waiting').fill('Approval from Sam');
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
@@ -140,7 +141,7 @@ try {
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-  await page.locator('#action-add-source').click();
+  await page.locator('#action-source-options').evaluate(node => node.open = true); await page.locator('#action-add-source').click();
   await page.locator('.source-path').fill('reference.md'); await page.locator('.source-quote').fill('This quotation is not in the source');
   await page.locator('#action-save').click();
   await page.getByText('内容需要核对。请检查必填项、日期和来源引用后重新保存。', {exact:true}).waitFor();
