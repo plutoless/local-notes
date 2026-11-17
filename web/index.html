@@ -112,24 +112,24 @@
           </div>
         </div>
         <div id="initiative-tools" hidden>
-          <button id="initiative-new">新建事项</button
-          ><button id="initiative-previous">上一页</button
-          ><button id="initiative-next">下一页</button>
+          <button class="ui-action primary" id="initiative-new">新建事项</button
+          ><button class="ui-action quiet" id="initiative-previous">上一页</button
+          ><button class="ui-action quiet" id="initiative-next">下一页</button>
         </div>
         <p id="index-state" role="status">正在打开目录…</p>
         <div id="items"></div>
       </section>
       <main>
         <section id="workspace-context" aria-label="事项上下文" hidden>
-          <div class="workspace-context-heading"><button id="workspace-back" type="button">‹ 事项列表</button><span>事项工作区</span></div>
-          <button id="workspace-overview" type="button" class="workspace-overview"><strong id="workspace-title"></strong><span id="workspace-progress"></span><small>查看目标与进展 →</small></button>
-          <section class="workspace-section"><div class="section-heading"><h2>行动</h2><button type="button" id="initiative-new-action" aria-describedby="initiative-help">新建行动</button></div>
+          <div class="workspace-context-heading"><button class="ui-action quiet" id="workspace-back" type="button">‹ 事项列表</button><span>事项工作区</span></div>
+          <button id="workspace-overview" type="button" class="workspace-overview ui-action quiet"><strong id="workspace-title"></strong><span id="workspace-state"></span><span id="workspace-goal"></span><span id="workspace-progress"></span><small>查看目标与进展 →</small></button>
+          <section class="workspace-section"><div class="section-heading"><h2>行动</h2><button type="button" class="ui-action quiet" id="initiative-new-action" aria-describedby="initiative-help">新建行动</button></div>
             <p id="initiative-help">先保存事项，再添加行动或笔记；已结束事项不能添加行动。</p>
             <div id="initiative-actions"></div>
-            <details><summary>已完成和已取消</summary><div id="initiative-retired"></div></details>
+            <details class="ui-disclosure"><summary>已完成和已取消</summary><div id="initiative-retired"></div></details>
           </section>
-          <section class="workspace-section"><div class="section-heading"><h2>笔记与资料</h2><button type="button" id="initiative-new-note" aria-describedby="initiative-help">新建笔记</button></div>
-            <div id="workspace-notes"></div>
+          <section class="workspace-section"><div class="section-heading"><h2>笔记与资料</h2><button type="button" class="ui-action quiet" id="initiative-new-note" aria-describedby="initiative-help">新建笔记</button></div>
+            <h3>工作笔记</h3><div id="workspace-notes"></div><h3>参考资料</h3><div id="workspace-references"></div>
           </section>
         </section>
         <div id="workspace-detail">
@@ -218,44 +218,44 @@
         </div>
         <div id="initiative-editor" hidden>
           <div class="toolbar">
-            <button id="initiative-back">‹ 事项</button>
+            <button class="ui-action quiet" id="initiative-back">‹ 事项</button>
           </div>
           <form id="initiative-form" class="document">
             <h2 id="initiative-heading">事项详情</h2>
-            <label>标题<input id="initiative-title" required /></label
-            ><label
+            <label class="ui-field">标题<input id="initiative-title" required /></label
+            ><label class="ui-field"
               >目标<textarea id="initiative-goal" rows="3"></textarea></label
-            ><label
+            ><label class="ui-field"
               >当前进展<textarea
                 id="initiative-progress"
                 rows="3"
               ></textarea></label
-            ><label
+            ><label class="ui-field"
               >状态<select id="initiative-status">
                 <option value="active">进行中</option>
                 <option value="later">以后再做</option>
                 <option value="ended">已结束</option>
               </select></label
             >
-            <details id="initiative-ending">
+            <details class="ui-disclosure" id="initiative-ending">
               <summary>结束与重新开启</summary>
               <h3>结束前处理未完成行动</h3>
               <p id="initiative-ending-help"></p>
               <p>逐项选择：完成或取消会改变行动状态；独立保留或移至其他事项会保留当前状态。保存后逐项生效，失败时已处理的行动不会回退，可核对后重试。</p>
               <div id="initiative-decisions"></div>
-              <button type="button" id="initiative-cancel-ending">暂不结束</button>
+              <button type="button" class="ui-action quiet" id="initiative-cancel-ending">暂不结束</button>
             </details>
-            <details id="initiative-link-details"><summary>管理笔记关联与来源引用</summary>
+            <details class="ui-disclosure" id="initiative-link-details"><summary>管理笔记关联与来源引用</summary>
             <p>工作笔记记录推进过程，参考资料提供依据。移除关联不会删除原文。</p>
             <div id="initiative-sources">
               <section><h4>工作笔记</h4><div id="initiative-working-notes"></div></section>
               <section><h4>参考资料</h4><div id="initiative-references"></div></section>
             </div>
-            <button type="button" id="initiative-add-link">关联已有笔记</button
+            <button type="button" class="ui-action quiet" id="initiative-add-link">关联已有笔记</button
             ></details>
-            <div id="initiative-save-state" role="status"></div>
-            <button type="submit" class="primary" id="initiative-save">保存事项</button
-            ><button type="button" id="initiative-discard">
+            <div id="initiative-save-state" class="ui-feedback" role="status" aria-live="polite"></div>
+            <button type="submit" class="ui-action primary" id="initiative-save">保存事项</button
+            ><button type="button" class="ui-action quiet" id="initiative-discard">
               放弃未保存的草稿
             </button>
           </form>

@@ -162,8 +162,8 @@ details { overflow-wrap: anywhere; }
 .workspace > .collection { background: var(--canvas); }
 .workspace > .collection header { padding: 26px 16px 16px; }
 .workspace #items { padding: 4px 8px 20px; }
-.workspace #items .card { border: 0; border-radius: 7px; padding: 14px 12px; margin-bottom: 3px; }
-.workspace #items .card p { font-size: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.workspace #items .card { border: 0; border-radius: var(--radius); padding: 14px 12px; margin-bottom: 3px; }
+.workspace #items .card p { font-size: 12px; }
 .workspace #initiative-tools { padding-inline: 12px; }
 .workspace main { display: grid; grid-template-columns: minmax(250px, 310px) minmax(0, 1fr); overflow: hidden; }
 .workspace #workspace-context { overflow: auto; border-right: 1px solid var(--divider); padding: 0 20px 28px; }
@@ -180,9 +180,9 @@ details { overflow-wrap: anywhere; }
 .section-heading button { color: var(--accent); font-size: 12px; padding: 6px 8px; }
 #initiative-help { font-size: 12px; color: var(--muted); }
 #initiative-help:empty { display: none; }
-#initiative-actions, #initiative-retired, #workspace-notes { display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
-#initiative-actions button, #initiative-retired button, #workspace-notes button { text-align: left; padding: 14px 10px; min-height: 52px; color: var(--text); border-bottom: 1px solid var(--divider); border-radius: 4px; }
-#workspace-notes small { display: block; color: var(--muted); margin-top: 4px; font-size: 12px; }
+#initiative-actions, #initiative-retired, #workspace-notes, #workspace-references { display: grid; gap: 3px; font-size: 13px; color: var(--muted); }
+#initiative-actions button, #initiative-retired button, #workspace-notes button, #workspace-references button { text-align: left; padding: 14px 10px; min-height: 52px; color: var(--text); border-bottom: 1px solid var(--divider); border-radius: 4px; }
+#workspace-notes small, #workspace-references small { display: block; color: var(--muted); margin-top: 4px; font-size: 12px; }
 #initiative-form > h2 { font-size: 18px; margin-top: 0; }
 #initiative-ending { margin-block: 24px; padding: 12px 16px; border: 1px solid var(--divider); border-radius: var(--radius); background: var(--canvas); font-size: 13px; }
 #initiative-link-details { border-top: 1px solid var(--divider); margin: 24px 0; font-size: 13px; }
@@ -324,3 +324,15 @@ details { overflow-wrap: anywhere; }
 .ui-field:has(> input[hidden]) { display: none; }
 
 .focus-row-open.ui-row { display: flex; border: 0; color: var(--text); }
+
+/* Initiative detail uses the same shared rows and readable form rhythm. */
+@media (min-width: 901px) {
+  .workspace:has(#initiative-editor:not([hidden])) #workspace-goal,
+  .workspace:has(#initiative-editor:not([hidden])) #workspace-progress { display: none; }
+}
+#workspace-goal::before { content: '目标 · '; }
+#workspace-progress::before { content: '进展 · '; }
+#workspace-context h3 { font-size: 14px; font-weight: 600; margin: 16px 0 8px; }
+#workspace-context .ui-row.selected { color: var(--selected-text); background: var(--selected); }
+#initiative-form select { max-width: 100%; }
+#initiative-form .ui-field, #workspace-context { overflow-wrap: anywhere; }
