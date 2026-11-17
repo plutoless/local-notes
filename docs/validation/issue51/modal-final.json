@@ -1,0 +1,32 @@
+{
+  "nav": [
+    {
+      "current": "false",
+      "text": "当前重点"
+    },
+    {
+      "current": "false",
+      "text": "\n            笔记库 "
+    },
+    {
+      "current": "false",
+      "text": "事项"
+    },
+    {
+      "current": "false",
+      "text": "整理"
+    },
+    {
+      "current": "false",
+      "text": "收藏"
+    },
+    {
+      "current": null,
+      "text": "同步检查"
+    }
+  ],
+  "title": "行动",
+  "description": "关闭与退出保护草稿",
+  "focused": "",
+  "save": "已保存到本地"
+}

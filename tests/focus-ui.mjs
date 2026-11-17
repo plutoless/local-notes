@@ -75,6 +75,10 @@ try {
   await page.reload();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.getByRole('button', {name: /^打开行动：/}).click();
+  await page.locator('#action-back').click();
+  await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开行动：Chosen next step');
+  await page.getByRole('button', {name: /^打开行动：/}).click();
+  await page.waitForFunction(() => document.activeElement.id === 'action-description');
   await page.locator('#action-status').selectOption('waiting');
   await page.locator('#action-options').evaluate(node => node.open = true);
   await page.locator('#action-waiting').fill('Approval from Sam');
@@ -120,7 +124,7 @@ try {
   assert.equal((await repository.query({search: 'Unreviewed recovered draft'})).actions.length, 0);
   await page.getByRole('button', {name: '打开事项', exact: true}).click();
   await page.waitForFunction(() => document.querySelector('#initiative-progress').value === 'Saved user progress');
-  await page.locator('[data-view=actions]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByText('放弃编辑', {exact: true}).click(); await page.locator('#action-discard').click();
   await page.locator('#search').fill('No matching action');
   await page.locator('#action-initiative-filter').selectOption(initiative.entityId);

@@ -1,0 +1,57 @@
+{
+  "id": "21dd414a-082e-4659-842c-5917a2c20c26",
+  "ok": true,
+  "result": {
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue51before (pid 66318)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 button 随手记\n\t\t\t\t5 container 主导航\n\t\t\t\t\t6 button 当前重点\n\t\t\t\t\t7 button 笔记库\n\t\t\t\t\t8 button 已确认行动\n\t\t\t\t\t9 button 事项\n\t\t\t\t\t10 button 整理\n\t\t\t\t\t11 button 收藏\n\t\t\t\t\t12 button 同步检查\n\t\t\t\t13 summary Sync, Value: 0\n\t\t\t14 heading 当前重点\n\t\t\t15 summary 更多操作, Value: 0\n\t\t\t16 button 新建行动\n\t\t\t17 button 全部行动\n\t\t\t18 heading 优先处理\n\t\t\t19 text 还没有重点行动。可从「全部行动」选择已确认的下一步。\n\t\t\t20 button 选择重点行动\n\t\t\t21 heading 等待与跟进\n\t\t\t22 text 没有等待中的行动。\n\t\t\t23 heading 继续推进\n\t\t\t24 text 还没有进行中的事项。\n\t\t\t25 button 创建第一个事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+      "focusedElementId": 2,
+      "id": "53A9F5A8-8FF7-44B3-9F18-8A25C49DDF16",
+      "app": {
+        "bundleId": "dev.localnotes.validation.issue51before",
+        "pid": 66318,
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 393,
+        "id": 11089,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 30,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshot": {
+      "format": "png",
+      "width": 786,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/21dd414a-082e-4659-842c-5917a2c20c26-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:19:10.216Z"
+    },
+    "screenshotStatus": {
+      "state": "captured",
+      "metadata": {
+        "windowId": 11089,
+        "engine": "screenCaptureKit"
+      }
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

@@ -55,6 +55,7 @@ function selectNavigation(next) {
 let actionOrigin = null;
 async function navigate(next) {
   if (!await flush(true)) return false;
+  actions.returnToFocus = null;
   actionOrigin = null; $('#workspace-return-action').hidden = true;
   captureOrigin = null; sourceOrigin = null; $('#capture-return').hidden = true;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
@@ -64,7 +65,9 @@ async function navigate(next) {
   view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
   selectNavigation(next);
-  $('.app').classList.remove('editing'); await refresh(); return true;
+  $('.app').classList.remove('editing'); await refresh();
+  if (next === 'actions') { $('#view-title').tabIndex = -1; $('#view-title').focus(); }
+  return true;
 }
 async function refreshBackground() {
   for (const repository of [actions.repository, initiatives.repository]) {

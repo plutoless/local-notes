@@ -119,8 +119,10 @@ try:
     snapshot('native-restarted-context')
     if phase == 'library-integration':
         # Exercise changed source/capture resource paths on the combined library base.
-        c("document.querySelector('nav [data-view=actions]').click()")
-        w("!document.querySelector('#action-tools').hidden && document.querySelector('nav [data-view=actions]').classList.contains('active') && !!document.querySelector('#items .ui-row')")
+        c("document.querySelector('nav [data-view=focus]').click()")
+        w("!!document.querySelector('.home-tools')")
+        c("[...document.querySelectorAll('.home-tools button')].find(b=>b.textContent==='全部行动').click()")
+        w("!document.querySelector('#action-tools').hidden && !document.querySelector('nav [aria-current=page]') && !!document.querySelector('#items .ui-row')")
         c("document.querySelector('#search').value='合并';document.querySelector('#search').dispatchEvent(new Event('input'))")
         w("!!document.querySelector('#items .ui-row')")
         c("document.querySelector('#items .ui-row').click()")

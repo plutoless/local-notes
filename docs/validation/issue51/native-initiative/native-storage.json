@@ -1,0 +1,21 @@
+{
+  "action": {
+    "description": "合并后失败保留并重试",
+    "status": "todo",
+    "initiativeId": "c098b50d-91c9-4434-9805-cb8732b17a45",
+    "dueDate": null,
+    "waitingOn": null,
+    "sources": [],
+    "formatVersion": 1,
+    "entityType": "action",
+    "workspaceId": "03ebfa73-ba40-4c2c-926e-e201cb444ecc",
+    "entityId": "e7ec696a-1c44-43f7-9427-0d0226eb1413",
+    "revision": "7e7dc444-b6b0-4312-a93c-a0313e4463cc",
+    "parents": [
+      "45624f78-dd86-406e-9146-bb98c2b48c4d"
+    ],
+    "focusPosition": null,
+    "modifiedAt": "2026-11-17T16:25:15.742Z"
+  },
+  "source": "# 隔离来源\n\n- [ ] 仅作为来源内容\n"
+}
