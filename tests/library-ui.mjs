@@ -81,6 +81,7 @@ try {
   await page.locator('#body').fill('中文正文，保留原文与路径。\n\n- 列表项目\n\n> 引用原文\n\n- [ ] 原文复选框');
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.locator('#mode').click(); assert.equal(await page.locator('#reading ul').count(),1); assert.equal(await page.locator('#reading blockquote').count(),1);
+  const checkbox=await page.getByLabel('原文复选框',{exact:true}).boundingBox(); assert.equal(checkbox.width,20);
   await page.getByLabel('原文复选框',{exact:true}).check();
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   assert.match(await readFile(sourcePath,'utf8'), /- \[x\] 原文复选框/);
