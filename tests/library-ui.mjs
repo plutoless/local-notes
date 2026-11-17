@@ -1,27 +1,22 @@
-import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
-const otherFixture = await storageFixture();
 let activeFixture = fixture;
-let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
+let releaseMetadata, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
-  const bridgeCalls = [];
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
-  const original = await readFile(sourcePath, 'utf8');
   await page.exposeFunction('bridge', async request => {
     try {
-      bridgeCalls.push(request.cmd);
-      if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
+      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve;});
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
-        if (request.cmd === 'actionQuery' && holdActionQuery) { heldQueryStartedResolve(); await new Promise(resolve => { releaseHeldQuery = resolve; }); }
         return result;
       }
       const workspace = await activeFixture.adapter('workspace');
@@ -42,7 +37,7 @@ try {
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
@@ -124,13 +119,23 @@ try {
   await page.waitForFunction(()=>!document.querySelector('#library-next').disabled);
   await page.locator('#library-next').click(); await page.waitForFunction(()=>!document.querySelector('#library-previous').disabled);
   await page.locator('#library-previous').click();
+  delayMetadata=true; await page.locator('#library-refresh').click();
+  await page.getByText('正在更新笔记列表…',{exact:true}).waitFor();
+  assert.equal(await page.locator('#library-refresh').isDisabled(),true);
+  await page.screenshot({path:'docs/validation/issue19/after-loading.png'});
+  delayMetadata=false; releaseMetadata(); await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled);
   fixture.fail(cmd=>cmd==='metadata'); await page.locator('#library-refresh').click();
   await page.getByText('目录暂不可用，请检查目录权限后刷新，或重新选择目录。',{exact:true}).waitFor();
   await page.screenshot({path:'docs/validation/issue19/after-error.png'});
   await page.getByRole('button',{name:'关闭提示'}).click(); await page.locator('#library-refresh').click();
-  await page.locator('#library-back').click();
+  await page.getByRole('button',{name:'浏览目录',exact:true}).click();
   await page.getByRole('button',{name:'目录：工作资料',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#library-location').textContent==='工作资料');
+  await page.locator('#library-back').click(); await page.locator('#library-back').click();
+  for (const name of await readdir(fixture.root)) if(name.endsWith('.md') || name==='工作资料') await rm(join(fixture.root,name),{recursive:true});
+  await page.locator('#library-refresh').click();
+  await page.getByText('笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。',{exact:true}).waitFor();
+  await page.screenshot({path:'docs/validation/issue19/after-empty-library.png'});
   assert.deepEqual(errors,[]);
   console.log('PASS: browse/search/favorites, topic create/rename/link/filter, Chinese reading/checkbox writeback, autosave, successful move and topic link repair, external conflict/copy, draft recovery after reload, 393px library/editor overflow, keyboard focus. Chromium + real Swift storage/SQLite adapter.');
-} catch(error) { console.log(error); throw error; } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
+} catch(error) { console.log(error); throw error; } finally { await browser.close(); await fixture.close(); }

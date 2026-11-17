@@ -16,7 +16,7 @@ export function renderMarkdown(text) {
     if (task) return closeList() + `<label class="checkline"><input type="checkbox" aria-label="${escapeHTML(task.text)}" data-line="${index}" ${task.done ? 'checked' : ''}><span>${escapeHTML(task.text)}</span></label>`;
     const value = escapeHTML(line).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     const item = value.match(/^\s*(?:[-*+] |(\d+)\. )(.*)$/);
-    if (item) { const type = item[1] ? 'ol' : 'ul'; const start = list === type ? '' : closeList() + `<${type}>`; list = type; return start + `<li>${item[2]}</li>`; }
+    if (item) { const type = item[1] ? 'ol' : 'ul'; const start = list === type ? '' : closeList() + (type === 'ol' ? `<ol start="${Number(item[1])}">` : '<ul>'); list = type; return start + `<li>${item[2]}</li>`; }
     const end = closeList(), heading = value.match(/^(#{1,6}) (.*)$/);
     if (heading) return end + `<h${heading[1].length}>${heading[2]}</h${heading[1].length}>`;
     if (value.startsWith('&gt; ')) return end + `<blockquote>${value.slice(5)}</blockquote>`;
