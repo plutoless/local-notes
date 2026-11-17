@@ -1,5 +1,7 @@
 # Issue 34 library design adoption
 
+**Current delivery:** latest-main integration results below supersede the original source binding for this PR. Original captures and receipts are retained as historical evidence.
+
 ## Scope and baseline
 
 Starting SHA and reviewed base: `45c6b5acb284c8fb3a3e1b16849387e645d46052`.
@@ -49,3 +51,23 @@ An earlier full UI attempt timed out finding a newly created initiative note's t
 Separate Standards and Spec reviewers examined the starting-SHA diff. Initial findings were fixed: awaited topic submit disabling; shared selection duplication; screen-owned context seam; clearing source origins on workspace selection; action source keyword/scroll/focus fallback; capture selected-note restoration. No minor suggestion was left accepted without action. Final source reviews reported no remaining hard, functional or scope findings. Both reviewers also confirm the final evidence-inclusive head in the delivery report/PR.
 
 Remaining risk: automated DOM/native-host checks cannot establish physical keyboard/IME, trackpad or assistive-technology comfort. Those checks and two-device transport end-to-end validation are unexecuted, while Android-specific and standalone Syncthing validation remain deferred. A maintainer may judge the restrained list density and physical native usability; no product or storage decision is required for this scoped implementation. Coordinator owns merge/issue closure.
+
+## Latest-main integration after PR 39
+
+Fetched main / comparison merge-base: `e89deb437a0fb69b63e5a5e399117729897e8c8c` (issue 33 / PR 39). Pre-integration issue 34 head: `3bee1d271e9aaa181bc3d64f71f06d2b6e0092c1`; original issue 34 start remains `45c6b5acb284c8fb3a3e1b16849387e645d46052`.
+
+Merge commit: `9b35624b8b8db8e7db5c778b4793507854ae323f`. Conflicts were limited to `web/app.js` note Back/mode handlers and adjacent `web/style.css` additions. The merged handler retains initiative `restoreContext()` as well as library/source return context and read-only title behavior. Both stylesheet additions remain. Automatic merges retained initiative selection/rememberContext calls, shared initiative controls and distinct working/reference sections. No storage or other issue implementation was added.
+
+Final source/test head: `e02b635a51e101df2dd7677ebaf9f917b87dd92d`; production resources match merge commit `9b35624`, with only an additional integration regression in the two following test commits. Subsequent commits contain evidence only. The test explicitly checks reference selection while reading, then note Back focus and scroll restoration into initiative context. Its first assertion incorrectly expected the reference to remain current after returning to the overview; the assertion was moved to the active note detail, matching existing issue 33 semantics without changing product behavior.
+
+Fresh receipts are under `integrated/`:
+
+- `npm run check`: passed shared syntax checks.
+- `npm test`: 45 passed, 0 failed, including shared local conflict/revision and partial association retry coverage.
+- Complete ten-script UI suite passed against combined production resources; the final test-head suite and the targeted workspace regression also passed. Library checks cover browse/capture selection, keyword/filter/scroll/focus, action-source return and workspace isolation. Initiative/workspace checks cover source-note return, working-note edits, action context, failed-save guards and context restoration. Capture, candidate and synchronization UI checks remain included.
+- `npm run build:mac`: passed for combined resources.
+- `python3 tests/native-library-design.py`: passed isolated issue34 WKWebView local save, unavailable-root save failure, blocked return, explicit retry, focus, restart/readback and checkbox writeback.
+- `python3 tests/native-initiative-workspace.py`: passed isolated issue33 WKWebView assigned-action save/overview return, real filesystem failure/draft retention/retry, ending/independent retention/reopening and restart/readback. `initiative-native.png` is a fresh native WK snapshot of combined resources. Both runs use test-owned private/synthetic data and terminate only their own processes.
+- Fresh library/393px and workspace screenshots accompany these receipts. Original baseline captures stay in `before/`; earlier evidence is not used as a substitute for this integrated run.
+
+Independent Standards and Spec source reviews of the merge against `e89deb4` both found zero findings. Final evidence-inclusive head confirmations are recorded in PR40 and the coordinator handoff. No native physical keyboard/IME/pointer, VoiceOver, Android, standalone Syncthing, or two-device transport checks were newly executed; the existing validation boundaries remain unchanged. Coordinator owns release and issue closure.
