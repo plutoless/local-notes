@@ -1,0 +1,33 @@
+import {chromium} from 'playwright';
+import {readFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
+try {
+ const page=await browser.newPage({viewport:{width:1180,height:850}}), errors=[];
+ page.on('pageerror',e=>errors.push(e.message));
+ await page.route('https://catalogue.test/**',async route=>{
+  const path=new URL(route.request().url()).pathname;
+  if(!['/docs/design/catalogue.html','/web/style.css','/web/presentation.js','/web/core.js'].includes(path)) return route.abort();
+  await route.fulfill({body:await readFile(new URL('..'+path,import.meta.url)),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});
+ });
+ await page.goto('https://catalogue.test/docs/design/catalogue.html');
+ await page.locator('#states [data-state=recovered]').waitFor();
+ const ratios=await page.evaluate(()=>{
+  const css=getComputedStyle(document.documentElement);
+  const luminance=hex=>{const c=hex.trim().slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+  const ratio=(a,b)=>{const [x,y]=[luminance(css.getPropertyValue('--'+a)),luminance(css.getPropertyValue('--'+b))].sort((a,b)=>b-a);return (x+.05)/(y+.05);};
+  return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected'].map(bg=>ratio(t,bg)))]));
+ });
+ for(const [token,ratio] of Object.entries(ratios))assert.ok(ratio>=(['line','focus'].includes(token)?3:4.5),`${token}: ${ratio}`);
+ await page.getByRole('button',{name:'打开核对面板',exact:true}).click();
+ await page.getByRole('button',{name:'关闭',exact:true}).click();
+ assert.equal(await page.evaluate(()=>document.activeElement.textContent),'打开核对面板');
+ await page.screenshot({path:'docs/validation/issue31/catalogue-desktop.png',fullPage:true});
+ await page.setViewportSize({width:393,height:852});
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await page.screenshot({path:'docs/validation/issue31/catalogue-393.png',fullPage:true});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ assert.equal(await page.locator('#actions button').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');
+ assert.equal(errors.length,0,errors.join('\n'));
+ console.log('Catalogue rendering, live tokens, contrast minima, dialog restoration, 393px and reduced motion passed',ratios);
+} finally {await browser.close();}

@@ -1,4 +1,4 @@
-import {statusLabel, button as controlButton} from './presentation.js';
+import {statusLabel, button as controlButton, disclosure, sectionHeading, selectionRow, pagination} from './presentation.js';
 import {escapeHTML as esc} from './core.js';
 import {isOverdue} from './actions.js';
 const $ = selector => document.querySelector(selector);
@@ -25,8 +25,8 @@ export class FocusScreen {
     if (!this.active || repository !== this.actions.repository || request !== this.request) return;
     $('#index-state').textContent = ''; const list = $('#items'); list.replaceChildren();
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
-    const title = document.createElement('h2'); title.textContent = '当前重点'; tools.append(title);
-    const utilities = document.createElement('details'); utilities.className = 'home-utilities'; utilities.innerHTML = '<summary>更多操作</summary>'; tools.append(utilities);
+    const title = sectionHeading('当前重点'); tools.append(title);
+    const utilities = disclosure('更多操作', [], 'home-utilities'); tools.append(utilities);
     tools.append(this.button('新建行动', async () => { await this.navigate('actions'); await this.actions.edit(null); }, {primary: true}),
       this.button('全部行动', () => this.navigate('actions')));
     utilities.append(this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
@@ -38,14 +38,14 @@ export class FocusScreen {
         if (warnings.length) this.notice(warnings.join('\n'));
         await this.show();
       }));
-    const section = title => { const node = document.createElement('section'); const heading = document.createElement('h2'); heading.textContent = title; node.append(heading); list.append(node); return node; };
+    const section = title => { const node = document.createElement('section'); const heading = sectionHeading(title); node.append(heading); list.append(node); return node; };
     const focus = section('优先处理');
     if (!focused.actions.length) focus.append('还没有重点行动。可从「全部行动」选择已确认的下一步。', this.button('选择重点行动', () => this.navigate('actions')));
     const shown = focused.actions.slice(0, this.limit);
     for (const [index, action] of shown.entries()) {
       const row = this.actionRow(action);
-      const menu = document.createElement('details'); menu.className = 'row-menu'; menu.innerHTML = '<summary>管理</summary>'; row.append(menu);
-      menu.append(this.button('移出重点', async () => { await repository.save({...action, focusPosition: null}, action); await this.show(); }));
+      const menu = disclosure(`管理：${action.description}`, [], 'row-menu'); menu.querySelector('summary').textContent = '管理'; menu.querySelector('summary').setAttribute('aria-label', `管理：${action.description}`); row.append(menu);
+      menu.append(this.button('移出重点', async () => { await repository.save({...action, focusPosition: null}, action); await this.show(); $('#items .focus-row-open, .home-tools .primary')?.focus(); }, {variant: 'danger'}));
       for (const direction of [-1, 1]) {
         if (index + direction < 0 || !focused.actions[index + direction]) continue;
         menu.append(this.button(direction < 0 ? '上移' : '下移', async () => {
@@ -53,33 +53,41 @@ export class FocusScreen {
           const beyond = focused.actions[index + direction * 2];
           const position = beyond ? (neighbor.focusPosition + beyond.focusPosition) / 2 : neighbor.focusPosition + direction;
           if (position === neighbor.focusPosition || position === beyond?.focusPosition) throw Error('Focus positions are too close; remove and add this action again.');
-          await repository.save({...action, focusPosition: position}, action); await this.show();
+          await repository.save({...action, focusPosition: position}, action); await this.show(); [...document.querySelectorAll('.focus-row-open')].find(node => node.getAttribute('aria-label') === `打开行动：${action.description}`)?.focus();
         }));
       }
       focus.append(row);
     }
     if (focused.actions.length > this.limit || focused.hasMore) focus.append(this.button('展开更多重点行动', async () => { this.limit = Math.min(99, this.limit + 50); await this.show(); }));
     // Beyond one bounded page, navigate explicit pages rather than rendering the collection.
-    if (this.focusOffset) focus.append(this.button('上一页重点', async () => { this.focusOffset = Math.max(0, this.focusOffset - 99); await this.show(); }));
-    if (this.limit === 99 && (focused.hasMore || focused.actions.length > this.limit)) focus.append(this.button('下一页重点', async () => { this.focusOffset = (this.focusOffset || 0) + 99; await this.show(); }));
+    if (this.focusOffset || this.limit === 99) focus.append(pagination(
+      () => this.pageFocus(Math.max(0, this.focusOffset - 99)),
+      () => this.pageFocus((this.focusOffset || 0) + 99),
+      {hasPrevious: Boolean(this.focusOffset), hasNext: this.limit === 99 && (focused.hasMore || focused.actions.length > this.limit)}));
     const followUp = section('等待与跟进');
-    if (!waiting.actions.length) followUp.append('没有等待中的行动。需要他人回复时，可将行动设为「等待中」。');
+    if (!waiting.actions.length) followUp.append('没有等待中的行动。');
     for (const action of waiting.actions) followUp.append(this.actionRow(action));
     if (waiting.hasMore) followUp.append(this.button('全部等待行动', async () => { this.actions.status = 'waiting'; this.actions.offset = 0; this.actions.search = ''; this.actions.initiativeFilter = ''; $('#search').value = ''; await this.navigate('actions'); $('#action-filter').value = 'waiting'; }));
     const work = section('继续推进');
     const side = document.createElement('div'); side.className = 'home-side'; side.append(followUp, work); list.append(side);
-    if (!initiatives.actions.length) work.append('还没有进行中的事项。新建事项，记录目标和进展。', this.button('创建第一个事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }));
+    if (!initiatives.actions.length) work.append('还没有进行中的事项。', this.button('创建第一个事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }));
     for (const initiative of initiatives.actions) {
       const row = document.createElement('div'); row.className = 'card';
-      row.innerHTML = `<h3>${esc(initiative.title)}</h3><p>${esc(initiative.progress || '尚未记录进展。打开事项后可以补充。')}</p>`;
+      row.innerHTML = `<h3>${esc(initiative.title)}</h3><p>${esc(initiative.progress || '尚未记录进展。')}</p>`;
       row.append(this.button('打开事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(initiative); })); work.append(row);
     }
     if (initiatives.hasMore) work.append(this.button('全部事项', () => this.navigate('initiatives')));
   }
+  async pageFocus(offset) {
+    const previous = this.focusOffset;
+    this.focusOffset = offset;
+    try { await this.show(); }
+    catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
+  }
   actionRow(action) {
     const row = document.createElement('div'); row.className = 'card focus-row';
-    const open = this.button('', async () => { if (await this.navigate('actions')) await this.actions.edit(action); });
-    open.className = 'focus-row-open'; open.setAttribute('aria-label', `打开行动：${action.description}`);
+    const open = selectionRow('', async () => { try { if (await this.navigate('actions')) await this.actions.edit(action); } catch (error) { this.notice(error.message); } });
+    open.classList.add('focus-row-open'); open.setAttribute('aria-label', `打开行动：${action.description}`);
     open.innerHTML = `<span class="action-marker" aria-hidden="true"></span><span><h3>${esc(action.description)}</h3><span class="row-meta">${esc(statusLabel(action.status))}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ''}</span>${action.waitingOn ? `<span class="waiting-condition">${esc(action.waitingOn)}</span>` : ''}</span>`;
     row.append(open); return row;
   }

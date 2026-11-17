@@ -1,0 +1,12 @@
+{
+  "previousPID": 55723,
+  "restartedPID": 63154,
+  "priorSHA256": "db85446d53232d1e7062342db20940185b8d286f29a0a462c87b7e6a6b1e56f7",
+  "priorUnchanged": true,
+  "captureSHA256": "c60537ee7adbfba087e28aa7d1997379fa85aa5cf0ab23a8cec4960beee8c8a1",
+  "captureMatchesSuccessfulSave": true,
+  "immutableFlagRestored": true,
+  "webResourcesUnchanged": true,
+  "executableUnchanged": true,
+  "applicationCommit": "75a832a373b920a4d54b468b81c67e3557eaa35c"
+}

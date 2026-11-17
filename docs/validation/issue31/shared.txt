@@ -1,0 +1,58 @@
+
+> local-notes@0.1.0 test
+> node --test tests/*.test.js
+
+✔ confirmed actions start empty despite reference checkboxes, and survive native index removal (4677.020292ms)
+✔ every state can be reopened while complete immutable history and optional fields survive restart (59.297542ms)
+✔ interrupted revision writes retain the edit and restart recovers only committed revisions (30.008666ms)
+✔ interrupted current writes retain the edit and restart recovers only committed revisions (35.355625ms)
+✔ interrupted index writes retain the edit and restart recovers only committed revisions (29.921167ms)
+✔ transient current-record and index failures report recovered saves after repair (23.665208ms)
+✔ queries paginate and workspace IDs reject writes from another root (46.395125ms)
+✔ a missing live SQLite index is rebuilt before returning query results (24.9315ms)
+✔ editing after a recoverable commit extends the committed revision without branching or duplicating the action (33.944625ms)
+✔ Mac URLSession controlled service: scope, auth isolation, invalid response, failure, redirect, cancellation, recovery (47840.789333ms)
+✔ individual edited decisions, initiative separation, later state, reference, links, progress and topics (5469.780584ms)
+✔ fingerprints block changed, missing and unavailable evidence; ignore and repeated analysis persist after rebuild (79.08525ms)
+✔ committed intent survives termination before target, repeated clicks and after-target interruption without duplicates (148.82325ms)
+✔ two-device review and target disagreements retain branches through rebuild and require conflict resolution (80.412333ms)
+✔ invalid synchronized approval intents are rejected before replay (65.357792ms)
+✔ rename and repeated analysis recognize a processed candidate by content fingerprints (75.992666ms)
+✔ task writeback preserves CRLF, nesting, and surrounding text (0.641333ms)
+✔ code examples must never become live tasks (0.448834ms)
+✔ paths exclude traversal, hidden folders and credentials (0.138584ms)
+✔ reading view escapes HTML and attribute injection (0.62475ms)
+✔ title update preserves dollar signs literally (0.835667ms)
+✔ Chinese reading renders semantic lists, quotations and named checkboxes without changing source lines (0.892958ms)
+✔ ordered lists preserve the author start number (0.747292ms)
+✔ focus uses the same actions, preserves explicit order and rebuilds; retirement clears selection (3403.9525ms)
+✔ failed cached recovery prevents stale revision writes and remains retryable (36.350125ms)
+✔ Mac index upgrades legacy and partially migrated query columns from confirmed JSON (40.767416ms)
+✔ initiative assignments, multiple links, explicit ending and index/restart recovery (3959.243709ms)
+✔ source state preserves changed, missing and ambiguous references; only unique fingerprint recovers moves (0.565792ms)
+✔ initiative revision survives interrupted current write and index removal (30.162ms)
+{"fixture":"500 notes / 2000 actions","coldMs":1261.6728329999987,"warmMs":711.1657910000013,"openingMs":0.04070800000044983,"coldReads":500,"warmReads":0,"editMoveReads":2}
+✔ 500-note incremental SQLite library with 2,000 confirmed actions (20170.727708ms)
+✔ production Mac traversal excludes protected ranges and returns only metadata (28.739291ms)
+✔ both native asset allowlists include every shipped JavaScript module (20.376833ms)
+✔ complete traceable batches and strict evidence validation resist injected instructions (4.56525ms)
+✔ explicit selected scope, persisted candidates, restart/index recovery, partial retry and cancel (5658.837ms)
+✔ cancel during asynchronous dedup query prevents persistence and coverage changes (0.41325ms)
+✔ candidate recovery composes with merged revision recovery without changing suggested state (50.711583ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (6046.287667ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (67.572583ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (62.315167ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (26.451041ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (23.4145ms)
+✔ an incoming current-file import failure does not block unrelated records (25.819209ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (25.691166ms)
+✔ an unavailable topic collection does not prevent action commits (34.82775ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (23.571666ms)
+ℹ tests 45
+ℹ suites 0
+ℹ pass 45
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47955.9825
