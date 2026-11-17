@@ -13,12 +13,20 @@
   --accent: #245bc3;
   --green: #245bc3;
   --hover: #edf2fa;
-  --line: #89919f;
+  --line: #717b8b;
   --divider: #e4e8ee;
   --focus: #075fcc;
   --danger: #a12622;
   --radius: 8px;
   --space: 8px;
+  --space-small: 4px;
+  --space-section: 24px;
+  --radius-panel: 14px;
+  --shadow-panel: 0 16px 60px #13294433;
+  --success: #21633d;
+  --warning: #805315;
+  --selected: #e3ebfa;
+  --selected-text: #204e9f;
 }
 * { box-sizing: border-box; }
 body { margin: 0; }
@@ -39,7 +47,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-
 aside > #new { display: flex; align-items: center; gap: 10px; margin: 0 4px; background: var(--surface); color: var(--text); border: 1px solid var(--divider); box-shadow: 0 1px 2px #192c4410; text-align: left; font-weight: 500; }
 nav { margin-top: 24px; display: grid; gap: 5px; }
 nav button { text-align: left; display: flex; align-items: center; gap: 11px; padding-inline: 14px; color: #596474; }
-nav .active { background: #e3ebfa; color: #204e9f; font-weight: 600; }
+nav .active { background: var(--selected); color: var(--selected-text); font-weight: 600; }
 nav span { margin-left: auto; font-variant-numeric: tabular-nums; }
 .directory-details { margin-top: auto; padding-top: 40px; font-size: 12px; color: var(--muted); }
 .directory-details > summary { padding: 10px 12px; }
@@ -292,3 +300,27 @@ details { overflow-wrap: anywhere; }
 
 /* Keep the editable title as the single note heading without changing Markdown line indices. */
 #reading > h1:first-child { display: none; }
+
+/* Shared presentation contract; see docs/design/README.md. */
+.ui-action.secondary { border-color: var(--line); background: var(--surface); }
+.ui-action.quiet { color: var(--accent); }
+.ui-action.danger { color: var(--danger); border-color: var(--danger); }
+.ui-action.icon-action { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 10px; }
+.ui-action:disabled { color: var(--muted); background: var(--sidebar); border-color: var(--divider); }
+.ui-field { display: grid; gap: var(--space); margin-block: 16px; min-width: 0; }
+.ui-field small { color: var(--muted); }
+[aria-invalid="true"] { border-color: var(--danger) !important; }
+.ui-feedback { overflow-wrap: anywhere; }
+.ui-feedback[data-state="failed"] { color: var(--danger); }
+.ui-feedback[data-state="saved"], [data-state="recovered"] { color: var(--success); }
+[data-state="dirty"], [data-state="saving"] { color: var(--warning); }
+.ui-row { display: block; width: 100%; text-align: left; border-bottom: 1px solid var(--divider); border-radius: 0; }
+.ui-row.selected { background: var(--selected); color: var(--selected-text); border-radius: var(--radius); }
+.ui-pagination { display: flex; flex-wrap: wrap; gap: var(--space); }
+.ui-panel { background: var(--surface); border: 1px solid var(--line); padding: var(--space-section); border-radius: var(--radius-panel); }
+.ui-dialog { box-shadow: var(--shadow-panel); }
+#capture-return { color: var(--accent); }
+#note-save { border-color: var(--line); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+
+.ui-field:has(> input[hidden]) { display: none; }
