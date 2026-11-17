@@ -1,0 +1,57 @@
+{
+  "id": "ce47efec-2efc-48a6-8e58-6c5bfabcfe10",
+  "ok": true,
+  "result": {
+    "screenshot": {
+      "format": "png",
+      "width": 786,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/ce47efec-2efc-48a6-8e58-6c5bfabcfe10-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:29:14.847Z"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue51reviewfix (pid 77182)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 button 随手记\n\t\t\t\t5 container 主导航\n\t\t\t\t\t6 button 当前重点\n\t\t\t\t\t7 button 笔记库\n\t\t\t\t\t8 button 事项\n\t\t\t\t\t9 button 整理\n\t\t\t\t\t10 button 收藏\n\t\t\t\t\t11 button 同步检查\n\t\t\t\t12 summary Sync, Value: 0\n\t13 close button\n\t14 full screen button, Secondary Actions: zoom the window\n\t15 minimize button\n\t16 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+      "focusedElementId": 2,
+      "id": "11024B46-EB28-4A29-A03C-414E7973C68E",
+      "app": {
+        "bundleId": "dev.localnotes.validation.issue51reviewfix",
+        "pid": 77182,
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 393,
+        "id": 11621,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 17,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "windowId": 11621,
+        "engine": "screenCaptureKit"
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}
