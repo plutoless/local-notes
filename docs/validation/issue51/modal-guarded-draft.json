@@ -26,7 +26,7 @@
     }
   ],
   "title": "行动",
+  "focused": "action-description",
   "description": "关闭与退出保护草稿",
-  "save": "行动草稿尚未保存",
-  "focused": "action-description"
+  "save": "行动草稿尚未保存"
 }

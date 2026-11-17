@@ -2,20 +2,20 @@
   "action": {
     "description": "合并后失败保留并重试",
     "status": "todo",
-    "initiativeId": "c098b50d-91c9-4434-9805-cb8732b17a45",
+    "initiativeId": "e5b64e26-496b-4786-b34c-70683c8380fe",
     "dueDate": null,
     "waitingOn": null,
     "sources": [],
     "formatVersion": 1,
     "entityType": "action",
-    "workspaceId": "03ebfa73-ba40-4c2c-926e-e201cb444ecc",
-    "entityId": "e7ec696a-1c44-43f7-9427-0d0226eb1413",
-    "revision": "7e7dc444-b6b0-4312-a93c-a0313e4463cc",
+    "workspaceId": "c21c7cb0-ec6f-4f60-8408-ecc8e83a81d6",
+    "entityId": "d8ba48d3-8451-4baa-b966-f894675cf3aa",
+    "revision": "b627b66f-c76f-4c99-968f-6ac3f01d2151",
     "parents": [
-      "45624f78-dd86-406e-9146-bb98c2b48c4d"
+      "a6da60a0-b238-4854-ae86-9b62a87dcddb"
     ],
     "focusPosition": null,
-    "modifiedAt": "2026-11-17T16:25:15.742Z"
+    "modifiedAt": "2026-11-17T16:30:09.773Z"
   },
   "source": "# 隔离来源\n\n- [ ] 仅作为来源内容\n"
 }

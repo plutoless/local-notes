@@ -71,6 +71,16 @@ try {
   await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
   await page.locator('#action-editor').waitFor({state: 'visible'});
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
+  await page.locator('#back').waitFor({state: 'visible'});
+  await page.locator('#back').click();
+  await page.locator('#action-description').waitFor({state: 'visible'});
+  await page.locator('#action-back').click();
+  await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开行动：确定本周最重要的两件事');
+  await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
+  await page.locator('#action-description').waitFor({state: 'visible'});
+  await page.waitForFunction(() => document.activeElement.id === 'action-description');
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
   await rm(sourcePath);
   await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
   await page.locator('#notice').waitFor({state: 'visible'});
@@ -102,6 +112,8 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(), '确定本周最重要的两件事');
   assert.equal(await page.locator('nav [aria-current=page]').count(), 0);
   assert.equal(await page.locator('#action-open-initiative').evaluate(node => node === document.activeElement), true);
+  await page.locator('#action-back').click();
+  await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开行动：确定本周最重要的两件事');
   await page.locator('[data-view=initiatives]').click();
   await page.locator(`#items [data-initiative-id="${first.entityId}"]`).click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
