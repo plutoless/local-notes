@@ -14,9 +14,9 @@ English project material; Simplified Chinese application copy; preserve user con
 
 ## Tasks
 
-- [ ] Capture isolated native before screenshots; introduce shared `web/presentation.js` for terminology, controls and diagnostic details, register it in both asset allowlists and UI fixtures.
-- [ ] Localize shell and home-owned flows at render sites, including action/initiative creation, native prompts, shared feedback, loading and recovery. Keep diagnostics in expandable details and disabled-control explanations outside disabled controls.
-- [ ] Replace shell/home styling with Chinese system typography, AA colors, visible focus, reusable fields/dialogs, full-width home and a wrapping 393px navigation. Retain seven/expand/reorder/remove and all existing data operations.
-- [ ] Document the concrete design baseline and content audit in English. Update UI expectations for localized copy and add shell accessibility, failure, loading and narrow-viewport assertions.
-- [ ] Run syntax/shared tests, relevant browser interactions, Mac build, actual native interaction and screenshots. Record build versus runtime evidence separately.
-- [ ] Commit, run separate Standards and Spec reviews against the starting SHA, resolve findings, validate final head, push and open one PR with limitations and Closes #16.
+- [x] Capture isolated native before screenshots; introduce shared `web/presentation.js` for terminology, controls and diagnostic details, register it in both asset allowlists and UI fixtures.
+- [x] Localize shell and home-owned flows at render sites, including action/initiative creation, native prompts, shared feedback, loading and recovery. Keep diagnostics in expandable details and disabled-control explanations outside disabled controls.
+- [x] Replace shell/home styling with Chinese system typography, AA colors, visible focus, reusable fields/dialogs, full-width home and a wrapping 393px navigation. Retain seven/expand/reorder/remove and all existing data operations.
+- [x] Document the concrete design baseline and content audit in English. Update UI expectations for localized copy and add shell accessibility, failure, loading and narrow-viewport assertions.
+- [x] Run syntax/shared tests, relevant browser interactions, Mac build, actual native interaction and screenshots. Record build versus runtime evidence separately.
+- [x] Commit, run separate Standards and Spec reviews against the starting SHA, resolve findings, validate final head, prepare one PR with limitations and Closes #16 (publication tracked by the coordinator-facing completion report).
