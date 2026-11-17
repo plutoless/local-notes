@@ -45,7 +45,7 @@
 
 **Interfaces:** Existing `npm run check`, `npm test`, `npm run test:ui`, `npm run build:mac`; preview uses unique bundle identity and isolated note/private roots.
 
-- [ ] Run applicable shared checks, full suites once, and Mac build. Expected: exit status 0; deferred platforms explicitly recorded.
-- [ ] Capture and inspect home, initiative overview, action detail, note detail, and narrow layouts. Exercise the Mac preview without touching daily data.
-- [ ] Review the full branch against standards and this approved spec, fix material findings, and record evidence.
-- [ ] Commit validation evidence and expose the running preview to the user.
+- [x] Run applicable shared checks, full suites once, and Mac build. Expected: exit status 0; deferred platforms explicitly recorded.
+- [x] Capture and inspect home, initiative overview, action detail, note detail, and narrow layouts. Exercise the Mac preview without touching daily data.
+- [x] Review the full branch against standards and this approved spec, fix material findings, and record evidence.
+- [x] Commit validation evidence and expose the running preview to the user.
