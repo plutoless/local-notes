@@ -98,6 +98,14 @@ try {
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   assert.equal(await page.locator('#reading > h1:first-child').isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue33/workspace-note.png'});
+  // Integration of library Back must preserve the initiative context return contract.
+  const contextScroll = await page.locator('#workspace-context').evaluate(node => node.scrollTop);
+  await page.locator('#back').click();
+  await page.waitForFunction(() => document.activeElement.dataset.path === 'reference.md' && !document.querySelector('#initiative-editor').hidden);
+  assert.equal(await page.locator('#workspace-context').evaluate(node => node.scrollTop), contextScroll);
+  assert.equal(await page.locator('#workspace-references [data-path="reference.md"]').getAttribute('aria-current'), 'true');
+  await page.locator('#workspace-references [data-path="reference.md"]').click();
+  await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
   await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
