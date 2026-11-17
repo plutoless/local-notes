@@ -319,8 +319,6 @@ details { overflow-wrap: anywhere; }
 .ui-pagination { display: flex; flex-wrap: wrap; gap: var(--space); }
 .ui-panel { background: var(--surface); border: 1px solid var(--line); padding: var(--space-section); border-radius: var(--radius-panel); }
 .ui-dialog { box-shadow: var(--shadow-panel); }
-#capture-return { color: var(--accent); }
-#note-save { border-color: var(--line); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 
 .ui-field:has(> input[hidden]) { display: none; }

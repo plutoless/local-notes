@@ -30,7 +30,7 @@ Controls have 44px minimum hit height. Default density is comfortable, not compa
 | Primitive | Consumer / usage | State behavior |
 | --- | --- | --- |
 | `button(text, run, {variant, label})` / `.ui-action` | Focus actions, shell capture/directory controls, save, sync | Primary: one next action per task; secondary: outlined save; quiet: navigation; danger: remove focus. Disabled during awaited action; keyboard outline; failures handled by caller with draft retained |
-| `.icon-action` | Icon control example using real `icon()` vocabulary | 44px square, explicit accessible name; use only when text is redundant in a demonstrated tight toolbar |
+| `.icon-action` | Note-detail favorite control; catalogue uses `icon()` vocabulary | 44px square, explicit accessible name; use only when text is redundant in a demonstrated tight toolbar |
 | `field(label, control, {help, invalid})` / `.ui-field` | Shell search; labeled capture title/body use the existing accessible names | Label always associated; invalid sets `aria-invalid`, visible hint linked by `aria-describedby`; callers provide actual validation and retain invalid values |
 | `selectionRow()` / `.ui-row` | Focus row openers | Whole title actionable; `aria-current` and selected fill; loading does not imply empty; disabled and keyboard states follow button |
 | `disclosure()` / `.ui-disclosure` | Focus utilities and per-row management | Native summary: Enter/Space, explicit expanded state, no custom menu keyboard model; management names identify the row |
@@ -38,7 +38,7 @@ Controls have 44px minimum hit height. Default density is comfortable, not compa
 | `feedback()`, `errorFeedback()` / `.ui-feedback` | Notice, save/error/retry surfaces | Failed diagnostic behind details; concise Chinese explanation first; loading, dirty, saving, saved, recovered text remains live; no success claim before persistence |
 | `bindDialog()` / `.ui-panel`, `.ui-dialog` | File conflict dialog and sync panel | Trap Tab inside modal; restore opener; Escape cannot discard protected edits. Native details/panel scrolling remains available |
 | `nav` / `.active`, `aria-current` | Shell | Selection distinct from hover; descriptive Chinese names, icons hidden from AT |
-| `.ui-pagination`, `.action-pagination` | Bounded list paging / catalogue constructor example | Explicit previous/next, unavailable direction disabled; seven Focus rows initially, explicit expand then bounded pages |
+| `.ui-pagination`, `.action-pagination` | Bounded Focus paging; action list uses the same layout class | Explicit previous/next, unavailable direction disabled; seven Focus rows initially, explicit expand then bounded pages |
 
 `primary: true` remains a compatibility alias for existing consumers. The catalogue's disabled/invalid examples are deliberate fixtures, not promises of new product behavior. Status is never conveyed by color alone. Form-level invalid errors retain input and supply a retry path. Failed note saves keep private local drafts and block task return; explicit Save retries the existing write. Autosave and Save share the same serialization and expected-base protection. Reopen reads the saved body; a recovered draft is visibly identified. A local-save receipt never implies remote receipt.
 

@@ -1,4 +1,4 @@
-import {statusLabel, button as controlButton, disclosure, sectionHeading, selectionRow} from './presentation.js';
+import {statusLabel, button as controlButton, disclosure, sectionHeading, selectionRow, pagination} from './presentation.js';
 import {escapeHTML as esc} from './core.js';
 import {isOverdue} from './actions.js';
 const $ = selector => document.querySelector(selector);
@@ -60,8 +60,10 @@ export class FocusScreen {
     }
     if (focused.actions.length > this.limit || focused.hasMore) focus.append(this.button('展开更多重点行动', async () => { this.limit = Math.min(99, this.limit + 50); await this.show(); }));
     // Beyond one bounded page, navigate explicit pages rather than rendering the collection.
-    if (this.focusOffset) focus.append(this.button('上一页重点', async () => { this.focusOffset = Math.max(0, this.focusOffset - 99); await this.show(); }));
-    if (this.limit === 99 && (focused.hasMore || focused.actions.length > this.limit)) focus.append(this.button('下一页重点', async () => { this.focusOffset = (this.focusOffset || 0) + 99; await this.show(); }));
+    if (this.focusOffset || this.limit === 99) focus.append(pagination(
+      async () => { this.focusOffset = Math.max(0, this.focusOffset - 99); await this.show(); },
+      async () => { this.focusOffset = (this.focusOffset || 0) + 99; await this.show(); },
+      {hasPrevious: Boolean(this.focusOffset), hasNext: this.limit === 99 && (focused.hasMore || focused.actions.length > this.limit)}));
     const followUp = section('等待与跟进');
     if (!waiting.actions.length) followUp.append('没有等待中的行动。');
     for (const action of waiting.actions) followUp.append(this.actionRow(action));
