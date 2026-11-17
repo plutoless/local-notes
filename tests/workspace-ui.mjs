@@ -6,6 +6,8 @@ import {ActionRepository} from '../web/actions.js';
 import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
+const otherFixture = await storageFixture();
+let holdRead = false, releaseRead, readStarted;
 let activeFixture = fixture;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
@@ -21,11 +23,12 @@ try {
   const first = (await initiatives.save({title: '整理工作资料', goal: '让常用资料有清晰的入口', progress: '资料目录已整理，正在确定本周行动。', status: 'active', sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: (await import('../web/initiatives.js')).fingerprint(original), role: 'reference'}]})).record;
   const second = (await initiatives.save({title: '准备下次评审', goal: '确认需要讨论的问题', progress: '等待评审时间确认。', status: 'active', sources: []})).record;
   const actions = new ActionRepository(fixture.adapter); await actions.open();
-  for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
+  for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, sources: i === 0 ? [{path:'reference.md',quote:'保留原文，只整理入口。',fingerprint:(await import('../web/initiatives.js')).fingerprint(original)}] : [], initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
   await actions.save({description: '确认评审时间', waitingOn: '等待对方回复可用时间', status: 'waiting', initiativeId: second.entityId});
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if (request.cmd === 'choose') { activeFixture = otherFixture; return {}; }
       if (request.cmd === 'actionWrite' && writeGate) { const gate = writeGate; writeGate = null; await gate; }
       if (request.cmd === 'actionQuery' && request.entityType === 'initiative' && queryGate) { const gate = queryGate; queryGate = null; await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
@@ -42,14 +45,14 @@ try {
           for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, size: (await stat(join(activeFixture.root, name))).size, modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
           return {notes, root: activeFixture.root};
         }
-        case 'read': return {text: await readFile(path, 'utf8')};
+        case 'read': { const text = await readFile(path, 'utf8'); if (holdRead) { readStarted(); await new Promise(resolve => releaseRead = resolve); } return {text}; }
         case 'save': if (failNoteSave) throw Error('Injected note save failure'); if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
         case 'create': await mkdir(join(path, '..'), {recursive: true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
         default: throw Error('Unhandled bridge command');
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'read') window.__readDelivered = true; if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
@@ -63,8 +66,44 @@ try {
   assert.equal(await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).count(), 1);
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue33/workspace-home.png'});
+  await page.screenshot({path: 'docs/validation/issue37/home-desktop.png'});
+  // Cross-page return must survive note editing and preserve the originating action.
+  await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
+  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
+  await rm(sourcePath);
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
+  await page.locator('#notice').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#action-editor').isVisible(), true, 'Unavailable source must retain the originating action');
+  assert.equal(await page.locator('nav [data-view=actions]').getAttribute('aria-current'), 'page');
+  await writeFile(sourcePath, original);
+  await page.getByRole('button', {name: '关闭提示'}).click();
+  await page.locator('#action-open-initiative').click();
+  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  assert.equal(await page.locator('nav [data-view=initiatives]').getAttribute('aria-current'), 'page');
+  await page.locator('#initiative-actions button').filter({hasText:'把阅读摘录'}).click();
+  await page.locator('#action-open-initiative').click();
+  await page.locator('#initiative-title').waitFor({state:'visible'});
+  assert.equal(await page.locator('#workspace-return-action').isHidden(), false, 'Nested context action retains outer origin');
+  await page.locator('#workspace-references button').click();
+  await page.locator('#reading').waitFor({state: 'visible'});
+  await page.locator('#back').click();
+  await page.screenshot({path: 'docs/validation/issue37/initiative-return-desktop.png'});
+  await page.setViewportSize({width: 393, height: 852});
+  await page.screenshot({path: 'docs/validation/issue37/initiative-return-393.png'});
+  fixture.fail((cmd, args) => cmd === 'actionQuery' && args.entityType === 'initiative');
+  await page.locator('#workspace-return-action').click();
+  await page.locator('#notice').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#workspace-return-action').isVisible(), true, 'Failed return retains a retry path');
+  await page.getByRole('button', {name:'关闭提示'}).click();
+  await page.locator('#workspace-return-action').click();
+  await page.setViewportSize({width: 1180, height: 800});
+  await page.waitForFunction(()=>document.activeElement.id === 'action-open-initiative' && document.querySelector('#action-description').value === '确定本周最重要的两件事');
+  assert.equal(await page.locator('#action-description').inputValue(), '确定本周最重要的两件事');
+  assert.equal(await page.locator('nav [data-view=actions]').getAttribute('aria-current'), 'page');
+  assert.equal(await page.locator('#action-open-initiative').evaluate(node => node === document.activeElement), true);
   await page.locator('[data-view=initiatives]').click();
-  await page.locator('#items .card', {hasText: '整理工作资料'}).click();
+  await page.locator(`#items [data-initiative-id="${first.entityId}"]`).click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(), '整理工作资料');
   await page.screenshot({path: 'docs/validation/issue33/workspace-initiative.png'});
@@ -148,6 +187,20 @@ try {
   await page.locator('#items .card', {hasText: '准备下次评审'}).click();
   await page.locator('#initiative-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(), '准备下次评审');
+  await page.locator('nav [data-view=actions]').click();
+  await page.locator('#items [data-entity-id]').filter({hasText:'确定本周最重要'}).click();
+  const sourceOpen = page.getByRole('button', {name:'打开来源：reference.md',exact:true});
+  await sourceOpen.waitFor();
+  await page.evaluate(()=>window.__readDelivered = false);
+  const started = new Promise(resolve => readStarted = resolve); holdRead = true;
+  await sourceOpen.click(); await started;
+  await page.locator('.directory-details summary').click();
+  await page.locator('#choose').click();
+  await page.waitForFunction(()=>document.querySelector('#index-state').textContent === '');
+  holdRead = false; releaseRead();
+  await page.waitForFunction(()=>window.__readDelivered);
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  assert.equal(await page.locator('#editor').isHidden(), true, 'Old-workspace source response must not open under the new workspace');
   assert.deepEqual(errors, []);
   console.log('PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed saves block initiative/New-action navigation, background refresh preserves drafts, missing notes preserve narrow-screen context, source save, selection, accessible action names, and narrow-pane navigation.');
-} finally { await browser.close(); await fixture.close(); }
+} finally { await browser.close(); await fixture.close(); await otherFixture.close(); }

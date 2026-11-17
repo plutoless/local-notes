@@ -91,3 +91,7 @@ Issue #36 uses `comparisonRow(label, value, {changed})` inside a definition list
 Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
 
 The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, a 3px focus-within outline, and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
+
+## Integrated journeys (#37)
+
+Use the [screen/state/content inventory and contributor checklist](journeys.md) for cross-page changes. It maps real shared primitives and catalogue states to maintained journey suites, including unavailable-source recovery and the quiet return-to-original-action control. Visible navigation selection and accessible current-page announcements must change together.
