@@ -18,6 +18,7 @@ const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
   if (!await flush()) return;
+  sourceOrigin = {view, action: !$('#action-editor').hidden ? actions.previous : null, opener: document.activeElement};
   focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); await openNote(path);
@@ -35,7 +36,7 @@ const syncScreen = new SyncScreen(() => [actions.repository, initiatives.reposit
 });
 async function navigate(next) {
   if (!await flush(true)) return false;
-  captureOrigin = null; $('#capture-return').hidden = true;
+  captureOrigin = null; sourceOrigin = null; $('#capture-return').hidden = true;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
   $('#organize-tools').hidden = next !== 'organize';
   if (next === 'initiatives') initiatives.detailKind = 'overview';
@@ -72,12 +73,13 @@ function state(msg){
   $('#save-state').textContent=msg;
   $('#save-state').dataset.state = /恢复/.test(msg) ? 'recovered' : /正在保存/.test(msg) ? 'saving' : /编辑中|尚有/.test(msg) ? 'dirty' : /未保存|外部修改/.test(msg) ? 'failed' : 'saved';
 }
-let captureOrigin = null;
+let captureOrigin = null, sourceOrigin = null;
 $('#note-save').onclick = () => save();
 $('#capture-return').onclick = async () => {
   if (!captureOrigin || !await flush()) return;
   const origin = captureOrigin;
   if (!await navigate(origin.view)) return;
+  if (origin.browse) { Object.assign(libraryScreen, origin.browse); $('#search').value = libraryScreen.search; await libraryScreen.restore(); }
   if (origin.initiative) {
     await initiatives.edit(origin.initiative);
     if (origin.note) await openContextNote(origin.note, origin.reading);
@@ -116,7 +118,7 @@ async function openContextNote(path, reading = true) {
     if (readMode !== reading) $('#mode').click();
   } catch (error) { notice(error.message); }
 }
-async function openNote(path){try{if(await flush())await load(path);}catch(e){notice(e.message);}}
+async function openNote(path){try{if(await flush()){await load(path); $('#mode').focus();}}catch(e){notice(e.message);}}
 async function save(){if(saving){await saving;return save();}if(!dirty)return true;if(blocked)return false;clearTimeout(timer);const path=current,text=content(),expected=base;state('正在保存…');saving=(async()=>{try{await note('save',{path,text,expected,workspaceId:currentWorkspace});base=text;dirty=content()!==text;if(!dirty)localStorage.removeItem(draftKey());state(dirty?'尚有编辑未保存':'已保存到本地');validateReferences();await refresh();return true;}catch(e){state('未保存 · 编辑仍保留');if(e.message.includes('CONFLICT')){blocked=true;$('#conflict').hidden=false;}else notice(e.message);return false;}finally{saving=null;}})();return saving;}
 async function flush(navigation = false){clearTimeout(timer);if((!navigation||!initiatives.recoveredDraft)&&!await initiatives.flush())return false;if((!navigation||!actions.recoveredDraft)&&!await actions.flush())return false;return save();}
 function draftKey(){return 'draft:'+(currentWorkspace||rootKey)+':'+current;}
@@ -130,7 +132,7 @@ for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filte
 async function createNote(initiativeId = null) {
   try {
     if (!await flush()) return;
-    const origin = !initiativeId ? {view, opener: document.activeElement, initiative: view === 'initiatives' ? initiatives.previous : null, action: !$('#action-editor').hidden ? actions.previous : null, note: !$('#editor').hidden ? current : null, reading: readMode} : null;
+    const origin = !initiativeId ? {browse: ['notes','favorites'].includes(view) ? {offset:libraryScreen.offset, directory:libraryScreen.directory, topic:libraryScreen.topic, search:libraryScreen.search, browseScroll:$('.collection').scrollTop} : null, view, opener: document.activeElement, initiative: view === 'initiatives' ? initiatives.previous : null, action: !$('#action-editor').hidden ? actions.previous : null, note: !$('#editor').hidden ? current : null, reading: readMode} : null;
     const path = `Notes/note-${Date.now()}.md`, text = '# 无标题\n\n';
     await note('create', {path, text});
     if (initiativeId) {
@@ -149,8 +151,8 @@ async function createNote(initiativeId = null) {
 $('#new').onclick = () => createNote();
 $('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
-$('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) await initiatives.edit(initiatives.previous); return; } if(await flush()){$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.render();$('#items .selected')?.focus();}};
-$('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').disabled=readMode;$('#mode').textContent=readMode?'编辑':'阅读';$('#note-mode').textContent=readMode?'阅读笔记':'编辑笔记';updateReading();};
+$('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) await initiatives.edit(initiatives.previous); return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){if(origin.action)await actions.edit(origin.action);if(origin.opener?.isConnected)origin.opener.focus();}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}};
+$('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').readOnly=readMode;$('#mode').textContent=readMode?'编辑':'阅读';$('#note-mode').textContent=readMode?'阅读笔记':'编辑笔记';updateReading();};
 $('#reading').onchange=async e=>{if(!e.target.matches('input[data-line]'))return;try{const text=toggleTask(content(),Number(e.target.dataset.line),e.target.checked);$('#body').value=text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');changed();await save();updateReading();}catch(err){notice(err.message);}};
 $('#rename').onclick=async()=>{try{if(!await flush())return;await repairMovedLinks();const path=prompt('输入相对于笔记目录的路径（以 .md 结尾）',current);if(!path||path===current)return;if(!safePath(path))throw Error('请使用有效的相对 Markdown 路径');await note('move',{path:current,target:path,expected:base,workspaceId:currentWorkspace});localStorage.setItem('pending-note-move:'+rootKey,JSON.stringify({from:current,to:path}));let linkError=null;try{await repairMovedLinks();}catch(error){linkError=error;} if(stars.delete(current)){stars.add(path);localStorage.setItem('stars',JSON.stringify([...stars]));}await validateReferences();await refresh();await load(path);if(!linkError)notice('笔记已移动，关联已更新。',true);if(linkError)notice('笔记已移动，关联尚未更新，请点击「重试更新关联」。'+linkError.message);}catch(e){notice(e.message);}};
 $('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
@@ -172,7 +174,7 @@ async function noteInitiatives(path) {
   if (current !== path) return;
   $('#note-initiatives').replaceChildren();
   for (const record of records.filter(i => i.sources.some(source => source.path === path))) {
-    const button = document.createElement('button'); button.textContent = `事项：${record.title}`;
+    const button = document.createElement('button'); button.className = 'ui-action quiet'; button.textContent = `事项：${record.title}`;
     button.onclick = async () => { if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=initiatives]').classList.add('active'); await initiatives.show(); await initiatives.edit(record); } };
     $('#note-initiatives').append(button);
   }

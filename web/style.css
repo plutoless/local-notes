@@ -231,7 +231,7 @@ details { overflow-wrap: anywhere; }
 /* Library and writing use the same quiet surfaces with a readable line length. */
 .app.library-view:not(.editing) { grid-template-columns: 196px minmax(0, 1fr); }
 .app.library-view:not(.editing) > main { display: none; }
-.library-view:not(.editing) #items { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 16px 28px; padding: 12px 28px; align-content: start; }
+.library-view:not(.editing) #items { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; padding: 12px 28px; align-content: start; }
 .library-view #items { overflow: visible; }
 .library-view #items .no-items { grid-column: 1 / -1; }
 .library-view .card p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
@@ -324,3 +324,16 @@ details { overflow-wrap: anywhere; }
 .ui-field:has(> input[hidden]) { display: none; }
 
 .focus-row-open.ui-row { display: flex; border: 0; color: var(--text); }
+
+/* Library adopts shared list/detail controls without touching Markdown source lines. */
+.library-view #items .ui-row.selected { background: var(--selected); color: var(--selected-text); }
+.library-view .card h3 { font-size: 15px; }
+#library-tools .ui-pagination { flex-basis: 100%; }
+#library-progress { flex-basis: 100%; font-size: 13px; }
+#library-progress:empty { display: none; }
+#topic-form { width: 100%; }
+#note-details label { min-height: 44px; gap: var(--space); }
+#reading h2 { font-size: 22px; line-height: 1.5; }
+#reading h3 { font-size: 18px; line-height: 1.5; }
+#title[readonly] { color: var(--text); }
+#editor .toolbar #save-state { flex: 1 1 140px; }
