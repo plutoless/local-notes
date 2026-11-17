@@ -187,7 +187,7 @@
               >事项<select id="action-initiative">
                 <option value="">独立行动</option>
               </select></label
-            ><p id="action-initiative-help">选择关联事项后可打开查看。</p><button type="button" id="action-open-initiative" aria-describedby="action-initiative-help">打开事项</button
+            ><p id="action-initiative-help">选择事项后可打开。</p><button type="button" id="action-open-initiative" aria-describedby="action-initiative-help">打开事项</button
             ><label>截止日期（可选）<input id="action-due" type="date" /></label
             ><label>等待的人或条件（可选）<input id="action-waiting" /></label>
             </details><details id="action-source-options"><summary>来源引用（可选）</summary>
@@ -196,8 +196,8 @@
             </details><div id="action-save-state" role="status" aria-live="polite"></div><div class="action-save-controls">
             <button id="action-save" type="submit" class="primary">
               保存行动</button
-            ><button id="action-discard" type="button">放弃未保存的草稿</button>
-            </div><section class="action-utilities" aria-label="行动管理"><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p>
+            >
+            </div><section class="action-utilities" aria-label="行动管理"><details class="ui-disclosure"><summary>当前重点与历史</summary><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p>
             <button
               aria-describedby="focus-help"
               id="action-focus"
@@ -213,7 +213,7 @@
             >
               查看历史
             </button>
-            <div id="action-revisions" aria-live="polite"></div></section>
+            <div id="action-revisions" aria-live="polite"></div></details><details class="ui-disclosure"><summary>放弃编辑</summary><button id="action-discard" type="button" class="ui-action danger">放弃未保存的草稿</button></details></section>
           </form>
         </div>
         <div id="initiative-editor" hidden>

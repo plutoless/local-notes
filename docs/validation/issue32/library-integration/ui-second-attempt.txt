@@ -1,0 +1,21 @@
+
+> local-notes@0.1.0 test:ui
+> node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs
+
+PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('heading', { name: 'Working log', exact: true }) to be visible[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-32/tests/initiatives-ui.mjs:164:71 {
+  log: [
+    "  - waiting for getByRole('heading', { name: 'Working log', exact: true }) to be visible"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

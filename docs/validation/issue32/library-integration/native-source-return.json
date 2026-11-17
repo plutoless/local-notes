@@ -1,0 +1,5 @@
+{
+  "focus": "action-description",
+  "search": "合并",
+  "description": "合并后失败保留并重试"
+}
