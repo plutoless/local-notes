@@ -101,6 +101,7 @@ try {
   assert.equal(actionPage.actions.length, 1);
   await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
+  await page.locator('#note-details').evaluate(node => node.open = true);
   const beforeInvalidRename = await readFile(sourcePath, 'utf8');
   page.once('dialog', dialog => dialog.accept('../outside.md'));
   await page.locator('#rename').click();
