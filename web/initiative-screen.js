@@ -78,7 +78,7 @@ export class InitiativeScreen {
     row.querySelector('button').onclick = () => { row.remove(); this.changed(); };
     row.querySelector('.source-open').onclick = async () => { if (await this.flush()) this.openNote(row.querySelector('input').value); };
     const place = () => $(row.querySelector('select').value === 'reference' ? '#initiative-references' : '#initiative-working-notes').append(row);
-    row.querySelector('select').onchange = () => { place(); this.changed(); };
+    row.querySelector('select').onchange = () => { const select = row.querySelector('select'); place(); select.focus(); this.changed(); };
     place();
   }
   form(fields, previous) {
@@ -118,7 +118,7 @@ export class InitiativeScreen {
       }
     }
     this.pendingDecisions = null;
-    if (!$('#initiative-actions').children.length) $('#initiative-actions').textContent = '没有未完成行动。可新建下一步行动。';
+    if (!$('#initiative-actions').children.length) $('#initiative-actions').textContent = record.status === 'ended' ? '没有未完成行动。将状态改为「进行中」或「以后再做」并保存，即可重新开启事项。' : '没有未完成行动。可新建下一步行动。';
     if (!$('#initiative-retired').children.length) $('#initiative-retired').textContent = '没有已完成或已取消的行动。';
     this.ending();
     for (const row of document.querySelectorAll('.initiative-source')) {
@@ -136,7 +136,7 @@ export class InitiativeScreen {
   decisions() { return Object.fromEntries([...document.querySelectorAll('#initiative-decisions select')].map(select => [select.dataset.action, select.value])); }
   ending() {
     const ending = $('#initiative-status').value === 'ended' && this.previous?.status !== 'ended';
-    $('#initiative-ending').hidden = !ending;
+    $('#initiative-ending').open = ending;
     const count = $('#initiative-decisions').children.length;
     $('#initiative-ending-help').textContent = count ? `还有 ${count} 项未完成行动。必须为每项选择处理方式，才可结束事项。` : '没有未完成行动。保存后结束事项，之后仍可将状态改为「进行中」或「以后再做」重新开启。';
     $('#initiative-save').textContent = ending ? '保存并结束事项' : '保存事项';
@@ -169,7 +169,7 @@ export class InitiativeScreen {
         this.retry = initiativeCommitted ? error.record : null; if (initiativeCommitted) this.previous = error.record;
         this.dirty = true; this.draft(); errorFeedback($('#initiative-save-state'), error.message);
         if (/Choose how to handle|Actions changed|destination initiative/.test(error.message)) {
-          $('#initiative-ending').hidden = false;
+          $('#initiative-ending').open = true;
           $('#initiative-save-state p').textContent = '尚未结束事项。请为每项未完成行动选择处理方式，再保存；可选择「暂不结束」。';
         }
         return false;
