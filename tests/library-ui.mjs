@@ -71,14 +71,14 @@ try {
   await page.getByText('还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。',{exact:true}).waitFor();
   await page.locator('[data-view=notes]').click();
   await page.locator('#library-create-topic').click();
-  await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#topic-drawer button[type=submit]').click();
   assert.equal(await page.locator('#topic-name').evaluate(node=>node.checkValidity()),false);
   assert.equal(await page.locator('#topic-name').inputValue(),'');
-  await page.locator('#topic-name').fill('长中文主题：研究资料与工作记录'); await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#topic-name').fill('长中文主题：研究资料与工作记录'); await page.locator('#topic-drawer button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#library-topic').options.length===3);
   const topic=await page.locator('#library-topic option').last().getAttribute('value');
   await page.locator('#library-topic').selectOption(topic); await page.getByText('这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。',{exact:true}).waitFor();
-  await page.locator('#library-rename-topic').click(); await page.locator('#topic-name').fill('已重命名主题'); await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#library-rename-topic').click(); await page.locator('#topic-name').fill('已重命名主题'); await page.locator('#topic-drawer button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#library-topic').selectedOptions[0].textContent==='已重命名主题');
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
