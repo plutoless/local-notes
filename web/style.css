@@ -754,3 +754,16 @@ aside > #new {
   #organize-tools { padding: 16px; }
   .organization-actions > button { flex: 1 1 120px; }
 }
+
+/* Synchronization review uses the shared surfaces and field rhythm. */
+.sync-panel { background: var(--surface, #fff); overflow-wrap: anywhere; }
+.sync-panel h3 { font-size: 15px; }
+.sync-panel h4 { font-size: 15px; margin-top: 24px; }
+.sync-panel pre, .sync-panel dd { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
+.sync-panel dt { color: var(--muted, #53645c); margin-top: 8px; font-weight: 600; }
+.sync-version { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 12px 0; }
+.sync-version summary { font-weight: 600; }
+.sync-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.sync-editor label { display: grid; gap: 6px; min-width: 0; }
+.sync-editor textarea, .sync-editor input, .sync-editor select { width: 100%; min-width: 0; }
+@media (max-width: 650px) { .sync-editor { grid-template-columns: 1fr; } .sync-panel { inset: 8px; padding: 16px; } }
