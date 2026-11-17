@@ -324,3 +324,5 @@ details { overflow-wrap: anywhere; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
 
 .ui-field:has(> input[hidden]) { display: none; }
+
+.focus-row-open.ui-row { display: flex; border: 0; color: var(--text); }

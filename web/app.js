@@ -70,7 +70,7 @@ function content(){return withTitle($('#body').value,$('#title').value||'无标�
 function updateStar(){const selected=stars.has(current);$('#star').textContent=selected?'★ 已收藏':'☆ 收藏';$('#star').setAttribute('aria-label',selected?'取消收藏笔记':'收藏笔记');$('#star').setAttribute('aria-pressed',String(selected));}
 function state(msg){
   $('#save-state').textContent=msg;
-  $('#save-state').dataset.state = /未保存|外部修改/.test(msg) ? 'failed' : /恢复/.test(msg) ? 'recovered' : /正在保存/.test(msg) ? 'saving' : /编辑中|尚有/.test(msg) ? 'dirty' : 'saved';
+  $('#save-state').dataset.state = /恢复/.test(msg) ? 'recovered' : /正在保存/.test(msg) ? 'saving' : /编辑中|尚有/.test(msg) ? 'dirty' : /未保存|外部修改/.test(msg) ? 'failed' : 'saved';
 }
 let captureOrigin = null;
 $('#note-save').onclick = () => save();
@@ -83,7 +83,7 @@ $('#capture-return').onclick = async () => {
     if (origin.note) await openContextNote(origin.note, origin.reading);
     else if (origin.action) { initiatives.detailKind = 'action'; $('.app').classList.add('detail-open'); await actions.edit(origin.action); }
   } else if (origin.action) await actions.edit(origin.action);
-  else if (origin.note) await load(origin.note);
+  else if (origin.note) { await load(origin.note); if (readMode !== origin.reading) $('#mode').click(); }
   captureOrigin = null; $('#capture-return').hidden = true;
   if (origin.opener?.isConnected && origin.opener.getClientRects().length) origin.opener.focus();
   else document.querySelector('nav .active')?.focus();
@@ -141,6 +141,8 @@ async function createNote(initiativeId = null) {
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
     focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
+    document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=notes]').classList.add('active');
+    for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === 'notes' ? 'page' : 'false');
     await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; $('#capture-return').hidden = !captureOrigin; if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
 }
