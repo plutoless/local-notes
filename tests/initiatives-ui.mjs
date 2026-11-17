@@ -119,6 +119,7 @@ try {
   await page.locator('#library-topic option', {hasText: 'Renamed topic'}).waitFor({state: 'attached'});
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading', {name: 'Working log', exact: true}).click();
+  await page.locator('#note-details').evaluate(node=>node.open=true);
   await page.locator('#note-topics input').check();
   await page.waitForFunction(() => document.querySelector('#note-topics input')?.checked && !document.querySelector('#note-topics input')?.disabled);
   await page.locator('#star').click();
@@ -129,7 +130,7 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 1);
   await page.locator('#search').fill('');
   await page.getByRole('button', {name: '浏览目录', exact: true}).click();
-  await page.getByRole('button', {name: '📁 Notes', exact: true}).click();
+  await page.getByRole('button', {name: '目录：Notes', exact: true}).click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-back').click();
   await page.waitForFunction(() => document.querySelector('#library-location').textContent === '/');
