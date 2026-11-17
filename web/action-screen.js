@@ -40,8 +40,7 @@ export class ActionScreen {
       try {
         if ($('.app').classList.contains('workspace')) {
           await this.initiatives.edit(this.initiatives.previous);
-          $('.app').classList.remove('detail-open');
-          $('#initiative-new-action').focus();
+          this.initiatives.restoreContext();
         } else {
           $('.app').classList.remove('editing');
           const row = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === this.previous?.entityId);
