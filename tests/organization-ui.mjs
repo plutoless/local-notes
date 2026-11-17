@@ -10,7 +10,7 @@ try {
   const target = page.locator(selector).first();
   const panel = page.locator('#organize-tools');
   const bounds = await panel.boundingBox();
-  assert.ok(bounds && bounds.height > 100, 'Organization panel needs a bounded visible viewport');
+  assert.ok(bounds && bounds.height > 100, 'Organization panel needs a bounded visible viewport: '+JSON.stringify(bounds));
   await page.mouse.move(bounds.x + bounds.width - 12, bounds.y + bounds.height / 2);
   for (let attempt = 0; attempt < 160; attempt++) {
    const visible = await target.evaluate(element => {
@@ -74,7 +74,11 @@ try {
   await wheelReach('#ai-results button');
   await wheelReach('#ai-results-next');
  }
+ await page.locator('#ai-selection input').check();
  const evidence = await wheelReach('#ai-results button');
  await page.mouse.click(evidence.x + evidence.width / 2, evidence.y + evidence.height / 2);await page.locator('#editor').waitFor();assert.equal(await page.locator('#file-path').textContent(),'reference.md');
+ await page.locator('#back').click(); await page.locator('#ai-results').waitFor();
+ await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开来源：reference.md，建议：Inspect evidence');
+ assert.equal(await page.locator('#ai-selection input').isChecked(), true);
  assert.deepEqual(errors,[]);console.log('Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.');
 }finally{await browser.close();await fixture.close();}
