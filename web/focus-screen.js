@@ -61,8 +61,8 @@ export class FocusScreen {
     if (focused.actions.length > this.limit || focused.hasMore) focus.append(this.button('展开更多重点行动', async () => { this.limit = Math.min(99, this.limit + 50); await this.show(); }));
     // Beyond one bounded page, navigate explicit pages rather than rendering the collection.
     if (this.focusOffset || this.limit === 99) focus.append(pagination(
-      async () => { this.focusOffset = Math.max(0, this.focusOffset - 99); await this.show(); },
-      async () => { this.focusOffset = (this.focusOffset || 0) + 99; await this.show(); },
+      () => this.pageFocus(Math.max(0, this.focusOffset - 99)),
+      () => this.pageFocus((this.focusOffset || 0) + 99),
       {hasPrevious: Boolean(this.focusOffset), hasNext: this.limit === 99 && (focused.hasMore || focused.actions.length > this.limit)}));
     const followUp = section('等待与跟进');
     if (!waiting.actions.length) followUp.append('没有等待中的行动。');
@@ -77,6 +77,12 @@ export class FocusScreen {
       row.append(this.button('打开事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(initiative); })); work.append(row);
     }
     if (initiatives.hasMore) work.append(this.button('全部事项', () => this.navigate('initiatives')));
+  }
+  async pageFocus(offset) {
+    const previous = this.focusOffset;
+    this.focusOffset = offset;
+    try { await this.show(); }
+    catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
   }
   actionRow(action) {
     const row = document.createElement('div'); row.className = 'card focus-row';
