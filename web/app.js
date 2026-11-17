@@ -22,7 +22,7 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   const generation = workspaceGeneration;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
-  if (generation !== workspaceGeneration) return;
+  if (generation !== workspaceGeneration || view !== origin.view) return;
   sourceOrigin = origin;
   focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
@@ -39,7 +39,7 @@ const organize = new OrganizeScreen(async path => {
   const generation = workspaceGeneration;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
-  if (generation !== workspaceGeneration) return;
+  if (generation !== workspaceGeneration || view !== origin.view) return;
   if (await navigate('notes')) { if (generation !== workspaceGeneration) return; sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
 });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
@@ -86,15 +86,23 @@ $('#action-open-initiative').onclick = async () => {
   } catch (error) { notice(error.message); }
 };
 $('#workspace-return-action').onclick = async () => {
+  const origin = actionOrigin;
   try {
-    if (!actionOrigin || !await flush()) return;
-    const origin = actionOrigin;
+    if (!origin || !await flush()) return;
     if (!await navigate(origin.view)) return;
     $('#search').value = origin.search;
     await actions.edit(origin.action);
     $('#action-open-initiative').focus({preventScroll: true});
     $('.collection').scrollTop = origin.scroll; $('#workspace-detail').scrollTop = origin.detailScroll;
-  } catch (error) { notice(error.message); }
+  } catch (error) {
+    // A failed return must retain its retry control and the saved initiative context.
+    actionOrigin = origin; view = 'initiatives'; selectNavigation(view);
+    actions.active = false; initiatives.active = true; focus.active = false;
+    $('.app').classList.add('workspace', 'editing'); $('.app').classList.remove('detail-open');
+    $('#workspace-context').hidden = false; $('#initiative-editor').hidden = false;
+    $('#action-editor').hidden = true; $('#action-tools').hidden = true;
+    $('#workspace-return-action').hidden = false; notice(error.message);
+  }
 };
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
