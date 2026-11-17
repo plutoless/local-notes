@@ -684,3 +684,14 @@ aside > #new {
 #initiative-sources section { margin-block: 24px; }
 #initiative-sources h4 { font-size: 16px; margin-bottom: 8px; }
 .initiative-source { margin-block: 16px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
+/* Action details reuse the shared surfaces and control hierarchy. */
+#action-editor .document { max-width: 960px; }
+#action-editor details { border-bottom: 1px solid var(--line); margin: 8px 0 16px; }
+#action-editor pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#action-editor blockquote { margin: 12px 0; padding-left: 16px; border-left: 3px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere; }
+#action-editor small { color: var(--muted); overflow-wrap: anywhere; }
+.action-save-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 24px; }
+.action-utilities { border-top: 1px solid var(--line); padding-top: 16px; }
+.action-utilities p { color: var(--muted); }
+.action-revision { border-top: 1px solid var(--line); padding: 16px 0; }
+#items .card.selected { border-color: var(--green); background: var(--hover); box-shadow: inset 4px 0 var(--green); }
