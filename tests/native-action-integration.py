@@ -32,6 +32,18 @@ m.OUT.mkdir(parents=True)
 (m.OUT / 'Private').mkdir()
 (m.OUT / 'Sync/reference.md').write_text('# 隔离来源\n\n- [ ] 仅作为来源内容\n')
 m.build()
+# Take deterministic WK snapshots through the same test-only command channel.
+generated = m.OUT / 'main.swift'
+generated.write_text(generated.read_text().replace('let wrapped =', '''if script == "__snapshot" {
+                    self?.web.takeSnapshot(with: nil) { image, error in
+                        if let tiff = image?.tiffRepresentation, let bitmap = NSBitmapImageRep(data: tiff), let png = bitmap.representation(using: .png, properties: [:]) { try? png.write(to: reviewProbe.directory.appendingPathComponent("snapshot.png")) }
+                        try? JSONSerialization.data(withJSONObject: ["ok": true]).write(to: reviewProbe.directory.appendingPathComponent("response.json"))
+                    }
+                    return
+                }
+                let wrapped ='''))
+subprocess.run(['swiftc', '-module-cache-path', 'build/swift-cache', str(generated), 'mac/AIService.swift', 'mac/ActionStorage.swift', 'mac/ActionIndex.swift', 'mac/ReferenceIndex.swift', 'mac/ReferenceScan.swift', '-lsqlite3', '-framework', 'Cocoa', '-framework', 'WebKit', '-o', str(m.APP / 'Contents/MacOS/LocalNotes')], check=True)
+subprocess.run(['codesign', '--force', '--deep', '--sign', '-', str(m.APP)], check=True)
 resources = m.APP / 'Contents/Resources/web'
 hashes = {}
 for source in Path('web').iterdir():
@@ -51,9 +63,8 @@ def record(name, expression):
     return value
 
 def snapshot(name):
-    result = json.loads(subprocess.check_output(['orca', 'computer', 'get-app-state', '--app', identity, '--json']))
-    assert result['ok'], result
-    shutil.copy(result['result']['screenshot']['path'], evidence / (name + '.png'))
+    c('__snapshot')
+    shutil.copy(m.OUT / 'snapshot.png', evidence / (name + '.png'))
 
 process = launch()
 protected = None
