@@ -154,7 +154,7 @@ try {
     await page.locator('#search').fill('打开资料');
     await page.getByRole('heading',{name:'从行动打开资料再返回',exact:true}).click();
     await page.locator('#action-source-options').evaluate(node=>node.open=true);
-    await page.getByRole('button',{name:'打开来源',exact:true}).click();
+    await page.getByRole('button',{name:/^打开来源：/}).click();
     await page.locator('#editor').waitFor({state:'visible'});
     await page.locator('#back').click();
     await page.locator('#action-editor').waitFor({state:'visible'});
@@ -163,7 +163,7 @@ try {
     assert.equal(await page.locator('#action-description').inputValue(),'从行动打开资料再返回');
     assert.equal(await page.locator('#action-description').evaluate(node=>node===document.activeElement),true);
     await page.locator('#action-source-options').evaluate(node=>node.open=true);
-    await page.getByRole('button',{name:'打开来源',exact:true}).click();
+    await page.getByRole('button',{name:/^打开来源：/}).click();
     await page.locator('#editor').waitFor({state:'visible'});
     alternateFixture = await storageFixture();
     await page.locator('.directory-details').evaluate(node=>node.open=true);

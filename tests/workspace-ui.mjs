@@ -90,6 +90,16 @@ try {
   await page.locator('#action-initiative').selectOption(first.entityId);
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  // A successful save must not hide the origin if the return query fails.
+  fixture.fail((cmd, args) => cmd === 'actionQuery' && args.entityType === 'initiative');
+  await page.locator('#action-back').click();
+  await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
+  assert.equal(await page.locator('#action-editor').isVisible(), true);
+  assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
+  assert.equal(await page.locator('#action-initiative').inputValue(), first.entityId);
+  await page.locator('#action-back').click();
+  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  await page.locator('#initiative-actions button', {hasText: '确定本周最重要'}).click();
   await page.locator('#workspace-detail').evaluate(node => node.scrollTop = 0);
   await page.screenshot({path: 'docs/validation/issue33/workspace-action.png'});
   await page.locator('#workspace-references button').click();

@@ -107,7 +107,8 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 #action-new, #initiative-new { width: 100%; }
 .action-pagination { display: flex; gap: 8px; align-items: center; justify-content: space-between; width: 100%; font-size: 12px; font-variant-numeric: tabular-nums; }
 #action-id, #action-revisions, .source-state { overflow-wrap: anywhere; font-size: 12px; }
-#action-save-state, #initiative-save-state { white-space: normal; font-size: 13px; color: var(--muted); }
+#initiative-save-state { white-space: normal; font-size: 13px; color: var(--muted); }
+#action-save-state { white-space: normal; font-size: 13px; }
 #action-save-state p, #initiative-save-state p { margin: 8px 0; }
 .action-source, .initiative-source { border: 1px solid var(--divider); border-radius: var(--radius); padding: 16px; margin: 16px 0; }
 summary { cursor: pointer; min-height: 44px; padding: 10px 0; }
@@ -325,6 +326,10 @@ details { overflow-wrap: anywhere; }
 
 .focus-row-open.ui-row { display: flex; border: 0; color: var(--text); }
 
+/* Confirmed action rows use the shared selection state, including metadata. */
+#items .card.ui-row.selected { background: var(--selected); color: var(--selected-text); }
+#items .card.ui-row.selected :is(p, small) { color: var(--selected-text); }
+#items .card.ui-row h3 { font-size: 15px; line-height: 1.65; font-weight: 600; }
 /* Library adopts shared list/detail controls without touching Markdown source lines. */
 .library-view #items .ui-row.selected { background: var(--selected); color: var(--selected-text); }
 .library-view .card h3 { font-size: 15px; }
