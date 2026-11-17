@@ -159,7 +159,11 @@ try {
   await page.locator('.source-state').filter({hasText: '来源已移至 moved-reference.md'}).waitFor();
   assert.equal(await readFile(join(fixture.root, 'moved-reference.md'), 'utf8'), original);
   // Separate roles, source warnings, and explicit note round trips.
-  await page.locator('.initiative-source select').first().selectOption('reference');
+  const roleSelect = page.locator('.initiative-source select').first();
+  await roleSelect.focus(); await roleSelect.selectOption('reference');
+  assert.equal(await page.locator('#initiative-references select').evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#initiative-references button').first().evaluate(el => el === document.activeElement), true);
   await page.locator('#initiative-save').click();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await page.locator('#initiative-references .initiative-source').count(), 1);

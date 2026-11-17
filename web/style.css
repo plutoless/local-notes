@@ -680,7 +680,7 @@ aside > #new {
 #initiative-form > h3 { margin-top: 32px; }
 #initiative-actions, #initiative-retired { display: grid; gap: 8px; }
 #initiative-actions button, #initiative-retired button { text-align: left; overflow-wrap: anywhere; }
-#initiative-ending { margin-block: 24px; padding: 16px; border: 1px solid var(--border, #819288); border-radius: 8px; background: #f5f7f5; }
+#initiative-ending { margin-block: 24px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
 #initiative-sources section { margin-block: 24px; }
 #initiative-sources h4 { font-size: 16px; margin-bottom: 8px; }
-.initiative-source { margin-block: 16px; padding: 16px; border: 1px solid #819288; border-radius: 8px; }
+.initiative-source { margin-block: 16px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
