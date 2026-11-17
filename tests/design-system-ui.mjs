@@ -107,6 +107,7 @@ try {
   await page.waitForFunction(()=>document.querySelector('#body').value==='重新打开后恢复的草稿');
   assert.equal(await page.locator('#body').inputValue(),'重新打开后恢复的草稿');
   assert.match(await page.locator('#save-state').textContent(),/恢复/);
+  assert.equal(await page.locator('#save-state').getAttribute('data-state'),'recovered');
   failNoteSave=false;
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText:'已保存到本地'}).waitFor();
