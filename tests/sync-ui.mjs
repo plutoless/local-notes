@@ -68,7 +68,7 @@ try {
   await panel.getByText('正在检查本地版本…').waitFor();
   assert.equal(await panel.locator('article').first().evaluate(el=>el.inert),true);
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false'); delayFiles=false;
-  await panel.getByRole('button', {name: '选择版本 1', exact: true}).click();
+  await panel.getByRole('button', {name: /^选择版本 /}).first().click();
   await panel.getByRole('button', {name: '关闭检查', exact: true}).click();
   await panel.getByText('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。').waitFor();
   await page.keyboard.press('Escape'); assert.equal(await panel.isVisible(), true);

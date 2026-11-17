@@ -33,6 +33,7 @@ export class SyncScreen {
     this.panel.hidden = true;
   }
   async refresh(show) {
+    if (show) { this.panel.hidden = false; this.panel.querySelector('button')?.focus(); }
     if (this.running || this.saving) return;
     if (this.dirty) { if (show) this.canLeave(); return; }
     if (show) this.panel.hidden = false;
@@ -46,7 +47,7 @@ export class SyncScreen {
       }
       this.warnings = warnings;
       this.render();
-      if (show) this.panel.querySelector('button')?.focus();
+      if (!this.panel.hidden && !this.panel.contains(document.activeElement)) this.panel.querySelector('button')?.focus();
       await this.changed();
     } catch (error) {
       feedback(this.status, '检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。', error.message);
