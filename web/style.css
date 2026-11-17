@@ -757,7 +757,7 @@ aside > #new {
 
 /* Synchronization review uses the shared surfaces and field rhythm. */
 .sync-panel { background: var(--surface, #fff); overflow-wrap: anywhere; }
-.sync-panel h3 { font-size: 19px; }
+.sync-panel h3 { font-size: 15px; }
 .sync-panel h4 { font-size: 15px; margin-top: 24px; }
 .sync-panel pre, .sync-panel dd { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
 .sync-panel dt { color: var(--muted, #53645c); margin-top: 8px; font-weight: 600; }

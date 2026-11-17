@@ -40,7 +40,7 @@ export function progressLabel(message) {
 // Bind after the modal exists; return focus to its opener on every close path.
 export function bindDialog(panel) {
   let origin;
-  const controls = () => [...panel.querySelectorAll('button:not(:disabled), input, textarea, select, summary')].filter(node => node.getClientRects().length);
+  const controls = () => [...panel.querySelectorAll('button:not(:disabled), input, textarea, select, summary')].filter(node => node.getClientRects().length && !node.closest('[inert]'));
   new MutationObserver(() => {
     if (panel.hidden) { origin?.focus(); origin = null; }
     else if (!panel.contains(document.activeElement)) { origin ||= document.activeElement; controls()[0]?.focus(); }
