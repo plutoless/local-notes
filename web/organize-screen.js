@@ -1,4 +1,4 @@
-import {button as makeButton, errorFeedback, feedback} from './presentation.js';
+import {button as makeButton, errorFeedback, feedback, field, disclosure} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -6,6 +6,9 @@ const $ = selector => document.querySelector(selector);
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
+    for (const node of document.querySelectorAll('#organize-tools button')) node.classList.add('ui-action', node.classList.contains('primary') ? 'primary' : 'secondary');
+    for (const node of document.querySelectorAll('#organize-tools details')) node.classList.add('ui-disclosure');
+    for (const node of document.querySelectorAll('#organize-tools label')) node.classList.add('ui-field');
     $('#ai-settings').onsubmit = event => { event.preventDefault(); this.attempt(async () => { await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value}); $('#ai-token').value = ''; await this.settings(); this.controls(); this.status('设置已保存在此设备。'); }); };
     $('#ai-preview').onclick = () => this.attempt(async () => {
       if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
@@ -37,14 +40,24 @@ export class OrganizeScreen {
   status(text) {
     const analyzing = text.match(/^Analyzing fragment (\d+)\/(\d+); completed (\d+)/);
     const complete = text.match(/^Complete: (\d+)\/(\d+)/);
+    $('#ai-progress').value = this.organization.covered || 0;
+    $('#ai-status').classList.add('ui-feedback');
+    $('#ai-status').dataset.state = analyzing ? 'loading' : complete ? 'saved' : 'idle';
     $('#ai-status').textContent = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
   }
   controls() {
     const running = this.organization.running || this.previewing, batches = this.organization.batches;
+    const ready = Boolean(batches?.length);
+    $('#ai-preview').classList.toggle('primary', !ready);
+    $('#ai-preview').classList.toggle('secondary', ready);
+    $('#ai-send').classList.toggle('primary', ready);
+    $('#ai-send').classList.toggle('secondary', !ready);
     $('#ai-preview').disabled = running;
     $('#ai-send').disabled = running || !this.configured || !batches?.length || this.organization.covered === batches.length;
     $('#ai-send').textContent = this.organization.covered && this.organization.covered < batches?.length ? '继续分析剩余内容' : '发送并分析';
     $('#ai-cancel').disabled = !this.organization.running;
+    $('#ai-progress').hidden = !this.organization.running;
+    $('#ai-progress').max = batches?.length || 1; $('#ai-progress').value = this.organization.covered || 0;
     $('#ai-selection').inert = running; $('#ai-directory').disabled = running;
     $('#ai-notes-next').disabled = running || !this.selectionHasMore;
     $('#ai-notes-previous').disabled = running || !this.selectionOffset;
@@ -100,46 +113,53 @@ export class OrganizeScreen {
   async inventory() {
     const result = await this.library.query({directory: $('#ai-directory').value, offset: this.selectionOffset, limit: 50});
     $('#ai-selection').replaceChildren();
-    for (const note of result.notes) { const label = document.createElement('label'), input = document.createElement('input'); input.type = 'checkbox'; input.value = note.path; input.checked = this.selected.has(note.path); input.onchange = () => { input.checked ? this.selected.add(note.path) : this.selected.delete(note.path); this.invalidate(); }; label.append(input, document.createTextNode(note.path)); $('#ai-selection').append(label); }
+    for (const note of result.notes) { const label = document.createElement('label'), input = document.createElement('input'); input.type = 'checkbox'; input.value = note.path; input.checked = this.selected.has(note.path); input.onchange = () => { input.checked ? this.selected.add(note.path) : this.selected.delete(note.path); this.invalidate(); }; label.className = 'ui-selection'; label.append(input, document.createTextNode(note.path)); $('#ai-selection').append(label); }
     this.selectionHasMore = result.hasMore; this.controls(); if (!result.notes.length) $('#ai-selection').textContent = '此目录没有可选择的笔记。';
   }
   async candidates() {
     if (this.reviewing) return;
+    const focused = document.activeElement.closest('[data-candidate]');
+    const focusId = focused?.dataset.candidate, focusName = document.activeElement.getAttribute('aria-label');
+    const scroll = $('#organize-tools').scrollTop;
     const destinations = await allRecords(this.review.targets.initiative);
     const page = await this.repository.query({offset: this.offset, limit: 50}); $('#ai-results').replaceChildren();
     for (const record of page.actions) {
-      const card = document.createElement('article'); card.className = 'card suggestion-card';
+      const card = document.createElement('article'); card.className = 'card suggestion-card'; card.dataset.candidate = record.entityId; card.tabIndex = -1; card.setAttribute('aria-label', `建议：${record.description}`);
       for (const text of [`${{initiative:'事项', action:'行动', topic:'主题', relationship:'关联', progress:'进展'}[record.candidateType] || '建议'}：${record.description}`, `建议归属：${record.placement}`, `理由：${record.reasoning}`, `当前适用性：${record.relevance}`]) { const p = document.createElement(text.startsWith('建议归属') || text.startsWith('理由') || text.startsWith('当前适用性') ? 'p' : 'h3'); p.textContent = text; card.append(p); }
-      for (const source of record.sources) { const quote = document.createElement('blockquote'); quote.textContent = source.quote; const button = makeButton(`${source.path} [${source.start}–${source.end}]`, () => this.openNote(source.path)); card.append(quote, button); }
+      for (const source of record.sources) { const quote = document.createElement('blockquote'); quote.textContent = source.quote; const button = makeButton(`${source.path} [${source.start}–${source.end}]`, () => this.openNote(source.path), {label: `打开来源：${source.path}，建议：${record.description}`}); card.append(quote, button); }
       const state = document.createElement('p');
       state.textContent = record.syncState ? '存在同步冲突，请打开「同步检查」。' : record.review ? `处理决定：${{confirm:'确认',ignore:'忽略',later:'留待以后',reference:'作为参考',attach:'关联事项'}[record.review.decision] || '待核对'}，${record.review.state === 'done' ? '已保存' : '待恢复'}` : '等待你确认';
-      card.append(state);
+      state.className = 'ui-feedback'; state.setAttribute('role', 'status'); card.append(state);
       if (record.review?.suggestion && record.review.suggestion !== record.description) { const approved = document.createElement('p'); approved.textContent = `保存的建议：${record.review.suggestion}`; card.append(approved); }
       if (!record.syncState && (!record.review || (record.review.decision === 'later' && !record.review.target && record.review.state === 'done'))) {
-        const editDetails = document.createElement('details'), editSummary = document.createElement('summary'), draftState = document.createElement('p'); editSummary.textContent = '确认前编辑建议'; editDetails.append(editSummary); card.append(editDetails);
+        const editDetails = disclosure('确认前编辑建议'), draftState = document.createElement('p'); draftState.setAttribute('role', 'status'); card.append(editDetails);
         const edit = document.createElement('textarea'); edit.setAttribute('aria-label', '编辑建议'); edit.value = this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description;
-        edit.oninput = () => { this.drafts.set(record.entityId, edit.value); draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }; editDetails.append(edit, draftState); if (this.drafts.has(record.entityId)) { editDetails.open = true; draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }
+        edit.oninput = () => { this.drafts.set(record.entityId, edit.value); draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }; editDetails.append(field('编辑建议', edit), draftState); if (this.drafts.has(record.entityId)) { editDetails.open = true; draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }
         const target = document.createElement('select'); target.setAttribute('aria-label', '已有事项');
         target.append(Object.assign(document.createElement('option'), {value: '', textContent: '选择要关联的已有事项'}));
         for (const initiative of destinations.filter(r => !r.syncState)) target.append(Object.assign(document.createElement('option'), {value: initiative.entityId, textContent: initiative.title}));
-        const targetLabel = document.createElement('label'); targetLabel.textContent = '归入已有事项（关联、参考或进展建议时选择）'; targetLabel.append(target); card.append(targetLabel);
+        card.append(field('归入已有事项', target, {help: '关联、参考或进展建议时选择。'}));
         const decisions = document.createElement('div'); decisions.className = 'organization-actions'; card.append(decisions);
         for (const [decision, label] of [['confirm', '确认此建议'], ['attach', '关联到事项'], ['reference', '作为参考资料'], ['later', '留待以后'], ['ignore', '忽略']]) {
-          const button = document.createElement('button'); button.textContent = label; if (decision === 'confirm') button.className = 'primary';
-          button.onclick = () => this.attempt(async () => {
-            this.reviewing = true; const buttons = [...card.querySelectorAll('button')]; buttons.forEach(b => b.disabled = true);
+          const button = makeButton(label, () => this.attempt(async () => {
+            this.reviewing = true; state.textContent = '正在保存决定…'; const buttons = [...card.querySelectorAll('button')]; buttons.forEach(b => b.disabled = true);
             try { await this.review.decide(record, decision, {description: edit.value, targetId: target.value}); this.drafts.delete(record.entityId); this.status('决定已保存到本地。每条建议都需要单独确认。'); }
             finally { this.reviewing = false; buttons.forEach(b => b.disabled = false); await this.candidates(); }
-          }); decisions.append(button);
+          }), {variant: decision === 'confirm' ? 'primary' : 'quiet', label: `${label}：${record.description}`}); decisions.append(button);
         }
       } else if (record.review?.state === 'pending' && !record.syncState) {
-        const retry = document.createElement('button'); retry.textContent = '恢复已确认的决定'; retry.onclick = () => this.attempt(async () => { await this.review.recover(); await this.candidates(); }); card.append(retry);
+        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { await this.review.recover(); await this.candidates(); }), {variant: 'secondary'}); card.append(retry);
       }
-      const details = document.createElement('details'), summary = document.createElement('summary'), raw = document.createElement('pre');
-      summary.textContent = '建议记录详情'; raw.textContent = JSON.stringify({entityId: record.entityId, revision: record.revision, review: record.review || null}, null, 2); details.append(summary, raw); card.append(details);
+      const raw = document.createElement('pre');
+      raw.textContent = JSON.stringify({entityId: record.entityId, revision: record.revision, review: record.review || null}, null, 2); card.append(disclosure('建议记录详情', [raw]));
       $('#ai-results').append(card);
     }
     if (!page.actions.length) $('#ai-results').textContent = '还没有保存的建议。选择笔记并分析后，在这里逐条核对。';
+    if (focusId) {
+      const card = [...$('#ai-results').children].find(node => node.dataset.candidate === focusId);
+      const control = [...(card?.querySelectorAll('[aria-label]') || [])].find(node => node.getAttribute('aria-label') === focusName);
+      (control || card)?.focus({preventScroll: true}); $('#organize-tools').scrollTop = scroll;
+    }
     $('#ai-results-previous').disabled = this.offset === 0; $('#ai-results-next').disabled = !page.hasMore;
   }
 }
