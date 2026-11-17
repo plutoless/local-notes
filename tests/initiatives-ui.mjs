@@ -2,6 +2,7 @@ import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/pro
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
+import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 let activeFixture = fixture;
@@ -10,12 +11,15 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
+  let writeGate = null, queryGate = null;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if (request.cmd === 'actionWrite' && writeGate) { const gate = writeGate; writeGate = null; await gate; }
+      if (request.cmd === 'actionQuery' && request.entityType === 'initiative' && queryGate) { const gate = queryGate; queryGate = null; await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -65,10 +69,24 @@ try {
   await page.locator('[data-view="initiatives"]').click();
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   await page.locator('#initiative-actions button').filter({hasText: 'Verify the release'}).waitFor();
+  await page.locator('#initiative-progress').fill('未保存的进展，跳转后仍保留');
+  await page.locator('#initiative-actions button').click();
+  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.locator('#action-open-initiative').click();
+  await page.waitForFunction(() => !document.querySelector('#initiative-form').inert);
+  assert.equal(await page.locator('#initiative-progress').inputValue(), '未保存的进展，跳转后仍保留');
+  await page.locator('#initiative-status').selectOption('later');
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  await page.locator('#initiative-status').selectOption('ended');
+  await page.locator('#initiative-ending').waitFor({state: 'visible'});
+  await page.locator('#initiative-cancel-ending').click();
+  assert.equal(await page.locator('#initiative-status').inputValue(), 'later');
   await page.locator('#initiative-status').selectOption('ended');
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state summary').click(); await page.getByText(/Choose how to handle every unfinished action/).waitFor();
-  await page.locator('summary').filter({hasText: '结束前处理未完成行动'}).click();
+  await page.locator('#initiative-ending').waitFor({state: 'visible'});
+  assert.match(await page.locator('#initiative-save-state').innerText(), /请为每项未完成行动选择处理方式/);
   await page.locator('[data-action]').selectOption('independent');
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
   await page.locator('#initiative-form [type=submit]').click();
@@ -77,6 +95,7 @@ try {
   await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-save-state').filter({hasText: /已恢复事项草稿/}).waitFor();
+  assert.equal(await page.locator('[data-action]').inputValue(), 'independent');
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await page.locator('#initiative-actions button').count(), 0);
@@ -85,6 +104,7 @@ try {
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#initiative-new-note').click();
   await page.locator('#editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
   await page.locator('#title').fill('Working log');
   await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
@@ -145,9 +165,59 @@ try {
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   await page.locator('.source-state').filter({hasText: '来源已移至 moved-reference.md'}).waitFor();
   assert.equal(await readFile(join(fixture.root, 'moved-reference.md'), 'utf8'), original);
+  // Separate roles, source warnings, and explicit note round trips.
+  const roleSelect = page.locator('.initiative-source select').first();
+  await roleSelect.focus(); await roleSelect.selectOption('reference');
+  assert.equal(await page.locator('#initiative-references select').evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#initiative-references button').first().evaluate(el => el === document.activeElement), true);
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  assert.equal(await page.locator('#initiative-references .initiative-source').count(), 1);
+  assert.equal(await page.locator('#initiative-working-notes .initiative-source').count(), 1);
+  await page.locator('#initiative-working-notes .source-open').click();
+  await page.locator('#editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
+  await page.locator('#note-details').evaluate(node => node.open = true);
+  await page.locator('#note-initiatives button').click();
+  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
+  await writeFile(join(fixture.root, 'moved-reference.md'), original + '\nExternal update');
+  await page.locator('[data-view="initiatives"]').click();
+  await page.locator('#initiative-references .source-state').filter({hasText: '来源已修改，请核对引用'}).waitFor();
+  // Pagination uses native storage and keeps search distinct from an empty collection.
+  const repository = new InitiativeRepository(fixture.adapter); await repository.open();
+  for (let i = 0; i < 51; i++) await repository.save({title: `分页事项 ${i}`, goal: '', progress: '', status: 'active', sources: []});
+  await page.locator('[data-view="initiatives"]').click();
+  await page.locator('#initiative-next').click();
+  await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 2);
+  await page.locator('#initiative-previous').click();
+  await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 50);
+  await page.locator('#search').fill('不存在的事项');
+  await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
+  await page.locator('#search').fill('');
+  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('#initiative-title').fill('很长的中文事项标题用于检查换行与键盘焦点。'.repeat(6));
   await page.setViewportSize({width: 393, height: 852});
-  await page.screenshot({path: 'build/initiatives-mobile.png'});
+  await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#initiative-goal').evaluate(el => el === document.activeElement), true);
+  assert.equal(await page.locator('#initiative-goal').evaluate(el => getComputedStyle(el).outlineStyle), 'solid');
+  await page.screenshot({path: 'docs/validation/issue18/web-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  // Hold real adapter calls to observe loading/saving rather than assuming transient states.
+  let releaseWrite; writeGate = new Promise(resolve => { releaseWrite = resolve; });
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^正在保存事项…$/}).waitFor();
+  assert.equal(await page.locator('#initiative-form').evaluate(el => el.inert), true);
+  releaseWrite();
+  await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  await page.locator('#initiative-back').click();
+  let releaseQuery; queryGate = new Promise(resolve => { releaseQuery = resolve; });
+  await page.locator('#search').fill('没有这个标题');
+  await page.locator('#index-state').filter({hasText: '正在载入事项…'}).waitFor();
+  releaseQuery();
+  await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
   assert.deepEqual(errors, []);
   console.log('PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).');
 } finally { await browser.close(); await fixture.close(); }

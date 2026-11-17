@@ -1,0 +1,25 @@
+{
+  "productionCommit": "8a5f6bffe0629adcb5ffef00937748f5623e5804",
+  "startingBase": "318a44f341895c27a32c97416bab4f92310f7381",
+  "integratedMain": "7e85261efde0d75957351048a376b403c5d2233d",
+  "files": {
+    "web/action-screen.js": "27f0e5ca85148c4cf59b3f5a4f042079452e8f91f9d47cc05af234c1ca199224",
+    "web/actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
+    "web/app.js": "4b2d6f53c8708909c40ee2cac2508842f43b906206fec2c8c9b77f508ec8bd81",
+    "web/bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "web/core.js": "ecb50a70ab995cc6d92a555a56e7b7d83eb096818631e0539da8f4afb0179eee",
+    "web/focus-screen.js": "ca93ae14110251c5b9e3eca4f6832b50a71932431b9a83a316e7512ff05d59c4",
+    "web/index.html": "d44b8c80272a93b8cc9263a3567b05da1219359a512fd23f9e157ac616c5445e",
+    "web/initiative-screen.js": "a99a24636f1cef06deb48d5516b1b9d242d29960a139d44f346124e8336cb912",
+    "web/initiatives.js": "009b47661d6f8b392f428446cd4fe60f36fd5103c9096d5a9326ef99c6fd3370",
+    "web/library-screen.js": "4f42afcb2b3d604c403a2a44e313ecf1f98eec48461381a0ac92bafe0c339c85",
+    "web/library.js": "78cde2a4770c3c1260065889052f11228205090dea69f6533619e96dc7c5ae7f",
+    "web/organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
+    "web/organize-screen.js": "7eb5f450673f7d5ee1b3d91d6739d1c69742b94ad68388a3048e685d8081423f",
+    "web/presentation.js": "ea52840517576c70aea8a19b45c90516ae7205fc1e5afc96a1609a6b53ab3574",
+    "web/revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "web/style.css": "bb36da2a49088281f207686fbf177054a15aeffb24b12b95bea7c581fdc79a64",
+    "web/sync-screen.js": "e594205369e3be595a99f9a52b737e68df25050e87ae437447e68c5211d2798b"
+  },
+  "apkSha256": "22e85a8effd15fc52995078bbb9270611c276739f2a108eca6513dd54228d2db"
+}

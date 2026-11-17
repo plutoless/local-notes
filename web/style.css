@@ -714,6 +714,14 @@ aside > #new {
 #reading .checkline input { width: 20px; min-width: 20px; max-width: 20px; }
 #reading .checkline span { min-width: 0; }
 
+/* Initiative details reuse shared fields and status feedback. */
+#initiative-form > h3 { margin-top: 32px; }
+#initiative-actions, #initiative-retired { display: grid; gap: 8px; }
+#initiative-actions button, #initiative-retired button { text-align: left; overflow-wrap: anywhere; }
+#initiative-ending { margin-block: 24px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--canvas); }
+#initiative-sources section { margin-block: 24px; }
+#initiative-sources h4 { font-size: 16px; margin-bottom: 8px; }
+.initiative-source { margin-block: 16px; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); }
 /* Action details reuse the shared surfaces and control hierarchy. */
 #action-editor .document { max-width: 960px; }
 #action-editor details { border-bottom: 1px solid var(--line); margin: 8px 0 16px; }
