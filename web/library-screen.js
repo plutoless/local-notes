@@ -31,10 +31,11 @@ export class LibraryScreen {
     this.topicDrawer.footer.append(cancel, submit);
     const guard = document.createElement('div'); guard.className = 'draft-guard'; guard.hidden = true;
     const message = document.createElement('p'); message.textContent = '主题尚未保存，是否放弃此次编辑？';
-    guard.append(message, button('继续编辑', () => { guard.hidden = true; input.focus(); }), button('放弃主题编辑', () => this.closeTopic()));
-    this.topicDrawer.body.append(guard); this.topicGuard = guard;
+    guard.append(message, button('继续编辑', () => { guard.hidden = true; (this.topicRetry ? submit : input).focus(); }), button('放弃主题编辑', () => this.closeTopic()));
+    this.topicDrawer.body.append(guard); this.topicGuard = guard; this.topicGuardMessage = message;
     input.oninput = () => {
       input.setAttribute('aria-invalid', 'false'); error.replaceChildren();
+      status.textContent = input.value === (this.editingTopic?.description || '') ? '' : '主题名称尚未保存。';
       try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic})); }
       catch { status.textContent = '草稿暂时无法在关闭后恢复，请保持窗口打开并保存。'; }
     };
@@ -45,20 +46,24 @@ export class LibraryScreen {
       status.textContent = '正在保存…'; error.replaceChildren();
       try {
         await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry);
-        this.closeTopic();
+        this.closeTopic(); this.notice('主题已保存到本地。', true);
       } catch (failure) {
         if (failure.revisionSaved) {
           this.topicRetry = failure.record;
           try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic, retry: this.topicRetry})); }
           catch { /* The open drawer still retains the recoverable revision. */ }
         }
-        status.textContent = ''; errorFeedback(error, failure.message); error.focus(); submit.textContent = '重试保存';
+        if (this.topicRetry) {
+          status.textContent = '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。';
+          feedback(error, '恢复未完成，已保存的版本仍保留。', failure.message);
+        } else { status.textContent = ''; errorFeedback(error, failure.message); }
+        error.focus(); submit.textContent = this.topicRetry ? '重试恢复' : '重试保存';
       }
       finally { this.topicSaving = false; submit.disabled = false; input.disabled = Boolean(this.topicRetry); }
     };
     this.topicInput = input; this.topicSubmit = submit; this.topicStatus = status; this.topicError = error;
   }
-  get topicDirty() { return this.topicDrawer.panel.open && this.topicInput.value !== (this.editingTopic?.description || ''); }
+  get topicDirty() { return this.topicDrawer.panel.open && (Boolean(this.topicRetry) || this.topicInput.value !== (this.editingTopic?.description || '')); }
   editTopic(topic) {
     if (this.topicDrawer.panel.open) { this.leaveTopic(); return; }
     this.topicBrowseScroll = $('.collection').scrollTop;
@@ -71,9 +76,10 @@ export class LibraryScreen {
     // Keep the original revision as the save base so recovered edits cannot overwrite a newer revision.
     if (draft?.previous) this.editingTopic = draft.previous;
     this.topicDrawer.setTitle(topic ? '重命名主题' : '新建主题');
-    this.topicSubmit.textContent = topic ? '保存' : '创建'; this.topicStatus.textContent = draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
+    this.topicSubmit.textContent = this.topicRetry ? '重试恢复' : topic ? '保存' : '创建';
+    this.topicStatus.textContent = this.topicRetry ? '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。' : draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
     this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false'); this.topicGuard.hidden = true;
-    this.topicDrawer.open(this.topicInput);
+    this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput);
   }
   closeTopic() {
     try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicGuard.hidden = true; this.topicDrawer.hide();
@@ -82,7 +88,12 @@ export class LibraryScreen {
   leaveTopic() {
     if (!this.topicDrawer.panel.open) return true;
     if (this.topicSaving) return false;
-    if (this.topicDirty) { this.topicGuard.hidden = false; this.topicGuard.querySelector('button').focus(); return false; }
+    if (this.topicDirty) {
+      this.topicGuardMessage.textContent = this.topicRetry ? '主题版本已保存，但恢复尚未完成。关闭只会清除本机恢复草稿，已保存的版本仍保留。' : '主题尚未保存，是否放弃此次编辑？';
+      const buttons = this.topicGuard.querySelectorAll('button');
+      buttons[0].textContent = this.topicRetry ? '继续恢复' : '继续编辑';
+      buttons[1].textContent = this.topicRetry ? '关闭并保留已保存版本' : '放弃主题编辑';
+      this.topicGuard.hidden = false; this.topicGuard.querySelector('button').focus(); return false; }
     this.closeTopic(); return true;
   }
   async show() {
