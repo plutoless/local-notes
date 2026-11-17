@@ -27,7 +27,7 @@ export class ActionScreen {
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = () => this.edit(null);
     $('#action-back').onclick = async () => { if (await this.flush()) $('.app').classList.remove('editing'); };
-    $('#action-discard').onclick = () => { if (this.dirty && !window.confirm('放弃尚未保存的行动草稿？已保存的行动不会删除。')) return; localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
+    $('#action-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
     $('#action-add-source').onclick = () => { $('#action-source-options').open = true; this.addSource({path: '', quote: '', fingerprint: ''}); this.changed(); };
@@ -91,7 +91,9 @@ export class ActionScreen {
     const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
     $('#index-state').textContent = '正在载入行动…';
-    const page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset});
+    let page;
+    try { page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset}); }
+    catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; errorFeedback($('#items'), error.message); } return; }
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const action of page.actions) {
@@ -162,10 +164,10 @@ export class ActionScreen {
     for (const row of document.querySelectorAll('.action-source')) {
       const source = action?.sources.find(s => s.path === row.querySelector('.source-path').value);
       if (!source) continue;
-      const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), async () => (await native('list', {workspaceId: this.repository.workspaceId})).notes);
+      const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.initiatives.listReferences);
       if (request !== this.editRequest || repository !== this.repository || !row.isConnected) return;
       const status = document.createElement('p'); status.textContent = statusLabel(result.state); row.append(status);
-      if (result.state === 'moved') { row.querySelector('.source-path').value = result.path; this.changed(); }
+      if (result.state === 'moved') { row.querySelector('.source-path').value = result.path; row.querySelector('h3').textContent = result.path.split('/').pop(); row.querySelector('small').textContent = result.path; this.changed(); }
       if (result.path && this.initiatives) { const open = document.createElement('button'); open.type = 'button'; open.textContent = '打开来源'; open.onclick = async () => { if (await this.flush()) this.initiatives.openNote(result.path); }; row.append(open); }
     }
   }

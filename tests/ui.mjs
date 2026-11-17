@@ -1,4 +1,4 @@
-import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -103,6 +103,25 @@ try {
   await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
   assert.equal(await page.locator('#action-status').inputValue(), 'todo');
   assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
+  // Recover an externally moved source using the reference inventory fingerprints.
+  const currentSource = await readFile(sourcePath, 'utf8');
+  await page.locator('.action-source summary').click();
+  await page.locator('.source-quote').fill('Run the sample command');
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  await rename(sourcePath, join(fixture.root, 'relocated.md'));
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByText('来源已移动', {exact: true}).waitFor();
+  assert.equal(await page.locator('.source-path').inputValue(), 'relocated.md');
+  await page.getByRole('button', {name: '打开来源', exact: true}).click();
+  await page.waitForFunction(() => document.querySelector('#file-path').textContent === 'relocated.md');
+  await rename(join(fixture.root, 'relocated.md'), sourcePath);
+  await page.locator('[data-view="actions"]').click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByText('来源已移动', {exact: true}).waitFor();
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  assert.equal(await readFile(sourcePath, 'utf8'), currentSource);
   await page.locator('#action-description').fill('Draft retained after a failed save');
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
   await page.locator('#action-save').click(); await page.getByText(/未保存的编辑仍保留/).waitFor();
@@ -142,6 +161,10 @@ try {
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
   await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).click();
+  await page.locator('#action-description').focus();
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#action-status').evaluate(node => node === document.activeElement), true);
+  assert.equal(await page.locator('#action-status').evaluate(node => getComputedStyle(node).outlineStyle), 'solid');
   await page.screenshot({path: 'build/actions-mobile.png'});
   assert.equal(await page.locator('#action-description').isVisible(), true);
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
