@@ -675,3 +675,15 @@ aside > #new {
 }
 
 .home-side{grid-column:2;grid-row:2;align-self:start;display:grid;gap:24px;min-width:0}.home-side section{border-top:1px solid var(--line);padding-top:12px}@media(max-width:1000px){.home-side{grid-column:1;grid-row:auto}}@media(max-width:700px){.home-side{width:100%}}
+
+/* Action details reuse the shared surfaces and control hierarchy. */
+#action-editor .document { max-width: 960px; }
+#action-editor details { border-bottom: 1px solid var(--line); margin: 8px 0 16px; }
+#action-editor pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#action-editor blockquote { margin: 12px 0; padding-left: 16px; border-left: 3px solid var(--line); white-space: pre-wrap; overflow-wrap: anywhere; }
+#action-editor small { color: var(--muted); overflow-wrap: anywhere; }
+.action-save-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 24px; }
+.action-utilities { border-top: 1px solid var(--line); padding-top: 16px; }
+.action-utilities p { color: var(--muted); }
+.action-revision { border-top: 1px solid var(--line); padding: 16px 0; }
+#items .card.selected { border-color: var(--green); background: var(--hover); box-shadow: inset 4px 0 var(--green); }
