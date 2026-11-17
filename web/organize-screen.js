@@ -134,7 +134,7 @@ export class OrganizeScreen {
       if (!record.syncState && (!record.review || (record.review.decision === 'later' && !record.review.target && record.review.state === 'done'))) {
         const editDetails = disclosure('确认前编辑建议'), draftState = document.createElement('p'); draftState.setAttribute('role', 'status'); card.append(editDetails);
         const edit = document.createElement('textarea'); edit.setAttribute('aria-label', '编辑建议'); edit.value = this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description;
-        edit.oninput = () => { this.drafts.set(record.entityId, edit.value); draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }; editDetails.append(field('编辑建议', edit), draftState); if (this.drafts.has(record.entityId)) { editDetails.open = true; draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }
+        edit.oninput = () => { edit.setAttribute('aria-invalid', String(!edit.value.trim())); this.drafts.set(record.entityId, edit.value); draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }; editDetails.append(field('编辑建议', edit, {invalid: !edit.value.trim()}), draftState); if (this.drafts.has(record.entityId)) { editDetails.open = true; draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }
         const target = document.createElement('select'); target.setAttribute('aria-label', '已有事项');
         target.append(Object.assign(document.createElement('option'), {value: '', textContent: '选择要关联的已有事项'}));
         for (const initiative of destinations.filter(r => !r.syncState)) target.append(Object.assign(document.createElement('option'), {value: initiative.entityId, textContent: initiative.title}));
