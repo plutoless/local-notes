@@ -1,4 +1,4 @@
-import {actionLabels, initiativeLabels, statusLabel, bindDialog, button, feedback} from './presentation.js';
+import {actionLabels, initiativeLabels, statusLabel, bindDialog, button, feedback, icon} from './presentation.js';
 import {escapeHTML as esc} from './core.js';
 
 const types = {action: '行动', initiative: '事项', topic: '主题', candidate: '建议'};
@@ -18,6 +18,7 @@ export class SyncScreen {
       if (event.key === 'Escape') { event.preventDefault(); event.stopImmediatePropagation(); this.close(); }
     }, true);
     this.opener = button('同步检查', () => this.refresh(true));
+    this.opener.innerHTML = icon('sync') + '同步检查';
     document.querySelector('nav').append(this.opener);
     const refresh = () => this.refresh(false);
     window.addEventListener('focus', refresh); window.addEventListener('reference-change', refresh);
