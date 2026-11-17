@@ -1,0 +1,1798 @@
+after-panel.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				16 button 选择本地目录 ↗
+			17 heading 当前重点
+			39 button 新建行动
+			40 button 全部行动
+			41 button 新建事项
+			42 button 整理所选笔记
+			43 button 刷新本地记录
+			44 heading 当前重点
+			45 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			46 button 选择重点行动
+			47 heading 等待与跟进
+			48 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			49 heading 继续推进
+			50 text 还没有进行中的事项。新建事项，记录目标和进展。
+			51 button 创建第一个事项
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			52 container 同步检查
+				53 heading 同步检查
+				54 text 这里只检查本地版本；无法确认其他设备是否收到。
+				55 button 关闭检查
+				56 button 重新检查
+				57 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				58 summary 查看技术详情, Value: 0
+				59 container 行动：核对项目交付清单
+					60 heading 行动：核对项目交付清单
+					61 text 发现冲突版本，请比较后选择或合并。
+					62 heading 1. 比较版本
+					63 summary 版本 1 · 核对项目交付清单 · 历史版本, Value: 0
+					64 container (expanded)
+						65 summary (expanded) 版本 2 · 核对另一设备上的交付清单 · 待解决分支, Value: 1
+						66 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						67 description list
+							68 text 内容 · 有差异
+							69 text 核对另一设备上的交付清单
+							70 text 状态 · 有差异
+							71 text 等待中
+							72 text 截止日期
+							73 text 未设置
+							74 text 等待对象或条件 · 有差异
+							75 text 产品同事
+							76 text 所属事项标识
+							77 text 未设置
+							78 text 重点排序
+							79 text 未设置
+							80 text 来源引用
+							81 text []
+						82 button 选择版本 2
+					83 container (expanded)
+						84 summary (expanded) 版本 3 · 核对本地修订后的交付清单 · 待解决分支, Value: 1
+						85 text 修改时间：2026-11-17T05:17:51.517Z；保留记录
+						86 description list
+							87 text 内容 · 有差异
+							88 text 核对本地修订后的交付清单
+							89 text 状态 · 有差异
+							90 text 待办
+							91 text 截止日期
+							92 text 未设置
+							93 text 等待对象或条件 · 有差异
+							94 text 设计同事
+							95 text 所属事项标识
+							96 text 未设置
+							97 text 重点排序
+							98 text 未设置
+							99 text 来源引用
+							100 text []
+						101 button 选择版本 3
+					102 heading 2. 审核与编辑解决内容
+					103 text 尚未选择解决版本。
+					104 container
+						105 text 内容
+						106 text entry area (settable) 内容 核对另一设备上的交付清单
+							107 text 核对另一设备上的交付清单
+					108 container
+						109 text 状态
+						110 pop up button 状态, Value: 等待中
+					111 container
+						112 text 截止日期
+						113 date time area 截止日期
+							114 container
+								115 stepper month, Value: 0, Secondary Actions: increment, decrement
+								116 text /
+								117 stepper day, Value: 0, Secondary Actions: increment, decrement
+								118 text /
+								119 stepper year, Value: 0, Secondary Actions: increment, decrement
+					120 container
+						121 text 等待对象或条件
+						122 text entry area (settable) 等待对象或条件 产品同事
+							123 text 产品同事
+					124 container
+						125 text 所属事项标识
+						126 text entry area (settable) 所属事项标识
+					127 container
+						128 text 重点排序
+						129 number field (settable) 重点排序
+							130 stepper, Value: 0
+								131 unknown
+								132 unknown
+					133 summary 高级：完整 JSON 与版本诊断, Value: 0
+					134 button 放弃编辑
+					135 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					136 button 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+after-state.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				16 button 选择本地目录 ↗
+			17 heading 当前重点
+			18 button 新建行动
+			19 button 全部行动
+			20 button 新建事项
+			21 button 整理所选笔记
+			22 button 刷新本地记录
+			23 heading 当前重点
+			24 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			25 button 选择重点行动
+			26 heading 等待与跟进
+			27 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			28 heading 继续推进
+			29 text 还没有进行中的事项。新建事项，记录目标和进展。
+			30 button 创建第一个事项
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+before-panel.json
+App=dev.localnotes.validation.issue21 (pid 78292)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			31 container
+				39 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				40 summary 查看技术详情, Value: 0
+				41 button 关闭提示
+			42 container 同步检查
+				43 heading 同步检查
+				44 text 本地保存不代表其他设备已收到。文件由 Syncthing 传输。
+				45 button 关闭检查
+				46 container 行动 记录详情
+					47 heading 行动 记录详情
+					48 text 发现冲突版本，请比较后选择或合并。
+					49 summary 核对本地修订后的交付清单 · 待办 · 76d6d6d2-cee9-4cee-8b36-cd36167bd928, Value: 0
+					50 summary 核对另一设备上的交付清单 · 等待中 · 0546416e-97c3-49da-8b5d-0f443afe1ff4, Value: 0
+					51 summary 核对项目交付清单 · 待办 · 58bdb19f-0848-4026-b9b1-cafd4ca708e3, Value: 0
+					52 text entry area (settable) 合并版本 JSON {   "description": "核对本地修订后的交付清单",   "status": "todo",   "formatVersion": 1,   "entityType": "action",   "workspaceId": "a6c0e863-751d-4759-b59c-b8beccdf38f3",   "entityId": "82b258d0-f015-4ef5-8b98-878eba94da82",   "revision": "76d6d6d2-cee9-4cee-8b36-cd36167bd928",   "parents": [     "58bdb19f-0848-4026-b9b1-cafd4ca708e3"   ],   "initiativeId": null,   "focusPosition": null,   "dueDate": null,   "waitingOn": "设计同事",   "sources": [],   "modifiedAt": "2026-11-17T05:17:51.517Z" }
+						53 container
+							54 text {
+							55 text "description": "核对本地修订后的交付清单",
+							56 text "status": "todo",
+							57 text "formatVersion": 1,
+							58 text "entityType": "action",
+							59 text "workspaceId": "a6c0e863-751d-4759-b59c-b8beccdf38f3",
+							60 text "entityId": "82b258d0-f015-4ef5-8b98-878eba94da82",
+							61 text "revision": "76d6d6d2-cee9-4cee-8b36-cd36167bd928",
+							62 text "parents": [
+							63 text "58bdb19f-0848-4026-b9b1-cafd4ca708e3"
+							64 text ],
+							65 text "initiativeId": null,
+							66 text "focusPosition": null,
+							67 text "dueDate": null,
+							68 text "waitingOn": "设计同事",
+							69 text "sources": [],
+							70 text "modifiedAt": "2026-11-17T05:17:51.517Z"
+							71 text }
+					72 button 将选定或合并的版本保存到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 45 button 关闭检查.
+
+before-state.json
+App=dev.localnotes.validation.issue21 (pid 78292)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				16 button 选择本地目录 ↗
+			17 heading 当前重点
+			18 button 新建行动
+			19 button 全部行动
+			20 button 新建事项
+			21 button 整理所选笔记
+			22 button 刷新本地记录
+			23 heading 当前重点
+			24 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			25 button 选择重点行动
+			26 heading 等待与跟进
+			27 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			28 heading 继续推进
+			29 text 还没有进行中的事项。新建事项，记录目标和进展。
+			30 button 创建第一个事项
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-blocked.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			39 container 同步检查
+				40 heading 同步检查
+				41 text 这里只检查本地版本；无法确认其他设备是否收到。
+				42 button 关闭检查
+				43 button 重新检查
+				44 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				45 summary 查看技术详情, Value: 0
+				46 container 行动：核对另一设备上的交付清单
+					47 heading 行动：核对另一设备上的交付清单
+					48 text 发现冲突版本，请比较后选择或合并。
+					49 heading 1. 比较版本
+					50 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					51 container (expanded)
+						52 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						53 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						54 description list
+							55 text 内容 · 有差异
+							56 text 核对并合并双方确认的交付清单
+							57 text 状态 · 有差异
+							58 text 等待中
+							59 text 截止日期
+							60 text 未设置
+							61 text 等待对象或条件 · 有差异
+							62 text 产品同事
+							63 text 所属事项标识
+							64 text 未设置
+							65 text 重点排序
+							66 text 未设置
+							67 text 来源引用
+							68 text 无来源引用
+						69 button 选择版本 2
+					70 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					71 container (expanded)
+						72 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						73 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						74 description list
+							75 text 内容 · 有差异
+							76 text 需要再次人工核对的分支
+							77 text 状态 · 有差异
+							78 text 待办
+							79 text 截止日期
+							80 text 未设置
+							81 text 等待对象或条件 · 有差异
+							82 text 未设置
+							83 text 所属事项标识
+							84 text 未设置
+							85 text 重点排序
+							86 text 未设置
+							87 text 来源引用
+							88 text 无来源引用
+						89 button 选择版本 4
+					90 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					91 heading 2. 审核与编辑解决内容
+					92 text 尚未选择解决版本。
+					93 container
+						94 text 内容
+						95 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							96 text 核对并合并双方确认的交付清单
+					97 container
+						98 text 状态
+						99 pop up button 状态, Value: 等待中
+					100 container
+						101 text 截止日期
+						102 date time area 截止日期
+							103 container
+								104 stepper month, Value: 0, Secondary Actions: increment, decrement
+								105 text /
+								106 stepper day, Value: 0, Secondary Actions: increment, decrement
+								107 text /
+								108 stepper year, Value: 0, Secondary Actions: increment, decrement
+					109 container
+						110 text 等待对象或条件
+						111 text entry area (settable) 等待对象或条件 产品同事
+							112 text 产品同事
+					113 container
+						114 text 所属事项标识
+						115 text entry area (settable) 所属事项标识
+					116 container
+						117 text 重点排序
+						118 number field (settable) 重点排序
+							119 stepper, Value: 0
+								120 unknown
+								121 unknown
+					122 summary 高级：完整 JSON 与版本诊断, Value: 0
+					123 button 放弃编辑
+					124 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					125 button 3. 保存解决结果到本地
+				126 container 行动：缺少前序版本的本地记录
+					127 heading 行动：缺少前序版本的本地记录
+					128 text 缺少前序版本，暂不能保存。请等待文件到达后重新检查。
+					129 heading 1. 比较版本
+					130 container (expanded)
+						131 summary (expanded) 版本 1 · 缺少前序版本的本地记录 · 待解决分支, Value: 1
+						132 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						133 description list
+							134 text 内容
+							135 text 缺少前序版本的本地记录
+							136 text 状态
+							137 text 待办
+							138 text 截止日期
+							139 text 未设置
+							140 text 等待对象或条件
+							141 text 未设置
+							142 text 所属事项标识
+							143 text 未设置
+							144 text 重点排序
+							145 text 未设置
+							146 text 来源引用
+							147 text 无来源引用
+						148 button (disabled) 选择版本 1
+					149 heading 2. 审核与编辑解决内容
+					150 text 尚未选择解决版本。
+					151 container
+						152 text 内容
+						153 text entry area (disabled, settable) 内容 缺少前序版本的本地记录
+							154 text 缺少前序版本的本地记录
+					155 container
+						156 text 状态
+						157 pop up button (disabled) 状态, Value: 待办
+					158 container
+						159 text 截止日期
+						160 date time area (disabled) 截止日期
+							161 container
+								162 stepper month, Value: 0, Secondary Actions: increment, decrement
+								163 text /
+								164 stepper day, Value: 0, Secondary Actions: increment, decrement
+								165 text /
+								166 stepper year, Value: 0, Secondary Actions: increment, decrement
+					167 container
+						168 text 等待对象或条件
+						169 text entry area (disabled, settable) 等待对象或条件
+					170 container
+						171 text 所属事项标识
+						172 text entry area (disabled, settable) 所属事项标识
+					173 container
+						174 text 重点排序
+						175 number field (disabled, settable) 重点排序
+							176 stepper, Value: 0
+								177 unknown
+								178 unknown
+					179 summary 高级：完整 JSON 与版本诊断, Value: 0
+					180 button 放弃编辑
+					181 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					182 button (disabled) 3. 保存解决结果到本地
+				183 container 行动：历史存在循环的本地记录
+					184 heading 行动：历史存在循环的本地记录
+					185 text 版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。
+					186 heading 1. 比较版本
+					187 summary 版本 1 · 历史存在循环的本地记录 · 历史版本, Value: 0
+					188 summary 版本 2 · 历史存在循环的本地记录 · 历史版本, Value: 0
+					189 heading 2. 审核与编辑解决内容
+					190 text 尚未选择解决版本。
+					191 container
+						192 text 内容
+						193 text entry area (disabled, settable) 内容 历史存在循环的本地记录
+							194 text 历史存在循环的本地记录
+					195 container
+						196 text 状态
+						197 pop up button (disabled) 状态, Value: 待办
+					198 container
+						199 text 截止日期
+						200 date time area (disabled) 截止日期
+							201 container
+								202 stepper month, Value: 0, Secondary Actions: increment, decrement
+								203 text /
+								204 stepper day, Value: 0, Secondary Actions: increment, decrement
+								205 text /
+								206 stepper year, Value: 0, Secondary Actions: increment, decrement
+					207 container
+						208 text 等待对象或条件
+						209 text entry area (disabled, settable) 等待对象或条件
+					210 container
+						211 text 所属事项标识
+						212 text entry area (disabled, settable) 所属事项标识
+					213 container
+						214 text 重点排序
+						215 number field (disabled, settable) 重点排序
+							216 stepper, Value: 0
+								217 unknown
+								218 unknown
+					219 summary 高级：完整 JSON 与版本诊断, Value: 0
+					220 button 放弃编辑
+					221 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					222 button (disabled) 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 42 button 关闭检查.
+
+final-clean.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			223 container
+				224 text 拾记
+				225 button ＋ 随手记
+				226 container 主导航
+					227 button 当前重点
+					228 button 笔记库
+					229 button 已确认行动
+					230 button 事项
+					231 button 整理
+					232 button 收藏
+					233 button 同步检查
+				234 text 当前笔记目录
+				235 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				236 button 选择本地目录 ↗
+			237 heading 当前重点
+			238 button 新建行动
+			239 button 全部行动
+			240 button 新建事项
+			241 button 整理所选笔记
+			242 button 刷新本地记录
+			243 heading 当前重点
+			244 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			245 button 选择重点行动
+			246 heading 等待与跟进
+			247 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			248 heading 继续推进
+			249 text 还没有进行中的事项。新建事项，记录目标和进展。
+			250 button 创建第一个事项
+			39 container 同步检查
+				40 heading 同步检查
+				41 text 这里只检查本地版本；无法确认其他设备是否收到。
+				42 button 关闭检查
+				43 button 重新检查
+				44 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				45 summary 查看技术详情, Value: 0
+				46 container 行动：核对另一设备上的交付清单
+					47 heading 行动：核对另一设备上的交付清单
+					48 text 发现冲突版本，请比较后选择或合并。
+					49 heading 1. 比较版本
+					50 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					51 container (expanded)
+						52 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						53 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						54 description list
+							55 text 内容 · 有差异
+							56 text 核对并合并双方确认的交付清单
+							57 text 状态 · 有差异
+							58 text 等待中
+							59 text 截止日期
+							60 text 未设置
+							61 text 等待对象或条件 · 有差异
+							62 text 产品同事
+							63 text 所属事项标识
+							64 text 未设置
+							65 text 重点排序
+							66 text 未设置
+							67 text 来源引用
+							68 text 无来源引用
+						69 button 选择版本 2
+					70 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					71 container (expanded)
+						72 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						73 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						74 description list
+							75 text 内容 · 有差异
+							76 text 需要再次人工核对的分支
+							77 text 状态 · 有差异
+							78 text 待办
+							79 text 截止日期
+							80 text 未设置
+							81 text 等待对象或条件 · 有差异
+							82 text 未设置
+							83 text 所属事项标识
+							84 text 未设置
+							85 text 重点排序
+							86 text 未设置
+							87 text 来源引用
+							88 text 无来源引用
+						89 button 选择版本 4
+					90 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					91 heading 2. 审核与编辑解决内容
+					92 text 尚未选择解决版本。
+					93 container
+						94 text 内容
+						95 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							96 text 核对并合并双方确认的交付清单
+					97 container
+						98 text 状态
+						99 pop up button 状态, Value: 等待中
+					100 container
+						101 text 截止日期
+						102 date time area 截止日期
+							103 container
+								104 stepper month, Value: 0, Secondary Actions: increment, decrement
+								105 text /
+								106 stepper day, Value: 0, Secondary Actions: increment, decrement
+								107 text /
+								108 stepper year, Value: 0, Secondary Actions: increment, decrement
+					109 container
+						110 text 等待对象或条件
+						111 text entry area (settable) 等待对象或条件 产品同事
+							112 text 产品同事
+					113 container
+						114 text 所属事项标识
+						115 text entry area (settable) 所属事项标识
+					116 container
+						117 text 重点排序
+						118 number field (settable) 重点排序
+							251 stepper, Value: 0
+								252 unknown
+								253 unknown
+					122 summary 高级：完整 JSON 与版本诊断, Value: 0
+					123 button 放弃编辑
+					124 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					125 button 3. 保存解决结果到本地
+				126 container 行动：缺少前序版本的本地记录
+					127 heading 行动：缺少前序版本的本地记录
+					128 text 缺少前序版本，暂不能保存。请等待文件到达后重新检查。
+					129 heading 1. 比较版本
+					130 container (expanded)
+						131 summary (expanded) 版本 1 · 缺少前序版本的本地记录 · 待解决分支, Value: 1
+						132 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						133 description list
+							134 text 内容
+							135 text 缺少前序版本的本地记录
+							136 text 状态
+							137 text 待办
+							138 text 截止日期
+							139 text 未设置
+							140 text 等待对象或条件
+							141 text 未设置
+							142 text 所属事项标识
+							143 text 未设置
+							144 text 重点排序
+							145 text 未设置
+							146 text 来源引用
+							147 text 无来源引用
+						148 button (disabled) 选择版本 1
+					149 heading 2. 审核与编辑解决内容
+					150 text 尚未选择解决版本。
+					151 container
+						152 text 内容
+						153 text entry area (disabled, settable) 内容 缺少前序版本的本地记录
+							154 text 缺少前序版本的本地记录
+					155 container
+						156 text 状态
+						157 pop up button (disabled) 状态, Value: 待办
+					158 container
+						159 text 截止日期
+						160 date time area (disabled) 截止日期
+							161 container
+								162 stepper month, Value: 0, Secondary Actions: increment, decrement
+								163 text /
+								164 stepper day, Value: 0, Secondary Actions: increment, decrement
+								165 text /
+								166 stepper year, Value: 0, Secondary Actions: increment, decrement
+					167 container
+						168 text 等待对象或条件
+						169 text entry area (disabled, settable) 等待对象或条件
+					170 container
+						171 text 所属事项标识
+						172 text entry area (disabled, settable) 所属事项标识
+					173 container
+						174 text 重点排序
+						175 number field (disabled, settable) 重点排序
+							254 stepper, Value: 0
+								255 unknown
+								256 unknown
+					179 summary 高级：完整 JSON 与版本诊断, Value: 0
+					180 button 放弃编辑
+					181 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					182 button (disabled) 3. 保存解决结果到本地
+				183 container 行动：历史存在循环的本地记录
+					184 heading 行动：历史存在循环的本地记录
+					185 text 版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。
+					186 heading 1. 比较版本
+					187 summary 版本 1 · 历史存在循环的本地记录 · 历史版本, Value: 0
+					188 summary 版本 2 · 历史存在循环的本地记录 · 历史版本, Value: 0
+					189 heading 2. 审核与编辑解决内容
+					190 text 尚未选择解决版本。
+					191 container
+						192 text 内容
+						193 text entry area (disabled, settable) 内容 历史存在循环的本地记录
+							194 text 历史存在循环的本地记录
+					195 container
+						196 text 状态
+						197 pop up button (disabled) 状态, Value: 待办
+					198 container
+						199 text 截止日期
+						200 date time area (disabled) 截止日期
+							201 container
+								202 stepper month, Value: 0, Secondary Actions: increment, decrement
+								203 text /
+								204 stepper day, Value: 0, Secondary Actions: increment, decrement
+								205 text /
+								206 stepper year, Value: 0, Secondary Actions: increment, decrement
+					207 container
+						208 text 等待对象或条件
+						209 text entry area (disabled, settable) 等待对象或条件
+					210 container
+						211 text 所属事项标识
+						212 text entry area (disabled, settable) 所属事项标识
+					213 container
+						214 text 重点排序
+						215 number field (disabled, settable) 重点排序
+							257 stepper, Value: 0
+								258 unknown
+								259 unknown
+					219 summary 高级：完整 JSON 与版本诊断, Value: 0
+					220 button 放弃编辑
+					221 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					222 button (disabled) 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-home.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				16 button 选择本地目录 ↗
+			17 heading 当前重点
+			18 button 新建行动
+			19 button 全部行动
+			20 button 新建事项
+			21 button 整理所选笔记
+			22 button 刷新本地记录
+			23 heading 当前重点
+			24 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			25 button 选择重点行动
+			26 heading 等待与跟进
+			27 heading 核对并合并双方确认的交付清单
+			28 text 等待中
+			29 text 产品同事
+			30 button 打开行动
+			31 heading 继续推进
+			32 text 还没有进行中的事项。新建事项，记录目标和进展。
+			33 button 创建第一个事项
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-reopened.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			38 container 同步检查
+				39 heading 同步检查
+				40 text 这里只检查本地版本；无法确认其他设备是否收到。
+				41 button 关闭检查
+				42 button 重新检查
+				43 text 现有版本中未发现待处理冲突。
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 41 button 关闭检查.
+
+final-scroll.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-scroll2.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-scroll3.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-scroll4.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-scroll5.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final-scroll6.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+final2-home.json
+App=dev.localnotes.validation.issue21 (pid 83605)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				16 button 选择本地目录 ↗
+			17 heading 当前重点
+			18 button 新建行动
+			19 button 全部行动
+			20 button 新建事项
+			21 button 整理所选笔记
+			22 button 刷新本地记录
+			23 heading 当前重点
+			24 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			25 button 选择重点行动
+			26 heading 等待与跟进
+			27 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			28 heading 继续推进
+			29 text 还没有进行中的事项。新建事项，记录目标和进展。
+			30 button 创建第一个事项
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+native-blank.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			38 container 同步检查
+				44 heading 同步检查
+				45 text 这里只检查本地版本；无法确认其他设备是否收到。
+				46 button 关闭检查
+				47 button 重新检查
+				130 text 请先选择一个版本，再审核需要保留的内容。
+				48 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				49 summary 查看技术详情, Value: 0
+				50 container 行动：核对另一设备上的交付清单
+					51 heading 行动：核对另一设备上的交付清单
+					52 text 发现冲突版本，请比较后选择或合并。
+					53 heading 1. 比较版本
+					54 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					55 container (expanded)
+						56 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						57 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						58 description list
+							59 text 内容 · 有差异
+							60 text 核对并合并双方确认的交付清单
+							61 text 状态 · 有差异
+							62 text 等待中
+							63 text 截止日期
+							64 text 未设置
+							65 text 等待对象或条件 · 有差异
+							66 text 产品同事
+							67 text 所属事项标识
+							68 text 未设置
+							69 text 重点排序
+							70 text 未设置
+							71 text 来源引用
+							72 text 无来源引用
+						73 button 选择版本 2
+					74 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					75 container (expanded)
+						76 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						77 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						78 description list
+							79 text 内容 · 有差异
+							80 text 需要再次人工核对的分支
+							81 text 状态 · 有差异
+							82 text 待办
+							83 text 截止日期
+							84 text 未设置
+							85 text 等待对象或条件 · 有差异
+							86 text 未设置
+							87 text 所属事项标识
+							88 text 未设置
+							89 text 重点排序
+							90 text 未设置
+							91 text 来源引用
+							92 text 无来源引用
+						93 button 选择版本 4
+					94 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					95 heading 2. 审核与编辑解决内容
+					161 text 解决内容尚未保存。原版本均会保留。
+					132 container
+						133 text 内容
+						134 text entry area (settable) 内容
+					136 container
+						137 text 状态
+						138 pop up button 状态, Value: 等待中
+					139 container
+						140 text 截止日期
+						141 date time area 截止日期
+							142 container
+								143 stepper month, Value: 0, Secondary Actions: increment, decrement
+								144 text /
+								145 stepper day, Value: 0, Secondary Actions: increment, decrement
+								146 text /
+								147 stepper year, Value: 0, Secondary Actions: increment, decrement
+					148 container
+						149 text 等待对象或条件
+						150 text entry area (settable) 等待对象或条件 产品同事
+							151 text 产品同事
+					152 container
+						153 text 所属事项标识
+						154 text entry area (settable) 所属事项标识
+					155 container
+						156 text 重点排序
+						157 number field (settable) 重点排序
+							158 stepper, Value: 0
+								159 unknown
+								160 unknown
+					126 summary 高级：完整 JSON 与版本诊断, Value: 0
+					127 button 放弃编辑
+					128 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					129 button 3. 保存解决结果到本地
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 134 text entry area (settable) 内容.
+
+native-edited.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			52 container 同步检查
+				53 heading 同步检查
+				54 text 这里只检查本地版本；无法确认其他设备是否收到。
+				55 button 关闭检查
+				56 button 重新检查
+				57 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				58 summary 查看技术详情, Value: 0
+				59 container 行动：核对项目交付清单
+					60 heading 行动：核对项目交付清单
+					61 text 发现冲突版本，请比较后选择或合并。
+					62 heading 1. 比较版本
+					63 summary 版本 1 · 核对项目交付清单 · 历史版本, Value: 0
+					64 container (expanded)
+						65 summary (expanded) 版本 2 · 核对另一设备上的交付清单 · 待解决分支, Value: 1
+						66 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						67 description list
+							68 text 内容 · 有差异
+							69 text 核对另一设备上的交付清单
+							70 text 状态 · 有差异
+							71 text 等待中
+							72 text 截止日期
+							73 text 未设置
+							74 text 等待对象或条件 · 有差异
+							75 text 产品同事
+							76 text 所属事项标识
+							77 text 未设置
+							78 text 重点排序
+							79 text 未设置
+							80 text 来源引用
+							81 text []
+						82 button 选择版本 2
+					83 container (expanded)
+						84 summary (expanded) 版本 3 · 核对本地修订后的交付清单 · 待解决分支, Value: 1
+						85 text 修改时间：2026-11-17T05:17:51.517Z；保留记录
+						86 description list
+							87 text 内容 · 有差异
+							88 text 核对本地修订后的交付清单
+							89 text 状态 · 有差异
+							90 text 待办
+							91 text 截止日期
+							92 text 未设置
+							93 text 等待对象或条件 · 有差异
+							94 text 设计同事
+							95 text 所属事项标识
+							96 text 未设置
+							97 text 重点排序
+							98 text 未设置
+							99 text 来源引用
+							100 text []
+						101 button 选择版本 3
+					102 heading 2. 审核与编辑解决内容
+					180 text 解决内容尚未保存。原版本均会保留。
+					151 container
+						152 text 内容
+						153 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							181 text 核对并合并双方确认的交付清单
+					155 container
+						156 text 状态
+						157 pop up button 状态, Value: 等待中
+					158 container
+						159 text 截止日期
+						160 date time area 截止日期
+							161 container
+								162 stepper month, Value: 0, Secondary Actions: increment, decrement
+								163 text /
+								164 stepper day, Value: 0, Secondary Actions: increment, decrement
+								165 text /
+								166 stepper year, Value: 0, Secondary Actions: increment, decrement
+					167 container
+						168 text 等待对象或条件
+						169 text entry area (settable) 等待对象或条件 产品同事
+							170 text 产品同事
+					171 container
+						172 text 所属事项标识
+						173 text entry area (settable) 所属事项标识
+					174 container
+						175 text 重点排序
+						176 number field (settable) 重点排序
+							177 stepper, Value: 0
+								178 unknown
+								179 unknown
+					133 summary 高级：完整 JSON 与版本诊断, Value: 0
+					134 button 放弃编辑
+					135 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					136 button 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 153 text entry area (settable) 内容 核对并合并双方确认的交付清单.
+
+native-error.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			162 container
+				163 text 拾记
+				164 button ＋ 随手记
+				165 container 主导航
+					166 button 当前重点
+					167 button 笔记库
+					168 button 已确认行动
+					169 button 事项
+					170 button 整理
+					171 button 收藏
+					172 button 同步检查
+				173 text 当前笔记目录
+				174 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				175 button 选择本地目录 ↗
+			176 heading 当前重点
+			177 button 新建行动
+			178 button 全部行动
+			179 button 新建事项
+			180 button 整理所选笔记
+			181 button 刷新本地记录
+			182 heading 当前重点
+			183 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			184 button 选择重点行动
+			185 heading 等待与跟进
+			186 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			187 heading 继续推进
+			188 text 还没有进行中的事项。新建事项，记录目标和进展。
+			189 button 创建第一个事项
+			38 container 同步检查
+				44 heading 同步检查
+				45 text 这里只检查本地版本；无法确认其他设备是否收到。
+				46 button 关闭检查
+				47 button 重新检查
+				190 container
+					191 text 解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。
+					192 summary 查看技术详情, Value: 0
+				48 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				49 summary 查看技术详情, Value: 0
+				50 container 行动：核对另一设备上的交付清单
+					51 heading 行动：核对另一设备上的交付清单
+					52 text 发现冲突版本，请比较后选择或合并。
+					53 heading 1. 比较版本
+					54 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					55 container (expanded)
+						56 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						57 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						58 description list
+							59 text 内容 · 有差异
+							60 text 核对并合并双方确认的交付清单
+							61 text 状态 · 有差异
+							62 text 等待中
+							63 text 截止日期
+							64 text 未设置
+							65 text 等待对象或条件 · 有差异
+							66 text 产品同事
+							67 text 所属事项标识
+							68 text 未设置
+							69 text 重点排序
+							70 text 未设置
+							71 text 来源引用
+							72 text 无来源引用
+						73 button 选择版本 2
+					74 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					75 container (expanded)
+						76 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						77 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						78 description list
+							79 text 内容 · 有差异
+							80 text 需要再次人工核对的分支
+							81 text 状态 · 有差异
+							82 text 待办
+							83 text 截止日期
+							84 text 未设置
+							85 text 等待对象或条件 · 有差异
+							86 text 未设置
+							87 text 所属事项标识
+							88 text 未设置
+							89 text 重点排序
+							90 text 未设置
+							91 text 来源引用
+							92 text 无来源引用
+						93 button 选择版本 4
+					94 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					95 heading 2. 审核与编辑解决内容
+					161 text 解决内容尚未保存。原版本均会保留。
+					132 container
+						133 text 内容
+						134 text entry area (settable) 内容
+					136 container
+						137 text 状态
+						138 pop up button 状态, Value: 等待中
+					139 container
+						140 text 截止日期
+						141 date time area 截止日期
+							142 container
+								143 stepper month, Value: 0, Secondary Actions: increment, decrement
+								144 text /
+								145 stepper day, Value: 0, Secondary Actions: increment, decrement
+								146 text /
+								147 stepper year, Value: 0, Secondary Actions: increment, decrement
+					148 container
+						149 text 等待对象或条件
+						150 text entry area (settable) 等待对象或条件 产品同事
+							151 text 产品同事
+					152 container
+						153 text 所属事项标识
+						154 text entry area (settable) 所属事项标识
+					155 container
+						156 text 重点排序
+						157 number field (settable) 重点排序
+							193 stepper, Value: 0
+								194 unknown
+								195 unknown
+					126 summary 高级：完整 JSON 与版本诊断, Value: 0
+					127 button 放弃编辑
+					128 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					129 button 3. 保存解决结果到本地
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+native-new-conflict.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			38 container 同步检查
+				44 heading 同步检查
+				45 text 这里只检查本地版本；无法确认其他设备是否收到。
+				46 button 关闭检查
+				47 button 重新检查
+				48 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				49 summary 查看技术详情, Value: 0
+				50 container 行动：核对另一设备上的交付清单
+					51 heading 行动：核对另一设备上的交付清单
+					52 text 发现冲突版本，请比较后选择或合并。
+					53 heading 1. 比较版本
+					54 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					55 container (expanded)
+						56 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						57 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						58 description list
+							59 text 内容 · 有差异
+							60 text 核对并合并双方确认的交付清单
+							61 text 状态 · 有差异
+							62 text 等待中
+							63 text 截止日期
+							64 text 未设置
+							65 text 等待对象或条件 · 有差异
+							66 text 产品同事
+							67 text 所属事项标识
+							68 text 未设置
+							69 text 重点排序
+							70 text 未设置
+							71 text 来源引用
+							72 text 无来源引用
+						73 button 选择版本 2
+					74 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					75 container (expanded)
+						76 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						77 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						78 description list
+							79 text 内容 · 有差异
+							80 text 需要再次人工核对的分支
+							81 text 状态 · 有差异
+							82 text 待办
+							83 text 截止日期
+							84 text 未设置
+							85 text 等待对象或条件 · 有差异
+							86 text 未设置
+							87 text 所属事项标识
+							88 text 未设置
+							89 text 重点排序
+							90 text 未设置
+							91 text 来源引用
+							92 text 无来源引用
+						93 button 选择版本 4
+					94 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					95 heading 2. 审核与编辑解决内容
+					96 text 尚未选择解决版本。
+					97 container
+						98 text 内容
+						99 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							100 text 核对并合并双方确认的交付清单
+					101 container
+						102 text 状态
+						103 pop up button 状态, Value: 等待中
+					104 container
+						105 text 截止日期
+						106 date time area 截止日期
+							107 container
+								108 stepper month, Value: 0, Secondary Actions: increment, decrement
+								109 text /
+								110 stepper day, Value: 0, Secondary Actions: increment, decrement
+								111 text /
+								112 stepper year, Value: 0, Secondary Actions: increment, decrement
+					113 container
+						114 text 等待对象或条件
+						115 text entry area (settable) 等待对象或条件 产品同事
+							116 text 产品同事
+					117 container
+						118 text 所属事项标识
+						119 text entry area (settable) 所属事项标识
+					120 container
+						121 text 重点排序
+						122 number field (settable) 重点排序
+							123 stepper, Value: 0
+								124 unknown
+								125 unknown
+					126 summary 高级：完整 JSON 与版本诊断, Value: 0
+					127 button 放弃编辑
+					128 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					129 button 3. 保存解决结果到本地
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 46 button 关闭检查.
+
+native-reselect.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			38 container 同步检查
+				44 heading 同步检查
+				45 text 这里只检查本地版本；无法确认其他设备是否收到。
+				46 button 关闭检查
+				47 button 重新检查
+				130 text 请先选择一个版本，再审核需要保留的内容。
+				48 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				49 summary 查看技术详情, Value: 0
+				50 container 行动：核对另一设备上的交付清单
+					51 heading 行动：核对另一设备上的交付清单
+					52 text 发现冲突版本，请比较后选择或合并。
+					53 heading 1. 比较版本
+					54 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					55 container (expanded)
+						56 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						57 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						58 description list
+							59 text 内容 · 有差异
+							60 text 核对并合并双方确认的交付清单
+							61 text 状态 · 有差异
+							62 text 等待中
+							63 text 截止日期
+							64 text 未设置
+							65 text 等待对象或条件 · 有差异
+							66 text 产品同事
+							67 text 所属事项标识
+							68 text 未设置
+							69 text 重点排序
+							70 text 未设置
+							71 text 来源引用
+							72 text 无来源引用
+						73 button 选择版本 2
+					74 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					75 container (expanded)
+						76 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						77 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						78 description list
+							79 text 内容 · 有差异
+							80 text 需要再次人工核对的分支
+							81 text 状态 · 有差异
+							82 text 待办
+							83 text 截止日期
+							84 text 未设置
+							85 text 等待对象或条件 · 有差异
+							86 text 未设置
+							87 text 所属事项标识
+							88 text 未设置
+							89 text 重点排序
+							90 text 未设置
+							91 text 来源引用
+							92 text 无来源引用
+						93 button 选择版本 4
+					94 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					95 heading 2. 审核与编辑解决内容
+					131 text 解决内容尚未保存。原版本均会保留。
+					132 container
+						133 text 内容
+						134 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							135 text 核对并合并双方确认的交付清单
+					136 container
+						137 text 状态
+						138 pop up button 状态, Value: 等待中
+					139 container
+						140 text 截止日期
+						141 date time area 截止日期
+							142 container
+								143 stepper month, Value: 0, Secondary Actions: increment, decrement
+								144 text /
+								145 stepper day, Value: 0, Secondary Actions: increment, decrement
+								146 text /
+								147 stepper year, Value: 0, Secondary Actions: increment, decrement
+					148 container
+						149 text 等待对象或条件
+						150 text entry area (settable) 等待对象或条件 产品同事
+							151 text 产品同事
+					152 container
+						153 text 所属事项标识
+						154 text entry area (settable) 所属事项标识
+					155 container
+						156 text 重点排序
+						157 number field (settable) 重点排序
+							158 stepper, Value: 0
+								159 unknown
+								160 unknown
+					126 summary 高级：完整 JSON 与版本诊断, Value: 0
+					127 button 放弃编辑
+					128 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					129 button 3. 保存解决结果到本地
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 134 text entry area (settable) 内容 核对并合并双方确认的交付清单.
+
+native-retry.json
+App=dev.localnotes.validation.issue21 (pid 82311)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			162 container
+				163 text 拾记
+				164 button ＋ 随手记
+				165 container 主导航
+					166 button 当前重点
+					167 button 笔记库
+					168 button 已确认行动
+					169 button 事项
+					170 button 整理
+					171 button 收藏
+					172 button 同步检查
+				173 text 当前笔记目录
+				174 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				175 button 选择本地目录 ↗
+			176 heading 当前重点
+			177 button 新建行动
+			178 button 全部行动
+			179 button 新建事项
+			180 button 整理所选笔记
+			181 button 刷新本地记录
+			182 heading 当前重点
+			183 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			184 button 选择重点行动
+			185 heading 等待与跟进
+			186 text 没有等待中的行动。需要他人回复时，可将行动设为「等待中」。
+			187 heading 继续推进
+			188 text 还没有进行中的事项。新建事项，记录目标和进展。
+			189 button 创建第一个事项
+			38 container 同步检查
+				44 heading 同步检查
+				45 text 这里只检查本地版本；无法确认其他设备是否收到。
+				46 button 关闭检查
+				47 button 重新检查
+				190 container
+					199 text 解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。
+					200 summary 查看技术详情, Value: 0
+				48 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				49 summary 查看技术详情, Value: 0
+				50 container 行动：核对另一设备上的交付清单
+					51 heading 行动：核对另一设备上的交付清单
+					52 text 发现冲突版本，请比较后选择或合并。
+					53 heading 1. 比较版本
+					54 summary 版本 1 · 核对另一设备上的交付清单 · 历史版本, Value: 0
+					55 container (expanded)
+						56 summary (expanded) 版本 2 · 核对并合并双方确认的交付清单 · 待解决分支, Value: 1
+						57 text 修改时间：2026-11-17T05:21:25.540Z；保留记录
+						58 description list
+							59 text 内容 · 有差异
+							60 text 核对并合并双方确认的交付清单
+							61 text 状态 · 有差异
+							62 text 等待中
+							63 text 截止日期
+							64 text 未设置
+							65 text 等待对象或条件 · 有差异
+							66 text 产品同事
+							67 text 所属事项标识
+							68 text 未设置
+							69 text 重点排序
+							70 text 未设置
+							71 text 来源引用
+							72 text 无来源引用
+						73 button 选择版本 2
+					74 summary 版本 3 · 核对本地修订后的交付清单 · 历史版本, Value: 0
+					75 container (expanded)
+						76 summary (expanded) 版本 4 · 需要再次人工核对的分支 · 待解决分支, Value: 1
+						77 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						78 description list
+							79 text 内容 · 有差异
+							80 text 需要再次人工核对的分支
+							81 text 状态 · 有差异
+							82 text 待办
+							83 text 截止日期
+							84 text 未设置
+							85 text 等待对象或条件 · 有差异
+							86 text 未设置
+							87 text 所属事项标识
+							88 text 未设置
+							89 text 重点排序
+							90 text 未设置
+							91 text 来源引用
+							92 text 无来源引用
+						93 button 选择版本 4
+					94 summary 版本 5 · 核对项目交付清单 · 历史版本, Value: 0
+					95 heading 2. 审核与编辑解决内容
+					161 text 解决内容尚未保存。原版本均会保留。
+					132 container
+						133 text 内容
+						134 text entry area (settable) 内容
+					136 container
+						137 text 状态
+						138 pop up button 状态, Value: 等待中
+					139 container
+						140 text 截止日期
+						141 date time area 截止日期
+							142 container
+								143 stepper month, Value: 0, Secondary Actions: increment, decrement
+								144 text /
+								145 stepper day, Value: 0, Secondary Actions: increment, decrement
+								146 text /
+								147 stepper year, Value: 0, Secondary Actions: increment, decrement
+					148 container
+						149 text 等待对象或条件
+						150 text entry area (settable) 等待对象或条件 产品同事
+							151 text 产品同事
+					152 container
+						153 text 所属事项标识
+						154 text entry area (settable) 所属事项标识
+					155 container
+						156 text 重点排序
+						157 number field (settable) 重点排序
+							201 stepper, Value: 0
+								202 unknown
+								203 unknown
+					126 summary 高级：完整 JSON 与版本诊断, Value: 0
+					127 button 放弃编辑
+					128 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					129 button 3. 保存解决结果到本地
+	34 close button
+	35 full screen button, Secondary Actions: zoom the window
+	36 minimize button
+	37 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+native-saved.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			183 container
+				184 text 拾记
+				185 button ＋ 随手记
+				186 container 主导航
+					187 button 当前重点
+					188 button 笔记库
+					189 button 已确认行动
+					190 button 事项
+					191 button 整理
+					192 button 收藏
+					193 button 同步检查
+				194 text 当前笔记目录
+				195 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-21/build/issue21/Sync
+				196 button 选择本地目录 ↗
+			197 heading 当前重点
+			198 button 新建行动
+			199 button 全部行动
+			200 button 新建事项
+			201 button 整理所选笔记
+			202 button 刷新本地记录
+			203 heading 当前重点
+			204 text 还没有重点行动。可从「全部行动」选择已确认的下一步。
+			205 button 选择重点行动
+			206 heading 等待与跟进
+			207 heading 核对并合并双方确认的交付清单
+			208 text 等待中
+			209 text 产品同事
+			210 button 打开行动
+			211 heading 继续推进
+			212 text 还没有进行中的事项。新建事项，记录目标和进展。
+			213 button 创建第一个事项
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			52 container 同步检查
+				214 heading 同步检查
+				215 text 这里只检查本地版本；无法确认其他设备是否收到。
+				216 button 关闭检查
+				217 button 重新检查
+				218 text 解决结果已保存到本地；无法确认其他设备是否收到。
+				219 text 现有版本中未发现待处理冲突。
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 2 HTML content 拾记 · Local Notes.
+
+native-selected.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			52 container 同步检查
+				53 heading 同步检查
+				54 text 这里只检查本地版本；无法确认其他设备是否收到。
+				55 button 关闭检查
+				56 button 重新检查
+				57 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				58 summary 查看技术详情, Value: 0
+				59 container 行动：核对项目交付清单
+					60 heading 行动：核对项目交付清单
+					61 text 发现冲突版本，请比较后选择或合并。
+					62 heading 1. 比较版本
+					63 summary 版本 1 · 核对项目交付清单 · 历史版本, Value: 0
+					64 container (expanded)
+						65 summary (expanded) 版本 2 · 核对另一设备上的交付清单 · 待解决分支, Value: 1
+						66 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						67 description list
+							68 text 内容 · 有差异
+							69 text 核对另一设备上的交付清单
+							70 text 状态 · 有差异
+							71 text 等待中
+							72 text 截止日期
+							73 text 未设置
+							74 text 等待对象或条件 · 有差异
+							75 text 产品同事
+							76 text 所属事项标识
+							77 text 未设置
+							78 text 重点排序
+							79 text 未设置
+							80 text 来源引用
+							81 text []
+						82 button 选择版本 2
+					83 container (expanded)
+						84 summary (expanded) 版本 3 · 核对本地修订后的交付清单 · 待解决分支, Value: 1
+						85 text 修改时间：2026-11-17T05:17:51.517Z；保留记录
+						86 description list
+							87 text 内容 · 有差异
+							88 text 核对本地修订后的交付清单
+							89 text 状态 · 有差异
+							90 text 待办
+							91 text 截止日期
+							92 text 未设置
+							93 text 等待对象或条件 · 有差异
+							94 text 设计同事
+							95 text 所属事项标识
+							96 text 未设置
+							97 text 重点排序
+							98 text 未设置
+							99 text 来源引用
+							100 text []
+						101 button 选择版本 3
+					102 heading 2. 审核与编辑解决内容
+					150 text 解决内容尚未保存。原版本均会保留。
+					151 container
+						152 text 内容
+						153 text entry area (settable) 内容 核对另一设备上的交付清单
+							154 text 核对另一设备上的交付清单
+					155 container
+						156 text 状态
+						157 pop up button 状态, Value: 等待中
+					158 container
+						159 text 截止日期
+						160 date time area 截止日期
+							161 container
+								162 stepper month, Value: 0, Secondary Actions: increment, decrement
+								163 text /
+								164 stepper day, Value: 0, Secondary Actions: increment, decrement
+								165 text /
+								166 stepper year, Value: 0, Secondary Actions: increment, decrement
+					167 container
+						168 text 等待对象或条件
+						169 text entry area (settable) 等待对象或条件 产品同事
+							170 text 产品同事
+					171 container
+						172 text 所属事项标识
+						173 text entry area (settable) 所属事项标识
+					174 container
+						175 text 重点排序
+						176 number field (settable) 重点排序
+							177 stepper, Value: 0
+								178 unknown
+								179 unknown
+					133 summary 高级：完整 JSON 与版本诊断, Value: 0
+					134 button 放弃编辑
+					135 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					136 button 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 153 text entry area (settable) 内容 核对另一设备上的交付清单.
+
+native-tab.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+No change in the accessibility tree since the previous snapshot.
+
+The focused UI element is 157 pop up button 状态, Value: 等待中.
+
+native-unsaved.json
+App=dev.localnotes.validation.issue21 (pid 79836)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			31 container
+				32 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。
+				33 summary 查看技术详情, Value: 0
+				34 button 关闭提示
+			52 container 同步检查
+				53 heading 同步检查
+				54 text 这里只检查本地版本；无法确认其他设备是否收到。
+				55 button 关闭检查
+				56 button 重新检查
+				182 text 还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。
+				57 text 部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。
+				58 summary 查看技术详情, Value: 0
+				59 container 行动：核对项目交付清单
+					60 heading 行动：核对项目交付清单
+					61 text 发现冲突版本，请比较后选择或合并。
+					62 heading 1. 比较版本
+					63 summary 版本 1 · 核对项目交付清单 · 历史版本, Value: 0
+					64 container (expanded)
+						65 summary (expanded) 版本 2 · 核对另一设备上的交付清单 · 待解决分支, Value: 1
+						66 text 修改时间：2026-11-17T05:17:51.511Z；保留记录
+						67 description list
+							68 text 内容 · 有差异
+							69 text 核对另一设备上的交付清单
+							70 text 状态 · 有差异
+							71 text 等待中
+							72 text 截止日期
+							73 text 未设置
+							74 text 等待对象或条件 · 有差异
+							75 text 产品同事
+							76 text 所属事项标识
+							77 text 未设置
+							78 text 重点排序
+							79 text 未设置
+							80 text 来源引用
+							81 text []
+						82 button 选择版本 2
+					83 container (expanded)
+						84 summary (expanded) 版本 3 · 核对本地修订后的交付清单 · 待解决分支, Value: 1
+						85 text 修改时间：2026-11-17T05:17:51.517Z；保留记录
+						86 description list
+							87 text 内容 · 有差异
+							88 text 核对本地修订后的交付清单
+							89 text 状态 · 有差异
+							90 text 待办
+							91 text 截止日期
+							92 text 未设置
+							93 text 等待对象或条件 · 有差异
+							94 text 设计同事
+							95 text 所属事项标识
+							96 text 未设置
+							97 text 重点排序
+							98 text 未设置
+							99 text 来源引用
+							100 text []
+						101 button 选择版本 3
+					102 heading 2. 审核与编辑解决内容
+					180 text 解决内容尚未保存。原版本均会保留。
+					151 container
+						152 text 内容
+						153 text entry area (settable) 内容 核对并合并双方确认的交付清单
+							181 text 核对并合并双方确认的交付清单
+					155 container
+						156 text 状态
+						157 pop up button 状态, Value: 等待中
+					158 container
+						159 text 截止日期
+						160 date time area 截止日期
+							161 container
+								162 stepper month, Value: 0, Secondary Actions: increment, decrement
+								163 text /
+								164 stepper day, Value: 0, Secondary Actions: increment, decrement
+								165 text /
+								166 stepper year, Value: 0, Secondary Actions: increment, decrement
+					167 container
+						168 text 等待对象或条件
+						169 text entry area (settable) 等待对象或条件 产品同事
+							170 text 产品同事
+					171 container
+						172 text 所属事项标识
+						173 text entry area (settable) 所属事项标识
+					174 container
+						175 text 重点排序
+						176 number field (settable) 重点排序
+							177 stepper, Value: 0
+								178 unknown
+								179 unknown
+					133 summary 高级：完整 JSON 与版本诊断, Value: 0
+					134 button 放弃编辑
+					135 text 保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。
+					136 button 3. 保存解决结果到本地
+	35 close button
+	36 full screen button, Secondary Actions: zoom the window
+	37 minimize button
+	38 text 拾记 · Local Notes
+
+The focused UI element is 157 pop up button 状态, Value: 等待中.
