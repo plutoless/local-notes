@@ -11,4 +11,4 @@ The approved design contract is docs/design/README.md and its live catalogue, wi
 - [x] Extend tests/sync-ui.mjs for selection, background refresh, failed refresh, invalid data, narrow/long Chinese, focus containment and restoration, partial-write recovery and source history. Keep real Mac storage adapter coverage.
 - [x] Add an isolated issue36 WKWebView probe for actual local save/failure/retry/restart/readback, with screenshots and explicit input-method limitations.
 - [x] Run shared checks, UI regressions and Mac build. Android and standalone Syncthing are deferred by user decision.
-- [ ] Commit, run independent Standards and Spec reviews against the starting SHA; resolve findings and refresh affected checks. Publish one PR; coordinator owns merging.
+- [x] Commit, run independent Standards and Spec reviews against the starting SHA; resolve findings and refresh affected checks. Publish one PR; coordinator owns merging.

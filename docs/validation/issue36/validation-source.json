@@ -1,0 +1,10 @@
+{
+  "sourceHead": "5092051366c03747242d1783e9236bb51f20e8a0",
+  "startingSha": "e8a869b42f396c2b9f3cf7e768aaa752ae4c448f",
+  "baseSha": "e8a869b42f396c2b9f3cf7e768aaa752ae4c448f",
+  "webResourcesMatchNative": true,
+  "unitTests": 45,
+  "uiSuites": 10,
+  "android": "deferred by user decision",
+  "syncthingStandalone": "deferred by user decision"
+}
