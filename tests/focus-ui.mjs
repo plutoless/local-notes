@@ -146,7 +146,7 @@ try {
   await page.locator('#action-save').click();
   await page.getByText('内容需要核对。请检查必填项、日期和来源引用后重新保存。', {exact:true}).waitFor();
   await page.locator('#action-save-state summary').click();
-  await page.locator('#action-save-state pre').filter({hasText:/Quoted fragment was not found/}).waitFor();
+  await page.locator('#action-save-state pre').filter({hasText:/未在来源中找到引用原文/}).waitFor();
   assert.equal(await page.locator('.source-quote').inputValue(), 'This quotation is not in the source');
   await page.locator('.action-source button').click(); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
