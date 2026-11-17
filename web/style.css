@@ -733,3 +733,24 @@ aside > #new {
 .action-utilities p { color: var(--muted); }
 .action-revision { border-top: 1px solid var(--line); padding: 16px 0; }
 #items .card.selected { border-color: var(--green); background: var(--hover); box-shadow: inset 4px 0 var(--green); }
+
+/* Organization is one task surface, with ordered stages rather than an empty editor. */
+.app.organization-view { grid-template-columns: 200px minmax(0, 1fr); }
+.organization-view main { display: none; }
+.organization-view .list { min-width: 0; }
+.organization-view #search { display: none; }
+#organize-tools { padding: 24px 32px; }
+#organize-tools section { border-top: 1px solid var(--line); margin-top: 24px; padding-top: 16px; }
+#organize-tools h3 { font-size: 17px; line-height: 1.6; margin: 8px 0; }
+#organize-tools pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+#ai-readable pre { background: var(--canvas); padding: 16px; font: inherit; }
+.organization-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
+.suggestion-card { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+.suggestion-card blockquote { border-left: 3px solid var(--line); margin: 16px 0 8px; padding: 0 16px; white-space: pre-wrap; }
+#organize-tools summary { cursor: pointer; padding: 12px 0; }
+#ai-input { max-height: 30dvh; }
+@media (max-width: 700px) {
+  .app.organization-view { grid-template-columns: minmax(0, 1fr); }
+  #organize-tools { padding: 16px; }
+  .organization-actions > button { flex: 1 1 120px; }
+}

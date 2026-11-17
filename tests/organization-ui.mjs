@@ -45,7 +45,7 @@ try {
  await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('https://notes.test/');await page.locator('[data-view=organize]').click();
  await page.locator('#ai-selection input').waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
- await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
+ await page.locator('#ai-configuration summary').click();await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
  assert.equal(await page.locator('#index-state').textContent(), '');
  await page.locator('#ai-selection input').check();await page.locator('#ai-preview').click();await page.waitForFunction(()=>!document.querySelector('#ai-send').disabled);
  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
@@ -55,8 +55,8 @@ try {
  for (const viewport of [{width:1180,height:800}, {width:800,height:600}, {width:380,height:548}]) {
   await page.setViewportSize(viewport);
   await page.locator('#organize-tools').evaluate(element => { element.scrollTop = 0; });
-  const summary = await wheelReach('#organize-tools summary');
-  if (!await page.locator('#organize-tools details').evaluate(element => element.open)) {
+  const summary = await wheelReach('#ai-request-details summary');
+  if (!await page.locator('#ai-request-details').evaluate(element => element.open)) {
    await page.mouse.click(summary.x + 30, summary.y + summary.height / 2);
   }
   await wheelReach('#ai-input');

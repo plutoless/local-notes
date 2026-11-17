@@ -61,7 +61,7 @@ function note(cmd,args={}){return native(cmd,{workspaceId:rootKey,...args});}
 function content(){return withTitle($('#body').value,$('#title').value||'无标题');}
 function updateStar(){const selected=stars.has(current);$('#star').textContent=selected?'★ 已收藏':'☆ 收藏';$('#star').setAttribute('aria-label',selected?'取消收藏笔记':'收藏笔记');$('#star').setAttribute('aria-pressed',String(selected));}
 function state(msg){$('#save-state').textContent=msg;}
-async function refresh(){const generation=workspaceGeneration;$('.app').classList.toggle('library-view',['notes','favorites'].includes(view));$('.app').classList.toggle('home', view === 'focus');
+async function refresh(){const generation=workspaceGeneration;$('.app').classList.toggle('library-view',['notes','favorites'].includes(view));$('.app').classList.toggle('home', view === 'focus');$('.app').classList.toggle('organization-view', view === 'organize');
 if(view==='organize'){await organize.show(libraryScreen.library);return;}
 if(view==='focus'){
   if(!actions.repository.ready) await actions.openWorkspace(true);
