@@ -19,12 +19,14 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
   if (!await flush()) return;
   const origin = {view, action: !$('#action-editor').hidden ? actions.previous : null, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
+  const generation = workspaceGeneration;
   let loaded;
-  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
+  try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
+  if (generation !== workspaceGeneration) return;
   sourceOrigin = origin;
   focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-  await refresh(); await load(path, loaded); $('#mode').focus();
+  await refresh(); if (generation !== workspaceGeneration) return; await load(path, loaded); $('#mode').focus();
 }, id => createNote(id), async () => {
   // Explicit missing-source recovery may build the reference index without visiting Notes.
   await libraryScreen.library.open(); await libraryScreen.library.sync();
@@ -34,9 +36,11 @@ actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async path => {
   if (!await flush()) return;
   const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
+  const generation = workspaceGeneration;
   let loaded;
-  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
-  if (await navigate('notes')) { sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
+  try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
+  if (generation !== workspaceGeneration) return;
+  if (await navigate('notes')) { if (generation !== workspaceGeneration) return; sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
 });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
 const syncScreen = new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
@@ -138,8 +142,7 @@ async function openContextNote(path, reading = true) {
   try {
     if (!await flush()) return;
     const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId;
-    let loaded;
-  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
+    const loaded = await note('read', {path});
     if (workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
     initiatives.rememberContext(); initiatives.detailKind = 'note'; $('.app').classList.add('workspace', 'detail-open', 'editing');
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
@@ -172,7 +175,6 @@ async function createNote(initiativeId = null) {
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
     focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-    selectNavigation('notes');
     await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; $('#capture-return').hidden = !captureOrigin; if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
 }
