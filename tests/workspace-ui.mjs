@@ -81,6 +81,10 @@ try {
   await page.locator('#action-open-initiative').click();
   await page.locator('#initiative-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('nav [data-view=initiatives]').getAttribute('aria-current'), 'page');
+  await page.locator('#initiative-actions button').filter({hasText:'把阅读摘录'}).click();
+  await page.locator('#action-open-initiative').click();
+  await page.locator('#initiative-title').waitFor({state:'visible'});
+  assert.equal(await page.locator('#workspace-return-action').isHidden(), false, 'Nested context action retains outer origin');
   await page.locator('#workspace-references button').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#back').click();
