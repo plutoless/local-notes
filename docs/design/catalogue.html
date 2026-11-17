@@ -10,7 +10,7 @@
 <section><h2>Feedback state matrix</h2><div id="states"></div></section>
 <section><h2>Focused panel and dialog</h2><div id="panel" class="ui-panel"><h3>Review surface</h3><p>Use this surface for focused decisions; a page layout remains separate.</p></div></section>
 <script type="module">
-import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog} from '../../web/presentation.js';
+import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog, comparisonRow} from '../../web/presentation.js';
 const $ = s => document.querySelector(s);
 for(const token of ['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','radius','radius-panel']){
  const node=document.createElement('span');node.className='swatch';node.textContent=`--${token}: ${getComputedStyle(document.documentElement).getPropertyValue('--'+token)}`;$('#tokens').append(node);
@@ -22,5 +22,6 @@ const disabled=button('正在保存…',()=>{});disabled.disabled=true;$('#actio
 for(const invalid of [false,true]){const input=document.createElement('input');input.value=invalid?'':'持续推进的事项';input.required=true;$('#fields').append(field('事项标题',input,{invalid,help:invalid?'请填写标题，编辑仍保留。':'用户输入保持原样。'}));}
 $('#rows').append(selectionRow('整理资料，确认下一步',()=>{}, {selected:true}),selectionRow('等待评审时间',()=>{}),disclosure('管理：整理资料',[button('上移',()=>{}),button('移出重点',()=>{}, {variant:'danger'})]),pagination(()=>{},()=>{}, {hasNext:true}));
 for(const [state,text] of [['normal','尚未选择内容'],['empty','还没有重点行动。'],['loading','正在载入重点…'],['dirty','编辑中…'],['saving','正在保存…'],['failed','未保存 · 编辑仍保留'],['saved','已保存到本地'],['recovered','已恢复未保存草稿']]){const node=document.createElement('div');node.setAttribute('role','status');feedback(node,text,state==='failed'?'Controlled failure example':'');node.dataset.state=state;$('#states').append(node);}
+const comparison=document.createElement('dl');comparison.append(comparisonRow('内容','核对原文'),comparisonRow('当前进展','已人工比较，需要保留两侧来源。',{changed:true}));$('#panel').append(comparison);
 const modal=document.createElement('div');modal.className='sync-panel ui-panel ui-dialog';modal.hidden=true;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','核对保存结果');modal.append('核对保存结果',button('关闭',()=>modal.hidden=true));document.body.append(modal);bindDialog(modal);$('#panel').append(button('打开核对面板',()=>modal.hidden=false));
 </script></html>
