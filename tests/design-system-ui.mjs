@@ -66,6 +66,15 @@ try {
 
   await page.locator('[data-view=actions]').click();
   await page.locator('#items .card').first().click();
+  const pagingFailure = await page.evaluate(async () => {
+    const {FocusScreen} = await import('/focus-screen.js');
+    const screen = Object.create(FocusScreen.prototype);
+    screen.focusOffset = 99; screen.show = async () => {throw Error('Controlled page failure');};
+    screen.notice = message => {screen.failure = message;};
+    await screen.pageFocus(198);
+    return {offset:screen.focusOffset, failure:screen.failure};
+  });
+  assert.deepEqual(pagingFailure,{offset:99,failure:'Controlled page failure'});
   const prior = await page.locator('#action-description').inputValue();
   await page.locator('#new').click();
   await page.locator('#title').waitFor({state:'visible'});
