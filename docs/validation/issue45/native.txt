@@ -1,0 +1,3 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/build/native-issue45-after/Home45.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/build/native-issue45-after/Home45.app: replacing existing signature
+PASS native persistence, home open/reorder/remove and 393px

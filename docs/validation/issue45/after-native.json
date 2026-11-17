@@ -1,0 +1,14 @@
+{
+  "engine": "Cocoa/WKWebView",
+  "createPersistedActions": true,
+  "reorder": true,
+  "remove": true,
+  "open": true,
+  "narrow": 393,
+  "pid": 10383,
+  "assets": {
+    "style.css": "d67956e1c8f797a3930370f5d6e69ed6132e2e0c27b533da2352b7a20c1fd433",
+    "presentation.js": "fd0f71a19dce21490a6804796e1907086c11142eabec29ddb9a63e744ab08c73",
+    "focus-screen.js": "d308399814169377f66eb82df75410de8f9dd582789f47b6baa1aeb8028d071b"
+  }
+}
