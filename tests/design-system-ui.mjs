@@ -111,6 +111,15 @@ try {
   failNoteSave=false;
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText:'已保存到本地'}).waitFor();
+  await page.locator('#mode').click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  await page.locator('#new').click();
+  await page.locator('#capture-return').waitFor({state:'visible'});
+  assert.equal(await page.locator('#body').isVisible(),true);
+  assert.equal(await page.locator('nav [data-view=notes]').getAttribute('aria-current'),'page');
+  await page.locator('#capture-return').click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  assert.equal(await page.locator('#file-path').textContent(),capturedPath);
   await page.locator('.directory-details summary').click();
   assert.equal(await page.locator('#choose').isVisible(),true);
   await page.locator('#choose').focus(); await page.keyboard.press('Tab');
