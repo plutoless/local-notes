@@ -182,6 +182,7 @@ try {
   await page.locator('#note-initiatives button').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
   assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await writeFile(join(fixture.root, 'moved-reference.md'), original + '\nExternal update');
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-references .source-state').filter({hasText: '来源已修改，请核对引用'}).waitFor();

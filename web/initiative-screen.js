@@ -44,7 +44,7 @@ export class InitiativeScreen {
       if (latest) { this.form(latest, latest); await this.details(); }
       if (!wasEditing) $('.app').classList.remove('editing');
     }
-    $('#view-title').textContent = '事项'; $('#search').placeholder = '搜索事项…';
+    $('#view-title').textContent = '事项'; $('#search').setAttribute('aria-label', '搜索事项'); $('#search').placeholder = '搜索事项…';
     $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = false;
     $('#editor').hidden = true; $('#action-editor').hidden = true;
     $('#initiative-editor').hidden = !this.previous && !this.dirty; $('#empty').hidden = !$('#initiative-editor').hidden;
