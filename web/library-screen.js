@@ -15,7 +15,7 @@ export class LibraryScreen {
     $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) editTopic(topic); };
     this.topicOpener = null;
     $('#topic-cancel').onclick = () => { $('#topic-form').hidden = true; this.topicOpener?.focus(); };
-    $('#topic-form').onsubmit = async event => { event.preventDefault(); try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; this.topicOpener?.focus(); } catch (error) { notice(error.message); } };
+    $('#topic-form').onsubmit = async event => { event.preventDefault(); const submit = $('#topic-form button[type=submit]'); if (submit.disabled) return; submit.disabled = true; try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; this.topicOpener?.focus(); } catch (error) { notice(error.message); } finally { submit.disabled = false; } };
     $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
     $('#library-next').onclick = () => { this.offset += 50; this.render(); };
     $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
@@ -32,7 +32,15 @@ export class LibraryScreen {
   async render() {
     if (!this.isActive()) return;
     const sequence = ++this.sequence;
-    const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()});
+    const generation = this.library.generation;
+    let result;
+    try { result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()}); }
+    catch (error) {
+      if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
+      this.failed = true;
+      feedback($('#library-progress'), '笔记列表暂不可用，请刷新重试或重新选择目录。', error.message);
+      return;
+    }
     if (sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
     directoryLabel(this.library.root || '本地笔记');
@@ -64,11 +72,17 @@ export class LibraryScreen {
     for (const note of result.notes) {
       const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
       card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt)}</p><small>${esc(note.path)} · ${new Date(note.modified * 1000).toLocaleDateString()}</small>`;
-      card.classList.toggle('selected', note.path === this.selectedPath); card.setAttribute('aria-current', note.path === this.selectedPath ? 'true' : 'false');
       list.append(card);
     }
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
     $('.collection').scrollTop = scroll;
+  }
+  captureContext() {
+    return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseScroll: $('.collection').scrollTop};
+  }
+  async restoreContext(context) {
+    Object.assign(this, context); $('#search').value = this.search;
+    await this.restore();
   }
   async restore() {
     await this.render();
