@@ -1,0 +1,76 @@
+App=dev.localnotes.validation.issue17 (pid 75400)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				15 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-17/build/issue17-root
+				16 button 选择本地目录 ↗
+			35 container
+				17 heading 已确认行动
+				36 text field (settable) 搜索行动, Placeholder: 搜索行动…
+			37 button ＋ 新建行动
+			38 container
+				39 text 状态
+				40 pop up button 状态, Value: 全部状态
+			41 container
+				42 text 事项
+				43 pop up button 事项, Value: 全部事项
+			44 button (disabled) 上一页
+			45 text 第 1 页
+			46 button (disabled) 下一页
+			47 container, Text: 还没有已确认行动。 决定要做什么后，点击「新建行动」。
+			48 container
+				51 button ‹ 行动
+				52 summary 记录详情, Value: 0
+				53 container
+					54 heading 已确认行动
+					55 container
+						56 text 行动描述
+						57 text entry area (settable) 行动描述
+					58 container
+						59 text 状态
+						60 pop up button 状态, Value: 待办
+					61 container
+						62 text 事项
+						63 pop up button 事项, Value: 独立行动
+					64 button 打开事项
+					65 container
+						66 text 截止日期（可选）
+						67 date time area 截止日期（可选）
+							68 container
+								69 stepper month, Value: 0, Secondary Actions: increment, decrement
+								70 text /
+								71 stepper day, Value: 0, Secondary Actions: increment, decrement
+								72 text /
+								73 stepper year, Value: 0, Secondary Actions: increment, decrement
+					74 container
+						75 text 等待的人或条件（可选）
+						76 text field (settable) 等待的人或条件（可选）
+					77 heading 来源引用
+					78 button 添加来源引用
+					79 text 行动草稿尚未保存
+					80 button 保存行动
+					81 button 放弃未保存的草稿
+					82 text 保存后，待办或进行中的行动可加入当前重点。
+					83 button (disabled) 加入当前重点
+					84 text 保存行动后可查看版本历史。
+					85 button (disabled) 查看历史
+	31 close button
+	32 full screen button, Secondary Actions: zoom the window
+	33 minimize button
+	34 text 拾记 · Local Notes
+
+The focused UI element is 57 text entry area (settable) 行动描述.
