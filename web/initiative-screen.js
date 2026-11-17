@@ -8,9 +8,9 @@ export class InitiativeScreen {
     $('#initiative-new').onclick = () => this.edit(null);
     $('#initiative-next').onclick = () => { this.offset += 50; this.list().catch(e => notice(e.message)); };
     $('#initiative-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.list().catch(e => notice(e.message)); };
-    $('#initiative-form').oninput = event => { event.target.setAttribute('aria-invalid', String(!event.target.validity?.valid)); this.changed(); this.ending(); };
+    $('#initiative-form').oninput = event => { event.target.setAttribute('aria-invalid', String(!event.target.validity?.valid)); if (event.target.validity?.valid) event.target.removeAttribute('aria-describedby'); this.changed(); this.ending(); };
     $('#initiative-form').addEventListener('invalid', event => {
-      event.preventDefault(); event.target.setAttribute('aria-invalid', 'true'); event.target.focus();
+      event.preventDefault(); event.target.setAttribute('aria-invalid', 'true'); event.target.setAttribute('aria-describedby', 'initiative-save-state'); event.target.focus();
       errorFeedback($('#initiative-save-state'), '请填写标题、路径和引用原文后重试。');
     }, true);
     $('#initiative-status').onchange = () => { this.changed(); this.ending(); };
@@ -29,6 +29,10 @@ export class InitiativeScreen {
       await this.actions.edit(null); $('#action-initiative').value = this.previous.entityId; this.actions.changed(); $('#initiative-editor').hidden = true;
     };
     $('#initiative-new-note').onclick = async () => { this.rememberContext(); if (await this.beforeEdit() && await this.flush() && await this.actions.flush() && this.previous) { this.rememberContext(); await this.createNote(this.previous.entityId); } };
+  }
+  state(message) {
+    const target = $('#initiative-save-state'); target.textContent = message;
+    target.dataset.state = /恢复/.test(message) ? 'recovered' : /正在保存/.test(message) ? 'saving' : /尚未保存|新建/.test(message) ? 'dirty' : 'saved';
   }
   selectContext(key = '') {
     this.selectedContext = key;
@@ -56,7 +60,7 @@ export class InitiativeScreen {
   restoreList() {
     const row = [...$('#items').querySelectorAll('[data-initiative-id]')].find(node => node.dataset.initiativeId === this.previous?.entityId);
     (row || $('#initiative-new')).focus({preventScroll: true});
-    if (this.listScroll !== undefined) $('.collection').scrollTop = this.listScroll;
+    if (this.listScroll !== undefined) $('#items').scrollTop = this.listScroll;
   }
   key() { return `initiative-draft:${this.repository.workspaceId}`; }
   async openWorkspace(cached = false) {
@@ -68,7 +72,7 @@ export class InitiativeScreen {
     if (repository !== this.repository) return;
     if (result.warnings.length) this.notice(result.warnings.join('\n'));
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
-    if (draft) { this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = true; await this.details(); $('#initiative-save-state').textContent = '已恢复事项草稿，请核对后保存。'; }
+    if (draft) { this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = true; await this.details(); this.state('已恢复事项草稿，请核对后保存。'); }
   }
   async show() {
     $('.app').classList.remove('library-view', 'home'); $('.app').classList.add('workspace');
@@ -90,6 +94,8 @@ export class InitiativeScreen {
   }
   async list() {
     const repository = this.repository, generation = ++this.listGeneration;
+    const query = `${this.search}:${this.offset}`, scroll = this.lastListQuery === query ? $('#items').scrollTop : 0;
+    this.lastListQuery = query;
     $('#index-state').textContent = '正在载入事项…';
     const page = await repository.query({limit: 50, offset: this.offset, search: this.search});
     if (!this.active || repository !== this.repository || generation !== this.listGeneration) return;
@@ -98,30 +104,36 @@ export class InitiativeScreen {
       const button = selectionRow('', () => this.edit(record).catch(e => this.notice(e.message)), {selected: record.entityId === this.previous?.entityId}); button.classList.add('card'); button.dataset.initiativeId = record.entityId; button.classList.toggle('selected', record.entityId === this.previous?.entityId); button.setAttribute('aria-current', String(record.entityId === this.previous?.entityId));
       const heading = document.createElement('h3'); heading.textContent = record.title;
       const summary = document.createElement('p'); summary.textContent = statusLabel(record.status);
-      button.append(heading, summary); button.onclick = () => this.edit(record).catch(e => this.notice(e.message)); $('#items').append(button);
+      button.append(heading, summary); $('#items').append(button);
     }
     if (!page.actions.length) $('#items').textContent = this.search ? '没有找到匹配事项。请缩短关键词，或清空搜索。' : '还没有事项。点击「新建事项」记录目标和进展。';
+    $('#items').scrollTop = scroll;
     $('#initiative-next').disabled = !page.hasMore; $('#initiative-previous').disabled = !this.offset;
   }
   fields() {
     return {title: $('#initiative-title').value, goal: $('#initiative-goal').value, progress: $('#initiative-progress').value, status: $('#initiative-status').value,
       sources: [...document.querySelectorAll('.initiative-source')].map(row => ({path: row.querySelector('input').value.trim(), quote: row.querySelector('textarea').value, role: row.querySelector('select').value, fingerprint: row.dataset.fingerprint || ''}))};
   }
-  changed() { this.recoveredDraft = false; this.dirty = true; this.retry = null; this.draft(); $('#initiative-save-state').textContent = '事项草稿尚未保存'; }
+  changed() { this.recoveredDraft = false; this.dirty = true; this.retry = null; this.draft(); this.state('事项草稿尚未保存'); }
   draft() { localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, decisions: this.decisions()})); }
+  nameSource(row) {
+    const identity = row.querySelector('input').value.trim() || `新关联 ${row.dataset.ordinal}`;
+    row.setAttribute('role', 'group'); row.setAttribute('aria-label', `来源关联：${identity}`);
+    for (const [selector, label] of [['input', 'Markdown 路径'], ['textarea', '引用原文'], ['select', '用途'], ['button', '移除关联'], ['.source-open', '打开来源']]) row.querySelector(selector).setAttribute('aria-label', `${label}：${identity}`);
+  }
   addLink(source) {
-    const row = document.createElement('div'); row.className = 'initiative-source'; row.dataset.fingerprint = source.fingerprint;
+    const row = document.createElement('div'); row.className = 'initiative-source'; row.dataset.fingerprint = source.fingerprint; row.dataset.ordinal = this.sourceSequence = (this.sourceSequence || 0) + 1;
     row.innerHTML = '<label>Markdown 路径<input required></label><label>引用原文<textarea rows="2" required></textarea></label><label>用途<select><option value="working-note">工作笔记</option><option value="reference">参考资料</option></select></label><button type="button">移除关联</button><span class="source-state"></span><button type="button" class="source-open">打开来源</button>';
     for (const label of row.querySelectorAll('label')) label.classList.add('ui-field');
     for (const control of row.querySelectorAll('button')) control.classList.add('ui-action', 'quiet');
     row.querySelector('.source-state').setAttribute('role', 'status');
     row.querySelector('input').value = source.path; row.querySelector('textarea').value = source.quote; row.querySelector('select').value = source.role;
-    row.querySelector('input').oninput = row.querySelector('textarea').oninput = () => { row.dataset.fingerprint = ''; };
+    row.querySelector('input').oninput = row.querySelector('textarea').oninput = () => { row.dataset.fingerprint = ''; this.nameSource(row); };
     row.querySelector('button').onclick = () => { row.remove(); this.changed(); };
     row.querySelector('.source-open').onclick = async () => { if (await this.flush()) this.openNote(row.querySelector('input').value); };
     const place = () => $(row.querySelector('select').value === 'reference' ? '#initiative-references' : '#initiative-working-notes').append(row);
     row.querySelector('select').onchange = () => { const select = row.querySelector('select'); place(); select.focus(); this.changed(); };
-    place();
+    place(); this.nameSource(row);
   }
   form(fields, previous) {
     if (this.previous?.entityId !== previous?.entityId) this.pendingDecisions = {};
@@ -131,7 +143,7 @@ export class InitiativeScreen {
     $('#initiative-heading').textContent = previous ? '事项详情' : '新建事项';
     for (const field of ['title', 'goal', 'progress']) $(`#initiative-${field}`).value = fields[field] || '';
     $('#initiative-status').value = fields.status || 'active';
-    $('#initiative-working-notes').replaceChildren(); $('#initiative-references').replaceChildren();
+    $('#initiative-working-notes').replaceChildren(); $('#initiative-references').replaceChildren(); this.sourceSequence = 0;
     // Working notes precede reference material regardless of the order links were added.
     for (const source of [...(fields.sources || [])].sort((a, b) => (a.role === 'reference') - (b.role === 'reference'))) this.addLink(source);
     $('#initiative-editor').hidden = false; $('#action-editor').hidden = true; $('#editor').hidden = true; $('#empty').hidden = true; $('.app').classList.add('editing');
@@ -141,8 +153,8 @@ export class InitiativeScreen {
   async edit(record) {
     if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush()) return;
     if (record?.entityId === this.previous?.entityId) record = this.previous;
-    this.listScroll = $('.collection').scrollTop;
-    this.retry = null; this.form(record || {}, record); $('#initiative-save-state').textContent = record ? '已保存到本地' : '新建事项';
+    this.listScroll = $('#items').scrollTop;
+    this.retry = null; this.form(record || {}, record); this.state(record ? '已保存到本地' : '新建事项');
     if (!record) this.changed();
     await this.details(); $('#initiative-title').focus();
   }
@@ -171,8 +183,13 @@ export class InitiativeScreen {
     const [actions, initiatives] = await Promise.all([allRecords(this.actions.repository), allRecords(this.repository)]);
     if (record !== this.previous) return;
     for (const action of actions.filter(a => a.initiativeId === record.entityId)) {
-      const button = selectionRow(`${action.description} · ${statusLabel(action.status)}`, () => {}); button.dataset.actionId = action.entityId;
-      button.onclick = async () => { this.rememberContext(); if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) { this.detailKind = 'action'; $('.app').classList.add('detail-open'); $('#initiative-editor').hidden = true; await this.actions.edit(action); this.selectContext(action.entityId); } };
+      const button = selectionRow(`${action.description} · ${statusLabel(action.status)}`, async () => {
+        this.rememberContext();
+        if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) {
+          this.detailKind = 'action'; $('.app').classList.add('detail-open'); $('#initiative-editor').hidden = true;
+          await this.actions.edit(action); this.selectContext(action.entityId);
+        }
+      }); button.dataset.actionId = action.entityId;
       (unfinished(action) ? $('#initiative-actions') : $('#initiative-retired')).append(button);
       if (unfinished(action)) {
         const label = document.createElement('label'); label.textContent = `结束时处理：${action.description}`;
@@ -198,7 +215,7 @@ export class InitiativeScreen {
           const link = [...document.querySelectorAll('#workspace-notes button, #workspace-references button')].find(button => button.dataset.path === source.path);
           if (link) { const warning = document.createElement('small'); warning.textContent = row.querySelector('.source-state').textContent; link.append(warning); if (result.path) link.dataset.path = result.path; }
         }
-        if (result.state === 'moved') { row.querySelector('input').value = result.path; this.changed(); }
+        if (result.state === 'moved') { row.querySelector('input').value = result.path; this.nameSource(row); this.changed(); }
         row.querySelector('.source-open').disabled = !result.path;
       } catch (error) {
         row.querySelector('.source-state').textContent = '来源暂不可用，请检查目录后重试。';
@@ -220,7 +237,7 @@ export class InitiativeScreen {
     if (this.saving) return this.saving;
     if (!this.dirty) return true;
     this.saving = (async () => {
-      $('#initiative-form').inert = true; $('#initiative-save-state').textContent = '正在保存事项…';
+      $('#initiative-form').inert = true; this.state('正在保存事项…');
       try {
         const fields = this.fields();
         for (const source of fields.sources) if (!source.fingerprint) {
@@ -238,7 +255,7 @@ export class InitiativeScreen {
           result = await endInitiative(this.repository, this.actions.repository, this.previous, decisions, fields);
         } else result = await this.repository.save(fields, this.previous, this.retry);
         this.recoveredDraft = false; this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
-        $('#initiative-save-state').textContent = result.recovered ? '已恢复并保存到本地' : '已保存到本地'; await this.list(); await this.details(); return true;
+        this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地'); await this.list(); await this.details(); return true;
       } catch (error) {
         const initiativeCommitted = error.revisionSaved && error.record?.entityType === 'initiative';
         this.retry = initiativeCommitted ? error.record : null; if (initiativeCommitted) this.previous = error.record;

@@ -11,7 +11,7 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let writeGate = null, queryGate = null;
+  let writeGate = null, queryGate = null, failNoteSave = false;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
@@ -35,7 +35,7 @@ try {
           return {notes, root: activeFixture.root};
         }
         case 'read': return {text: await readFile(path, 'utf8')};
-        case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
+        case 'save': if (failNoteSave) throw Error('Injected note save failure'); if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
         case 'create': await mkdir(join(path, '..'), {recursive: true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
         default: throw Error('Unhandled bridge command');
       }
@@ -53,7 +53,11 @@ try {
   await page.getByText('还没有已确认行动。', {exact: false}).waitFor();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-new').click();
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /内容需要核对/}).waitFor();
+  assert.equal(await page.locator('#initiative-title').getAttribute('aria-describedby'), 'initiative-save-state');
   await page.locator('#initiative-title').fill('Release planning');
+  assert.equal(await page.locator('#initiative-save-state').getAttribute('data-state'), 'dirty');
   await page.locator('#initiative-goal').fill('Ship the next version');
   await page.locator('#initiative-progress').fill('Validation in progress');
   await page.locator('#initiative-link-details summary').click();
@@ -123,11 +127,24 @@ try {
   await page.locator('#title').fill('Working log');
   await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
+  failNoteSave = true;
+  await page.locator('#body').fill('Manual research update draft');
+  await page.locator('#workspace-overview').click();
+  await page.locator('#save-state').filter({hasText: /未保存/}).waitFor();
+  assert.equal(await page.locator('#editor').isVisible(), true);
+  assert.equal(await page.locator('#body').inputValue(), 'Manual research update draft');
+  failNoteSave = false;
+  await page.locator('#body').fill('Manual research update');
+  await page.locator('#note-save').click();
+  await page.locator('#save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-progress').fill('Progress after capture');
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await page.locator('.initiative-source').count(), 2);
+  const names = await page.locator('.initiative-source .source-open').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')));
+  assert.equal(new Set(names).size, 2);
+  assert.ok(names.every(name => name.startsWith('打开来源：')));
   await page.locator('[data-view="actions"]').click();
   await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
@@ -210,6 +227,19 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 2);
   await page.locator('#initiative-previous').click();
   await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 50);
+  await page.locator('#items .card').nth(30).scrollIntoViewIfNeeded();
+  const listScroll = await page.locator('#items').evaluate(node => node.scrollTop);
+  assert.ok(listScroll > 0);
+  await page.locator('#items .card').nth(30).click();
+  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  await page.locator('#initiative-progress').fill('滚动位置验证');
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  await page.setViewportSize({width:393,height:852});
+  await page.locator('#initiative-back').click();
+  await page.locator('#workspace-back').click();
+  assert.ok(Math.abs(await page.locator('#items').evaluate(node => node.scrollTop) - listScroll) < 2);
+  await page.setViewportSize({width:1180,height:800});
   await page.locator('#search').fill('不存在的事项');
   await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
   await page.locator('#search').fill('Release planning');
@@ -239,9 +269,13 @@ try {
   await page.locator('#initiative-save').click();
   await page.locator('#initiative-save-state').filter({hasText: /^正在保存事项…$/}).waitFor();
   assert.equal(await page.locator('#initiative-form').evaluate(el => el.inert), true);
+  assert.equal(await page.locator('#initiative-save-state').getAttribute('data-state'), 'saving');
   releaseWrite();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  assert.equal(await page.locator('#initiative-save-state').getAttribute('data-state'), 'saved');
   await page.locator('#initiative-back').click();
+  await page.screenshot({path:'docs/validation/issue33/after-393px-context.png'});
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   await page.locator('#workspace-back').click();
   let releaseQuery; queryGate = new Promise(resolve => { releaseQuery = resolve; });
   await page.locator('#search').fill('没有这个标题');
