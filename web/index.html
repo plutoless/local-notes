@@ -69,9 +69,9 @@
           <section aria-labelledby="ai-select-title">
             <h2 id="ai-select-title">1 · 选择来源笔记</h2>
             <p>每次选择 1–20 篇。只有点击「发送并分析」才会发送预览内容。</p>
-            <select id="ai-directory" aria-label="选择分析目录"></select>
+            <label class="ui-field">来源目录<select id="ai-directory" aria-label="选择分析目录"></select></label>
             <div id="ai-selection"></div>
-            <div class="organization-actions"><button id="ai-notes-previous">上一页笔记</button><button id="ai-notes-next">下一页笔记</button></div>
+            <div class="organization-actions ui-pagination"><button id="ai-notes-previous">上一页笔记</button><button id="ai-notes-next">下一页笔记</button></div>
             <p id="ai-selection-state" role="status"></p>
             <button id="ai-preview" class="primary">预览所选内容</button>
           </section>
@@ -81,13 +81,13 @@
             <div id="ai-readable"></div>
             <details id="ai-request-details"><summary>查看完整请求详情</summary><pre id="ai-input"></pre></details>
             <div class="organization-actions"><button id="ai-send" class="primary" aria-describedby="ai-help" disabled>发送并分析</button><button id="ai-cancel" disabled>取消分析</button></div>
-            <div id="ai-status" role="status"></div>
+            <progress id="ai-progress" aria-label="已完成的分析片段" hidden></progress><div id="ai-status" role="status"></div>
           </section>
           <section aria-labelledby="ai-review-title">
             <h2 id="ai-review-title">3 · 核对已保存的建议</h2>
             <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
             <div id="ai-results"></div>
-            <div class="organization-actions"><button id="ai-results-previous">上一页建议</button><button id="ai-results-next">下一页建议</button></div>
+            <div class="organization-actions ui-pagination"><button id="ai-results-previous">上一页建议</button><button id="ai-results-next">下一页建议</button></div>
           </section>
         </div>
         <div id="filters">

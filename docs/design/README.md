@@ -79,3 +79,9 @@ Downstream #32–#37 must:
 - Exercise applicable normal, empty, loading, invalid, failure/retry, disabled, dirty/saving and recovered states. Verify focus/restoration, ≥44px targets, contrast and long Chinese content.
 - Preserve bounded queries, durable revisions, rebuildable indexes, source guards, workspace isolation, private drafts and recovery. Presentation code cannot own storage changes.
 - Preserve delivered organization/candidate/sync behavior; run shared local conflict/revision checks. Record browser/native evidence separately and all deferred checks honestly.
+
+## Organization adoption (#35)
+
+Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
+
+The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, a 3px focus-within outline, and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
