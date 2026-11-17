@@ -176,8 +176,10 @@ try {
   assert.equal(await page.locator('#initiative-working-notes .initiative-source').count(), 1);
   await page.locator('#initiative-working-notes .source-open').click();
   await page.locator('#editor').waitFor({state: 'visible'});
+  await page.locator('#note-details').evaluate(node => node.open = true);
   await page.locator('#note-initiatives button').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);
   await writeFile(join(fixture.root, 'moved-reference.md'), original + '\nExternal update');
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-references .source-state').filter({hasText: '来源已修改，请核对引用'}).waitFor();

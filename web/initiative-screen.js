@@ -34,6 +34,7 @@ export class InitiativeScreen {
     if (draft) { this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = true; await this.details(); $('#initiative-save-state').textContent = '已恢复事项草稿，请核对后保存。'; }
   }
   async show() {
+    $('.app').classList.remove('library-view');
     $('#library-tools').hidden = true;
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
