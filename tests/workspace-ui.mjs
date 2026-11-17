@@ -99,11 +99,11 @@ try {
   assert.equal(await page.locator('#reading > h1:first-child').isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue33/workspace-note.png'});
   // Integration of library Back must preserve the initiative context return contract.
+  assert.equal(await page.locator('#workspace-references [data-path="reference.md"]').getAttribute('aria-current'), 'true');
   const contextScroll = await page.locator('#workspace-context').evaluate(node => node.scrollTop);
   await page.locator('#back').click();
   await page.waitForFunction(() => document.activeElement.dataset.path === 'reference.md' && !document.querySelector('#initiative-editor').hidden);
   assert.equal(await page.locator('#workspace-context').evaluate(node => node.scrollTop), contextScroll);
-  assert.equal(await page.locator('#workspace-references [data-path="reference.md"]').getAttribute('aria-current'), 'true');
   await page.locator('#workspace-references [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
