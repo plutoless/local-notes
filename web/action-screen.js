@@ -1,4 +1,4 @@
-import {actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel} from './presentation.js';
+import {actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback} from './presentation.js';
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
 import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
@@ -9,6 +9,15 @@ export class ActionScreen {
   constructor(notice) {
     this.repository = new ActionRepository(native); this.notice = notice; this.dirty = false; this.active = false;
     this.previous = null; this.retry = null; this.offset = 0; this.status = ''; this.search = ''; this.saving = null;
+    // Adopt the catalogue's form and control vocabulary without moving persistence here.
+    for (const label of document.querySelectorAll('#action-form label, #action-tools label')) {
+      const control = label.querySelector('input, textarea, select');
+      if (control) label.replaceWith(field(label.firstChild.textContent.trim(), control));
+    }
+    for (const control of document.querySelectorAll('#action-editor button, #action-tools button')) {
+      control.classList.add('ui-action', control.id === 'action-save' || control.id === 'action-new' ? 'primary' : 'quiet');
+    }
+    for (const details of document.querySelectorAll('#action-editor details')) details.classList.add('ui-disclosure');
     $('#action-status').innerHTML = ACTION_STATES.map(state => `<option value="${state}">${labels[state]}</option>`).join('');
     $('#action-filter').innerHTML = '<option value="">全部状态</option>' + $('#action-status').innerHTML;
     $('#action-filter').onchange = () => { this.status = $('#action-filter').value; this.offset = 0; this.list().catch(error => notice(error.message)); };
@@ -26,7 +35,20 @@ export class ActionScreen {
     $('#action-next').onclick = () => { this.offset += 30; this.list().catch(error => notice(error.message)); };
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = () => this.edit(null);
-    $('#action-back').onclick = async () => { if (await this.flush()) { if ($('.app').classList.contains('workspace')) { await this.initiatives.edit(this.initiatives.previous); $('.app').classList.remove('detail-open'); } else $('.app').classList.remove('editing'); } };
+    $('#action-back').onclick = async () => {
+      if (!await this.flush()) return;
+      try {
+        if ($('.app').classList.contains('workspace')) {
+          await this.initiatives.edit(this.initiatives.previous);
+          $('.app').classList.remove('detail-open');
+          $('#initiative-new-action').focus();
+        } else {
+          $('.app').classList.remove('editing');
+          const row = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === this.previous?.entityId);
+          (row || $('#action-new')).focus({preventScroll: true});
+        }
+      } catch (error) { errorFeedback($('#action-save-state'), error.message); }
+    };
     $('#action-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
@@ -44,7 +66,7 @@ export class ActionScreen {
           const item = document.createElement('article'); item.className = 'action-revision';
           const older = ordered[index + 1];
           const changes = older ? ['description', 'status', 'initiativeId', 'dueDate', 'waitingOn', 'sources', 'focusPosition'].filter(key => JSON.stringify(record[key]) !== JSON.stringify(older[key])).map(key => ({description:'描述', status:'状态', initiativeId:'所属事项', dueDate:'截止日期', waitingOn:'等待条件', sources:'来源引用', focusPosition:'当前重点'})[key]) : ['创建行动'];
-          item.innerHTML = `<h3>${esc(labels[record.status])} · ${esc(new Date(record.modifiedAt).toLocaleString('zh-CN', {hour12: false}))}</h3><p>${esc(record.description)}</p><small>${esc(changes.join('、') || '保存记录')}</small><details><summary>完整版本与记录详情</summary><pre>${esc(JSON.stringify(record, null, 2))}</pre></details>`;
+          item.innerHTML = `<h3>${esc(labels[record.status])} · ${esc(new Date(record.modifiedAt).toLocaleString('zh-CN', {hour12: false}))}</h3><p>${esc(record.description)}</p><small>${esc(changes.join('、') || '保存记录')}</small><details class="ui-disclosure"><summary>完整版本与记录详情</summary><pre>${esc(JSON.stringify(record, null, 2))}</pre></details>`;
           history.append(item);
         }
         if (!ordered.length) history.textContent = '暂无可用历史。';
@@ -85,10 +107,12 @@ export class ActionScreen {
     $('#editor').hidden = true;
     $('#action-editor').hidden = !this.dirty && !this.previous;
     $('#empty').hidden = !$('#action-editor').hidden;
+    await this.assignments();
     await this.list(); $('#index-state').textContent = '';
   }
   async list() {
     if (!this.active) return;
+    const scroll = $('#items').scrollTop;
     const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
     $('#index-state').textContent = '正在载入行动…';
@@ -98,17 +122,19 @@ export class ActionScreen {
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const action of page.actions) {
-      const row = document.createElement('button'); row.className = 'card'; row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
-      row.innerHTML = `<h3>${esc(action.description)}</h3><p>${labels[action.status]}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ' · 未设日期'}</p><small>${esc(action.waitingOn || (action.initiativeId ? '已关联事项' : '独立行动'))}</small>`;
+      const row = selectionRow('', () => this.edit(action), {selected: action.entityId === this.previous?.entityId}); row.classList.add('card'); row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
+      row.innerHTML = `<h3>${esc(action.description)}</h3><p>${labels[action.status]}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ' · 未设日期'}</p><small>${esc(this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动'))}${action.waitingOn ? ` · 等待：${esc(action.waitingOn)}` : ''}</small>`;
       row.onclick = () => this.edit(action); $('#items').append(row);
     }
     if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有已确认行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
+    $('#items').scrollTop = scroll;
     $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
     $('#action-page').textContent = `第 ${this.offset / 30 + 1} 页`;
   }
   async assignments(selected = $('#action-initiative').value || '') {
     if (!this.initiatives?.repository.ready) return;
     const records = await allRecords(this.initiatives.repository);
+    this.initiativeNames = new Map(records.map(record => [record.entityId, record.title]));
     const select = $('#action-initiative'); select.replaceChildren(new Option('独立行动', ''));
     for (const record of records.filter(i => i.status !== 'ended' || i.entityId === selected)) select.add(new Option(record.title, record.entityId));
     if (selected && !records.some(i => i.entityId === selected)) select.add(new Option('事项不可用，请重新选择', selected));
@@ -122,18 +148,29 @@ export class ActionScreen {
       dueDate: $('#action-due').value, waitingOn: $('#action-waiting').value,
       sources: [...document.querySelectorAll('.action-source')].map(row => ({path: row.querySelector('.source-path').value.trim(), quote: row.querySelector('.source-quote').value, fingerprint: row.dataset.fingerprint || ''}))};
   }
-  state(message) { $('#action-save-state').textContent = message; }
+  state(message) {
+    feedback($('#action-save-state'), message);
+    $('#action-save-state').dataset.state = message === '正在保存…' ? 'saving' : this.recoveredDraft ? 'recovered' : this.dirty ? 'dirty' : 'saved';
+  }
   changed() {
     this.recoveredDraft = false; this.dirty = true; this.retry = null;
+    $('#action-description').setAttribute('aria-invalid', 'false');
+    $('#action-focus').disabled = true;
     localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry}));
     this.state('行动草稿尚未保存');
   }
   addSource(source) {
     const row = document.createElement('div'); row.className = 'action-source'; row.dataset.fingerprint = source.fingerprint;
-    row.innerHTML = `<h3>${esc(source.path?.split('/').pop() || '新来源')}</h3><small>${esc(source.path || '填写笔记路径并引用原文')}</small><blockquote>${esc(source.quote || '未添加原文引用')}</blockquote><details ${source.path ? '' : 'open'}><summary>编辑来源引用</summary><label>笔记相对路径<input class="source-path" placeholder="Notes/reference.md"></label><label>引用原文<textarea class="source-quote" rows="2"></textarea></label><button type="button">移除引用</button></details>`;
-    row.querySelector('.source-path').value = source.path; row.querySelector('.source-quote').value = source.quote;
-    row.querySelector('.source-path').oninput = row.querySelector('.source-quote').oninput = () => { row.dataset.fingerprint = ''; };
-    row.querySelector('button').onclick = () => { row.remove(); this.changed(); }; $('#action-sources').append(row);
+    const heading = document.createElement('h3'); heading.textContent = source.path?.split('/').pop() || '新来源';
+    const path = document.createElement('small'); path.textContent = source.path || '填写笔记路径并引用原文';
+    const quote = document.createElement('blockquote'); quote.textContent = source.quote || '未添加原文引用';
+    const pathInput = document.createElement('input'); pathInput.className = 'source-path'; pathInput.value = source.path;
+    const quoteInput = document.createElement('textarea'); quoteInput.className = 'source-quote'; quoteInput.rows = 2; quoteInput.value = source.quote;
+    pathInput.oninput = quoteInput.oninput = () => { row.dataset.fingerprint = ''; };
+    const remove = button('移除引用', () => { row.remove(); this.changed(); $('#action-add-source').focus(); }, {variant: 'danger', label: `移除引用：${source.path || '新来源'}`});
+    const options = disclosure('编辑来源引用', [field('笔记相对路径', pathInput), field('引用原文', quoteInput), remove]);
+    options.open = !source.path;
+    row.append(heading, path, quote, options); $('#action-sources').append(row);
   }
   showForm(fields, previous) {
     this.previous = previous; this.retry = null;
@@ -172,17 +209,18 @@ export class ActionScreen {
       if (request !== this.editRequest || repository !== this.repository || !row.isConnected) return;
       const status = document.createElement('p'); status.textContent = statusLabel(result.state); row.append(status);
       if (result.state === 'moved') { row.querySelector('.source-path').value = result.path; row.querySelector('h3').textContent = result.path.split('/').pop(); row.querySelector('small').textContent = result.path; this.changed(); }
-      if (result.path && this.initiatives) { const open = document.createElement('button'); open.type = 'button'; open.textContent = '打开来源'; open.onclick = async () => { if (await this.flush()) this.initiatives.openNote(result.path); }; row.append(open); }
+      if (result.path && this.initiatives) { const open = button('打开来源', async () => { if (await this.flush()) await this.initiatives.openNote(result.path); }, {label: `打开来源：${result.path}`}); row.append(open); }
     }
   }
   async save() {
     if (this.saving) return this.saving;
     if (!this.dirty) return true;
+    const focused = document.activeElement;
     this.saving = (async () => {
       this.state('正在保存…'); $('#action-save').disabled = true; $('#action-form').inert = true;
       try {
         const fields = this.fields();
-        if (!fields.description.trim()) throw Error('请填写行动描述。');
+        if (!fields.description.trim()) { $('#action-description').setAttribute('aria-invalid', 'true'); throw Error('请填写行动描述。'); }
         if (fields.initiativeId && fields.initiativeId !== this.previous?.initiativeId) {
           const target = (await allRecords(this.initiatives.repository)).find(i => i.entityId === fields.initiativeId && i.status !== 'ended');
           if (!target) throw Error('请选择进行中或以后再做的事项。');
@@ -195,6 +233,7 @@ export class ActionScreen {
         this.previous = result.record; this.retry = null; this.recoveredDraft = false; this.dirty = false; localStorage.removeItem(this.key());
         this.showForm(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地');
+        $('#action-save-state').dataset.state = 'saved';
         await this.list();
         if ($('.app').classList.contains('workspace')) await this.initiatives.details();
         return true;
@@ -204,7 +243,7 @@ export class ActionScreen {
         this.dirty = true;
         localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry}));
         errorFeedback($('#action-save-state'), error.message); return false;
-      } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; }
+      } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; if (focused?.isConnected) focused.focus({preventScroll: true}); }
     })();
     return this.saving;
   }
