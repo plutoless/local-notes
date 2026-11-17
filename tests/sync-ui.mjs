@@ -148,6 +148,11 @@ try {
   const colors=await page.evaluate(()=>({text:getComputedStyle(document.querySelector('.sync-panel')).color,background:getComputedStyle(document.querySelector('.sync-panel')).backgroundColor}));
   console.log('Rendered contrast inputs:',JSON.stringify(colors));
   await page.screenshot({path:'docs/validation/issue21/web-393px.png',fullPage:true});
+  await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+  delayFiles=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
+  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  assert.equal(await panel.isVisible(),true);await panel.getByText('正在检查本地版本…').waitFor();
+  await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');delayFiles=false;
   assert.equal(await readFile(sourcePath,'utf8'),original);
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
