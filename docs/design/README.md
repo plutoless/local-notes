@@ -79,3 +79,9 @@ Downstream #32–#37 must:
 - Exercise applicable normal, empty, loading, invalid, failure/retry, disabled, dirty/saving and recovered states. Verify focus/restoration, ≥44px targets, contrast and long Chinese content.
 - Preserve bounded queries, durable revisions, rebuildable indexes, source guards, workspace isolation, private drafts and recovery. Presentation code cannot own storage changes.
 - Preserve delivered organization/candidate/sync behavior; run shared local conflict/revision checks. Record browser/native evidence separately and all deferred checks honestly.
+
+## Conflict comparison rows
+
+Issue #36 uses `comparisonRow(label, value, {changed})` inside a definition list. It wraps long user evidence, marks differing fields with Chinese text, and uses semantic text/divider tokens. Rows are read-only; version selection uses secondary actions, and resolution editing uses `field()`. Blocked incomplete/cyclic histories retain readable evidence while their controls are disabled. The catalogue demonstrates both unchanged and differing rows. The synchronization panel reuses the shell/Focus `selectionRow()` for record jump navigation, the capture field pattern, and the existing feedback and dialog catalogue states; no private palette or control variant is introduced.
+
+`bindDialog()` additionally returns `open()` for callers that need to capture an opener synchronously before focusing a newly visible panel. Existing hidden-attribute consumers remain supported. Closing restores that opener without replacing the underlying editor or its scroll surface.
