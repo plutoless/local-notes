@@ -173,11 +173,12 @@ try {
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-open-initiative').click();
   await page.locator('#workspace-overview').waitFor({state:'visible'});
+  await page.locator('#workspace-return-action').waitFor({state:'visible'});
   await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
   await page.locator('[data-view="notes"]').click();
-  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
+  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor().catch(async error=>{console.log('NOTE TRANSITION',await page.evaluate(()=>({classes:document.querySelector('.app').className,active:document.querySelector('nav [aria-current=page]')?.textContent,drawer:document.querySelector('#initiative-drawer').open,libraryHidden:document.querySelector('#library-tools').hidden,search:document.querySelector('#search').value,items:document.querySelector('#items').innerText,notice:document.querySelector('#notice').innerText,initiativeState:document.querySelector('#initiative-save-state').textContent,actionState:document.querySelector('#action-save-state').textContent})));console.log('NOTE FILES',await readdir(fixture.root));throw error;});
   await page.locator('#library-create-topic').click();
   await page.locator('#topic-name').fill('Research topic');
   await page.locator('#topic-drawer button[type=submit]').click();

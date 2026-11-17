@@ -108,6 +108,8 @@ try {
     await edit();assert.equal(await page.locator('#initiative-status').inputValue(),'active');await page.locator('#initiative-discard').click();await closed();
     await page.locator('#initiative-new-action').click();await page.locator('#action-description').fill('结束时处理的已选行动');await page.locator('#action-save').click();
     await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+    await edit();await page.setViewportSize({width:393,height:800});await page.locator('#initiative-discard').click();await closed();
+    assert.equal(await page.locator('#action-description').evaluate(n=>n===document.activeElement),true);await page.setViewportSize({width:1180,height:800});
     await edit();await page.locator('#initiative-status').selectOption('ended');await page.locator('[data-action]').selectOption('completed');await submit.click();await closed();
     assert.equal(await page.locator('#action-editor').isVisible(),true);assert.equal(await page.locator('#action-status').inputValue(),'completed');
     await page.locator('#action-description').fill('结束后继续编辑已选行动');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
@@ -123,6 +125,14 @@ try {
     assert.equal(await page.locator('#action-status').inputValue(),'canceled');
     assert.equal(await page.locator('#initiative-retired button').filter({hasText:'已取消'}).count(),1);
     await page.locator('#action-description').fill('部分结束失败后继续保存');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+    await page.locator('#action-status').selectOption('todo');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+    await edit();await page.locator('#initiative-status').selectOption('ended');await page.locator('[data-action]').selectOption('completed');
+    fixture.fail((cmd,args)=>cmd==='actionWrite'&&args.path.startsWith('actions/'),2);await submit.click();await page.getByText(/未保存的编辑仍保留/).waitFor();
+    fixture.fail((cmd,args)=>cmd==='actionWrite'&&args.path.startsWith('actions/'));
+    await page.locator('#initiative-discard').click();await page.getByRole('button',{name:'放弃事项编辑',exact:true}).click();
+    await page.getByText('关联行动尚未恢复，草稿仍保留。请重试关闭，或继续编辑。',{exact:true}).waitFor();assert.equal(await page.locator('[data-action]').inputValue(),'completed');
+    await page.getByRole('button',{name:'放弃事项编辑',exact:true}).click();await closed();assert.equal(await page.locator('#action-status').inputValue(),'completed');
+    await page.locator('#action-description').fill('修复不可变版本后继续保存');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
     const before=await readFile(sourcePath,'utf8');
     await open();await page.locator('#initiative-title').fill('重复提交保护');delayTopic=true;await submit.click();
     await page.waitForFunction(()=>document.querySelector('#initiative-form').inert);
