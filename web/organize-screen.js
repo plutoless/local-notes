@@ -8,10 +8,12 @@ export class OrganizeScreen {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
     $('#ai-settings').onsubmit = event => { event.preventDefault(); this.attempt(async () => { await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value}); $('#ai-token').value = ''; await this.settings(); this.controls(); this.status('设置已保存在此设备。'); }); };
     $('#ai-preview').onclick = () => this.attempt(async () => {
-      if (this.organization.running) throw Error('请先取消正在进行的分析');
+      if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
+      this.previewing = true; this.controls(); this.status('正在读取所选内容…');
+      try {
       const paths = [...this.selected];
       const batches = await this.organization.preview(paths);
-      $('#ai-input').textContent = '系统消息：\n' + SYSTEM_PROMPT + '\n\n用户消息（每个片段一次请求）：\n' + batches.map(batch => JSON.stringify(batch)).join('\n\n');
+      $('#ai-input').textContent = `服务地址：${$('#ai-address').value}\n模型：${$('#ai-model').value}\nstream: false\n\n` + '系统消息：\n' + SYSTEM_PROMPT + '\n\n用户消息（每个片段一次请求）：\n' + batches.map(batch => JSON.stringify(batch)).join('\n\n');
       $('#ai-readable').replaceChildren();
       for (const batch of batches) {
         const article = document.createElement('article'), title = document.createElement('h3'), text = document.createElement('pre');
@@ -19,15 +21,16 @@ export class OrganizeScreen {
         article.append(title, text); $('#ai-readable').append(article);
       }
       this.controls(); this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
+      } finally { this.previewing = false; this.controls(); }
     });
     $('#ai-send').onclick = () => this.attempt(async () => {
       const operation = this.organization.run(text => this.status(text)); this.controls();
       try { await operation; } finally { this.controls(); await this.candidates(); }
     });
     $('#ai-cancel').onclick = () => this.attempt(async () => { await this.organization.cancel(); this.controls(); this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`); });
-    $('#ai-directory').onchange = () => { this.selectionOffset = 0; this.inventory(); };
-    $('#ai-notes-next').onclick = () => { this.selectionOffset += 50; this.inventory(); };
-    $('#ai-notes-previous').onclick = () => { this.selectionOffset = Math.max(0, this.selectionOffset - 50); this.inventory(); };
+    $('#ai-directory').onchange = () => { this.selectionOffset = 0; this.attempt(() => this.inventory()); };
+    $('#ai-notes-next').onclick = () => { this.selectionOffset += 50; this.attempt(() => this.inventory()); };
+    $('#ai-notes-previous').onclick = () => { this.selectionOffset = Math.max(0, this.selectionOffset - 50); this.attempt(() => this.inventory()); };
     $('#ai-results-next').onclick = () => { this.offset += 50; this.candidates(); };
     $('#ai-results-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.candidates(); };
   }
@@ -37,7 +40,7 @@ export class OrganizeScreen {
     $('#ai-status').textContent = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
   }
   controls() {
-    const running = this.organization.running, batches = this.organization.batches;
+    const running = this.organization.running || this.previewing, batches = this.organization.batches;
     $('#ai-preview').disabled = running;
     $('#ai-send').disabled = running || !this.configured || !batches?.length || this.organization.covered === batches.length;
     $('#ai-send').textContent = this.organization.covered && this.organization.covered < batches?.length ? '继续分析剩余内容' : '发送并分析';
@@ -84,12 +87,13 @@ export class OrganizeScreen {
       await this.repository.open(); await this.review.open();
       if (previousWorkspace !== this.repository.workspaceId) { this.drafts.clear(); this.selected.clear(); this.offset = 0; this.invalidate(); }
       this.status('正在载入已保存的建议…');
-      try { await this.review.recover(); } catch (error) { errorFeedback($('#ai-status'), error.message); }
+      let recoveryError;
+      try { await this.review.recover(); } catch (error) { recoveryError = error; }
       await this.settings();
       this.library = library; await library.open(); await library.sync();
       this.selectionOffset = 0; $('#ai-directory').replaceChildren();
       for (const path of ['*', '', ...(library.directories || [])]) { const option = document.createElement('option'); option.value = path; option.textContent = path === '*' ? '全部目录（逐篇选择笔记）' : path || '/'; $('#ai-directory').append(option); }
-      await this.inventory(); await this.candidates(); this.controls(); this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '请先配置 AI 服务；已有建议仍可核对。');
+      await this.inventory(); await this.candidates(); this.controls(); if (recoveryError) throw recoveryError; this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '请先配置 AI 服务；已有建议仍可核对。');
     });
     $('#index-state').textContent = '';
   }

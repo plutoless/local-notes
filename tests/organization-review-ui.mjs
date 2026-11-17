@@ -9,7 +9,7 @@ await writeFile(fixture.root + '/reference.md', text);
 const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
 const initiative = (await initiatives.save({title:'合成事项', goal:'验证关联', progress:'', status:'active', sources:[]})).record;
 const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
-let mode = 'partial', requests = 0, pending, failTarget = false;
+let mode = 'partial', requests = 0, pending, failTarget = false, delayRead = false, releaseRead;
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
  const errors = []; page.on('pageerror', e => errors.push(e.message));
@@ -26,6 +26,7 @@ try {
     const batch = JSON.parse(request.messages[1].content);
     return {text:JSON.stringify({candidates:Array.from({length:6}, (_, i) => ({type:'action', content:`合成建议 ${i} · ${batch.start}`, placement:'独立行动', reasoning:'来源明确提及核对证据', relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]}))})};
    }
+   if (request.cmd === 'read' && delayRead) await new Promise(resolve => releaseRead = resolve);
    if (request.cmd === 'read') return {text:await readFile(fixture.root + '/' + request.path, 'utf8')};
    if (failTarget && request.cmd === 'actionWrite' && request.path.startsWith('revisions/') && JSON.parse(request.text).entityType === 'action') { failTarget = false; return {error:'Synthetic target write failure'}; }
    return await fixture.adapter(request.cmd, request);
@@ -39,13 +40,18 @@ try {
  const card = i => page.locator('.suggestion-card').filter({has:page.getByRole('heading', {name:`行动：合成建议 ${i} · 0`, exact:true})});
  await page.goto('https://notes.test/'); await organize();
  assert.equal(await page.locator('#ai-cancel').isDisabled(), true);
- await preview(); assert.equal(requests, 0);
+ delayRead = true; await page.locator('#ai-selection input').check(); await page.locator('#ai-preview').click();
+ await page.waitForFunction(() => document.querySelector('#ai-selection').inert);
+ assert.equal(await page.locator('#ai-directory').isDisabled(), true);
+ assert.equal(await page.locator('#ai-preview').isDisabled(), true);
+ while (!releaseRead) await new Promise(resolve => setTimeout(resolve, 1)); delayRead = false; releaseRead();
+ await page.waitForFunction(() => !document.querySelector('#ai-send').disabled); assert.equal(requests, 0);
  assert.equal(await page.locator('#ai-readable pre').allTextContents().then(x => x.join('')), text);
  await page.locator('#ai-selection input').uncheck(); assert.equal(await page.locator('#ai-send').isDisabled(), true);
  assert.equal(await page.locator('#ai-input').textContent(), '');
  await preview(); await page.locator('#ai-send').click(); await status('服务暂时');
- assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
- mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2'); assert.equal(await page.locator('.suggestion-card').count(), 12);
+ await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 6); assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
+ mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2'); await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12); assert.equal(await page.locator('.suggestion-card').count(), 12);
  await card(0).getByText('确认前编辑建议', {exact:true}).click(); await card(0).getByLabel('编辑建议', {exact:true}).fill('已编辑的合成建议');
  await card(0).getByRole('button', {name:'确认此建议', exact:true}).click(); await card(0).getByText('处理决定：确认，已保存').waitFor(); await card(0).getByText('保存的建议：已编辑的合成建议').waitFor();
  await card(1).getByRole('button', {name:'留待以后', exact:true}).click(); await card(1).getByText('处理决定：留待以后，已保存').waitFor();
@@ -54,6 +60,9 @@ try {
  await card(3).getByLabel('已有事项', {exact:true}).selectOption(initiative.entityId); await card(3).getByRole('button', {name:'作为参考资料', exact:true}).click(); await card(3).getByText('处理决定：作为参考，已保存').waitFor();
  await card(4).getByRole('button', {name:'忽略', exact:true}).click(); await card(4).getByText('处理决定：忽略，已保存').waitFor();
  failTarget = true; await card(5).getByRole('button', {name:'确认此建议', exact:true}).click(); await card(5).getByRole('button', {name:'恢复已确认的决定'}).waitFor();
+ await writeFile(fixture.root + '/reference.md', '来源已被外部修改');
+ await page.reload(); await organize(); await status('来源已变化');
+ await writeFile(fixture.root + '/reference.md', text);
  await card(5).getByRole('button', {name:'恢复已确认的决定'}).click(); await card(5).getByText('处理决定：确认，已保存').waitFor();
  await page.reload(); await organize(); await card(0).getByText('保存的建议：已编辑的合成建议').waitFor();
  const actions = await fixture.adapter('actionQuery', {workspaceId:initiative.workspaceId, entityType:'action'}); assert.equal(actions.actions.length, 3); assert.equal(actions.actions.filter(a => a.initiativeId === initiative.entityId).length, 1);
