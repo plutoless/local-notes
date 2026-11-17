@@ -56,6 +56,7 @@ try {
   assert.equal(await page.evaluate(() => document.activeElement.matches('button')), true);
   assert.equal(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle), 'solid');
   assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 0);
+  await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '整理所选笔记', exact: true}).waitFor();
   await page.getByRole('button', {name: '新建行动', exact: true}).click();
   await page.locator('#action-description').fill('Chosen next step');
@@ -96,8 +97,10 @@ try {
   await page.getByRole('button', {name: '展开更多重点行动'}).click();
   await page.getByRole('heading', {name: 'Focus item 8', exact: true}).waitFor();
   assert.equal(await page.locator('#items section').first().locator('h3').count(), 9);
+  await page.locator('#items section').first().locator('.card').nth(1).locator('summary').click();
   await page.locator('#items section').first().locator('.card').nth(1).getByRole('button', {name: '上移'}).click();
   await page.waitForFunction(() => document.querySelector('#items section h3').textContent === 'Focus item 1');
+  await page.locator('#items section').first().locator('.card').first().locator('summary').click();
   await page.locator('#items section').first().locator('.card').first().getByRole('button', {name: '移出重点', exact: true}).click();
   await page.getByRole('heading', {name: 'Focus item 1', exact: true}).waitFor({state: 'detached'});
   await page.reload();
@@ -128,6 +131,7 @@ try {
   assert.equal(await page.locator('#action-filter').inputValue(), 'waiting');
   await page.locator('[data-view=focus]').click();
   await writeFile(join(fixture.root, 'LocalNotesData/actions/broken.json'), '{');
+  await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '刷新本地记录'}).click();
   await page.locator('#notice summary').click(); await page.locator('#notice pre').filter({hasText: /broken.json/}).waitFor();
   await page.getByRole('button', {name: '关闭提示'}).click();
@@ -152,6 +156,7 @@ try {
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await page.locator('[data-view=focus]').click();
   for (const node of await page.locator('nav button').all()) assert.equal(await node.evaluate(n => n.getBoundingClientRect().height >= 44), true);
+  await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name:'整理所选笔记'}).click();
   assert.equal(await page.locator('#ai-help').isVisible(), true);
   assert.equal(await page.locator('#ai-send').isDisabled(), true);
@@ -160,7 +165,7 @@ try {
     const luminance = hex => { if (hex.length === 4) hex = '#' + [...hex.slice(1)].map(c => c+c).join(''); const values = hex.match(/[a-f0-9]{2}/gi).map(v => parseInt(v,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4); return values[0]*.2126 + values[1]*.7152 + values[2]*.0722; };
     const ratio = (a,b) => { const x=luminance(a),y=luminance(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); };
     const css = getComputedStyle(document.documentElement), token = key => css.getPropertyValue(key).trim();
-    return {body:ratio(token('--text'),token('--canvas')), secondary:ratio(token('--muted'),token('--surface')), primary:ratio('#ffffff',token('--green')), border:ratio(token('--line'),token('--surface')), focus:ratio(token('--focus'),token('--surface'))};
+    return {body:ratio(token('--text'),token('--canvas')), secondary:ratio(token('--muted'),token('--surface')), primary:ratio('#ffffff',token('--accent')), border:ratio(token('--line'),token('--surface')), focus:ratio(token('--focus'),token('--surface'))};
   });
   assert.ok(contrast.body >= 4.5 && contrast.secondary >= 4.5 && contrast.primary >= 4.5, JSON.stringify(contrast));
   assert.ok(contrast.border >= 3 && contrast.focus >= 3, JSON.stringify(contrast));
