@@ -37,7 +37,7 @@ export class SyncScreen {
     if (this.dirty) { if (show) this.canLeave(); return; }
     if (show) this.panel.hidden = false;
     this.running = true;
-    this.render(); feedback(this.status, '正在检查本地版本…'); this.panel.setAttribute('aria-busy', 'true');
+    this.render(); for (const article of this.panel.querySelectorAll('article')) article.inert = true; feedback(this.status, '正在检查本地版本…'); this.panel.setAttribute('aria-busy', 'true');
     try {
       const warnings = [];
       for (const repo of this.repositories()) {
@@ -84,7 +84,7 @@ export class SyncScreen {
           if (key === 'status') for (const [value, title] of Object.entries(repo.entityType === 'initiative' ? initiativeLabels : actionLabels)) { const option = document.createElement('option'); option.value = value; option.textContent = title; control.append(option); }
           if (key === 'dueDate') control.type = 'date';
           if (key === 'focusPosition') control.type = 'number';
-          control.value = draft.value[key] ?? ''; control.disabled = Boolean(blocked);
+          control.dataset.field = key; control.value = draft.value[key] ?? ''; control.disabled = Boolean(blocked);
           control.oninput = () => { draft.value[key] = control.type === 'number' ? (control.value === '' ? null : Number(control.value)) : control.value; json.value = JSON.stringify(draft.value, null, 2); markDirty(); };
           label.append(control); editor.append(label);
         }
@@ -109,7 +109,15 @@ export class SyncScreen {
       const heading = document.createElement('h4'); heading.textContent = '2. 审核与编辑解决内容'; article.append(heading, editStatus, editor);
       renderEditor();
       const diagnostics = document.createElement('pre'); diagnostics.textContent = JSON.stringify({entityId: id, tips: conflict.tips.map(v => v.revision), versions: conflict.versions}, null, 2);
-      json.disabled = Boolean(blocked); json.oninput = () => { selected = true; markDirty(); }; advanced.append(diagnostics, json); article.append(advanced);
+      json.disabled = Boolean(blocked); json.oninput = () => {
+        markDirty();
+        try {
+          const parsed = JSON.parse(json.value);
+          if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) throw Error('Invalid resolution');
+          draft.value = parsed;
+          for (const control of editor.querySelectorAll('[data-field]')) { control.disabled = Boolean(blocked); control.value = parsed[control.dataset.field] ?? ''; }
+        } catch { for (const control of editor.querySelectorAll('[data-field]')) control.disabled = true; }
+      }; advanced.append(diagnostics, json); article.append(advanced);
       article.append(button('放弃编辑', () => { selected = false; this.dirty = false; this.saved = ''; this.render(); }));
       const consequence = document.createElement('p'); consequence.textContent = '保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。'; article.append(consequence);
       const save = button('3. 保存解决结果到本地', async () => {
