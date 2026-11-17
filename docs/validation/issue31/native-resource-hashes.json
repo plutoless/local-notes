@@ -1,0 +1,22 @@
+{
+  "codeHead": "dffb1a9b806ac50a740a2b74aa556869ce5bfccd",
+  "sha256": {
+    "library-screen.js": "07bf25f703b9b720ce02bab3c76145028257bf8642e823b4883c7fac5a6b8162",
+    "organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
+    "index.html": "b58afcbd046c10f53f4e4ee4260f03741c460af4f6e94af388c24dd0f8944b63",
+    "core.js": "e1b033ae3a5bba3fd43fb96daa65b12b698e8e9f78e817de7e042f3c3ea547b1",
+    "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
+    "initiative-screen.js": "6b2a6a79fade8f3e14d5b5ddd644e1cfeacacbffc3a1c64caa79ca91857d3090",
+    "library.js": "eaa3b6de846f5536dcf702e33372dc84727b6260a7f5ea986b9f3daa429a4e89",
+    "focus-screen.js": "b47dbcb50023f8ee0983381b68c8ed40a7c70c758108640d814a97525a9d7f97",
+    "revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "style.css": "19e44b0ccf70768184122cd1be0643c78a653d01a4c502286e6fce3707a8a3b9",
+    "organize-screen.js": "fe92f2beb25f057d9eba1c6d67a4526dc2945cc2cfb374b1ca5cfa1b6fdd03af",
+    "action-screen.js": "983e6e2a19c973b68493b29a5067687d1f655d0259d4907045837242725ead73",
+    "presentation.js": "498702ad755c0e2c8f5bc0578160738e4c4bb8f5a0a9d8f8c3278b96aede1c9b",
+    "sync-screen.js": "7d8ff1d60974720ddae62a87fe8d9f0b4099cac3640824ab0f5bf6312b4f34e1",
+    "app.js": "217efac6fd61c3316824e67d47ecd3c456ded2bb34746f0053e0ca6b9b9c49df",
+    "initiatives.js": "009b47661d6f8b392f428446cd4fe60f36fd5103c9096d5a9326ef99c6fd3370"
+  }
+}

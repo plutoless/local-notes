@@ -32,3 +32,22 @@ The production-adapter browser suite covers normal/empty/loading/disabled Focus,
 `home-before.png` is newly rendered from starting-SHA assets with the same fixture, not reused historical evidence. After captures use current assets. Historical screenshots emitted by existing suites are restored to avoid rewriting earlier evidence. Screenshot layout is visually inspected, not merely generated.
 
 Android-specific tests/builds and standalone Syncthing transport remain deferred by explicit maintainer decision and do not block merge. No real uploads, paid AI calls, physical-device checks or remote receipt claims are made.
+
+## Final code-head results and review
+
+Code/test head: `dffb1a9b806ac50a740a2b74aa556869ce5bfccd`; base/start: `46063f6b3e9facc5a41b19b339f3f2efcbf21007`. Syntax, 45 shared tests, all ten registered UI suites and Mac build passed after the last code changes. `issue31/ui.txt` contains the complete execution results. Contrast minima across white/canvas/sidebar/selection: body 12.64, secondary 4.72, accent 5.22, success 6.01, warning 5.54, danger 6.23, boundary 3.57, focus 4.98. No horizontal overflow at 393px; narrow capture and catalogue screenshots were visually inspected along with desktop native readback.
+
+Independent `/code-review` Standards and Spec reviews both re-reviewed that exact full head against the starting SHA and reported no remaining material findings:
+
+- **Standards:** initial findings were an unused pagination/icon variant, recovered/dirty text misclassification and redundant page-specific styles. Fixed by actual Focus pagination/favorite consumers, corrected state classification with recovery coverage, and removing duplicate styles. Re-review caught missing pagination failure handling; `pageFocus` now catches, reports and restores the prior offset, with a controlled failure check.
+- **Spec:** initial findings were shared row classes overwritten (and wrong wrapper layout), prior library reading mode not restored, and catalogue-only variants. Fixed while preserving the primitive classes and restoring prior task mode; browser coverage exercises reading-context return. Re-review requested paging failure feedback and an actual navigation catalogue example; both are implemented. No downstream pages or storage changes found.
+
+No minor finding was silently deferred or accepted as a substitute for required behavior. Reviewers explicitly separate code review from execution evidence. Human judgment remains the coordinator's assessment of visual quality, validation scope and merge readiness; there is no known material code blocker.
+
+### Final native resource pass
+
+A second distinct identity, `dev.localnotes.validation.issue31final` (`build/issue31/Design31Final.app`), was built from final code-head resources. It uses only copied sample notes and private state under `build/issue31/final/`. `native-resource-hashes.json` records SHA-256 hashes of every shipped web resource and an asserted byte-for-byte comparison to the source. The earlier preview was left untouched.
+
+Fresh CUA interactions on this final identity created `最终原生随手记`, entered Chinese title/body, saved locally, returned to home using Save-and-return, and reopened the saved title/body from the library. Tab from the editable title reached the note-information disclosure; `native-final.json` and `native-final.png` capture the final app's state and focus. The earlier isolated native process also exercised actual quit/relaunch/readback; final resource hashes distinguish that earlier run from the final native pass. Native failure injection and a second restart of the final identity were not executed; browser failure/recovery and earlier native restart are not described as those unrun checks.
+
+The final evidence-only commit changes no app resources or tests; exact reviewed/final checked head is pinned in the PR. Final checks are executed once more on that delivery head with logs in ignored `build/issue31/final-checks/`, and their actual outcomes belong to the PR record.

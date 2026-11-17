@@ -1,0 +1,1 @@
+Capture: typing, failed-save guard, retry, prior action return, reopen, reload draft recovery, 393px, directory and keyboard passed
