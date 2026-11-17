@@ -28,6 +28,7 @@ export function errorFeedback(target, diagnostic) {
   if (/conflict|CONFLICT|branch/i.test(diagnostic)) message = '发现版本冲突。请打开「同步检查」核对版本后重试，现有内容仍保留。';
   else if (/required|description|title|date|Choose|Quote|fragment|handle every unfinished/i.test(diagnostic)) message = '内容需要核对。请检查必填项、日期和来源引用后重新保存。';
   else if (/workspace changed/i.test(diagnostic)) message = '笔记目录已切换。请从当前目录重新打开内容。';
+  else if (/有效.*路径|路径超出|relative.*path|invalid.*path/i.test(diagnostic)) message = '路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。';
   feedback(target, message, diagnostic);
 }
 

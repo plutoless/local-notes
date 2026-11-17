@@ -100,7 +100,15 @@ try {
   const actionPage = await fixture.adapter('actionQuery', {workspaceId: actionWorkspace.workspaceId});
   assert.equal(actionPage.actions.length, 1);
   await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
-  await page.locator('#editor').waitFor({state: 'visible'}); if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await page.locator('#body').fill('Unsaved local edit');
+  await page.locator('#editor').waitFor({state: 'visible'});
+  const beforeInvalidRename = await readFile(sourcePath, 'utf8');
+  page.once('dialog', dialog => dialog.accept('../outside.md'));
+  await page.locator('#rename').click();
+  await page.getByText('路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。', {exact: true}).waitFor();
+  assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
+  assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
+  await page.getByRole('button', {name: '关闭提示'}).click();
+  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await page.locator('#body').fill('Unsaved local edit');
   await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
