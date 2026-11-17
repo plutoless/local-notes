@@ -1,0 +1,17 @@
+{
+  "id": "cc02c622-b3df-4575-9ac1-95f53a74bb83",
+  "ok": false,
+  "error": {
+    "code": "verification_failed",
+    "message": "set-value did not take effect: after the write the element reads \" \", not the requested value",
+    "data": {
+      "nextSteps": [
+        "Run `orca computer get-app-state --app <app> --json` and check which field holds the value; another field may have changed instead.",
+        "Do not retry the same `set-value` unchanged. For editable text, click the field and confirm focus, select all (`cmd+a` on macOS, `ctrl+a` on Windows/Linux), then use `type-text` and inspect the resulting value."
+      ]
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}
