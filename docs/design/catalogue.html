@@ -10,7 +10,7 @@
 <section><h2>Feedback state matrix</h2><div id="states"></div></section>
 <section><h2>Focused panel and dialog</h2><div id="panel" class="ui-panel"><h3>Review surface</h3><p>Use this surface for focused decisions; a page layout remains separate.</p></div></section>
 <script type="module">
-import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog, comparisonRow} from '../../web/presentation.js';
+import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog, comparisonRow, drawer} from '../../web/presentation.js';
 const $ = s => document.querySelector(s);
 for(const token of ['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','target-height','button-surface','field-surface','control-inset','radius','radius-panel']){
  const node=document.createElement('span');node.className='swatch';node.textContent=`--${token}: ${getComputedStyle(document.documentElement).getPropertyValue('--'+token)}`;$('#tokens').append(node);
@@ -25,3 +25,14 @@ for(const [state,text] of [['normal','尚未选择内容'],['empty','还没有�
 const comparison=document.createElement('dl');comparison.append(comparisonRow('内容','核对原文'),comparisonRow('当前进展','已人工比较，需要保留两侧来源。',{changed:true}));$('#panel').append(comparison);
 const modal=document.createElement('div');modal.className='sync-panel ui-panel ui-dialog';modal.hidden=true;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','核对保存结果');modal.append('核对保存结果',button('关闭',()=>modal.hidden=true));document.body.append(modal);bindDialog(modal);$('#panel').append(button('打开核对面板',()=>modal.hidden=false));
 </script></html>
+
+<script type="module">
+import {drawer, button, field} from '../../web/presentation.js';
+const section = document.createElement('section');
+section.innerHTML = '<h2>Contextual topic drawer</h2><p>Production drawer constructor, consumed by LibraryScreen for real topic creation and renaming. This isolated catalogue example has no persistence. The actual journey and guards are verified in issue46 evidence.</p>';
+const panel = drawer({id:'catalogue-drawer', title:'新建主题', onDismiss:()=>panel.hide()});
+const input = document.createElement('input');
+panel.body.append(field('主题名称',input,{density:'compact'}));
+panel.footer.append(button('取消',()=>panel.hide(),{density:'compact'}),button('创建',()=>panel.hide(),{primary:true,density:'compact'}));
+section.append(button('打开主题抽屉',()=>panel.open(input))); document.body.append(section);
+</script>

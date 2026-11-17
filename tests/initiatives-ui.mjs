@@ -164,12 +164,12 @@ try {
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-create-topic').click();
   await page.locator('#topic-name').fill('Research topic');
-  await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#topic-drawer button[type=submit]').click();
   await page.locator('#library-topic option', {hasText: 'Research topic'}).waitFor({state: 'attached'});
   await page.locator('#library-topic').selectOption({label: 'Research topic'});
   await page.locator('#library-rename-topic').click();
   await page.locator('#topic-name').fill('Renamed topic');
-  await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#topic-drawer button[type=submit]').click();
   await page.locator('#library-topic option', {hasText: 'Renamed topic'}).waitFor({state: 'attached'});
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading', {name: 'Working log', exact: true}).click();
