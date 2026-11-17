@@ -49,7 +49,11 @@ async function refreshBackground() {
 $('#action-open-initiative').onclick = async () => {
   if (!await flush()) return;
   const record = (await allRecords(initiatives.repository)).find(i => i.entityId === $('#action-initiative').value);
-  if (record) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; await initiatives.show(); await initiatives.edit(record); }
+  if (record) {
+    $('#initiative-form').inert = true;
+    try { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; await initiatives.show(); await initiatives.edit(record); }
+    finally { $('#initiative-form').inert = false; }
+  }
 };
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }

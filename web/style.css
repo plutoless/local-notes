@@ -675,3 +675,12 @@ aside > #new {
 }
 
 .home-side{grid-column:2;grid-row:2;align-self:start;display:grid;gap:24px;min-width:0}.home-side section{border-top:1px solid var(--line);padding-top:12px}@media(max-width:1000px){.home-side{grid-column:1;grid-row:auto}}@media(max-width:700px){.home-side{width:100%}}
+
+/* Initiative details reuse shared fields and status feedback. */
+#initiative-form > h3 { margin-top: 32px; }
+#initiative-actions, #initiative-retired { display: grid; gap: 8px; }
+#initiative-actions button, #initiative-retired button { text-align: left; overflow-wrap: anywhere; }
+#initiative-ending { margin-block: 24px; padding: 16px; border: 1px solid var(--border, #819288); border-radius: 8px; background: #f5f7f5; }
+#initiative-sources section { margin-block: 24px; }
+#initiative-sources h4 { font-size: 16px; margin-bottom: 8px; }
+.initiative-source { margin-block: 16px; padding: 16px; border: 1px solid #819288; border-radius: 8px; }
