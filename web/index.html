@@ -17,7 +17,7 @@
         <nav aria-label="主导航">
           <button data-view="focus" class="active">当前重点</button
           ><button data-view="notes">
-            笔记库 <span id="note-count"></span></button
+            笔记库 <span id="note-count" hidden></span></button
           ><button data-view="actions">已确认行动</button
           ><button data-view="initiatives">事项</button
           ><button data-view="organize">整理</button
@@ -39,7 +39,7 @@
         <div id="library-tools" hidden>
           <select id="library-topic" aria-label="筛选主题"></select
           ><button id="library-create-topic">新建主题</button
-          ><button id="library-rename-topic">重命名主题</button>
+          ><button id="library-rename-topic" aria-describedby="topic-help">重命名主题</button><small id="topic-help">选择一个主题后可重命名。</small>
           <form id="topic-form" hidden>
             <label>主题名称<input id="topic-name" required /></label
             ><button type="submit">保存主题</button
@@ -133,29 +133,30 @@
         </div>
         <div id="editor" hidden>
           <div class="toolbar">
-            <button id="back">‹ 列表</button><span id="file-path"></span
-            ><button id="star" aria-label="收藏">☆</button
-            ><button id="rename">移动 / 改名</button>
+            <button id="back">‹ 返回列表</button>
+            <span id="note-mode">编辑笔记</span>
+            <span id="save-state" role="status">已保存到本地</span>
+            <button id="mode">阅读</button>
           </div>
           <div class="document">
-            <input
-              id="title"
-              aria-label="笔记标题"
-              placeholder="无标题"
-            /><button id="repair-links" hidden>重试更新关联</button>
-            <div id="note-topics"></div>
-            <div id="note-initiatives"></div>
-            <div class="meta">
-              <span id="save-state">已保存到本地</span
-              ><button id="mode">阅读</button>
-            </div>
+            <input id="title" aria-label="笔记标题" placeholder="无标题" />
+            <details id="note-details">
+              <summary>笔记信息与整理</summary>
+              <p>来源路径：<span id="file-path"></span></p>
+              <button id="star" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
+              <button id="rename">移动 / 改名</button>
+              <button id="repair-links" hidden>重试更新关联</button>
+              <h2>主题</h2><div id="note-topics"></div>
+              <h2>关联事项</h2><div id="note-initiatives"></div>
+              <p>笔记中的复选框只记录原文。需要跟进时，请在「已确认行动」中单独新建行动。</p>
+            </details>
             <textarea
               id="body"
               aria-label="笔记正文"
-              placeholder="从这里开始…\n\n用 - [ ] 记下待办"
+              placeholder="输入笔记正文…"
               spellcheck="false"
             ></textarea>
-            <article id="reading" hidden></article>
+            <article id="reading" aria-label="笔记阅读内容" hidden></article>
           </div>
         </div>
         <div id="action-editor" hidden>
