@@ -46,6 +46,17 @@ export class InitiativeScreen {
     guard.append(message, button('继续编辑', () => { guard.hidden = true; $('#initiative-title').focus(); }), button('放弃事项编辑', () => this.closeDrawer(true)));
     this.drawer.body.append(guard); this.drawerGuard = guard;
   }
+  selectInitiative(record) {
+    for (const row of document.querySelectorAll('#items [data-initiative-id]')) {
+      const selected = row.dataset.initiativeId === record?.entityId;
+      row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected));
+    }
+  }
+  rememberCommit(record) {
+    if (this.drawerContext?.previous?.entityId === record.entityId) {
+      this.drawerContext.previous = record; this.drawerContext.committed = true;
+    }
+  }
   closeDrawer(discard = false) {
     if (discard) {
       localStorage.removeItem(this.key()); this.dirty = false; this.recoveredDraft = false; this.retry = null;
@@ -56,6 +67,7 @@ export class InitiativeScreen {
       this.previous = context.previous;
       if (context.nodes) for (const [selector, nodes] of Object.entries(context.nodes)) $(selector).replaceChildren(...nodes);
       for (const [selector, text] of Object.entries(context.text)) $(selector).textContent = text;
+      if (context.committed) this.renderContext();
       this.selectContext(context.selectedContext); this.detailKind = context.detailKind;
       for (const [selector, hidden] of Object.entries(context.hidden)) $(selector).hidden = hidden;
       $('.app').className = context.classes;
@@ -63,6 +75,7 @@ export class InitiativeScreen {
       $('#initiative-new-action').disabled = !this.previous || this.previous.status === 'ended';
       $('#initiative-new-note').disabled = !this.previous;
       this.drawerContext = null;
+      this.selectInitiative(this.previous);
     }
   }
   leaveDrawer() {
@@ -185,7 +198,7 @@ export class InitiativeScreen {
     if (this.previous?.entityId !== previous?.entityId) this.pendingDecisions = {};
     this.previous = previous; this.detailKind = 'overview'; this.selectedContext = '';
     $('#workspace-context').hidden = false; $('.app').classList.add('workspace', 'detail-open');
-    for (const row of document.querySelectorAll('#items [data-initiative-id]')) { const selected = row.dataset.initiativeId === previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
+    this.selectInitiative(previous);
     this.drawer.setTitle(previous ? '编辑事项' : '新建事项');
     for (const field of ['title', 'goal', 'progress']) $(`#initiative-${field}`).value = fields[field] || '';
     $('#initiative-status').value = fields.status || 'active';
@@ -223,6 +236,7 @@ export class InitiativeScreen {
       $('.app').className = this.drawerContext.classes;
       for (const [selector, nodes] of Object.entries(this.drawerContext.nodes)) $(selector).replaceChildren(...nodes);
       for (const [selector, text] of Object.entries(this.drawerContext.text)) $(selector).textContent = text;
+      this.selectInitiative(this.drawerContext.previous);
       this.openDrawer();
     } else this.restoreContext();
   }
@@ -322,6 +336,7 @@ export class InitiativeScreen {
           // Keep the previous revision as the parent while committing the user's fields.
           result = await endInitiative(this.repository, this.actions.repository, this.previous, decisions, fields);
         } else result = await this.repository.save(fields, this.previous, this.retry);
+        this.rememberCommit(result.record);
         this.recoveredDraft = false; this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地'); await this.list(); await this.details();
         if (this.drawer.panel.open) {
@@ -336,7 +351,7 @@ export class InitiativeScreen {
         return true;
       } catch (error) {
         const initiativeCommitted = error.revisionSaved && error.record?.entityType === 'initiative';
-        this.retry = initiativeCommitted ? error.record : null; if (initiativeCommitted) this.previous = error.record;
+        this.retry = initiativeCommitted ? error.record : null; if (initiativeCommitted) { this.previous = error.record; this.rememberCommit(error.record); }
         this.dirty = true; this.draft(); errorFeedback($('#initiative-save-state'), error.message);
         if (/Choose how to handle|Actions changed|destination initiative/.test(error.message)) {
           $('#initiative-ending').open = true;
