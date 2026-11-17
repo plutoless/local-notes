@@ -6,9 +6,9 @@ export const initiativeLabels = {active: '进行中', later: '以后再做', end
 export const sourceLabels = {unchanged: '来源未变', available: '来源可用', changed: '来源已修改，请核对引用', valid: '来源可用', unavailable: '来源不可用，请重新关联', missing: '来源缺失，请重新关联', moved: '来源已移动', ambiguous: '找到多个来源，请手动关联'};
 export const statusLabel = value => actionLabels[value] || initiativeLabels[value] || sourceLabels[value] || '需要核对';
 
-export function button(text, run, {primary = false, variant = primary ? 'primary' : 'quiet', label} = {}) {
+export function button(text, run, {primary = false, variant = primary ? 'primary' : 'quiet', label, density} = {}) {
   const node = document.createElement('button'); node.type = 'button'; node.textContent = text;
-  node.className = `ui-action ${variant}`;
+  node.className = `ui-action ${variant}${density === 'compact' ? ' ui-compact' : ''}`;
   if (label) node.setAttribute('aria-label', label);
   node.onclick = async () => { node.disabled = true; try { await run(); } finally { node.disabled = false; } };
   return node;
@@ -97,11 +97,14 @@ export function sectionHeading(text, {level = 2, className = ''} = {}) {
   node.textContent = text; return node;
 }
 
-export function field(label, control, {help = '', invalid = false} = {}) {
+export function field(label, control, {help = '', invalid = false, density} = {}) {
   const node = document.createElement('label'); node.className = 'ui-field';
   const name = document.createElement('span'); name.textContent = label;
   control.setAttribute('aria-invalid', String(invalid));
-  node.append(name, control);
+  if (density === 'compact') {
+    const target = document.createElement('span'); target.className = 'ui-field-target';
+    target.append(control); node.append(name, target);
+  } else node.append(name, control);
   if (help) {
     const hint = document.createElement('small'); hint.id = `field-help-${++field.sequence}`;
     hint.textContent = help; node.append(hint); control.setAttribute('aria-describedby', hint.id);

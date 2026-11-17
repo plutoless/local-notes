@@ -18,6 +18,10 @@
   --focus: #075fcc;
   --danger: #a12622;
   --radius: 8px;
+  --target-height: 44px;
+  --button-surface: 32px;
+  --field-surface: 40px;
+  --control-inset: calc((var(--target-height) - var(--button-surface)) / 2);
   --space: 8px;
   --space-small: 4px;
   --space-section: 24px;
@@ -365,3 +369,36 @@ details { overflow-wrap: anywhere; }
 .ui-selection:focus-within, .suggestion-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .ui-selection input { flex: 0 0 auto; }
 #ai-progress { width: 100%; accent-color: var(--accent); }
+
+/* Compact surfaces reserve their entire target in normal layout. No hit slop. */
+.ui-action.ui-compact, .home aside :is(button, summary), .home .ui-disclosure > summary {
+  position: relative; isolation: isolate; min-height: var(--target-height);
+  padding: 10px 12px; border: 0; background: transparent; border-radius: var(--radius);
+}
+.ui-action.ui-compact::before, .home aside :is(button, summary)::before, .home .ui-disclosure > summary::before {
+  content: ''; position: absolute; z-index: -1; pointer-events: none;
+  inset: var(--control-inset) 0; border-radius: var(--radius);
+  background: var(--control-fill, transparent); border: 1px solid var(--control-line, transparent);
+}
+.ui-action.ui-compact.primary { --control-fill: var(--accent); }
+.ui-action.ui-compact.secondary, .home aside #new { --control-fill: var(--surface); --control-line: var(--line); box-shadow: none; }
+.ui-action.ui-compact.danger { --control-line: var(--danger); }
+.ui-action.ui-compact:hover, .home aside :is(button, summary):hover, .home .ui-disclosure > summary:hover { --control-fill: var(--hover); }
+.ui-action.ui-compact.primary:hover { --control-fill: #194ba7; }
+.ui-action.ui-compact:active, .home aside button:active { --control-fill: var(--selected); }
+.ui-action.ui-compact.primary:active { --control-fill: #194ba7; }
+.ui-action.ui-compact:disabled { --control-fill: var(--sidebar); --control-line: var(--divider); }
+.home aside #new { background: transparent; border: 0; }
+.home aside nav .active { --control-fill: var(--selected); }
+.home-tools { align-items: flex-start; }
+.home-tools > h2 { min-height: var(--target-height); display: flex; align-items: center; }
+.home .card { padding-block: 12px; }
+.home .focus-row-open { padding: 10px 2px; }
+.home .row-menu > summary { padding: 12px 8px; }
+.home .card h3 { margin-bottom: var(--space-small); }
+.home #items > section h2, .home-side h2 { margin-bottom: 12px; }
+.home-side { row-gap: var(--space-section); }
+.home .home-side .card > button { padding-inline: 12px; }
+/* The label reserves the 44px click area around a 40px native field. */
+.ui-field-target { display: grid; padding-block: 2px; min-height: var(--target-height); }
+.ui-field-target > :is(input, select) { min-height: var(--field-surface); padding-block: 7px; width: 100%; }

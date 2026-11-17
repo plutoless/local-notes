@@ -3,8 +3,8 @@
 <style>body{max-width:960px;margin:auto;padding:24px}section{margin-block:32px} .examples{display:flex;flex-wrap:wrap;gap:8px} .swatch{padding:12px;border:1px solid var(--line);border-radius:8px} h1{margin-top:24px} .ui-field{max-width:600px}</style>
 <h1>Presentation primitives and states</h1><p>Maintainer-only reference. <a href="README.md">Contract and adoption checklist</a>. Examples import the shipped tokens and constructors; they never access notes or storage.</p>
 <section><h2>Computed semantic tokens</h2><div id="tokens" class="examples"></div></section>
-<section><h2>Actions, feedback and keyboard</h2><p>Tab through controls. Click an enabled action to see its receipt. Primary, secondary, quiet, danger and icon controls share the production constructor.</p><div id="actions" class="examples"></div><div id="receipt" role="status"></div></section>
-<section><h2>Fields and validation</h2><div id="fields"></div></section>
+<section><h2>Actions, feedback and keyboard</h2><p>Tab through controls. Click an enabled action to see its receipt. Compact primary, secondary, quiet, danger and icon controls use the production constructor. Surfaces are 32px; their nonoverlapping targets reserve at least 44px. Wrapped labels grow naturally.</p><div id="actions" class="examples"></div><div id="receipt" role="status"></div></section>
+<section><h2>Fields and validation</h2><p>The shared field constructor reserves a 44px label click target around a 40px native field. Click its outer padding to focus the input.</p><div id="fields"></div></section>
 <section><h2>Rows, navigation, disclosure and pagination</h2><nav aria-label="导航示例"><button class="active" aria-current="page">当前重点</button><button>笔记库</button><button disabled>正在载入…</button></nav><div id="rows"></div></section>
 <section><h2>Organization multi-selection</h2><label class="ui-selection"><input type="checkbox" checked>已选择的来源笔记.md</label><label class="ui-selection"><input type="checkbox">待选择的来源笔记.md</label></section>
 <section><h2>Feedback state matrix</h2><div id="states"></div></section>
@@ -12,16 +12,16 @@
 <script type="module">
 import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog, comparisonRow} from '../../web/presentation.js';
 const $ = s => document.querySelector(s);
-for(const token of ['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','radius','radius-panel']){
+for(const token of ['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','target-height','button-surface','field-surface','control-inset','radius','radius-panel']){
  const node=document.createElement('span');node.className='swatch';node.textContent=`--${token}: ${getComputedStyle(document.documentElement).getPropertyValue('--'+token)}`;$('#tokens').append(node);
 }
 for(const [variant,label] of [['primary','保存行动'],['secondary','保存笔记'],['quiet','返回任务'],['danger','移出重点'],['icon-action','新建笔记']]){
- const node=button(label,()=>feedback($('#receipt'),'已保存到本地'),{variant,label});if(variant==='icon-action')node.innerHTML=icon('plus');$('#actions').append(node);
+ const node=button(label,()=>feedback($('#receipt'),'已保存到本地'),{variant,label,density:'compact'});if(variant==='icon-action')node.innerHTML=icon('plus');$('#actions').append(node);
 }
-const disabled=button('正在保存…',()=>{});disabled.disabled=true;$('#actions').append(disabled);
-for(const invalid of [false,true]){const input=document.createElement('input');input.value=invalid?'':'持续推进的事项';input.required=true;$('#fields').append(field('事项标题',input,{invalid,help:invalid?'请填写标题，编辑仍保留。':'用户输入保持原样。'}));}
+const disabled=button('正在保存…',()=>{},{density:'compact'});disabled.disabled=true;$('#actions').append(disabled);
+for(const invalid of [false,true]){const input=document.createElement('input');input.value=invalid?'':'持续推进的事项';input.required=true;$('#fields').append(field('事项标题',input,{density:'compact',invalid,help:invalid?'请填写标题，编辑仍保留。':'用户输入保持原样。'}));}
 $('#rows').append(selectionRow('整理资料，确认下一步',()=>{}, {selected:true}),selectionRow('等待评审时间',()=>{}),disclosure('管理：整理资料',[button('上移',()=>{}),button('移出重点',()=>{}, {variant:'danger'})]),pagination(()=>{},()=>{}, {hasNext:true}));
-for(const [state,text] of [['normal','尚未选择内容'],['empty','还没有重点行动。'],['loading','正在载入重点…'],['dirty','编辑中…'],['saving','正在保存…'],['failed','未保存 · 编辑仍保留'],['saved','已保存到本地'],['recovered','已恢复未保存草稿']]){const node=document.createElement('div');node.setAttribute('role','status');feedback(node,text,state==='failed'?'Controlled failure example':'');node.dataset.state=state;$('#states').append(node);}
+for(const [state,text] of [['normal','尚未选择内容'],['empty','还没有重点行动。'],['loading','正在载入重点…'],['dirty','编辑中…'],['saving','正在保存…'],['invalid','请填写标题，编辑仍保留'],['failed','未保存 · 编辑仍保留'],['saved','已保存到本地'],['recovered','已恢复未保存草稿']]){const node=document.createElement('div');node.setAttribute('role','status');feedback(node,text,state==='failed'?'Controlled failure example':'');node.dataset.state=state;$('#states').append(node);}
 const comparison=document.createElement('dl');comparison.append(comparisonRow('内容','核对原文'),comparisonRow('当前进展','已人工比较，需要保留两侧来源。',{changed:true}));$('#panel').append(comparison);
 const modal=document.createElement('div');modal.className='sync-panel ui-panel ui-dialog';modal.hidden=true;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','核对保存结果');modal.append('核对保存结果',button('关闭',()=>modal.hidden=true));document.body.append(modal);bindDialog(modal);$('#panel').append(button('打开核对面板',()=>modal.hidden=false));
 </script></html>
