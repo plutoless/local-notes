@@ -34,8 +34,9 @@ try:
  state=subprocess.run(['orca','computer','get-app-state','--app','pid:'+str(process.pid),'--json'],capture_output=True,text=True)
  (Path('docs/validation/issue45')/(phase+'-native-ax.json')).write_text(state.stdout)
  c('__snapshot');shutil.copy(m.OUT/'snapshot.png',Path('docs/validation/issue45')/(phase+'-native-desktop.png'))
- rect=c("const r=document.querySelector('.row-menu summary').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2+32}")
- result=subprocess.run(['orca','computer','click','--x',str(rect['x']),'--y',str(rect['y']),'--app','pid:'+str(process.pid),'--json'],capture_output=True,text=True)
+ tree=json.loads(state.stdout)['result']['snapshot']['treeText']
+ index=next(line.strip().split()[0] for line in tree.splitlines() if 'summary 管理：确定' in line)
+ result=subprocess.run(['orca','computer','click','--element-index',index,'--app','pid:'+str(process.pid),'--json'],capture_output=True,text=True)
  (Path('docs/validation/issue45')/(phase+'-native-pointer.json')).write_text(result.stdout)
  assert json.loads(result.stdout)['ok'],result.stdout
  w("document.querySelector('.row-menu').open")
