@@ -18,10 +18,12 @@ const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
   if (!await flush()) return;
+  let loaded;
+  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
   sourceOrigin = {view, action: !$('#action-editor').hidden ? actions.previous : null, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
-  focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+  focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-  await refresh(); await openNote(path);
+  await refresh(); await load(path, loaded); $('#mode').focus();
 }, id => createNote(id), async () => {
   // Explicit missing-source recovery may build the reference index without visiting Notes.
   await libraryScreen.library.open(); await libraryScreen.library.sync();
@@ -30,16 +32,25 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async path => {
   if (!await flush()) return;
+  let loaded;
+  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
   const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
-  if (await navigate('notes')) { sourceOrigin = origin; await openNote(path); }
+  if (await navigate('notes')) { sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
 });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
 const syncScreen = new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
   if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
   else await refresh();
 });
+function selectNavigation(next) {
+  document.querySelector('nav .active')?.classList.remove('active');
+  document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
+  for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === next ? 'page' : 'false');
+}
+let actionOrigin = null;
 async function navigate(next) {
   if (!await flush(true)) return false;
+  actionOrigin = null; $('#workspace-return-action').hidden = true;
   captureOrigin = null; sourceOrigin = null; $('#capture-return').hidden = true;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
   $('#organize-tools').hidden = next !== 'organize';
@@ -47,8 +58,7 @@ async function navigate(next) {
   $('.app').classList.toggle('workspace', next === 'initiatives'); $('#workspace-context').hidden = next !== 'initiatives';
   view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
-  document.querySelector('nav .active')?.classList.remove('active'); document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
-  for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === next ? 'page' : 'false');
+  selectNavigation(next);
   $('.app').classList.remove('editing'); await refresh(); return true;
 }
 async function refreshBackground() {
@@ -60,13 +70,26 @@ async function refreshBackground() {
   if (view === 'focus') await focus.show();
 }
 $('#action-open-initiative').onclick = async () => {
-  if (!await flush()) return;
-  const record = (await allRecords(initiatives.repository)).find(i => i.entityId === $('#action-initiative').value);
-  if (record) {
-    $('#initiative-form').inert = true;
-    try { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=initiatives]').classList.add('active'); await initiatives.show(); await initiatives.edit(record); }
-    finally { $('#initiative-form').inert = false; }
-  }
+  try {
+    if (!await flush()) return;
+    const record = (await allRecords(initiatives.repository)).find(i => i.entityId === $('#action-initiative').value);
+    if (!record) { notice('关联事项暂不可用，请刷新后重试。'); return; }
+    const origin = {view, action: actions.previous, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop};
+    if (!await navigate('initiatives')) return;
+    await initiatives.edit(record);
+    if (origin.view !== 'initiatives') { actionOrigin = origin; $('#workspace-return-action').hidden = false; }
+  } catch (error) { notice(error.message); }
+};
+$('#workspace-return-action').onclick = async () => {
+  try {
+    if (!actionOrigin || !await flush()) return;
+    const origin = actionOrigin;
+    if (!await navigate(origin.view)) return;
+    $('#search').value = origin.search;
+    await actions.edit(origin.action);
+    $('#action-open-initiative').focus({preventScroll: true});
+    $('.collection').scrollTop = origin.scroll; $('#workspace-detail').scrollTop = origin.detailScroll;
+  } catch (error) { notice(error.message); }
 };
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
@@ -114,7 +137,8 @@ async function openContextNote(path, reading = true) {
   try {
     if (!await flush()) return;
     const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId;
-    const loaded = await note('read', {path});
+    let loaded;
+  try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
     if (workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
     initiatives.rememberContext(); initiatives.detailKind = 'note'; $('.app').classList.add('workspace', 'detail-open', 'editing');
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
@@ -145,15 +169,14 @@ async function createNote(initiativeId = null) {
       if (initiatives.previous?.entityId === initiativeId) { initiatives.form(linked.record, linked.record); await initiatives.details(); }
     }
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
-    focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+    focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-    document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=notes]').classList.add('active');
-    for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === 'notes' ? 'page' : 'false');
+    selectNavigation('notes');
     await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; $('#capture-return').hidden = !captureOrigin; if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
 }
 $('#new').onclick = () => createNote();
-$('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
 $('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action)await actions.edit(origin.action); (origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').readOnly=readMode;$('#mode').textContent=readMode?'编辑':'阅读';$('#note-mode').textContent=readMode?'阅读笔记':'编辑笔记';updateReading();};
