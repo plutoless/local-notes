@@ -84,10 +84,12 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-filter').selectOption('');
   await page.locator('#action-focus').click(); await page.getByRole('button', {name: '移出当前重点', exact: true}).waitFor();
+  await page.getByRole('button', {name: '打开来源', exact: true}).waitFor();
   await page.locator('#action-focus').click(); await page.getByRole('button', {name: '加入当前重点', exact: true}).waitFor();
   await page.locator('#action-description').fill('Unsaved navigation is saved before leaving');
   await page.locator('[data-view="notes"]').click();
   await page.locator('[data-view="actions"]').click();
+  await page.getByRole('button', {name: '打开来源', exact: true}).waitFor();
   await page.getByRole('heading', {name: 'Unsaved navigation is saved before leaving', exact: true}).click();
   await page.locator('#action-description').fill('Follow up with the reviewer');
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
@@ -207,6 +209,7 @@ try {
   const bAction = (await otherFixture.adapter('actionQuery', {workspaceId: bWorkspace})).actions[0];
   const heldQueryStarted = new Promise(resolve => { heldQueryStartedResolve = resolve; });
   holdActionQuery = true; await page.locator('#search').fill('Only in workspace B'); await heldQueryStarted;
+  assert.equal(await page.locator('#index-state').textContent(), '正在载入行动…');
   fixture.fail(cmd => cmd === 'actionFiles');
   await page.locator('#choose').click(); await page.locator('#notice summary').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor(); await page.getByRole('button', {name:'关闭提示'}).click();
   holdActionQuery = false; releaseHeldQuery();

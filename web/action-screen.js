@@ -148,13 +148,14 @@ export class ActionScreen {
     $('#action-sources').replaceChildren(); for (const source of fields.sources || []) this.addSource(source);
     $('#action-revisions').replaceChildren(); $('#action-id').textContent = previous?.entityId || '新建行动'; $('#action-history').disabled = !previous;
     $('#empty').hidden = true; $('#editor').hidden = true; $('#action-editor').hidden = false; $('.app').classList.add('editing');
+    // Source availability is advisory and must survive every form reconstruction.
+    this.refreshSources(fields).catch(error => this.notice(error.message));
   }
   async edit(action) {
     if (action && action.workspaceId !== this.repository.workspaceId) { this.notice('笔记目录已切换，请重新打开行动。'); return; }
     if (!await this.flush()) return;
     this.showForm(action || {}, action);
     await this.assignments(action?.initiativeId || '');
-    await this.refreshSources(action);
     if (!this.dirty) this.state(action ? '已保存到本地' : '写下你已决定执行的下一步。');
     if (!action) this.changed();
     $('#action-description').focus();
@@ -163,7 +164,7 @@ export class ActionScreen {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;
     for (const row of document.querySelectorAll('.action-source')) {
       const source = action?.sources.find(s => s.path === row.querySelector('.source-path').value);
-      if (!source) continue;
+      if (!source?.path || !source.fingerprint) continue;
       const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.initiatives.listReferences);
       if (request !== this.editRequest || repository !== this.repository || !row.isConnected) return;
       const status = document.createElement('p'); status.textContent = statusLabel(result.state); row.append(status);
@@ -192,8 +193,6 @@ export class ActionScreen {
         this.showForm(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地');
         await this.list();
-        // Source availability is advisory; its failure must not turn a committed save into a failed draft.
-        this.refreshSources(result.record).catch(error => this.notice(error.message));
         return true;
       } catch (error) {
         this.retry = error.revisionSaved ? error.record : null;
