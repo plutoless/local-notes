@@ -43,7 +43,7 @@ export function progressLabel(message) {
 // Bind after the modal exists; return focus to its opener on every close path.
 export function bindDialog(panel) {
   let origin;
-  const controls = () => [...panel.querySelectorAll('button:not(:disabled), input, textarea, select, summary')].filter(node => node.getClientRects().length && !node.closest('[inert]'));
+  const controls = () => [...panel.querySelectorAll('button:not(:disabled), input, textarea, select, summary')].filter(node => !node.matches(':disabled') && node.getClientRects().length && !node.closest('[inert]'));
   new MutationObserver(() => {
     if (panel.hidden) { origin?.focus(); origin = null; }
     else if (!panel.contains(document.activeElement)) { origin ||= document.activeElement; controls()[0]?.focus(); }
@@ -55,6 +55,12 @@ export function bindDialog(panel) {
       event.preventDefault(); nodes[event.shiftKey ? nodes.length - 1 : 0].focus();
     }
   });
+  return {open() {
+    if (!panel.hidden) return;
+    origin = document.activeElement;
+    panel.hidden = false;
+    controls()[0]?.focus();
+  }};
 }
 
 // Icons are fixed presentation assets, never generated from user content.
@@ -115,4 +121,12 @@ export function pagination(previous, next, {hasPrevious = false, hasNext = false
   const back = button('上一页', previous, {variant: 'secondary'});
   const forward = button('下一页', next, {variant: 'secondary'});
   back.disabled = !hasPrevious; forward.disabled = !hasNext; node.append(back, forward); return node;
+}
+
+// A definition row keeps long field evidence readable without horizontal tables.
+export function comparisonRow(label, value, {changed = false} = {}) {
+  const node = document.createElement('div'); node.className = 'ui-comparison-row';
+  const term = document.createElement('dt'), detail = document.createElement('dd');
+  term.textContent = label + (changed ? ' · 有差异' : ''); detail.textContent = value;
+  node.append(term, detail); return node;
 }
