@@ -1,5 +1,7 @@
 # Approved native light workspace validation
 
+Historical PR #27 branch evidence; final integration evidence is recorded in `issue-30.md`. Issues #20 and #21 have since been delivered through PRs #28 and #29.
+
 Issue: #26. Base: `bca201d20052b10be8cec886ae57b75bc1d21cca` (main). Implementation: `0a323e6`; reviewed navigation fixes: `9ec25c7`.
 
 The user approved direction 09's tree workspace structure with direction 01's native light list styling after comparing ten interactive concepts. This record covers the shared visual baseline, Current Focus, and initiative context/detail navigation. AI organization and synchronization page-specific work remain in #20 and #21.

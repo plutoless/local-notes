@@ -198,7 +198,7 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#items .card').length === 50);
   await page.locator('#search').fill('不存在的事项');
   await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
-  await page.locator('#search').fill('');
+  await page.locator('#search').fill('Release planning');
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   await page.locator('#initiative-title').fill('很长的中文事项标题用于检查换行与键盘焦点。'.repeat(6));
   await page.setViewportSize({width: 393, height: 852});
