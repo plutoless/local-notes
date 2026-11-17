@@ -1,0 +1,57 @@
+{
+  "id": "c1cc9c7f-b318-45a8-9ea3-ada54cbcc504",
+  "ok": true,
+  "result": {
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue30 (pid 29802)\nWindow: \"拾记 · Local Notes\", App: Workspace30.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 已确认行动\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Notes, Value: 0\n\t\t\t32 container\n\t\t\t\t33 heading 事项\n\t\t\t\t34 text field (settable) 搜索事项, Placeholder: 搜索事项…\n\t\t\t35 button 新建事项\n\t\t\t36 button (disabled) 上一页\n\t\t\t37 button (disabled) 下一页\n\t\t\t38 button 集成验证事项 进行中 · 正在验证本地保存\n\t\t\t39 container\n\t\t\t\t40 container 事项上下文\n\t\t\t\t\t41 text 事项工作区\n\t\t\t\t\t42 button 集成验证事项 正在验证本地保存 查看目标与进展 →\n\t\t\t\t\t43 heading 行动\n\t\t\t\t\t44 button 新建行动\n\t\t\t\t\t45 button 集成验证行动：已在原生窗口编辑并保存 · 待办\n\t\t\t\t\t46 summary 已完成和已取消, Value: 0\n\t\t\t\t\t47 heading 笔记与资料\n\t\t\t\t\t48 button 新建笔记\n\t\t\t\t\t49 button reference 参考资料 来源已修改，请核对引用\n\t\t\t\t50 button ‹ 返回列表\n\t\t\t\t51 text 阅读笔记\n\t\t\t\t52 text 已保存到本地\n\t\t\t\t53 button 编辑\n\t\t\t\t54 text field (disabled, settable) 笔记标题, Value: 整理资料, Placeholder: 无标题\n\t\t\t\t55 summary 笔记信息与整理, Value: 0\n\t\t\t\t56 container 笔记阅读内容\n\t\t\t\t\t57 text 保留原文，只整理入口。\n\t\t\t\t\t58 text 原生集成验证：笔记已编辑，事项上下文保持可见。\n\t28 close button\n\t29 full screen button, Secondary Actions: zoom the window\n\t30 minimize button\n\t31 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+      "focusedElementId": 2,
+      "id": "41CC9A4B-BA7C-480F-ACD8-DB3491F5F4CA",
+      "app": {
+        "pid": 29802,
+        "bundleId": "dev.localnotes.validation.issue30",
+        "name": "Workspace30"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 6353,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 46,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/c1cc9c7f-b318-45a8-9ea3-ada54cbcc504-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T06:53:02.002Z"
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 6353
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

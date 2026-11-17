@@ -44,13 +44,26 @@ Two independent reviewers covered `git diff d877a6c...9ae0d47` against repositor
 
 Follow-up review and exact final-head validation are recorded in the PR delivery evidence.
 
-## Native acceptance remains blocked
+## Native acceptance completed after permission recovery
 
 A separately identified application was built from the integrated resources at `build/issue30/Workspace30.app` with bundle ID `dev.localnotes.validation.issue30`. Only isolated notes and private storage under `build/issue30/native/` were seeded, using the production repository/storage API. Environment overrides are `LOCAL_NOTES_TEST_ROOT` and `LOCAL_NOTES_TEST_PRIVATE`.
 
-The app launched as PID 17810, window 5792 (1180×832, not minimized). Orca Computer Use repeatedly returned `permission_denied`: visible window but no AX window after retries, despite reporting Accessibility and screenshots granted. The CUA fallback returned `cgWindowNotFound`; the screenshot skill also failed to capture that window. The coordinator independently confirmed the failure and is arranging a permission refresh. Error records are retained in `issue30/native-*-error.json`.
+The app launched as PID 17810, window 5792 (1180×832, not minimized). Orca Computer Use repeatedly returned `permission_denied`: visible window but no AX window after retries, despite reporting Accessibility and screenshots granted. The CUA fallback returned `cgWindowNotFound`; the screenshot skill also failed to capture that window. The coordinator independently confirmed the failure; the maintainer then refreshed Accessibility and the coordinator explicitly authorized resuming native acceptance. Error records are retained in `issue30/native-*-error.json`.
 
-**Native edit/save/context/restart readback and native visual inspection have not passed.** Browser/storage tests and a successful build do not replace them. PR #27 must remain draft pending the required native acceptance. No merge recommendation is made while this gate remains open.
+Fresh AX access succeeded on the same preview (PID 17810/window 5792) after permission recovery. Orca background/foreground pointer targeting still failed (`background_unavailable`, stale indexes, and `window_not_focused`), so the CUA fallback performed the actual native interactions successfully; actions were verified from fresh accessibility state and screenshots rather than provider return status alone.
+
+Executed in actual WKWebView using only isolated sample data:
+
+1. Opened the initiative from home and inspected its persistent initiative/action/reference context.
+2. Opened the action, set its description to `集成验证行动：已在原生窗口编辑并保存`, and selected Save. Native UI displayed the local-save receipt and updated the context action title without losing the initiative.
+3. Opened the linked note, switched to edit mode, and added `原生集成验证：笔记已编辑，事项上下文保持可见。` while preserving the original paragraph. The native UI showed editing status; returning through the back control flushed the edit and retained the initiative context. The overview remained reachable, with the expected source-change warning instead of silently rewriting the source fingerprint.
+4. Read the action source JSON and note Markdown from the isolated root and asserted both edits exist. Compared every shipped web resource byte-for-byte with the reviewed source at `533cc2b4c40f16c9179978e3915ea7f72b0a58fe`: all matched.
+5. Quit only this newly created preview through its own Quit command, verified PID 17810 exited, then relaunched with the same isolated roots. Home's action accessible name retained the edited description. Reopened the initiative and note; the saved note text and original paragraph were both read back from WKWebView with the initiative context visible.
+6. Native keyboard navigation from the editable note title via Tab reached the note-information disclosure. Inspected native screenshots for the light workspace, accessible Chinese controls, readable text, scrolling, source warning and reachable back/overview controls. Chromium separately covers 393px and long-text checks; native inspection is desktop, not an Android/device claim.
+
+The first restarted process (PID 28582) later exited; the isolated app was explicitly reopened through LaunchServices with the same environment roots to capture persisted readback again. The final preserved preview is PID 29802. `native-resume.*`, `native-saved-overview.*`, `native-restarted-home.*`, `native-restart-readback.*`, and `native-storage-readback.json` retain actual native evidence. Initial permission failures remain as historical troubleshooting evidence; they are no longer an open acceptance blocker.
+
+The follow-up commit changes evidence only; it does not alter any application resources exercised natively. The final exact reviewed/tested head and readiness are recorded in PR #27. Merge and postmerge validation still belong to the coordinator.
 
 ## Deferred and ownership boundaries
 
