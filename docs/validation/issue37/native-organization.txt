@@ -1,0 +1,12 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37-organization-after/Organization35.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37-organization-after/Organization35.app: replacing existing signature
+Traceback (most recent call last):
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/tests/native-journey-regression.py", line 14, in <module>
+    exec(compile(source, str(path), 'exec'), {'__name__': '__main__', '__file__': str(path)})
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/tests/native-organization-design.py", line 68, in <module>
+    w("document.activeElement.getAttribute('aria-label')?.startsWith('打开来源：evidence.md')")
+    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/tests/native-candidate-review.py", line 43, in wait
+    raise AssertionError('Native UI timed out: '+expression)
+AssertionError: Native UI timed out: document.activeElement.getAttribute('aria-label')?.startsWith('打开来源：evidence.md')

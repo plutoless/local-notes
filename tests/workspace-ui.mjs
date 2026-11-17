@@ -21,7 +21,7 @@ try {
   const first = (await initiatives.save({title: '整理工作资料', goal: '让常用资料有清晰的入口', progress: '资料目录已整理，正在确定本周行动。', status: 'active', sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: (await import('../web/initiatives.js')).fingerprint(original), role: 'reference'}]})).record;
   const second = (await initiatives.save({title: '准备下次评审', goal: '确认需要讨论的问题', progress: '等待评审时间确认。', status: 'active', sources: []})).record;
   const actions = new ActionRepository(fixture.adapter); await actions.open();
-  for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
+  for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, sources: i === 0 ? [{path:'reference.md',quote:'保留原文，只整理入口。',fingerprint:(await import('../web/initiatives.js')).fingerprint(original)}] : [], initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
   await actions.save({description: '确认评审时间', waitingOn: '等待对方回复可用时间', status: 'waiting', initiativeId: second.entityId});
   await page.exposeFunction('bridge', async request => {
     try {
@@ -63,8 +63,35 @@ try {
   assert.equal(await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).count(), 1);
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue33/workspace-home.png'});
+  await page.screenshot({path: 'docs/validation/issue37/home-desktop.png'});
+  // Cross-page return must survive note editing and preserve the originating action.
+  await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
+  await page.locator('#action-editor').waitFor({state: 'visible'});
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).waitFor();
+  await rm(sourcePath);
+  await page.getByRole('button', {name: '打开来源：reference.md', exact: true}).click();
+  await page.locator('#notice').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#action-editor').isVisible(), true, 'Unavailable source must retain the originating action');
+  assert.equal(await page.locator('nav [data-view=actions]').getAttribute('aria-current'), 'page');
+  await writeFile(sourcePath, original);
+  await page.getByRole('button', {name: '关闭提示'}).click();
+  await page.locator('#action-open-initiative').click();
+  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  assert.equal(await page.locator('nav [data-view=initiatives]').getAttribute('aria-current'), 'page');
+  await page.locator('#workspace-references button').click();
+  await page.locator('#reading').waitFor({state: 'visible'});
+  await page.locator('#back').click();
+  await page.screenshot({path: 'docs/validation/issue37/initiative-return-desktop.png'});
+  await page.setViewportSize({width: 393, height: 852});
+  await page.screenshot({path: 'docs/validation/issue37/initiative-return-393.png'});
+  await page.locator('#workspace-return-action').click();
+  await page.setViewportSize({width: 1180, height: 800});
+  await page.locator('#action-description').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#action-description').inputValue(), '确定本周最重要的两件事');
+  assert.equal(await page.locator('nav [data-view=actions]').getAttribute('aria-current'), 'page');
+  assert.equal(await page.locator('#action-open-initiative').evaluate(node => node === document.activeElement), true);
   await page.locator('[data-view=initiatives]').click();
-  await page.locator('#items .card', {hasText: '整理工作资料'}).click();
+  await page.locator(`#items [data-initiative-id="${first.entityId}"]`).click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(), '整理工作资料');
   await page.screenshot({path: 'docs/validation/issue33/workspace-initiative.png'});
