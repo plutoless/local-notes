@@ -1,5 +1,5 @@
 {
-  "id": "ff200aff-3dd2-409c-a91a-0a6af0e65963",
+  "id": "3a2e44ed-b0ed-4600-ac29-5e62dbbe0f84",
   "ok": true,
   "result": {
     "screenshot": {
@@ -7,32 +7,32 @@
       "width": 786,
       "height": 1664,
       "format": "png",
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/ff200aff-3dd2-409c-a91a-0a6af0e65963-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/3a2e44ed-b0ed-4600-ac29-5e62dbbe0f84-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T17:01:04.191Z"
+      "expiresAt": "2026-11-18T17:13:04.869Z"
     },
     "screenshotStatus": {
       "state": "captured",
       "metadata": {
-        "windowId": 12712,
-        "engine": "screenCaptureKit"
+        "engine": "screenCaptureKit",
+        "windowId": 13094
       }
     },
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue47after (pid 4608)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 新建事项\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 新建事项\n\t\t\t\t\t33 button 关闭新建事项\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 真实原生事项\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 目标\n\t\t\t\t\t\t40 text entry area (settable) 目标 原生保存与恢复\n\t\t\t\t\t\t\t53 text 原生保存与恢复\n\t\t\t\t\t41 container\n\t\t\t\t\t\t42 text 当前进展\n\t\t\t\t\t\t43 text entry area (settable) 当前进展 验证中\n\t\t\t\t\t\t\t54 text 验证中\n\t\t\t\t\t44 container\n\t\t\t\t\t\t45 text 状态\n\t\t\t\t\t\t46 pop up button 状态, Value: 进行中\n\t\t\t\t\t47 summary 结束与重新开启, Value: 0\n\t\t\t\t\t48 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t55 text 事项草稿尚未保存\n\t\t\t\t56 text 事项尚未保存，是否放弃此次编辑？已保存的版本和已处理的行动仍保留。\n\t\t\t\t57 button 继续编辑\n\t\t\t\t58 button 放弃事项编辑\n\t\t\t\t50 container\n\t\t\t\t\t51 button 取消\n\t\t\t\t\t52 button 创建事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 57 button 继续编辑.",
+      "treeText": "App=dev.localnotes.validation.issue47after (pid 15064)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 新建事项\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 新建事项\n\t\t\t\t\t33 button 关闭新建事项\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 真实原生事项\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 目标\n\t\t\t\t\t\t40 text entry area (settable) 目标 原生保存与恢复\n\t\t\t\t\t\t\t53 text 原生保存与恢复\n\t\t\t\t\t41 container\n\t\t\t\t\t\t42 text 当前进展\n\t\t\t\t\t\t43 text entry area (settable) 当前进展 验证中\n\t\t\t\t\t\t\t54 text 验证中\n\t\t\t\t\t44 container\n\t\t\t\t\t\t45 text 状态\n\t\t\t\t\t\t46 pop up button 状态, Value: 进行中\n\t\t\t\t\t47 summary 结束与重新开启, Value: 0\n\t\t\t\t\t48 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t55 text 事项草稿尚未保存\n\t\t\t\t56 text 事项尚未保存，是否放弃此次编辑？已保存的版本和已处理的行动仍保留。\n\t\t\t\t57 button 继续编辑\n\t\t\t\t58 button 放弃事项编辑\n\t\t\t\t50 container\n\t\t\t\t\t51 button 取消\n\t\t\t\t\t52 button 创建事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 57 button 继续编辑.",
       "focusedElementId": 57,
-      "id": "02EC383B-1C6C-46FA-AEF3-5E20C2C751D6",
+      "id": "E372F30B-EA19-4E13-A36B-2F4604CCEE26",
       "app": {
-        "bundleId": "dev.localnotes.validation.issue47after",
-        "pid": 4608,
-        "name": "LocalNotes"
+        "pid": 15064,
+        "name": "LocalNotes",
+        "bundleId": "dev.localnotes.validation.issue47after"
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 393,
-        "id": 12712,
+        "id": 13094,
         "height": 832,
         "isOffscreen": false,
         "y": 48,
@@ -61,7 +61,7 @@
       "actionName": "pressKey",
       "fallbackReason": null,
       "path": "synthetic",
-      "targetWindowId": 12712
+      "targetWindowId": 13094
     }
   },
   "_meta": {

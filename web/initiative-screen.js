@@ -62,6 +62,10 @@ export class InitiativeScreen {
     this.closing = true;
     try {
       try {
+        if (this.drawerContext?.refreshWorkspace || this.drawerContext?.refreshAction) {
+          await this.actions.repository.serialize(() => this.actions.repository.recover());
+          await this.repository.serialize(() => this.repository.recover());
+        }
         if (this.drawerContext?.refreshWorkspace) {
           await this.details();
           this.drawerContext.nodes = null; this.drawerContext.text = {}; this.drawerContext.refreshWorkspace = false;
@@ -97,6 +101,10 @@ export class InitiativeScreen {
         this.selectInitiative(this.previous);
       }
       this.drawer.hide();
+      if (document.activeElement === document.body || !document.activeElement?.getClientRects().length) {
+        const fallback = ['#action-description', '#mode', '#workspace-overview', '#initiative-new'].map(selector => $(selector)).find(node => !node.disabled && node.getClientRects().length);
+        fallback?.focus({preventScroll: true});
+      }
       return true;
     } finally { this.closing = false; }
   }
@@ -240,17 +248,19 @@ export class InitiativeScreen {
   }
   async prepareEdit(record, metadata) {
     if (!this.leaveDrawer()) return;
+    const layout = metadata ? {
+      classes: $('.app').className, selectedContext: this.selectedContext, detailKind: this.detailKind,
+      hidden: Object.fromEntries(['#editor', '#action-editor', '#initiative-editor', '#workspace-context', '#empty'].map(selector => [selector, $(selector).hidden])),
+      scroll: Object.fromEntries(['.collection', '#items', '#workspace-context', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))
+    } : null;
     if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush()) return;
     if (record?.entityId === this.previous?.entityId) record = this.previous;
     this.listScroll = $('#items').scrollTop;
     if (metadata) this.drawerContext = {
       actionId: record && this.actions.previous?.initiativeId === record.entityId ? this.actions.previous.entityId : null,
-      previous: this.previous, selectedContext: this.selectedContext, detailKind: this.detailKind,
-      classes: $('.app').className,
+      ...layout, previous: this.previous,
       nodes: Object.fromEntries(['#initiative-actions', '#initiative-retired', '#workspace-notes', '#workspace-references'].map(selector => [selector, [...$(selector).childNodes]])),
-      text: Object.fromEntries(['#workspace-title', '#workspace-progress', '#workspace-goal', '#workspace-state', '#initiative-help'].map(selector => [selector, $(selector).textContent])),
-      hidden: Object.fromEntries(['#editor', '#action-editor', '#initiative-editor', '#workspace-context', '#empty'].map(selector => [selector, $(selector).hidden])),
-      scroll: Object.fromEntries(['.collection', '#items', '#workspace-context', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))
+      text: Object.fromEntries(['#workspace-title', '#workspace-progress', '#workspace-goal', '#workspace-state', '#initiative-help'].map(selector => [selector, $(selector).textContent]))
     };
     this.retry = null; this.form(record || {}, record); this.state(record ? '已保存到本地' : '新建事项');
     if (!record) { this.dirty = false; this.state('新建事项'); }
