@@ -11,7 +11,7 @@
   "resourceHashes": {
     "library-screen.js": "a7ccc74465ee775489f6014673a98613620bebc06aa939d1bf021977c40f5b6c",
     "organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
-    "index.html": "67e3eef0cf2ac3fdd16f2a5517d400924821fc7a1f1438a6ad09242e9c0c2c13",
+    "index.html": "7ce8b91dfb1ee41dc2e502838a00e8f07649987769c17c68a400d5d9d5bb8700",
     "core.js": "e1b033ae3a5bba3fd43fb96daa65b12b698e8e9f78e817de7e042f3c3ea547b1",
     "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
     "actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
@@ -24,7 +24,7 @@
     "action-screen.js": "3254b8528bfbc24257f59555b9bd146ddfe3b6a7fefe9782fa93c3c4bba4ffaf",
     "presentation.js": "912eda489723ab07b3258108c16a0d196a31e562a99b25f19ca40ab0c027bec3",
     "sync-screen.js": "7aa1ef6a4a284b97b16f1834b630d555935019928f5af5f99cb8c3848f3c24eb",
-    "app.js": "edfb2d6d164a6a6bc6b9199863cf7bc9b1b1194fb822818ca07a95d05bdaf2a7",
+    "app.js": "76b77a08f351987d92257062f199540a1b5759d7cd8212303ed7aefd79b75366",
     "initiatives.js": "009b47661d6f8b392f428446cd4fe60f36fd5103c9096d5a9326ef99c6fd3370"
   }
 }

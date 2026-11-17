@@ -21,21 +21,18 @@ Organization review UI passed: exact preview, invalidation, partial retry, edite
   4.278605097267699,
   5.969564700266222
 ]
-node:internal/modules/run_main:107
-    triggerUncaughtException(
-    ^
-
-locator.waitFor: Timeout 30000ms exceeded.
-Call log:
-[2m  - waiting for locator('#notice') to be visible[22m
-[2m    63 × locator resolved to hidden <div hidden="" id="notice" role="status"></div>[22m
-
-    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/tests/workspace-ui.mjs:72:33 {
-  log: [
-    "  - waiting for locator('#notice') to be visible",
-    '    63 × locator resolved to hidden <div hidden="" id="notice" role="status"></div>'
-  ],
-  name: 'TimeoutError'
+PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed saves block initiative/New-action navigation, background refresh preserves drafts, missing notes preserve narrow-screen context, source save, selection, accessible action names, and narrow-pane navigation.
+Focus outline: rgb(7, 95, 204) solid 3px
+Rendered contrast inputs: {"text":"rgb(32, 38, 51)","background":"rgb(255, 255, 255)"}
+PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.
+Capture: typing, failed-save guard, retry, prior action return, reopen, reload draft recovery, 393px, directory and keyboard passed
+Catalogue rendering, live tokens, contrast minima, dialog restoration, 393px and reduced motion passed {
+  text: 12.643630908476043,
+  muted: 4.716443450384083,
+  accent: 5.2180600395830945,
+  success: 6.0100158560007975,
+  warning: 5.536987462909477,
+  danger: 6.225655952655553,
+  line: 3.571603606612721,
+  focus: 4.983147153962463
 }
-
-Node.js v25.1.0
