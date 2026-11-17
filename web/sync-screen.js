@@ -1,4 +1,4 @@
-import {statusLabel, bindDialog} from './presentation.js';
+import {statusLabel, bindDialog, icon} from './presentation.js';
 import {escapeHTML as esc} from './core.js';
 
 // One review surface serves every synchronized confirmed-record type.
@@ -8,7 +8,7 @@ export class SyncScreen {
     this.panel = document.createElement('section'); this.panel.hidden = true;
     this.panel.setAttribute('aria-label', '同步检查'); this.panel.className = 'sync-panel'; this.panel.setAttribute('role', 'dialog'); this.panel.setAttribute('aria-modal', 'true');
     document.body.append(this.panel); bindDialog(this.panel);
-    const button = document.createElement('button'); button.textContent = '同步检查';
+    const button = document.createElement('button'); button.innerHTML = icon('sync') + '同步检查';
     button.onclick = () => this.refresh(true).catch(error => notice(error.message));
     document.querySelector('nav').append(button);
     window.addEventListener('focus', () => this.refresh(false).catch(error => notice(error.message)));

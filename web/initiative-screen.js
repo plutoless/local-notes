@@ -3,8 +3,8 @@ import {InitiativeRepository, allRecords, endInitiative, unfinished, fingerprint
 import {native} from './bridge.js';
 const $ = selector => document.querySelector(selector);
 export class InitiativeScreen {
-  constructor(actions, notice, openNote, createNote, listReferences) {
-    this.listReferences = listReferences; this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = ''; this.listGeneration = 0;
+  constructor(actions, notice, openNote, createNote, listReferences, beforeEdit = async () => true) {
+    this.beforeEdit = beforeEdit; this.detailKind = 'overview'; this.listReferences = listReferences; this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = ''; this.listGeneration = 0;
     $('#initiative-new').onclick = () => this.edit(null);
     $('#initiative-next').onclick = () => { this.offset += 50; this.list().catch(e => notice(e.message)); };
     $('#initiative-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.list().catch(e => notice(e.message)); };
@@ -12,11 +12,15 @@ export class InitiativeScreen {
     $('#initiative-status').onchange = () => { this.changed(); this.ending(); };
     $('#initiative-cancel-ending').onclick = () => { $('#initiative-status').value = this.previous?.status || 'active'; this.changed(); this.ending(); };
     $('#initiative-form').onsubmit = event => { event.preventDefault(); this.save(); };
-    $('#initiative-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#initiative-editor').hidden = true; $('.app').classList.remove('editing'); };
-    $('#initiative-back').onclick = async () => { if (await this.flush()) $('.app').classList.remove('editing'); };
+    $('#initiative-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#initiative-editor').hidden = true; $('#workspace-context').hidden = true; $('.app').classList.remove('editing', 'detail-open'); };
+    $('#initiative-back').textContent = '‹ 行动与资料';
+    $('#initiative-back').onclick = async () => { if (await this.flush()) $('.app').classList.remove('detail-open'); };
+    $('#workspace-back').onclick = async () => { if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) $('.app').classList.remove('editing', 'detail-open'); };
+    $('#workspace-overview').onclick = () => this.edit(this.previous).catch(e => notice(e.message));
     $('#initiative-add-link').onclick = () => { this.addLink({path: '', quote: '', fingerprint: '', role: 'working-note'}); this.changed(); };
     $('#initiative-new-action').onclick = async () => {
       if (!await this.flush() || !this.previous || this.previous.status === 'ended') return;
+      this.detailKind = 'action'; $('.app').classList.add('detail-open');
       await this.actions.edit(null); $('#action-initiative').value = this.previous.entityId; this.actions.changed(); $('#initiative-editor').hidden = true;
     };
     $('#initiative-new-note').onclick = async () => { if (await this.flush() && this.previous) this.createNote(this.previous.entityId); };
@@ -34,7 +38,8 @@ export class InitiativeScreen {
     if (draft) { this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = true; await this.details(); $('#initiative-save-state').textContent = '已恢复事项草稿，请核对后保存。'; }
   }
   async show() {
-    $('.app').classList.remove('library-view');
+    $('.app').classList.remove('library-view', 'home'); $('.app').classList.add('workspace');
+    $('#workspace-context').hidden = !this.previous && !this.dirty;
     $('#library-tools').hidden = true;
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
@@ -57,7 +62,7 @@ export class InitiativeScreen {
     if (!this.active || repository !== this.repository || generation !== this.listGeneration) return;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const record of page.actions) {
-      const button = document.createElement('button'); button.className = 'card';
+      const button = document.createElement('button'); button.className = 'card'; button.dataset.initiativeId = record.entityId; button.classList.toggle('selected', record.entityId === this.previous?.entityId); button.setAttribute('aria-current', String(record.entityId === this.previous?.entityId));
       const heading = document.createElement('h3'); heading.textContent = record.title;
       const summary = document.createElement('p'); summary.textContent = `${statusLabel(record.status)} · ${record.progress || record.goal || '尚未填写进展，打开后可补充。'}`;
       button.append(heading, summary); button.onclick = () => this.edit(record).catch(e => this.notice(e.message)); $('#items').append(button);
@@ -83,7 +88,9 @@ export class InitiativeScreen {
     place();
   }
   form(fields, previous) {
-    this.previous = previous;
+    this.previous = previous; this.detailKind = 'overview';
+    $('#workspace-context').hidden = false; $('.app').classList.add('workspace', 'detail-open');
+    for (const row of document.querySelectorAll('#items [data-initiative-id]')) { const selected = row.dataset.initiativeId === previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
     $('#initiative-heading').textContent = previous ? '事项详情' : '新建事项';
     for (const field of ['title', 'goal', 'progress']) $(`#initiative-${field}`).value = fields[field] || '';
     $('#initiative-status').value = fields.status || 'active';
@@ -95,20 +102,35 @@ export class InitiativeScreen {
     $('#initiative-new-action').disabled = !previous || previous.status === 'ended'; $('#initiative-new-note').disabled = !previous;
   }
   async edit(record) {
-    if (!await this.flush() || !await this.actions.flush()) return;
+    if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush()) return;
+    if (record?.entityId === this.previous?.entityId) record = this.previous;
     this.retry = null; this.form(record || {}, record); $('#initiative-save-state').textContent = record ? '已保存到本地' : '新建事项';
     if (!record) this.changed();
-    await this.details();
+    await this.details(); $('#initiative-title').focus();
+  }
+  renderContext() {
+    const record = this.previous;
+    $('#workspace-title').textContent = record?.title || '新建事项';
+    $('#workspace-progress').textContent = record?.progress || record?.goal || '';
+    $('#initiative-help').textContent = !record ? '保存事项后可添加行动与笔记。' : record.status === 'ended' ? '事项已结束。重新开启后可添加行动。' : '';
+    $('#workspace-notes').replaceChildren();
+    for (const source of record?.sources || []) {
+      const open = document.createElement('button'); open.type = 'button'; open.dataset.path = source.path;
+      const title = document.createElement('span'); title.textContent = source.path.split('/').pop().replace(/\.md$/i, '');
+      const role = document.createElement('small'); role.textContent = source.role === 'reference' ? '参考资料' : '工作笔记'; open.append(title, role);
+      open.onclick = () => this.openNote(open.dataset.path); $('#workspace-notes').append(open);
+    }
+    if (!$('#workspace-notes').children.length) $('#workspace-notes').textContent = '尚未关联笔记。';
   }
   async details() {
     $('#initiative-actions').replaceChildren(); $('#initiative-retired').replaceChildren(); $('#initiative-decisions').replaceChildren();
-    const record = this.previous;
+    const record = this.previous; this.renderContext();
     if (!record) { this.ending(); return; }
     const [actions, initiatives] = await Promise.all([allRecords(this.actions.repository), allRecords(this.repository)]);
     if (record !== this.previous) return;
     for (const action of actions.filter(a => a.initiativeId === record.entityId)) {
       const button = document.createElement('button'); button.type = 'button'; button.textContent = `${action.description} · ${statusLabel(action.status)}`;
-      button.onclick = async () => { if (await this.flush()) { $('#initiative-editor').hidden = true; await this.actions.edit(action); } };
+      button.onclick = async () => { if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) { this.detailKind = 'action'; $('.app').classList.add('detail-open'); $('#initiative-editor').hidden = true; await this.actions.edit(action); } };
       (unfinished(action) ? $('#initiative-actions') : $('#initiative-retired')).append(button);
       if (unfinished(action)) {
         const label = document.createElement('label'); label.textContent = `结束时处理：${action.description}`;
@@ -129,6 +151,11 @@ export class InitiativeScreen {
         const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.listReferences);
         if (record !== this.previous) return;
         row.querySelector('.source-state').textContent = result.state === 'moved' ? `来源已移至 ${result.path}，请核对后保存。` : statusLabel(result.state);
+        if (!['unchanged', 'available', 'valid'].includes(result.state)) {
+          $('#initiative-link-details').open = true;
+          const link = [...document.querySelectorAll('#workspace-notes button')].find(button => button.dataset.path === source.path);
+          if (link) { const warning = document.createElement('small'); warning.textContent = row.querySelector('.source-state').textContent; link.append(warning); if (result.path) link.dataset.path = result.path; }
+        }
         if (result.state === 'moved') { row.querySelector('input').value = result.path; this.changed(); }
         row.querySelector('.source-open').disabled = !result.path;
       } catch (error) { row.querySelector('.source-state').textContent = '来源暂不可用，请检查目录后重试。'; }

@@ -11,7 +11,7 @@ export class FocusScreen {
     return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, options);
   }
   async show() {
-    $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
+    $('.app').classList.remove('workspace'); $('#workspace-context').hidden = true; $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
     const request = this.request = (this.request || 0) + 1;
     const repository = this.actions.repository;
     $('#view-title').textContent = '当前重点'; $('#search').hidden = true;
@@ -25,9 +25,11 @@ export class FocusScreen {
     if (!this.active || repository !== this.actions.repository || request !== this.request) return;
     $('#index-state').textContent = ''; const list = $('#items'); list.replaceChildren();
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
+    const title = document.createElement('h2'); title.textContent = '当前重点'; tools.append(title);
+    const utilities = document.createElement('details'); utilities.className = 'home-utilities'; utilities.innerHTML = '<summary>更多操作</summary>'; tools.append(utilities);
     tools.append(this.button('新建行动', async () => { await this.navigate('actions'); await this.actions.edit(null); }, {primary: true}),
-      this.button('全部行动', () => this.navigate('actions')),
-      this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
+      this.button('全部行动', () => this.navigate('actions')));
+    utilities.append(this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
       this.button('整理所选笔记', () => this.navigate('organize')),
       this.button('刷新本地记录', async () => {
         const actionResult = await repository.serialize(() => repository.recover());
@@ -37,15 +39,16 @@ export class FocusScreen {
         await this.show();
       }));
     const section = title => { const node = document.createElement('section'); const heading = document.createElement('h2'); heading.textContent = title; node.append(heading); list.append(node); return node; };
-    const focus = section('当前重点');
+    const focus = section('优先处理');
     if (!focused.actions.length) focus.append('还没有重点行动。可从「全部行动」选择已确认的下一步。', this.button('选择重点行动', () => this.navigate('actions')));
     const shown = focused.actions.slice(0, this.limit);
     for (const [index, action] of shown.entries()) {
       const row = this.actionRow(action);
-      row.append(this.button('移出重点', async () => { await repository.save({...action, focusPosition: null}, action); await this.show(); }));
+      const menu = document.createElement('details'); menu.className = 'row-menu'; menu.innerHTML = '<summary>管理</summary>'; row.append(menu);
+      menu.append(this.button('移出重点', async () => { await repository.save({...action, focusPosition: null}, action); await this.show(); }));
       for (const direction of [-1, 1]) {
         if (index + direction < 0 || !focused.actions[index + direction]) continue;
-        row.append(this.button(direction < 0 ? '上移' : '下移', async () => {
+        menu.append(this.button(direction < 0 ? '上移' : '下移', async () => {
           const neighbor = focused.actions[index + direction];
           const beyond = focused.actions[index + direction * 2];
           const position = beyond ? (neighbor.focusPosition + beyond.focusPosition) / 2 : neighbor.focusPosition + direction;
@@ -74,8 +77,10 @@ export class FocusScreen {
     if (initiatives.hasMore) work.append(this.button('全部事项', () => this.navigate('initiatives')));
   }
   actionRow(action) {
-    const row = document.createElement('div'); row.className = 'card';
-    row.innerHTML = `<h3>${esc(action.description)}</h3><p>${esc(statusLabel(action.status))}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ''}</p><p>${esc(action.waitingOn || (action.status === 'waiting' ? '尚未填写等待对象或条件。' : ''))}</p>`;
-    row.append(this.button('打开行动', async () => { await this.navigate('actions'); await this.actions.edit(action); })); return row;
+    const row = document.createElement('div'); row.className = 'card focus-row';
+    const open = this.button('', async () => { if (await this.navigate('actions')) await this.actions.edit(action); });
+    open.className = 'focus-row-open'; open.setAttribute('aria-label', '打开行动');
+    open.innerHTML = `<span class="action-marker" aria-hidden="true"></span><span><h3>${esc(action.description)}</h3><span class="row-meta">${esc(statusLabel(action.status))}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ''}</span>${action.waitingOn ? `<span class="waiting-condition">${esc(action.waitingOn)}</span>` : ''}</span>`;
+    row.append(open); return row;
   }
 }
