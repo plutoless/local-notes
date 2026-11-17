@@ -1,4 +1,4 @@
-import {feedback, directoryLabel, button, selectionRow} from './presentation.js';
+import {feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -10,15 +10,80 @@ export class LibraryScreen {
     this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
     $('#library-refresh').onclick = async () => { $('#library-refresh').disabled = true; $('#library-progress').textContent = '正在更新笔记列表…'; try { await this.library.sync(); this.failed = false; await this.render(); } catch (error) { this.failed = true; await this.render(); notice(error.message); } finally { $('#library-refresh').disabled = false; } };
     $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
-    const editTopic = topic => { this.topicOpener = document.activeElement; this.editingTopic = topic; $('#topic-name').value = topic?.description || ''; $('#topic-form').hidden = false; $('#topic-name').focus(); };
-    $('#library-create-topic').onclick = () => editTopic(null);
-    $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) editTopic(topic); };
-    this.topicOpener = null;
-    $('#topic-cancel').onclick = () => { $('#topic-form').hidden = true; this.topicOpener?.focus(); };
-    $('#topic-form').onsubmit = async event => { event.preventDefault(); const submit = $('#topic-form button[type=submit]'); if (submit.disabled) return; submit.disabled = true; try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; this.topicOpener?.focus(); } catch (error) { notice(error.message); } finally { submit.disabled = false; } };
+    this.setupTopicDrawer();
+    $('#library-create-topic').onclick = () => this.editTopic(null);
+    $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic); };
     $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
     $('#library-next').onclick = () => { this.offset += 50; this.render(); };
     $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
+  }
+  setupTopicDrawer() {
+    this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
+    const form = document.createElement('form'); form.id = 'topic-form'; form.noValidate = true;
+    const input = document.createElement('input'); input.id = 'topic-name'; input.required = true;
+    const status = document.createElement('div'); status.id = 'topic-status'; status.setAttribute('role', 'status');
+    const error = document.createElement('div'); error.id = 'topic-error'; error.setAttribute('role', 'alert'); error.tabIndex = -1;
+    input.setAttribute('aria-describedby', 'topic-error topic-status');
+    form.append(field('主题名称', input, {density: 'compact'}), status, error);
+    this.topicDrawer.body.append(form);
+    const cancel = button('取消', () => this.leaveTopic(), {density: 'compact'}); cancel.id = 'topic-cancel';
+    const submit = document.createElement('button'); submit.type = 'submit'; submit.setAttribute('form', form.id); submit.className = 'ui-action primary ui-compact';
+    this.topicDrawer.footer.append(cancel, submit);
+    const guard = document.createElement('div'); guard.className = 'draft-guard'; guard.hidden = true;
+    const message = document.createElement('p'); message.textContent = '主题尚未保存，是否放弃此次编辑？';
+    guard.append(message, button('继续编辑', () => { guard.hidden = true; input.focus(); }), button('放弃主题编辑', () => this.closeTopic()));
+    this.topicDrawer.body.append(guard); this.topicGuard = guard;
+    input.oninput = () => {
+      input.setAttribute('aria-invalid', 'false'); error.replaceChildren();
+      try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic})); }
+      catch { status.textContent = '草稿暂时无法在关闭后恢复，请保持窗口打开并保存。'; }
+    };
+    form.onsubmit = async event => {
+      event.preventDefault(); if (this.topicSaving) return;
+      if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); error.textContent = '请填写主题名称。'; input.focus(); return; }
+      this.topicSaving = true; submit.disabled = true; input.disabled = true; guard.hidden = true;
+      status.textContent = '正在保存…'; error.replaceChildren();
+      try {
+        await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry);
+        this.closeTopic();
+      } catch (failure) {
+        if (failure.revisionSaved) {
+          this.topicRetry = failure.record;
+          try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic, retry: this.topicRetry})); }
+          catch { /* The open drawer still retains the recoverable revision. */ }
+        }
+        status.textContent = ''; errorFeedback(error, failure.message); error.focus(); submit.textContent = '重试保存';
+      }
+      finally { this.topicSaving = false; submit.disabled = false; input.disabled = Boolean(this.topicRetry); }
+    };
+    this.topicInput = input; this.topicSubmit = submit; this.topicStatus = status; this.topicError = error;
+  }
+  get topicDirty() { return this.topicDrawer.panel.open && this.topicInput.value !== (this.editingTopic?.description || ''); }
+  editTopic(topic) {
+    if (this.topicDrawer.panel.open) { this.leaveTopic(); return; }
+    this.topicBrowseScroll = $('.collection').scrollTop;
+    this.editingTopic = topic; this.topicRetry = null; this.topicInput.disabled = false;
+    this.topicDraftKey = `topic-draft:${this.library.workspaceId}:${topic?.entityId || 'new'}`;
+    let draft;
+    try { draft = JSON.parse(localStorage.getItem(this.topicDraftKey)); } catch { /* Invalid private drafts do not replace saved records. */ }
+    this.topicInput.value = draft?.name ?? topic?.description ?? '';
+    this.topicRetry = draft?.retry || null; this.topicInput.disabled = Boolean(this.topicRetry);
+    // Keep the original revision as the save base so recovered edits cannot overwrite a newer revision.
+    if (draft?.previous) this.editingTopic = draft.previous;
+    this.topicDrawer.setTitle(topic ? '重命名主题' : '新建主题');
+    this.topicSubmit.textContent = topic ? '保存' : '创建'; this.topicStatus.textContent = draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
+    this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false'); this.topicGuard.hidden = true;
+    this.topicDrawer.open(this.topicInput);
+  }
+  closeTopic() {
+    try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicGuard.hidden = true; this.topicDrawer.hide();
+    $('.collection').scrollTop = this.topicBrowseScroll;
+  }
+  leaveTopic() {
+    if (!this.topicDrawer.panel.open) return true;
+    if (this.topicSaving) return false;
+    if (this.topicDirty) { this.topicGuard.hidden = false; this.topicGuard.querySelector('button').focus(); return false; }
+    this.closeTopic(); return true;
   }
   async show() {
     this.failed = false;

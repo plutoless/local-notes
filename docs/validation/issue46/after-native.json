@@ -1,0 +1,17 @@
+{
+  "engine": "Cocoa/WKWebView",
+  "phase": "after",
+  "pointerOpen": true,
+  "trustedEscapeGuard": true,
+  "nativeCloseGuard": true,
+  "createRenameReopenAndCleanCancel": true,
+  "unchangedMarkdown": true,
+  "width": 393,
+  "assets": {
+    "style.css": "65e7090e12d77211dd0646e47baffeb679cd890b4db13d7c9fd389be5c1b5a28",
+    "presentation.js": "ae12a78ef8cb9f0e879f00bec545159ae0c297bcec737e6ee368780085ca0343",
+    "library-screen.js": "224d0807e844e1b7d754cab94e2843aa57300dd39bd8db4ac70c44d89de6395d",
+    "app.js": "edd4ce2e4d5102191c195468bcff0f2304c2220b9ae80a4cf11e3c2b36e4bcff",
+    "index.html": "0d98e65ae7b73ab74b5c959c1ff2f20a69f95dee1c07ea6cf667e6cad82dae22"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "id": "cec8ab1a-8591-4158-992a-1c3d74e34bd8",
+  "ok": true,
+  "result": {
+    "screenshot": {
+      "scale": 2,
+      "width": 786,
+      "height": 1664,
+      "format": "png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/cec8ab1a-8591-4158-992a-1c3d74e34bd8-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T15:29:24.409Z"
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 10769
+      },
+      "state": "captured"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue46after (pid 41193)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nNo UI element is currently focused.",
+      "focusedElementId": null,
+      "id": "7A9BA3D8-1630-4690-91B2-635303405CD4",
+      "app": {
+        "pid": 41193,
+        "bundleId": "dev.localnotes.validation.issue46after",
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 393,
+        "id": 10769,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 20,
+      "truncation": {
+        "truncated": false,
+        "maxDepthReached": false,
+        "maxDepth": 64,
+        "maxNodes": 1200
+      },
+      "treeDiff": {
+        "baseSnapshotId": "EE5F6AAE-28A5-4925-883C-350E8D9654D8",
+        "changed": 0,
+        "added": 0,
+        "removed": 0
+      }
+    },
+    "action": {
+      "verification": {
+        "expected": null,
+        "actualPreview": null,
+        "state": "unverified",
+        "reason": "synthetic_input"
+      },
+      "delivery": "foreground",
+      "actionName": "hotkey",
+      "fallbackReason": null,
+      "path": "synthetic",
+      "targetWindowId": 10769
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

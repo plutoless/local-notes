@@ -1,0 +1,4 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-46/build/native-issue46-before/Library46.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-46/build/native-issue46-before/Library46.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-46/build/native-issue46-before/Library46.app: replacing existing signature
+PASS native before pointer, layouts and source/persistence assertions

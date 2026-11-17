@@ -1,0 +1,11 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-46/tests/topic-drawer-ui.mjs:92:16 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

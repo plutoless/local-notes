@@ -40,19 +40,18 @@
           />
         </header>
         <div id="library-tools" hidden>
-          <select id="library-topic" aria-label="筛选主题"></select
-          ><button id="library-create-topic" class="ui-action quiet">新建主题</button
-          ><button id="library-rename-topic" class="ui-action quiet" aria-describedby="topic-help">重命名主题</button><small id="topic-help">选择一个主题后可重命名。</small>
-          <form id="topic-form" hidden>
-            <label class="ui-field">主题名称<input id="topic-name" required /></label
-            ><button type="submit" class="ui-action primary">保存主题</button
-            ><button type="button" id="topic-cancel" class="ui-action quiet">取消</button>
-          </form>
-          <button id="library-refresh" class="ui-action secondary">刷新</button
-          ><button id="library-back" class="ui-action quiet">上一级目录</button
-          ><span id="library-location"></span
-          ><div class="ui-pagination"><button id="library-previous" class="ui-action secondary">上一页</button
-          ><button id="library-next" class="ui-action secondary">下一页</button></div>
+          <div class="library-filter-group" role="group" aria-label="主题筛选与管理">
+            <select id="library-topic" aria-label="筛选主题"></select>
+            <button id="library-create-topic" class="ui-action quiet ui-compact">新建主题</button>
+            <button id="library-rename-topic" class="ui-action quiet ui-compact">重命名主题</button>
+          </div>
+          <div class="library-location-group" role="group" aria-label="目录导航">
+            <span id="library-location"></span>
+            <button id="library-back" class="ui-action quiet ui-compact">上一级目录</button>
+            <button id="library-refresh" class="ui-action secondary ui-compact">刷新</button>
+          </div>
+          <div class="ui-pagination" aria-label="笔记分页"><button id="library-previous" class="ui-action secondary ui-compact">上一页</button>
+          <button id="library-next" class="ui-action secondary ui-compact">下一页</button></div>
           <div id="library-progress" role="status"></div>
         </div>
         <div id="organize-tools" hidden>
