@@ -147,6 +147,15 @@ export function drawer({id, title, onDismiss}) {
   const footer = document.createElement('footer'); footer.className = 'ui-drawer-footer';
   panel.append(header, body, footer); document.body.append(panel);
   panel.addEventListener('cancel', event => { event.preventDefault(); onDismiss(); });
+  panel.addEventListener('keydown', event => {
+    if (event.key !== 'Tab') return;
+    const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
+      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length);
+    const index = controls.indexOf(document.activeElement);
+    if (controls.length && (event.shiftKey ? index <= 0 : index === controls.length - 1 || index < 0)) {
+      event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0].focus();
+    }
+  });
   panel.addEventListener('click', event => {
     const rect = panel.getBoundingClientRect();
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();

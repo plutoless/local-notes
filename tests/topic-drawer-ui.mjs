@@ -79,7 +79,7 @@ try {
     // Native top-layer modal rejects focus and activation of background controls.
     await page.locator('#search').evaluate(n=>n.focus());
     assert.equal(await page.locator('#search').evaluate(n=>n===document.activeElement),false);
-    for(let i=0;i<10;i++){await page.keyboard.press(i%2?'Shift+Tab':'Tab');assert.ok(await page.evaluate(()=>document.querySelector('#topic-drawer').contains(document.activeElement)));}
+    for(const key of ['Tab','Shift+Tab']) for(let i=0;i<16;i++){await page.keyboard.press(key);assert.ok(await page.evaluate(()=>document.querySelector('#topic-drawer').contains(document.activeElement)));}
     await page.screenshot({path:join(evidence,'after-drawer-1180.png')});
     await page.setViewportSize({width:393,height:340});
     assert.equal(await page.locator('#topic-drawer').evaluate(n=>Math.round(n.getBoundingClientRect().width)),393);
@@ -135,6 +135,16 @@ try {
     await open();await page.locator('#topic-name').fill('恢复的主题草稿');await page.reload();
     await page.locator('[data-view=notes]').click();await open(); assert.equal(await page.locator('#topic-name').inputValue(),'恢复的主题草稿');
     await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃主题编辑',exact:true}).click();
+    const countBeforeRecovery=await page.locator('#library-topic option').count();
+    await open(); await page.locator('#topic-name').fill('已提交待恢复'); fixture.fail(cmd=>cmd==='actionQuery'); await submit.click();
+    await page.getByText('主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。',{exact:true}).waitFor();
+    assert.equal(await page.locator('#topic-name').isDisabled(),true);
+    assert.equal(await submit.textContent(),'重试恢复');
+    await page.screenshot({path:join(evidence,'after-recovery-pending.png')});
+    await page.reload(); await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor(); await page.locator('[data-view=notes]').click(); await open();
+    assert.equal(await page.locator('#topic-name').inputValue(),'已提交待恢复'); assert.equal(await submit.textContent(),'重试恢复');
+    await submit.click(); await page.waitForFunction(()=>!document.querySelector('#topic-drawer').open);
+    assert.equal(await page.locator('#library-topic option').count(),countBeforeRecovery+1);
     assert.equal(await readFile(sourcePath,'utf8'),before);
     alternateFixture=await storageFixture();
     await page.locator('#choose').evaluate(n=>n.click());

@@ -1,13 +1,13 @@
 {
-  "id": "30349c3e-377b-434f-91ce-4f97929fb04a",
+  "id": "b4ec9d3e-2953-4b7a-bf97-95e26bd63d9d",
   "ok": true,
   "result": {
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue46after (pid 42651)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t37 container 新建主题\n\t\t\t\t38 container\n\t\t\t\t\t39 heading 新建主题\n\t\t\t\t\t40 button 关闭新建主题\n\t\t\t\t41 container\n\t\t\t\t\t42 text 主题名称\n\t\t\t\t\t43 text field (settable) 主题名称, Value: 真实原生主题\n\t\t\t\t47 text 主题尚未保存，是否放弃此次编辑？\n\t\t\t\t48 button 继续编辑\n\t\t\t\t49 button 放弃主题编辑\n\t\t\t\t44 container\n\t\t\t\t\t45 button 取消\n\t\t\t\t\t46 button 创建\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
+      "treeText": "App=dev.localnotes.validation.issue46after (pid 46202)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t37 container 新建主题\n\t\t\t\t38 container\n\t\t\t\t\t39 heading 新建主题\n\t\t\t\t\t40 button 关闭新建主题\n\t\t\t\t47 container\n\t\t\t\t\t41 container\n\t\t\t\t\t\t42 text 主题名称\n\t\t\t\t\t\t43 text field (settable) 主题名称, Value: 真实原生主题\n\t\t\t\t\t48 text 主题名称尚未保存。\n\t\t\t\t49 text 主题尚未保存，是否放弃此次编辑？\n\t\t\t\t50 button 继续编辑\n\t\t\t\t51 button 放弃主题编辑\n\t\t\t\t44 container\n\t\t\t\t\t45 button 取消\n\t\t\t\t\t46 button 创建\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
       "focusedElementId": null,
-      "id": "61B179F1-9680-4938-98D7-4AFAAB4DF7CA",
+      "id": "84023AFD-09E1-43B6-941B-38540321E30E",
       "app": {
-        "pid": 42651,
+        "pid": 46202,
         "bundleId": "dev.localnotes.validation.issue46after",
         "name": "LocalNotes"
       },
@@ -16,7 +16,7 @@
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 393,
-        "id": 10821,
+        "id": 10920,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -26,7 +26,7 @@
         }
       },
       "coordinateSpace": "window",
-      "elementCount": 20,
+      "elementCount": 22,
       "truncation": {
         "truncated": false,
         "maxDepth": 64,
@@ -39,14 +39,14 @@
       "width": 786,
       "height": 1664,
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/30349c3e-377b-434f-91ce-4f97929fb04a-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/b4ec9d3e-2953-4b7a-bf97-95e26bd63d9d-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T15:32:24.376Z"
+      "expiresAt": "2026-11-18T15:36:52.476Z"
     },
     "screenshotStatus": {
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 10821
+        "windowId": 10920
       },
       "state": "captured"
     }

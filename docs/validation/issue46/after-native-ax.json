@@ -1,13 +1,13 @@
 {
-  "id": "5759c0d6-cbac-4619-a1b5-e7928ebeb1e0",
+  "id": "4a619340-cc73-408c-832b-b492c2fea09a",
   "ok": true,
   "result": {
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue46after (pid 42651)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 已确认行动\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t15 container\n\t\t\t\t16 heading 笔记库\n\t\t\t\t17 container\n\t\t\t\t\t18 text 搜索\n\t\t\t\t\t19 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…\n\t\t\t20 container 主题筛选与管理\n\t\t\t\t21 pop up button 筛选主题, Value: 全部主题\n\t\t\t\t22 button 新建主题\n\t\t\t\t23 button (disabled) 重命名主题\n\t\t\t24 container 目录导航\n\t\t\t\t25 text 全部目录\n\t\t\t\t26 button (disabled) 上一级目录\n\t\t\t\t27 button 刷新\n\t\t\t28 container 笔记分页\n\t\t\t\t29 button (disabled) 上一页\n\t\t\t\t30 button (disabled) 下一页\n\t\t\t31 button 浏览目录\n\t\t\t32 button Native reference Keep this source unchanged. reference.md · 11/17/2026\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+      "treeText": "App=dev.localnotes.validation.issue46after (pid 46202)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 已确认行动\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t15 container\n\t\t\t\t16 heading 笔记库\n\t\t\t\t17 container\n\t\t\t\t\t18 text 搜索\n\t\t\t\t\t19 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…\n\t\t\t20 container 主题筛选与管理\n\t\t\t\t21 pop up button 筛选主题, Value: 全部主题\n\t\t\t\t22 button 新建主题\n\t\t\t\t23 button (disabled) 重命名主题\n\t\t\t24 container 目录导航\n\t\t\t\t25 text 全部目录\n\t\t\t\t26 button (disabled) 上一级目录\n\t\t\t\t27 button 刷新\n\t\t\t28 container 笔记分页\n\t\t\t\t29 button (disabled) 上一页\n\t\t\t\t30 button (disabled) 下一页\n\t\t\t31 button 浏览目录\n\t\t\t32 button Native reference Keep this source unchanged. reference.md · 11/17/2026\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
       "focusedElementId": 2,
-      "id": "1FC2540A-E3D2-4F03-AF19-BAA39F253D96",
+      "id": "7DF967EF-9210-459A-8128-66899C4C2CCD",
       "app": {
-        "pid": 42651,
+        "pid": 46202,
         "bundleId": "dev.localnotes.validation.issue46after",
         "name": "LocalNotes"
       },
@@ -16,7 +16,7 @@
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 10821,
+        "id": 10920,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -39,14 +39,14 @@
       "width": 2360,
       "height": 1664,
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/5759c0d6-cbac-4619-a1b5-e7928ebeb1e0-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/4a619340-cc73-408c-832b-b492c2fea09a-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T15:32:21.699Z"
+      "expiresAt": "2026-11-18T15:36:49.824Z"
     },
     "screenshotStatus": {
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 10821
+        "windowId": 10920
       },
       "state": "captured"
     }

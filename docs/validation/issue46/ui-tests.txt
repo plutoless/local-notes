@@ -1,6 +1,6 @@
 
 > local-notes@0.1.0 test:ui
-> node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs
+> node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs && node tests/topic-drawer-ui.mjs
 
 PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).
 PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).
@@ -36,3 +36,4 @@ Catalogue rendering, live tokens, contrast minima, dialog restoration, 393px and
   line: 3.571603606612721,
   focus: 4.983147153962463
 }
+PASS topic drawer layout, invalid input, dirty guards, focus, failed write/retry, real persistence, rename/reopen, clean cancel, recovery and unchanged Markdown

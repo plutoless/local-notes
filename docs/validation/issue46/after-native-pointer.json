@@ -1,5 +1,5 @@
 {
-  "id": "3abbcde9-4ed7-4a33-ab1e-05e0cd2d77b0",
+  "id": "ef700119-7e0c-47f6-9212-9b134beb7a8f",
   "ok": true,
   "result": {
     "action": {
@@ -7,18 +7,18 @@
       "fallbackReason": null,
       "actionName": "AXPress",
       "delivery": "background",
-      "targetWindowId": 10821,
+      "targetWindowId": 10920,
       "verification": {
         "state": "unverified",
         "reason": "accessibility_action_unasserted"
       }
     },
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue46after (pid 42651)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t37 container 新建主题\n\t\t\t\t38 container\n\t\t\t\t\t39 heading 新建主题\n\t\t\t\t\t40 button 关闭新建主题\n\t\t\t\t41 container\n\t\t\t\t\t42 text 主题名称\n\t\t\t\t\t43 text field (settable) 主题名称\n\t\t\t\t44 container\n\t\t\t\t\t45 button 取消\n\t\t\t\t\t46 button 创建\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nThe focused UI element is 43 text field (settable) 主题名称.",
+      "treeText": "App=dev.localnotes.validation.issue46after (pid 46202)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t37 container 新建主题\n\t\t\t\t38 container\n\t\t\t\t\t39 heading 新建主题\n\t\t\t\t\t40 button 关闭新建主题\n\t\t\t\t41 container\n\t\t\t\t\t42 text 主题名称\n\t\t\t\t\t43 text field (settable) 主题名称\n\t\t\t\t44 container\n\t\t\t\t\t45 button 取消\n\t\t\t\t\t46 button 创建\n\t33 close button\n\t34 full screen button, Secondary Actions: zoom the window\n\t35 minimize button\n\t36 text 拾记 · Local Notes\n\nThe focused UI element is 43 text field (settable) 主题名称.",
       "focusedElementId": 43,
-      "id": "C0C8D4EB-A3D0-4D4D-BD21-56CED206CBAF",
+      "id": "1E440E85-6164-4BBC-B713-A1BE18FECC93",
       "app": {
-        "pid": 42651,
+        "pid": 46202,
         "bundleId": "dev.localnotes.validation.issue46after",
         "name": "LocalNotes"
       },
@@ -27,7 +27,7 @@
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 10821,
+        "id": 10920,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -50,14 +50,14 @@
       "width": 2360,
       "format": "png",
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/3abbcde9-4ed7-4a33-ab1e-05e0cd2d77b0-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/ef700119-7e0c-47f6-9212-9b134beb7a8f-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T15:32:21.972Z"
+      "expiresAt": "2026-11-18T15:36:50.099Z"
     },
     "screenshotStatus": {
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 10821
+        "windowId": 10920
       },
       "state": "captured"
     }
