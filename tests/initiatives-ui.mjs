@@ -11,12 +11,15 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
+  let writeGate = null, queryGate = null;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if (request.cmd === 'actionWrite' && writeGate) { const gate = writeGate; writeGate = null; await gate; }
+      if (request.cmd === 'actionQuery' && request.entityType === 'initiative' && queryGate) { const gate = queryGate; queryGate = null; await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -194,6 +197,19 @@ try {
   assert.equal(await page.locator('#initiative-goal').evaluate(el => getComputedStyle(el).outlineStyle), 'solid');
   await page.screenshot({path: 'docs/validation/issue18/web-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  // Hold real adapter calls to observe loading/saving rather than assuming transient states.
+  let releaseWrite; writeGate = new Promise(resolve => { releaseWrite = resolve; });
+  await page.locator('#initiative-save').click();
+  await page.locator('#initiative-save-state').filter({hasText: /^正在保存事项…$/}).waitFor();
+  assert.equal(await page.locator('#initiative-form').evaluate(el => el.inert), true);
+  releaseWrite();
+  await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
+  await page.locator('#initiative-back').click();
+  let releaseQuery; queryGate = new Promise(resolve => { releaseQuery = resolve; });
+  await page.locator('#search').fill('没有这个标题');
+  await page.locator('#index-state').filter({hasText: '正在载入事项…'}).waitFor();
+  releaseQuery();
+  await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
   assert.deepEqual(errors, []);
   console.log('PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).');
 } finally { await browser.close(); await fixture.close(); }
