@@ -63,13 +63,16 @@ def record(name, expression):
     return value
 
 def snapshot(name):
+    image = m.OUT / 'snapshot.png'
+    image.unlink(missing_ok=True)
     c('__snapshot')
-    shutil.copy(m.OUT / 'snapshot.png', evidence / (name + '.png'))
+    assert image.is_file(), 'WK snapshot did not produce a fresh PNG'
+    shutil.copy(image, evidence / (name + '.png'))
 
 process = launch()
 protected = None
 try:
-    w("!!document.querySelector('nav .active')")
+    w("!!document.querySelector('#items .home-tools')")
     c("document.querySelector('nav [data-view=initiatives]').click()")
     w("!document.querySelector('#initiative-tools').hidden")
     c("document.querySelector('#initiative-new').click()")
@@ -101,7 +104,7 @@ try:
     process.terminate()
     process.wait(timeout=10)
     process = launch()
-    w("!!document.querySelector('nav .active')")
+    w("!!document.querySelector('#items .home-tools')")
     c("document.querySelector('nav [data-view=initiatives]').click()")
     w("!!document.querySelector('[data-initiative-id]')")
     c("document.querySelector('[data-initiative-id]').click()")
@@ -117,7 +120,7 @@ try:
     if phase == 'library-integration':
         # Exercise changed source/capture resource paths on the combined library base.
         c("document.querySelector('nav [data-view=actions]').click()")
-        w("!!document.querySelector('#items .ui-row')")
+        w("!document.querySelector('#action-tools').hidden && document.querySelector('nav [data-view=actions]').classList.contains('active') && !!document.querySelector('#items .ui-row')")
         c("document.querySelector('#search').value='合并';document.querySelector('#search').dispatchEvent(new Event('input'))")
         w("!!document.querySelector('#items .ui-row')")
         c("document.querySelector('#items .ui-row').click()")
@@ -148,8 +151,9 @@ try:
         w("!document.querySelector('#capture-return').hidden && !document.querySelector('#editor').hidden")
         c("document.querySelector('#title').value='合并随手记';document.querySelector('#title').dispatchEvent(new Event('input'));document.querySelector('#body').value='保留行动返回上下文';document.querySelector('#body').dispatchEvent(new Event('input'));document.querySelector('#capture-return').click()")
         w("!document.querySelector('#action-editor').hidden && document.querySelector('#capture-return').hidden")
-        capture_return = record('native-capture-return', "({description:document.querySelector('#action-description').value,search:document.querySelector('#search').value})")
+        capture_return = record('native-capture-return', "({description:document.querySelector('#action-description').value,search:document.querySelector('#search').value,activeView:document.querySelector('nav .active')?.dataset.view})")
         assert capture_return['description'] == failed['description']
+        assert capture_return['activeView'] == 'actions'
         snapshot('native-source-capture-return')
     (evidence / 'native-storage.json').write_text(json.dumps({'action': json.loads(protected.read_text()), 'source': (m.OUT / 'Sync/reference.md').read_text()}, ensure_ascii=False, indent=2) + '\n')
     print('PASS: source/capture paths included when phase is library-integration; combined-resource actual WKWebView assigned-action save, protected-file failed Back and retained draft, retry, context focus, process restart/readback and existing-action return; isolated sample/private storage and exact web-resource hashes')
