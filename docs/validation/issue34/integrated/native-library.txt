@@ -1,0 +1,3 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-34/build/native-issue34/Library.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-34/build/native-issue34/Library.app: replacing existing signature
+PASS: isolated native save, failure protection, retry, return focus, restart/readback, reading and checkbox writeback

@@ -41,18 +41,18 @@
         </header>
         <div id="library-tools" hidden>
           <select id="library-topic" aria-label="筛选主题"></select
-          ><button id="library-create-topic">新建主题</button
-          ><button id="library-rename-topic" aria-describedby="topic-help">重命名主题</button><small id="topic-help">选择一个主题后可重命名。</small>
+          ><button id="library-create-topic" class="ui-action quiet">新建主题</button
+          ><button id="library-rename-topic" class="ui-action quiet" aria-describedby="topic-help">重命名主题</button><small id="topic-help">选择一个主题后可重命名。</small>
           <form id="topic-form" hidden>
-            <label>主题名称<input id="topic-name" required /></label
-            ><button type="submit">保存主题</button
-            ><button type="button" id="topic-cancel">取消</button>
+            <label class="ui-field">主题名称<input id="topic-name" required /></label
+            ><button type="submit" class="ui-action primary">保存主题</button
+            ><button type="button" id="topic-cancel" class="ui-action quiet">取消</button>
           </form>
-          <button id="library-refresh">刷新</button
-          ><button id="library-back">上一级目录</button
+          <button id="library-refresh" class="ui-action secondary">刷新</button
+          ><button id="library-back" class="ui-action quiet">上一级目录</button
           ><span id="library-location"></span
-          ><button id="library-previous">上一页</button
-          ><button id="library-next">下一页</button>
+          ><div class="ui-pagination"><button id="library-previous" class="ui-action secondary">上一页</button
+          ><button id="library-next" class="ui-action secondary">下一页</button></div>
           <div id="library-progress" role="status"></div>
         </div>
         <div id="organize-tools" hidden>
@@ -139,20 +139,20 @@
         </div>
         <div id="editor" hidden>
           <div class="toolbar">
-            <button id="back">‹ 返回列表</button>
+            <button id="back" class="ui-action quiet">‹ 返回列表</button>
             <button id="capture-return" class="ui-action quiet" hidden>保存并返回原任务</button><button id="note-save" class="ui-action secondary">保存笔记</button>
             <span id="note-mode">编辑笔记</span>
             <span id="save-state" role="status">已保存到本地</span>
-            <button id="mode">阅读</button>
+            <button id="mode" class="ui-action secondary">阅读</button>
           </div>
           <div class="document">
             <input id="title" aria-label="笔记标题" placeholder="无标题" />
-            <details id="note-details">
+            <details id="note-details" class="ui-disclosure">
               <summary>笔记信息与整理</summary>
               <p>来源路径：<span id="file-path"></span></p>
               <button id="star" class="ui-action icon-action" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
-              <button id="rename">移动 / 改名</button>
-              <button id="repair-links" hidden>重试更新关联</button>
+              <button id="rename" class="ui-action quiet">移动 / 改名</button>
+              <button id="repair-links" class="ui-action quiet" hidden>重试更新关联</button>
               <h2>主题</h2><div id="note-topics"></div>
               <h2>关联事项</h2><div id="note-initiatives"></div>
               <p>笔记中的复选框只记录原文。需要跟进时，请在「已确认行动」中单独新建行动。</p>
