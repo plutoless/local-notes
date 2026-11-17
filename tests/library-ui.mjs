@@ -105,6 +105,9 @@ try {
   await page.locator('#library-refresh').click();
   await page.locator('.card').filter({has:page.locator('small').filter({hasText:copied})}).click();
   await page.waitForFunction(()=>document.querySelector('#title').value==='恢复的中文草稿' && document.querySelector('#save-state').textContent==='已保存到本地');
+  await page.locator('#title').fill('恢复的中文草稿：长期研究资料与工作记录'.repeat(6));
+  await page.locator('#body').fill(('中文长段落用于验证持续阅读、换行和滚动，不改变任何其他笔记。'.repeat(15)+'\n\n').repeat(4));
+  await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.setViewportSize({width:393,height:852});
   await page.screenshot({path:'docs/validation/issue19/after-393-editor.png'});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
