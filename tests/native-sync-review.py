@@ -35,7 +35,9 @@ def launch():
 process=launch()
 try:
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const r=new ActionRepository(native);await r.open();const b=(await r.save({description:'核对冲突样本',focusPosition:1})).record;await r.save({...b,description:'左侧分支'},b);const right={...b,revision:crypto.randomUUID(),parents:[b.revision],description:'右侧分支'};await r.request('actionWrite',{path:`revisions/${b.entityId}/${right.revision}.json`,text:JSON.stringify(right)});window.sampleId=b.entityId")
- c("document.querySelector('nav [data-view=actions]').click()")
+ c("document.querySelector('nav [data-view=focus]').click()")
+ w("!!document.querySelector('.home-tools')")
+ c("[...document.querySelectorAll('.home-tools button')].find(b=>b.textContent==='全部行动').click()")
  w("!document.querySelector('#action-tools').hidden")
  c("document.querySelector('#action-new').click()")
  w("!document.querySelector('#action-editor').hidden")

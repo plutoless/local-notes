@@ -49,8 +49,8 @@ try {
   });
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
-  await page.locator('[data-view=actions]').click();
-  await page.getByText('还没有已确认行动。', {exact: false}).waitFor();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
+  await page.getByText('还没有行动。', {exact: false}).waitFor();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-new').click();
   await page.locator('#initiative-save').click();
@@ -111,7 +111,7 @@ try {
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /未保存的编辑仍保留/}).waitFor();
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.locator('[data-view="initiatives"]').click();
   await page.locator('#initiative-save-state').filter({hasText: /已恢复事项草稿/}).waitFor();
   assert.equal(await page.locator('[data-action]').inputValue(), 'independent');
@@ -145,7 +145,7 @@ try {
   const names = await page.locator('.initiative-source .source-open').evaluateAll(nodes => nodes.map(node => node.getAttribute('aria-label')));
   assert.equal(new Set(names).size, 2);
   assert.ok(names.every(name => name.startsWith('打开来源：')));
-  await page.locator('[data-view="actions"]').click();
+  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
   const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
@@ -153,7 +153,7 @@ try {
   await page.locator('#action-initiative').selectOption(initiativeId);
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
   await page.locator('#action-save').click(); await page.getByText(/未保存的编辑仍保留/).waitFor();
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click(); await page.getByText(/已恢复行动草稿/).waitFor();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
   assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-open-initiative').click();
