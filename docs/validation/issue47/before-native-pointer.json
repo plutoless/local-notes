@@ -1,0 +1,68 @@
+{
+  "id": "066175fb-a63b-447f-aff5-f1ddb8ba6877",
+  "ok": true,
+  "result": {
+    "action": {
+      "path": "accessibility",
+      "actionName": "AXPress",
+      "fallbackReason": null,
+      "delivery": "background",
+      "targetWindowId": 11245,
+      "verification": {
+        "state": "unverified",
+        "reason": "accessibility_action_unasserted"
+      }
+    },
+    "screenshot": {
+      "height": 1664,
+      "width": 2360,
+      "format": "png",
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/066175fb-a63b-447f-aff5-f1ddb8ba6877-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:21:54.076Z"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue47before (pid 70001)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 已确认行动\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t15 container\n\t\t\t\t16 heading 事项\n\t\t\t\t17 container\n\t\t\t\t\t18 text 搜索\n\t\t\t\t\t19 text field (settable) 搜索事项, Placeholder: 搜索事项…\n\t\t\t20 button 新建事项\n\t\t\t21 button (disabled) 上一页\n\t\t\t22 button (disabled) 下一页\n\t\t\t23 text 还没有事项。点击「新建事项」记录目标和进展。\n\t\t\t24 container\n\t\t\t\t31 container 事项上下文\n\t\t\t\t\t32 text 事项工作区\n\t\t\t\t\t33 button 新建事项 尚未保存 查看目标与进展 →\n\t\t\t\t\t34 heading 行动\n\t\t\t\t\t35 button (disabled) 新建行动\n\t\t\t\t\t36 text 保存事项后可添加行动与笔记。\n\t\t\t\t\t37 summary 已完成和已取消, Value: 0\n\t\t\t\t\t38 heading 笔记与资料\n\t\t\t\t\t39 button (disabled) 新建笔记\n\t\t\t\t\t40 heading 工作笔记\n\t\t\t\t\t41 text 尚未关联工作笔记。\n\t\t\t\t\t42 heading 参考资料\n\t\t\t\t\t43 text 尚未关联参考资料。\n\t\t\t\t44 button ‹ 行动与资料\n\t\t\t\t45 container\n\t\t\t\t\t46 heading 新建事项\n\t\t\t\t\t47 container\n\t\t\t\t\t\t48 text 标题\n\t\t\t\t\t\t49 text field (settable) 标题\n\t\t\t\t\t50 container\n\t\t\t\t\t\t51 text 目标\n\t\t\t\t\t\t52 text entry area (settable) 目标\n\t\t\t\t\t53 container\n\t\t\t\t\t\t54 text 当前进展\n\t\t\t\t\t\t55 text entry area (settable) 当前进展\n\t\t\t\t\t56 container\n\t\t\t\t\t\t57 text 状态\n\t\t\t\t\t\t58 pop up button 状态, Value: 进行中\n\t\t\t\t\t59 summary 结束与重新开启, Value: 0\n\t\t\t\t\t60 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t61 text 事项草稿尚未保存\n\t\t\t\t\t62 button 保存事项\n\t\t\t\t\t63 button 放弃未保存的草稿\n\t27 close button\n\t28 full screen button, Secondary Actions: zoom the window\n\t29 minimize button\n\t30 text 拾记 · Local Notes\n\nThe focused UI element is 49 text field (settable) 标题.",
+      "focusedElementId": 49,
+      "id": "C7F2F735-16CF-4BFB-80EC-CDD487396500",
+      "app": {
+        "name": "LocalNotes",
+        "pid": 70001,
+        "bundleId": "dev.localnotes.validation.issue47before"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 11245,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 48,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 62,
+      "truncation": {
+        "maxDepth": 64,
+        "truncated": false,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 11245
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

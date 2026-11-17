@@ -1,0 +1,57 @@
+{
+  "id": "4477b9f7-dbf8-405a-b35d-617b254a44cf",
+  "ok": true,
+  "result": {
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/4477b9f7-dbf8-405a-b35d-617b254a44cf-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:35:38.891Z"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue47productionfinal (pid 84225)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t43 container 新建事项\n\t\t\t\t44 container\n\t\t\t\t\t45 heading 新建事项\n\t\t\t\t\t46 button 关闭新建事项\n\t\t\t\t47 container\n\t\t\t\t\t48 container\n\t\t\t\t\t\t49 text 标题\n\t\t\t\t\t\t50 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t51 container\n\t\t\t\t\t\t52 text 目标\n\t\t\t\t\t\t53 text entry area (settable) 目标\n\t\t\t\t\t54 container\n\t\t\t\t\t\t55 text 当前进展\n\t\t\t\t\t\t56 text entry area (settable) 当前进展\n\t\t\t\t\t57 container\n\t\t\t\t\t\t58 text 状态\n\t\t\t\t\t\t59 pop up button 状态, Value: 进行中\n\t\t\t\t\t60 summary 结束与重新开启, Value: 0\n\t\t\t\t\t61 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t66 text 事项草稿尚未保存\n\t\t\t\t63 container\n\t\t\t\t\t64 button 取消\n\t\t\t\t\t65 button 创建事项\n\t27 close button\n\t28 full screen button, Secondary Actions: zoom the window\n\t29 minimize button\n\t30 text 拾记 · Local Notes\n\nThe focused UI element is 50 text field (settable) 标题, Value: 最终生产路径守卫.",
+      "focusedElementId": 50,
+      "id": "815755C7-9C56-4EA1-8EB5-3157B80BBE7B",
+      "app": {
+        "pid": 84225,
+        "name": "LocalNotes",
+        "bundleId": "dev.localnotes.validation.issue47productionfinal"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 11977,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 48,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 30,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshotStatus": {
+      "state": "captured",
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 11977
+      }
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}
