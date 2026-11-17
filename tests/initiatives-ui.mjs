@@ -104,6 +104,7 @@ try {
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#initiative-new-note').click();
   await page.locator('#editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
   await page.locator('#title').fill('Working log');
   await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
@@ -176,6 +177,7 @@ try {
   assert.equal(await page.locator('#initiative-working-notes .initiative-source').count(), 1);
   await page.locator('#initiative-working-notes .source-open').click();
   await page.locator('#editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
   await page.locator('#note-details').evaluate(node => node.open = true);
   await page.locator('#note-initiatives button').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
