@@ -1,0 +1,3 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37/Journeys37.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37/Journeys37.app: replacing existing signature
+PASS actual Cocoa/WKWebView: Current Focus/action/initiative/linked note/edit/local save/context/original action; selected navigation and focus verified; isolated native filesystem readback.

@@ -121,6 +121,7 @@
       </section>
       <main>
         <section id="workspace-context" aria-label="事项上下文" hidden>
+          <button id="workspace-return-action" class="ui-action quiet" type="button" hidden>‹ 返回原行动</button>
           <div class="workspace-context-heading"><button class="ui-action quiet" id="workspace-back" type="button">‹ 事项列表</button><span>事项工作区</span></div>
           <button id="workspace-overview" type="button" class="workspace-overview ui-action quiet"><strong id="workspace-title"></strong><span id="workspace-state"></span><span id="workspace-goal"></span><span id="workspace-progress"></span><small>查看目标与进展 →</small></button>
           <section class="workspace-section"><div class="section-heading"><h2>行动</h2><button type="button" class="ui-action quiet" id="initiative-new-action" aria-describedby="initiative-help">新建行动</button></div>
@@ -175,7 +176,7 @@
             </details>
           </div>
           <form id="action-form" class="document" novalidate>
-            <h2>已确认行动</h2>
+            <h2>行动详情</h2>
             <label
               >行动描述<textarea
                 id="action-description"

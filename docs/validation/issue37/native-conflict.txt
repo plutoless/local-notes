@@ -1,0 +1,3 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37-conflict-after/Sync36.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-37/build/native-issue37-conflict-after/Sync36.app: replacing existing signature
+PASS issue36 actual WKWebView: compare/edit, failed save, retained task and resolution, retry, multi-parent history, restart readback
