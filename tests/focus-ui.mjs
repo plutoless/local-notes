@@ -60,6 +60,7 @@ try {
   await page.getByRole('button', {name: '整理所选笔记', exact: true}).waitFor();
   await page.getByRole('button', {name: '新建行动', exact: true}).click();
   await page.locator('#action-description').fill('Chosen next step');
+  await page.getByText('当前重点与历史', {exact: true}).click();
   assert.equal(await page.locator('#focus-help').isVisible(), true);
   assert.equal(await page.locator('#action-focus').isDisabled(), true);
   assert.equal(await page.locator('#action-focus').getAttribute('aria-describedby'), 'focus-help');
@@ -67,7 +68,7 @@ try {
   await page.getByText('正在保存…', {exact:true}).waitFor();
   assert.equal(await page.locator('#action-save').isDisabled(), true); holdSaving = false; releaseSaving();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
-  await page.locator('#action-focus').click();
+  await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click();
   await page.getByRole('button', {name: '移出当前重点'}).waitFor();
   await page.locator('[data-view=focus]').click();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
@@ -120,7 +121,7 @@ try {
   await page.getByRole('button', {name: '打开事项', exact: true}).click();
   await page.waitForFunction(() => document.querySelector('#initiative-progress').value === 'Saved user progress');
   await page.locator('[data-view=actions]').click();
-  await page.locator('#action-discard').click();
+  await page.getByText('放弃编辑', {exact: true}).click(); await page.locator('#action-discard').click();
   await page.locator('#search').fill('No matching action');
   await page.locator('#action-initiative-filter').selectOption(initiative.entityId);
   await page.locator('[data-view=focus]').click();
