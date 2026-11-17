@@ -1,0 +1,8 @@
+{
+  "sourceTestHead": "e02b635a51e101df2dd7677ebaf9f917b87dd92d",
+  "productionMergeHead": "9b35624b8b8db8e7db5c778b4793507854ae323f",
+  "reviewBase": "e89deb437a0fb69b63e5a5e399117729897e8c8c",
+  "webTree": "ee78c1e5c2713c9842cc8c70fc887b0bdb15d2b3",
+  "macTree": "a8e6bdc6df0f41953acd2c0803132cda71ccbb2b",
+  "finalHeadRule": "Subsequent commits contain evidence only; verify web and mac tree hashes against final delivery head"
+}

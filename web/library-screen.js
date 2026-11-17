@@ -1,4 +1,4 @@
-import {feedback, directoryLabel} from './presentation.js';
+import {feedback, directoryLabel, button, selectionRow} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -10,11 +10,12 @@ export class LibraryScreen {
     this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
     $('#library-refresh').onclick = async () => { $('#library-refresh').disabled = true; $('#library-progress').textContent = '正在更新笔记列表…'; try { await this.library.sync(); this.failed = false; await this.render(); } catch (error) { this.failed = true; await this.render(); notice(error.message); } finally { $('#library-refresh').disabled = false; } };
     $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
-    const editTopic = topic => { this.editingTopic = topic; $('#topic-name').value = topic?.description || ''; $('#topic-form').hidden = false; $('#topic-name').focus(); };
+    const editTopic = topic => { this.topicOpener = document.activeElement; this.editingTopic = topic; $('#topic-name').value = topic?.description || ''; $('#topic-form').hidden = false; $('#topic-name').focus(); };
     $('#library-create-topic').onclick = () => editTopic(null);
     $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) editTopic(topic); };
-    $('#topic-cancel').onclick = () => { $('#topic-form').hidden = true; };
-    $('#topic-form').onsubmit = async event => { event.preventDefault(); try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; } catch (error) { notice(error.message); } };
+    this.topicOpener = null;
+    $('#topic-cancel').onclick = () => { $('#topic-form').hidden = true; this.topicOpener?.focus(); };
+    $('#topic-form').onsubmit = async event => { event.preventDefault(); const submit = $('#topic-form button[type=submit]'); if (submit.disabled) return; submit.disabled = true; try { await this.library.saveTopic($('#topic-name').value, this.editingTopic); $('#topic-form').hidden = true; this.topicOpener?.focus(); } catch (error) { notice(error.message); } finally { submit.disabled = false; } };
     $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
     $('#library-next').onclick = () => { this.offset += 50; this.render(); };
     $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
@@ -31,7 +32,15 @@ export class LibraryScreen {
   async render() {
     if (!this.isActive()) return;
     const sequence = ++this.sequence;
-    const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()});
+    const generation = this.library.generation;
+    let result;
+    try { result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()}); }
+    catch (error) {
+      if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
+      this.failed = true;
+      feedback($('#library-progress'), '笔记列表暂不可用，请刷新重试或重新选择目录。', error.message);
+      return;
+    }
     if (sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
     directoryLabel(this.library.root || '本地笔记');
@@ -44,14 +53,16 @@ export class LibraryScreen {
     $('#library-location').textContent = this.directory === '*' ? '全部目录' : this.directory || '/';
     $('#library-back').disabled = this.directory === '*';
     $('#library-previous').disabled = this.offset === 0; $('#library-next').disabled = !result.hasMore;
+    const focusedPath = document.activeElement.closest('#items [data-path]')?.dataset.path;
+    const scroll = $('.collection').scrollTop;
     const list = $('#items'); list.replaceChildren();
     if (!this.search && this.offset === 0) {
       const inventory = (this.library.directories || []).map(directory => ({path: directory + '/_'}));
       if (sequence !== this.sequence || !this.isActive()) return;
       const prefix = this.directory === '*' || this.directory === '' ? '' : this.directory + '/';
       const directories = new Set(inventory.filter(n => n.path.startsWith(prefix)).map(n => n.path.slice(prefix.length)).filter(p => p.includes('/')).map(p => prefix + p.split('/')[0]));
-      if (this.directory === '*') { const root = document.createElement('button'); root.textContent = '浏览目录'; root.onclick = () => { this.directory = ''; this.render(); }; list.append(root); }
-      else for (const directory of [...directories].sort()) { const button = document.createElement('button'); button.textContent = '目录：' + directory; button.onclick = () => { this.directory = directory; this.offset = 0; this.render(); }; list.append(button); }
+      if (this.directory === '*') { const root = button('浏览目录', () => { this.directory = ''; return this.render(); }); list.append(root); }
+      else for (const directory of [...directories].sort()) { const entry = button('目录：' + directory, () => { this.directory = directory; this.offset = 0; return this.render(); }); list.append(entry); }
     }
     if (!result.notes.length && !this.library.running) {
       const empty = document.createElement('p'); empty.className = 'no-items'; empty.setAttribute('role', 'status');
@@ -59,11 +70,24 @@ export class LibraryScreen {
       list.append(empty);
     }
     for (const note of result.notes) {
-      const card = document.createElement('button'); card.className = 'card';
+      const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
       card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt)}</p><small>${esc(note.path)} · ${new Date(note.modified * 1000).toLocaleDateString()}</small>`;
-      card.classList.toggle('selected', note.path === this.selectedPath); card.setAttribute('aria-current', note.path === this.selectedPath ? 'true' : 'false');
-      card.onclick = () => this.openNote(note.path); list.append(card);
+      list.append(card);
     }
+    if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
+    $('.collection').scrollTop = scroll;
+  }
+  captureContext() {
+    return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseScroll: $('.collection').scrollTop};
+  }
+  async restoreContext(context) {
+    Object.assign(this, context); $('#search').value = this.search;
+    await this.restore();
+  }
+  async restore() {
+    await this.render();
+    $('#items .selected')?.focus({preventScroll: true});
+    $('.collection').scrollTop = this.browseScroll || 0;
   }
   async noteTopics(path) {
     await this.library.open();
