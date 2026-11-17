@@ -50,4 +50,4 @@ Home keeps one heading, one primary creation control, seven focused rows, waitin
 
 Initiatives use a persistent initiative list, an action/reference context pane, and an existing editor in the detail pane. Opening an action or linked note retains initiative context. On viewports at or below 900px, the context and detail occupy one pane at a time; below 700px the initiative list also becomes a separate step. Back controls retain the current initiative, and switching initiatives flushes note/action/initiative edits before changing selection. Source warnings expand the evidence editor and remain visible on context links.
 
-See `docs/superpowers/specs/2026-11-16-workspace-design.md` and `docs/validation/workspace-design.md`. AI organization and synchronization-specific flow polish remains in #20 and #21.
+See `docs/superpowers/specs/2026-11-16-workspace-design.md` and `docs/validation/workspace-design.md`. AI organization (#20 / PR #28) and synchronization-specific flow polish (#21 / PR #29) are already merged; issue #30 integrates this workspace with those flows.
