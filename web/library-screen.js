@@ -1,4 +1,4 @@
-import {feedback} from './presentation.js';
+import {feedback, directoryLabel} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -34,7 +34,7 @@ export class LibraryScreen {
     const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()});
     if (sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
-    $('#root-label').textContent = this.library.root || '本地笔记';
+    directoryLabel(this.library.root || '本地笔记');
     $('#note-count').textContent = `${this.offset + result.notes.length}${result.hasMore ? '+' : ''}`;
     if (this.library.warnings?.length) feedback($('#library-progress'), '部分笔记暂不可用，请检查目录后刷新。', this.library.warnings.join('\n')); else $('#library-progress').textContent = this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表…' : '';
     const select = $('#library-topic'); select.replaceChildren();

@@ -1,4 +1,4 @@
-import {actionLabels, statusLabel, errorFeedback, progressLabel} from './presentation.js';
+import {actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel} from './presentation.js';
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
 import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
@@ -26,7 +26,7 @@ export class ActionScreen {
     $('#action-next').onclick = () => { this.offset += 30; this.list().catch(error => notice(error.message)); };
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = () => this.edit(null);
-    $('#action-back').onclick = async () => { if (await this.flush()) $('.app').classList.remove('editing'); };
+    $('#action-back').onclick = async () => { if (await this.flush()) { if ($('.app').classList.contains('workspace')) { await this.initiatives.edit(this.initiatives.previous); $('.app').classList.remove('detail-open'); } else $('.app').classList.remove('editing'); } };
     $('#action-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
@@ -62,7 +62,7 @@ export class ActionScreen {
     const workspace = await repository.open({cached, progress: message => { if (this.repository === repository) $('#index-state').textContent = progressLabel(message); }});
     if (this.repository !== repository) return null;
     this.root = workspace.root; this.previous = null; this.retry = null; this.dirty = false;
-    $('#root-label').textContent = workspace.root;
+    directoryLabel(workspace.root);
     if (workspace.warnings.length) this.notice(workspace.warnings.join('\n'));
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     if (draft) { this.recoveredDraft = true; this.showForm(draft.fields, draft.previous); this.retry = draft.retry; this.dirty = true; this.state('已恢复行动草稿，请核对后保存。'); }
@@ -88,6 +88,7 @@ export class ActionScreen {
     await this.list(); $('#index-state').textContent = '';
   }
   async list() {
+    if (!this.active) return;
     const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
     $('#index-state').textContent = '正在载入行动…';
@@ -136,7 +137,7 @@ export class ActionScreen {
   }
   showForm(fields, previous) {
     this.previous = previous; this.retry = null;
-    for (const row of document.querySelectorAll('#items .card')) { const selected = row.dataset.entityId === previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
+    for (const row of document.querySelectorAll('#items .card[data-entity-id]')) { const selected = row.dataset.entityId === previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
     $('#action-open-initiative').disabled = !fields.initiativeId;
     $('#action-options').open = !!(fields.initiativeId || fields.dueDate || fields.waitingOn);
     $('#action-source-options').open = !!fields.sources?.length;
@@ -195,6 +196,7 @@ export class ActionScreen {
         this.showForm(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地');
         await this.list();
+        if ($('.app').classList.contains('workspace')) await this.initiatives.details();
         return true;
       } catch (error) {
         this.retry = error.revisionSaved ? error.record : null;
