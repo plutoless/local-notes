@@ -5,7 +5,7 @@ import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const evidence = process.env.LIBRARY_EVIDENCE_DIR || 'docs/validation/issue19';
 const fixture = await storageFixture();
-let activeFixture = fixture;
+let activeFixture = fixture, alternateFixture;
 let releaseMetadata, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
@@ -20,6 +20,7 @@ try {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
       }
+      if (request.cmd === 'choose') { activeFixture = alternateFixture || fixture; return {}; }
       const workspace = await activeFixture.adapter('workspace');
       if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
       const path = join(activeFixture.root, request.path || '');
@@ -33,7 +34,7 @@ try {
         case 'move': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await mkdir(join(activeFixture.root, request.target, '..'), {recursive:true}); await rename(path, join(activeFixture.root, request.target)); return {};
         case 'read': return {text: await readFile(path, 'utf8')};
         case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
-        case 'create': await writeFile(path, request.text, {flag: 'wx'}); return {};
+        case 'create': await mkdir(join(path, '..'), {recursive:true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
         default: throw Error('Unhandled bridge command');
       }
     } catch (error) { return {error: error.message}; }
@@ -69,7 +70,11 @@ try {
   await page.locator('#back').click();
   await page.getByText('还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。',{exact:true}).waitFor();
   await page.locator('[data-view=notes]').click();
-  await page.locator('#library-create-topic').click(); await page.locator('#topic-name').fill('长中文主题：研究资料与工作记录'); await page.locator('#topic-form button[type=submit]').click();
+  await page.locator('#library-create-topic').click();
+  await page.locator('#topic-form button[type=submit]').click();
+  assert.equal(await page.locator('#topic-name').evaluate(node=>node.checkValidity()),false);
+  assert.equal(await page.locator('#topic-name').inputValue(),'');
+  await page.locator('#topic-name').fill('长中文主题：研究资料与工作记录'); await page.locator('#topic-form button[type=submit]').click();
   await page.waitForFunction(()=>document.querySelector('#library-topic').options.length===3);
   const topic=await page.locator('#library-topic option').last().getAttribute('value');
   await page.locator('#library-topic').selectOption(topic); await page.getByText('这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。',{exact:true}).waitFor();
@@ -135,7 +140,45 @@ try {
     await page.locator('#back').click();
     await page.waitForFunction(path=>document.activeElement.dataset.path===path, path);
     assert.equal(await page.locator('.collection').evaluate(node=>node.scrollTop),scroll);
+    await page.locator('#new').click();
+    await page.locator('#capture-return').waitFor({state:'visible'});
+    await page.locator('#capture-return').click();
+    await page.waitForFunction(path=>document.querySelector('#items .selected')?.dataset.path===path, path);
+    assert.equal(await page.locator('.collection').evaluate(node=>node.scrollTop),scroll);
+    const {ActionRepository} = await import('../web/actions.js');
+    const {fingerprint} = await import('../web/initiatives.js');
+    const repository = new ActionRepository(fixture.adapter); await repository.open();
+    const sourceText = await readFile(join(fixture.root,path),'utf8');
+    await repository.save({description:'从行动打开资料再返回',status:'todo',sources:[{path,quote:sourceText.trim(),fingerprint:fingerprint(sourceText)}]});
+    await page.locator('nav [data-view=actions]').click();
+    await page.locator('#search').fill('打开资料');
+    await page.getByRole('heading',{name:'从行动打开资料再返回',exact:true}).click();
+    await page.locator('#action-source-options').evaluate(node=>node.open=true);
+    await page.getByRole('button',{name:'打开来源',exact:true}).click();
+    await page.locator('#editor').waitFor({state:'visible'});
+    await page.locator('#back').click();
+    await page.locator('#action-editor').waitFor({state:'visible'});
+    await page.waitForFunction(()=>document.querySelector('#search').value==='打开资料');
+    assert.equal(await page.locator('#search').inputValue(),'打开资料');
+    assert.equal(await page.locator('#action-description').inputValue(),'从行动打开资料再返回');
+    assert.equal(await page.locator('#action-description').evaluate(node=>node===document.activeElement),true);
+    await page.locator('#action-source-options').evaluate(node=>node.open=true);
+    await page.getByRole('button',{name:'打开来源',exact:true}).click();
+    await page.locator('#editor').waitFor({state:'visible'});
+    alternateFixture = await storageFixture();
+    await page.locator('.directory-details').evaluate(node=>node.open=true);
+    await page.locator('#choose').click();
+    await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
+    await page.locator('#editor').waitFor({state:'visible'});
+    await page.locator('#back').click();
+    assert.equal(await page.locator('#action-editor').isVisible(),false);
+    const second = alternateFixture; alternateFixture = null;
+    await page.locator('#choose').click();
+    await second.close();
+    await page.locator('nav [data-view=notes]').click();
   }
+  await page.waitForFunction(()=>!document.querySelector('#library-progress').textContent);
+  await page.waitForTimeout(150); // Let queued incremental refresh receipts settle before fault injection.
   delayMetadata=true; await page.locator('#library-refresh').click();
   await page.getByText('正在更新笔记列表…',{exact:true}).waitFor();
   assert.equal(await page.locator('#library-refresh').isDisabled(),true);
@@ -149,10 +192,11 @@ try {
   await page.getByRole('button',{name:'目录：工作资料',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#library-location').textContent==='工作资料');
   await page.locator('#library-back').click(); await page.locator('#library-back').click();
-  for (const name of await readdir(fixture.root)) if(name.endsWith('.md') || name==='工作资料') await rm(join(fixture.root,name),{recursive:true});
+  for (const name of await readdir(fixture.root)) if(name.endsWith('.md') || ['工作资料','Notes'].includes(name)) await rm(join(fixture.root,name),{recursive:true});
   await page.locator('#library-refresh').click();
   await page.getByText('笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。',{exact:true}).waitFor();
   await page.screenshot({path:join(evidence, 'after-empty-library.png')});
+  for (const id of ['library-refresh','library-create-topic','library-next','library-previous']) assert.ok((await page.locator('#'+id).boundingBox()).height>=44);
   assert.deepEqual(errors,[]);
   console.log('PASS: browse/search/favorites, topic create/rename/link/filter, Chinese reading/checkbox writeback, autosave, successful move and topic link repair, external conflict/copy, draft recovery after reload, 393px library/editor overflow, keyboard focus. Chromium + real Swift storage/SQLite adapter.');
-} catch(error) { console.log(error); throw error; } finally { await browser.close(); await fixture.close(); }
+} catch(error) { console.log(error); throw error; } finally { await browser.close(); await fixture.close(); if (alternateFixture) await alternateFixture.close(); }

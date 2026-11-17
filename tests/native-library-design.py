@@ -7,6 +7,7 @@ No real notes, online requests, or production application identity are used.
 import importlib.util
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 
@@ -15,6 +16,7 @@ probe = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(probe)
 probe.OUT = probe.REPO / 'build/native-issue34'
 probe.APP = probe.OUT / 'Library.app'
+if probe.OUT.exists(): shutil.rmtree(probe.OUT)
 probe.OUT.mkdir(parents=True, exist_ok=True)
 root = probe.OUT / 'Sync'
 root.mkdir(exist_ok=True)
