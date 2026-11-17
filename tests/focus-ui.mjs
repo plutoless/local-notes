@@ -13,8 +13,10 @@ try {
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
+  let releaseSaving; const savingGate = new Promise(resolve => releaseSaving = resolve); let holdSaving = false;
   let releaseLoading; const loadingGate = new Promise(resolve => releaseLoading = resolve); let initialQuery = true;
   await page.exposeFunction('bridge', async request => {
+    if (request.cmd === 'actionWrite' && request.path.startsWith('revisions/') && holdSaving) await savingGate;
     if (request.cmd === 'actionQuery' && initialQuery) { initialQuery = false; await loadingGate; }
     try {
       bridgeCalls.push(request.cmd);
@@ -60,10 +62,12 @@ try {
   assert.equal(await page.locator('#focus-help').isVisible(), true);
   assert.equal(await page.locator('#action-focus').isDisabled(), true);
   assert.equal(await page.locator('#action-focus').getAttribute('aria-describedby'), 'focus-help');
-  await page.locator('#action-save').click();
+  holdSaving = true; await page.locator('#action-save').click();
+  await page.getByText('正在保存…', {exact:true}).waitFor();
+  assert.equal(await page.locator('#action-save').isDisabled(), true); holdSaving = false; releaseSaving();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-focus').click();
-  await page.getByRole('button', {name: '移出重点 from 当前重点'}).waitFor();
+  await page.getByRole('button', {name: '移出当前重点'}).waitFor();
   await page.locator('[data-view=focus]').click();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.reload();
@@ -136,6 +140,15 @@ try {
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  await page.locator('#action-add-source').click();
+  await page.locator('.source-path').fill('reference.md'); await page.locator('.source-quote').fill('This quotation is not in the source');
+  await page.locator('#action-save').click();
+  await page.getByText('内容需要核对。请检查必填项、日期和来源引用后重新保存。', {exact:true}).waitFor();
+  await page.locator('#action-save-state summary').click();
+  await page.locator('#action-save-state pre').filter({hasText:/Quoted fragment was not found/}).waitFor();
+  assert.equal(await page.locator('.source-quote').inputValue(), 'This quotation is not in the source');
+  await page.locator('.action-source button').click(); await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await page.locator('[data-view=focus]').click();
   for (const node of await page.locator('nav button').all()) assert.equal(await node.evaluate(n => n.getBoundingClientRect().height >= 44), true);
   await page.getByRole('button', {name:'整理所选笔记'}).click();
@@ -152,6 +165,6 @@ try {
   assert.ok(contrast.border >= 3 && contrast.focus >= 3, JSON.stringify(contrast));
   console.log('Contrast ratios:', contrast);
   assert.deepEqual(errors, []);
-  assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 0);
-  console.log('PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; zero note-body reads.');
+  assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 1);
+  console.log('PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; home reads no note bodies and explicit source validation reads one.');
 } finally { await browser.close(); await fixture.close(); }

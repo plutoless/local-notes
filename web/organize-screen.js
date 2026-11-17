@@ -39,6 +39,7 @@ export class OrganizeScreen {
       for (const path of ['*', '', ...(library.directories || [])]) { const option = document.createElement('option'); option.value = path; option.textContent = path === '*' ? '全部目录（逐篇选择笔记）' : path || '/'; $('#ai-directory').append(option); }
       await this.inventory(); await this.candidates();
     });
+    $('#index-state').textContent = '';
   }
   async inventory() {
     const result = await this.library.query({directory: $('#ai-directory').value, offset: this.selectionOffset, limit: 50});
