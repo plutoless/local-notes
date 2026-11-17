@@ -104,8 +104,9 @@ try {
   await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('[data-view=actions]').click(); await page.getByText(/已恢复行动草稿/).waitFor();
   assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
-  await page.locator('[data-view="initiatives"]').click();
-  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('#action-open-initiative').click();
+  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
   await page.locator('[data-view="notes"]').click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
