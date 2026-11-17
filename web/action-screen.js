@@ -154,6 +154,8 @@ export class ActionScreen {
   async edit(action) {
     if (action && action.workspaceId !== this.repository.workspaceId) { this.notice('笔记目录已切换，请重新打开行动。'); return; }
     if (!await this.flush()) return;
+    // A flush may commit a relocated source before the selected list row refreshes.
+    if (action && action.entityId === this.previous?.entityId) action = this.previous;
     this.showForm(action || {}, action);
     await this.assignments(action?.initiativeId || '');
     if (!this.dirty) this.state(action ? '已保存到本地' : '写下你已决定执行的下一步。');
