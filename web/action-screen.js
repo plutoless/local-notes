@@ -26,7 +26,7 @@ export class ActionScreen {
     $('#action-next').onclick = () => { this.offset += 30; this.list().catch(error => notice(error.message)); };
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = () => this.edit(null);
-    $('#action-back').onclick = async () => { if (await this.flush()) { if ($('.app').classList.contains('workspace')) { await this.initiatives.edit(this.initiatives.previous); $('.app').classList.remove('detail-open'); } else $('.app').classList.remove('editing'); } };
+    $('#action-back').onclick = async () => { if (await this.flush()) { if ($('.app').classList.contains('workspace')) { await this.initiatives.edit(this.initiatives.previous); this.initiatives.restoreContext(); } else $('.app').classList.remove('editing'); } };
     $('#action-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
