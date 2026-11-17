@@ -2,7 +2,7 @@
 
 ## Scope and provenance
 
-Starting SHA and independently fetched main: `e8a869b42f396c2b9f3cf7e768aaa752ae4c448f`. Native blocked_by and textual dependencies were re-read before editing: #31 is closed and foundation `45c6b5acb284c8fb3a3e1b16849387e645d46052` is an ancestor of main. Issue #36 had no comments. No storage format, transport algorithm, source-note mutation, or adjacent page feature is introduced.
+Original starting SHA and main at initial dispatch: `e8a869b42f396c2b9f3cf7e768aaa752ae4c448f`. Native blocked_by and textual dependencies were re-read before editing: #31 is closed and foundation `45c6b5acb284c8fb3a3e1b16849387e645d46052` is an ancestor of main. Issue #36 had no comments. No storage format, transport algorithm, source-note mutation, or adjacent page feature is introduced.
 
 The focused panel reuses `ui-panel`, `ui-dialog`, `bindDialog`, `field`, `disclosure`, `selectionRow`, `feedback`, `sectionHeading`, and existing action variants. `comparisonRow` is the single demonstrated shared extension, documented and rendered in the catalogue. Storage remains owned by the existing repositories. A recovery-pending save retries its retained immutable record using the existing repository retry interface, with editing disabled until recovery completes.
 
@@ -38,3 +38,12 @@ Android-specific tests/builds and standalone Syncthing transport remain deferred
 ## Review follow-up
 
 Independent Standards review found no hard violations. Its minor suggestion to rename the native probe's short aliases is accepted without a rewrite: this test intentionally follows adjacent probe conventions, and descriptive production interfaces remain unchanged. Independent Spec review requested excluding all disabled field types from dialog focus traversal; the shared filter and an expanded-Advanced blocked-history Tab/Shift+Tab regression now cover that case. Each conflict article is also labeled with its record name. Save and Discard are disabled before version selection, with the selection prerequisite stated beside the editor. Visual QA found a background notice could cover the modal; the focused review now sits above notices, with a hit-test assertion for the close control and an additional narrow top snapshot.
+
+
+## Combined-tree revalidation after PR #42
+
+Latest main `c47ef1eb03b262afede3baeb850a6df2d57caeea` was fetched and merged with ordinary merge commit `c992743cd37d797c4d39bdf0ab51e98fdaf9a72b`. The only conflicts were additive sections in `docs/design/README.md` and `web/style.css`; both the organization and conflict-review sections were retained. The catalogue auto-merge retains both examples. Organization code and tests are unchanged from latest main; no extra feature work was performed.
+
+The combined tree was revalidated with the complete shared test suite, all ten UI suites, syntax checks, Mac build, and the actual isolated issue36 WKWebView filesystem failure/retry/context/history/restart journey. Current `unit.txt`, `ui.txt`, `check.txt`, `mac.txt`, `native.txt`, `sync.txt`, `design.txt`, after screenshots and `after-native.json` supersede their initial-delivery counterparts. The native report hashes every current web resource, including the merged organization implementation. Before artifacts remain historical baseline evidence. `validation-source.json` records the merged production source head, latest-main base and original starting SHA.
+
+Independent Standards and Spec reviews confirmed the merged source head against latest main, with no hard or blocking findings. The final evidence-only head also requires both exact-head confirmations, recorded in PR #43 and the coordinator handoff. Android/Syncthing deferrals, physical-input and two-device limitations above remain unchanged.
