@@ -53,7 +53,12 @@ try {
  await preview(); await page.locator('#ai-send').click(); await status('服务暂时');
  await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 6); assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
  mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2'); await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12); assert.equal(await page.locator('.suggestion-card').count(), 12);
- await card(0).getByText('确认前编辑建议', {exact:true}).click(); await card(0).getByLabel('编辑建议', {exact:true}).fill('已编辑的合成建议');
+ await card(0).getByText('确认前编辑建议', {exact:true}).click();
+ await card(0).getByLabel('编辑建议', {exact:true}).fill('');
+ await card(0).getByRole('button', {name:/^确认此建议：/}).click(); await status('建议内容不能为空');
+ assert.equal(await card(0).getByLabel('编辑建议', {exact:true}).getAttribute('aria-invalid'), 'true');
+ assert.equal(await card(0).getByLabel('编辑建议', {exact:true}).inputValue(), '');
+ await card(0).getByLabel('编辑建议', {exact:true}).fill('已编辑的合成建议');
  await card(0).getByRole('button', {name:/^确认此建议：/}).click(); await card(0).getByText('处理决定：确认，已保存').waitFor(); await card(0).getByText('保存的建议：已编辑的合成建议').waitFor();
  await card(1).getByRole('button', {name:/^留待以后：/}).click(); await card(1).getByText('处理决定：留待以后，已保存').waitFor();
  await card(2).getByLabel('已有事项', {exact:true}).selectOption(initiative.entityId); await card(2).getByRole('button', {name:/^关联到事项：/}).click(); await card(2).getByText('处理决定：关联事项，已保存').waitFor();

@@ -43,7 +43,7 @@ try:
  if phase != 'before':
   revisions = m.OUT / 'Sync/LocalNotesData/revisions'
   revisions.chmod(0o555)
- c("[...card().querySelectorAll('button')].find(b=>b.textContent==='确认此建议').click()")
+ c("const button=[...card().querySelectorAll('button')].find(b=>b.textContent==='确认此建议');button.focus();button.click()")
  if phase != 'before':
   w("document.querySelector('#ai-status').dataset.state==='failed'")
   assert c("return card().textContent.includes('保存的建议：原生编辑后的行动')")
@@ -53,8 +53,25 @@ try:
  process.terminate(); process.wait(timeout=10); process = m.launch()
  c("document.querySelector('[data-view=organize]').click()")
  w("document.querySelector('#ai-results').textContent.includes('保存的建议：原生编辑后的行动')")
+ if phase != 'before':
+  c("window.card=()=>document.querySelectorAll('.suggestion-card')[1];window.sourceButton=card().querySelector('button');sourceButton.focus();sourceButton.click()")
+  w("!document.querySelector('#editor').hidden")
+  (m.OUT / 'Sync').rename(m.OUT / 'Offline')
+  c("document.querySelector('#body').value+='\\n原生来源失败重试';document.querySelector('#body').dispatchEvent(new Event('input'));document.querySelector('#back').click()")
+  w("document.querySelector('#save-state').textContent.includes('未保存')")
+  assert c("return !document.querySelector('#editor').hidden && window.hasUnsavedChanges()")
+  (m.OUT / 'Offline').rename(m.OUT / 'Sync')
+  c("document.querySelector('#note-save').click()")
+  w("document.querySelector('#save-state').textContent==='已保存到本地'")
+  assert '原生来源失败重试' in (m.OUT / 'Sync/evidence.md').read_text()
+  c("document.querySelector('#back').click()")
+  w("document.activeElement.getAttribute('aria-label')?.startsWith('打开来源：evidence.md')")
+  process.terminate(); process.wait(timeout=10); process = m.launch()
+  c("document.querySelector('[data-view=organize]').click()")
+  w("document.querySelector('#ai-results').textContent.includes('保存的建议：原生编辑后的行动')")
  c('__snapshot'); shutil.copy(m.OUT/'snapshot.png', Path('docs/validation/issue35')/(phase+'-native-readback.png'))
  print('PASS actual Cocoa/WKWebView: settings, select/preview without transmission, loopback send, edit/confirm, restart/readback; phase='+phase)
 finally:
+ if (m.OUT / 'Offline').exists(): (m.OUT / 'Offline').rename(m.OUT / 'Sync')
  if phase != 'before' and 'revisions' in locals(): revisions.chmod(0o755)
  process.terminate(); process.wait(timeout=10); server.shutdown()
