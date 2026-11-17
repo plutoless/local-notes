@@ -84,6 +84,19 @@ try {
     await edit();assert.ok((await page.locator('#initiative-title').inputValue()).length>40);
     await page.locator('#initiative-title').fill('已保存事项');await submit.click();await closed();
     await edit();assert.equal(await page.locator('#initiative-title').inputValue(),'已保存事项');await page.locator('#initiative-discard').click();await closed();
+    const selectedId=await page.locator('#items [aria-current=true]').getAttribute('data-initiative-id');
+    await open();assert.equal(await page.locator('#items [aria-current=true]').getAttribute('data-initiative-id'),selectedId);
+    await page.locator('#initiative-discard').click();await closed();
+    assert.equal(await page.locator('#items [aria-current=true]').getAttribute('data-initiative-id'),selectedId);
+    await open();await page.locator('#initiative-title').fill('取消后保留原选择');await page.locator('#initiative-discard').click();
+    await page.getByRole('button',{name:'放弃事项编辑',exact:true}).click();await closed();
+    assert.equal(await page.locator('#items [aria-current=true]').getAttribute('data-initiative-id'),selectedId);
+    await edit();await page.locator('#initiative-progress').fill('已经提交但刷新失败');fixture.fail(cmd=>cmd==='actionQuery');await submit.click();
+    await page.getByText(/未保存的编辑仍保留/).waitFor();await page.locator('#initiative-discard').click();
+    await page.getByRole('button',{name:'放弃事项编辑',exact:true}).click();await closed();
+    await edit();assert.equal(await page.locator('#initiative-progress').inputValue(),'已经提交但刷新失败');
+    await page.locator('#initiative-progress').fill('基于已提交版本继续保存');await submit.click();await closed();
+    await edit();assert.equal(await page.locator('#initiative-progress').inputValue(),'基于已提交版本继续保存');await page.locator('#initiative-discard').click();await closed();
     await edit();await page.locator('#initiative-progress').fill('恢复的真实草稿');await page.reload();
     await page.getByRole('heading',{name:'当前重点',level:2,exact:true}).waitFor();await page.locator('[data-view=initiatives]').click();
     await panel.waitFor({state:'visible'});assert.equal(await page.locator('#initiative-progress').inputValue(),'恢复的真实草稿');await submit.click();await closed();
@@ -98,6 +111,7 @@ try {
     await page.locator('#initiative-form').evaluate(n=>{n.dispatchEvent(new Event('submit',{cancelable:true}));n.dispatchEvent(new Event('submit',{cancelable:true}));});
     await page.keyboard.press('Escape');assert.ok(await panel.evaluate(n=>n.open));releaseTopic();await closed();
     assert.equal(await page.locator('#items [data-initiative-id]').count(),2);assert.equal(await readFile(sourcePath,'utf8'),before);
+    assert.equal(await page.locator('#items [aria-current=true]').getAttribute('data-initiative-id'),selectedId);
   }
   assert.deepEqual(errors,[]);
   console.log('PASS initiative drawer: real persistence, create/edit/reopen, clean cancel, dirty close/cancel/Escape, focus containment, failure/retry, recovery, end/reopen, duplicate submission, desktop/393px/short layout');

@@ -13,11 +13,15 @@ The existing initiative form consumes the shared modal C drawer at 460px, full w
 - `npm test` after latest-main integration: 46 shared tests passed, including revision/conflict, repair, isolation and serialized writes.
 - `npm run build:mac`: production Cocoa/WKWebView build and ad-hoc signing passed.
 - `tests/initiative-drawer-ui.mjs`: real production Mac storage adapter, file persistence and SQLite; create/edit/reopen, clean cancellation, invalid input, dirty header/Cancel/Escape, focus trap/background inertness, write failure/retry, recovered draft, ending/reopening, duplicate submission, long Chinese input, desktop, 393px and 340px height.
-- `tests/native-action-navigation.py` with `PHASE=issue47integration`: existing #51 native create/edit/reopen/list-return and close/quit dispatch checks passed against the combined application; generated evidence is copied into this issue evidence directory.
+- `tests/native-action-navigation.py` with `PHASE=issue47finalfix`: existing #51 native create/edit/reopen/list-return and close/quit dispatch checks passed against the combined application; generated evidence is copied into this issue evidence directory.
 - `tests/native-initiative-drawer.py`: actual Cocoa/WKWebView with test-only command/snapshot transport; native pointer opening, trusted Escape, create/edit/save/reopen/clean cancel and filesystem assertions, plus an assigned-action save, metadata drawer cancellation preserving the selected action, and contextual Back with the duplicate action navigation destination absent. Before and after desktop/393px screenshots are retained. It does not substitute for the production termination path.
 - `tests/native-initiative-termination.py`: uninstrumented production binary and assets, isolated data and unique bundle ID. Actual native window-close button and OS-menu Quit each displayed the unsaved-content alert; dismissing both preserved the entered title, real submission wrote one initiative, and clean OS-menu Quit exited 0. See `final-production-*` evidence.
 
 `asset-sha256.json` identifies the exact application assets exercised by final validation. Before captures use the integrated main base `e527b607b0ce4f993fd9a401ad5bbc9d5f73fff6`; after captures use delivered assets. Re-running older UI suites may regenerate their historical screenshot paths; those unrelated artifacts are excluded from the change.
+
+## Review-driven regressions
+
+The first Spec review found two P2 regressions: a post-commit refresh failure followed by Discard restored the old revision into the metadata form, and creation did not restore the original list selection. The drawer context now advances its saved revision as soon as persistence returns (including committed-error receipts), while retaining its original selected entity. List selection is explicitly restored on drawer entry and exit. The focused real-storage suite covers failed post-commit refresh → discard → reopen → further successful save, plus original selection across clean cancellation, dirty discard and successful creation. Final reviews are recorded against the subsequent evidence-inclusive head.
 
 ## Limitations and failed attempts
 

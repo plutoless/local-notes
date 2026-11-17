@@ -1,22 +1,22 @@
 {
-  "id": "61b1def8-77fb-4d05-a08c-91608ad3b93a",
+  "id": "a27e4227-b3fe-4d74-884d-1ef3ab1d83d6",
   "ok": true,
   "result": {
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue47after (pid 87084)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 事项\n\t\t\t\t\t10 button 整理\n\t\t\t\t\t11 button 收藏\n\t\t\t\t\t12 button 同步检查\n\t\t\t\t13 summary Sync, Value: 0\n\t\t\t14 container\n\t\t\t\t15 heading 事项\n\t\t\t\t16 container\n\t\t\t\t\t17 text 搜索\n\t\t\t\t\t18 text field (settable) 搜索事项, Placeholder: 搜索事项…\n\t\t\t19 button 新建事项\n\t\t\t20 button (disabled) 上一页\n\t\t\t21 button (disabled) 下一页\n\t\t\t22 text 还没有事项。点击「新建事项」记录目标和进展。\n\t\t\t23 container\n\t\t\t\t24 heading 尚未打开内容\n\t\t\t\t25 text 从列表选择内容，或使用「新建」开始记录。\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+      "treeText": "App=dev.localnotes.validation.issue47after (pid 92520)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 事项\n\t\t\t\t\t10 button 整理\n\t\t\t\t\t11 button 收藏\n\t\t\t\t\t12 button 同步检查\n\t\t\t\t13 summary Sync, Value: 0\n\t\t\t14 container\n\t\t\t\t15 heading 事项\n\t\t\t\t16 container\n\t\t\t\t\t17 text 搜索\n\t\t\t\t\t18 text field (settable) 搜索事项, Placeholder: 搜索事项…\n\t\t\t19 button 新建事项\n\t\t\t20 button (disabled) 上一页\n\t\t\t21 button (disabled) 下一页\n\t\t\t22 text 还没有事项。点击「新建事项」记录目标和进展。\n\t\t\t23 container\n\t\t\t\t24 heading 尚未打开内容\n\t\t\t\t25 text 从列表选择内容，或使用「新建」开始记录。\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
       "focusedElementId": 2,
-      "id": "284CF36A-B74B-48E5-90A8-C7EC9492EA12",
+      "id": "51733B2E-12F9-4EB1-B293-EB4A76990347",
       "app": {
-        "pid": 87084,
         "name": "LocalNotes",
-        "bundleId": "dev.localnotes.validation.issue47after"
+        "bundleId": "dev.localnotes.validation.issue47after",
+        "pid": 92520
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 12025,
+        "id": 12201,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -39,15 +39,15 @@
       "width": 2360,
       "height": 1664,
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/61b1def8-77fb-4d05-a08c-91608ad3b93a-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/a27e4227-b3fe-4d74-884d-1ef3ab1d83d6-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T16:39:09.990Z"
+      "expiresAt": "2026-11-18T16:47:39.365Z"
     },
     "screenshotStatus": {
       "state": "captured",
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 12025
+        "windowId": 12201
       }
     }
   },

@@ -1,25 +1,34 @@
 {
-  "id": "c2e38ad1-2d3d-4257-97ce-415b11e48237",
+  "id": "d894e195-bbad-46ed-8e08-1c8539b0af91",
   "ok": true,
   "result": {
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/d894e195-bbad-46ed-8e08-1c8539b0af91-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:47:48.231Z"
+    },
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue47productionfinal (pid 87179)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t42 container 新建事项\n\t\t\t\t43 container\n\t\t\t\t\t44 heading 新建事项\n\t\t\t\t\t45 button 关闭新建事项\n\t\t\t\t46 container\n\t\t\t\t\t47 container\n\t\t\t\t\t\t48 text 标题\n\t\t\t\t\t\t49 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t50 container\n\t\t\t\t\t\t51 text 目标\n\t\t\t\t\t\t52 text entry area (settable) 目标\n\t\t\t\t\t53 container\n\t\t\t\t\t\t54 text 当前进展\n\t\t\t\t\t\t55 text entry area (settable) 当前进展\n\t\t\t\t\t56 container\n\t\t\t\t\t\t57 text 状态\n\t\t\t\t\t\t58 pop up button 状态, Value: 进行中\n\t\t\t\t\t59 summary 结束与重新开启, Value: 0\n\t\t\t\t\t60 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t65 text 事项草稿尚未保存\n\t\t\t\t62 container\n\t\t\t\t\t63 button 取消\n\t\t\t\t\t64 button 创建事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 49 text field (settable) 标题, Value: 最终生产路径守卫.",
+      "treeText": "App=dev.localnotes.validation.issue47productionfinal (pid 92630)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t42 container 新建事项\n\t\t\t\t43 container\n\t\t\t\t\t44 heading 新建事项\n\t\t\t\t\t45 button 关闭新建事项\n\t\t\t\t46 container\n\t\t\t\t\t47 container\n\t\t\t\t\t\t48 text 标题\n\t\t\t\t\t\t49 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t50 container\n\t\t\t\t\t\t51 text 目标\n\t\t\t\t\t\t52 text entry area (settable) 目标\n\t\t\t\t\t53 container\n\t\t\t\t\t\t54 text 当前进展\n\t\t\t\t\t\t55 text entry area (settable) 当前进展\n\t\t\t\t\t56 container\n\t\t\t\t\t\t57 text 状态\n\t\t\t\t\t\t58 pop up button 状态, Value: 进行中\n\t\t\t\t\t59 summary 结束与重新开启, Value: 0\n\t\t\t\t\t60 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t65 text 事项草稿尚未保存\n\t\t\t\t62 container\n\t\t\t\t\t63 button 取消\n\t\t\t\t\t64 button 创建事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 49 text field (settable) 标题, Value: 最终生产路径守卫.",
       "focusedElementId": 49,
-      "id": "22646340-E6E4-4698-872A-2D67B91733EA",
+      "id": "2EE42CDB-2E17-49BC-AC02-D94E14929DA0",
       "app": {
-        "pid": 87179,
         "name": "LocalNotes",
-        "bundleId": "dev.localnotes.validation.issue47productionfinal"
+        "bundleId": "dev.localnotes.validation.issue47productionfinal",
+        "pid": 92630
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 12037,
+        "id": 12213,
         "height": 832,
         "isOffscreen": false,
-        "y": 48,
+        "y": 47,
         "isMinimized": false,
         "platform": {
           "layer": 0
@@ -34,19 +43,10 @@
         "maxNodes": 1200
       }
     },
-    "screenshot": {
-      "format": "png",
-      "width": 2360,
-      "height": 1664,
-      "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/c2e38ad1-2d3d-4257-97ce-415b11e48237-screenshot.png",
-      "dataOmitted": true,
-      "expiresAt": "2026-11-18T16:39:18.451Z"
-    },
     "screenshotStatus": {
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 12037
+        "windowId": 12213
       },
       "state": "captured"
     }
