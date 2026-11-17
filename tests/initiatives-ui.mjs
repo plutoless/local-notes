@@ -63,6 +63,8 @@ try {
   await page.locator('#initiative-form [type=submit]').click();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await readFile(sourcePath, 'utf8'), original);
+  await page.locator('#workspace-detail').evaluate(node => node.scrollTop = 0);
+  await page.screenshot({path: 'docs/validation/issue33/after-desktop.png'});
   await page.locator('#initiative-new-action').click();
   await page.locator('#action-description').fill('Verify the release');
   await page.locator('#action-save').click();
@@ -73,6 +75,18 @@ try {
   await page.locator('#initiative-progress').fill('未保存的进展，跳转后仍保留');
   await page.locator('#initiative-actions button').click();
   await page.locator('#action-editor').waitFor({state: 'visible'});
+  assert.equal(await page.locator('#initiative-actions button').getAttribute('aria-current'), 'true');
+  await page.locator('#action-description').fill('Verify the release draft');
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'), 2);
+  await page.locator('#workspace-overview').click();
+  await page.locator('#action-save-state').filter({hasText: /未保存的编辑仍保留/}).waitFor();
+  assert.equal(await page.locator('#action-editor').isVisible(), true);
+  assert.equal(await page.locator('#action-description').inputValue(), 'Verify the release draft');
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText: /未保存的编辑仍保留/}).waitFor();
+  await page.locator('#action-description').fill('Verify the release');
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-open-initiative').click();
   await page.waitForFunction(() => !document.querySelector('#initiative-form').inert);
   assert.equal(await page.locator('#initiative-progress').inputValue(), '未保存的进展，跳转后仍保留');
@@ -202,12 +216,23 @@ try {
   await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
   // Opening awaits source/context queries before assigning initial keyboard focus.
   await page.waitForFunction(() => document.querySelector('#initiative-title') === document.activeElement);
+  await page.setViewportSize({width: 393, height: 852});
+  await page.locator('#initiative-back').click();
+  await page.locator('#workspace-overview').focus(); await page.keyboard.press('Enter');
+  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  await page.locator('#initiative-back').click();
+  assert.equal(await page.locator('#workspace-overview').evaluate(el => el === document.activeElement), true);
+  await page.locator('#workspace-back').click();
+  assert.equal(await page.locator('#items .selected').evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press('Enter');
+  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  for (const id of ['initiative-save', 'initiative-back']) assert.ok(await page.locator('#'+id).evaluate(el => el.getBoundingClientRect().height >= 44));
   await page.locator('#initiative-title').fill('很长的中文事项标题用于检查换行与键盘焦点。'.repeat(6));
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
   assert.equal(await page.locator('#initiative-goal').evaluate(el => el === document.activeElement), true);
   assert.equal(await page.locator('#initiative-goal').evaluate(el => getComputedStyle(el).outlineStyle), 'solid');
-  await page.screenshot({path: 'docs/validation/issue18/web-393px.png'});
+  await page.screenshot({path: 'docs/validation/issue33/after-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   // Hold real adapter calls to observe loading/saving rather than assuming transient states.
   let releaseWrite; writeGate = new Promise(resolve => { releaseWrite = resolve; });
