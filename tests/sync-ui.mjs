@@ -161,6 +161,16 @@ try {
   await panel.getByText('缺少前序版本，暂不能保存。请等待文件到达后重新检查。').waitFor();
   await panel.getByText('版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。').waitFor();
   for(const save of await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).all()) assert.equal(await save.isDisabled(),true);
+  if(process.env.PHASE !== 'before') {
+    const blocked=panel.locator('article').last();
+    await blocked.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
+    const lastEnabled=blocked.locator('summary').last();
+    await lastEnabled.focus(); await page.keyboard.press('Tab');
+    assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await lastEnabled.evaluate(el=>el===document.activeElement),true);
+  }
+
   for (let index=0;index<2;index++) {
     const extra=(await repo.save({description:'多冲突键盘检查'+index})).record;
     const fork={...extra,revision:randomUUID(),parents:[]};
@@ -187,6 +197,14 @@ try {
   const colors=await page.evaluate(()=>({text:getComputedStyle(document.querySelector('.sync-panel')).color,background:getComputedStyle(document.querySelector('.sync-panel')).backgroundColor}));
   console.log('Rendered contrast inputs:',JSON.stringify(colors));
   await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-393px.png`,fullPage:true});
+  if(process.env.PHASE !== 'before') {
+    // A background failure notice must not cover or intercept modal controls.
+    const close=panel.getByRole('button',{name:'关闭检查',exact:true});
+    await close.scrollIntoViewIfNeeded();
+    const box=await close.boundingBox();
+    assert.equal(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.textContent,{x:box.x+box.width/2,y:box.y+box.height/2}),'关闭检查');
+    await page.screenshot({path:'docs/validation/issue36/after-web-393px-top.png',fullPage:true});
+  }
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   delayFiles=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
   await page.getByRole('button',{name:'同步检查',exact:true}).click();

@@ -75,13 +75,14 @@ export class SyncScreen {
       const name = conflict.versions.find(v => v.title || v.description);
       const blocked = conflict.incomplete || conflict.cyclic;
       const recordName = `${types[repo.entityType]}：${name?.title || name?.description || '未命名记录'}`;
+      article.setAttribute('aria-label', recordName);
       const jump = selectionRow(recordName, () => { article.scrollIntoView({block: 'start'}); article.querySelector('h3').focus(); }); navigation.append(jump);
       article.innerHTML = `<h3 tabindex="-1">${esc(types[repo.entityType])}：${esc(name?.title || name?.description || '未命名记录')}</h3><p>${conflict.cyclic ? '版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。' : conflict.incomplete ? '缺少前序版本，暂不能保存。请等待文件到达后重新检查。' : '发现冲突版本，请比较后选择或合并。'}</p><h4>1. 比较版本</h4>`;
       const draft = {value: structuredClone(conflict.tips[0] || conflict.versions[0])};
       const editor = document.createElement('div'); editor.className = 'sync-editor';
       const editStatus = document.createElement('p'); editStatus.setAttribute('role', 'status'); editStatus.textContent = '尚未选择解决版本。请先选择，再审核与编辑。';
       let selected = false, retryRecord = null;
-      const markDirty = () => { selected = true; this.dirty = true; for (const other of this.panel.querySelectorAll('article')) if (other !== article) other.inert = true; editStatus.textContent = '解决内容尚未保存。原版本均会保留。'; };
+      const markDirty = () => { selected = true; this.dirty = true; discard.disabled = false; save.disabled = false; for (const other of this.panel.querySelectorAll('article')) if (other !== article) other.inert = true; editStatus.textContent = '解决内容尚未保存。原版本均会保留。'; };
       const advanced = disclosure('高级：完整 JSON 与版本诊断');
       const json = document.createElement('textarea'); json.rows = 12; json.setAttribute('aria-label', '合并版本 JSON');
       const renderEditor = () => {
@@ -124,7 +125,7 @@ export class SyncScreen {
           for (const control of editor.querySelectorAll('[data-field]')) { control.disabled = Boolean(blocked); control.value = parsed[control.dataset.field] ?? ''; }
         } catch { json.setAttribute('aria-invalid', 'true'); editStatus.textContent = 'JSON 格式无效。请修正后保存，编辑仍保留。'; for (const control of editor.querySelectorAll('[data-field]')) control.disabled = true; }
       }; advanced.append(diagnostics, json); article.append(advanced);
-      article.append(button('放弃编辑', () => { selected = false; this.dirty = false; this.saved = ''; this.render(); this.panel.querySelector('button')?.focus(); }, {variant: 'danger'}));
+      const discard = button('放弃编辑', () => { selected = false; this.dirty = false; this.saved = ''; this.render(); this.panel.querySelector('button')?.focus(); }, {variant: 'danger'}); discard.disabled = true; article.append(discard);
       const consequence = document.createElement('p'); consequence.textContent = '保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。'; article.append(consequence);
       const save = button('3. 保存解决结果到本地', async () => {
         if (!selected) { feedback(this.status, '请先选择一个版本，再审核需要保留的内容。'); return; }
@@ -141,7 +142,7 @@ export class SyncScreen {
           feedback(editStatus, retryRecord ? '版本已保留，恢复尚未完成。请点击保存重试恢复；已保留的内容暂不能编辑。' : '未保存 · 编辑仍保留'); feedback(this.status, retryRecord ? '版本已保留，本地恢复未完成。请点击保存重试恢复；无法确认其他设备是否收到。' : '解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。', error.message); }
         finally { this.saving = false; article.inert = false; }
         if (!this.dirty) await this.refresh(true);
-      }, {primary: true}); save.disabled = Boolean(blocked); article.append(save); this.panel.append(article);
+      }, {primary: true}); save.disabled = Boolean(blocked) || !selected; article.append(save); this.panel.append(article);
     }
     if (!count && this.checked) this.panel.append(Object.assign(document.createElement('p'), {textContent: this.warnings?.length ? '未发现可解决的冲突，请先核对上方异常详情。' : '现有版本中未发现待处理冲突。'}));
   }
