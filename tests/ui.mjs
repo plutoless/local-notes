@@ -180,6 +180,7 @@ try {
   const oldSource = await readFile(sourcePath, 'utf8');
   const otherSource = join(otherFixture.root, 'reference.md'); await writeFile(otherSource, oldSource);
   otherFixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('.directory-details').evaluate(node => node.open = true);
   await page.locator('#choose').click(); await page.locator('#notice summary').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor(); await page.getByRole('button', {name:'关闭提示'}).click();
   assert.equal(await page.locator('#editor').isVisible(), false);
   assert.equal(await page.locator('#action-editor').isVisible(), false);
@@ -212,6 +213,7 @@ try {
   holdActionQuery = true; await page.locator('#search').fill('Only in workspace B'); await heldQueryStarted;
   assert.equal(await page.locator('#index-state').textContent(), '正在载入行动…');
   fixture.fail(cmd => cmd === 'actionFiles');
+  await page.locator('.directory-details').evaluate(node => node.open = true);
   await page.locator('#choose').click(); await page.locator('#notice summary').click(); await page.getByText('Injected storage failure', {exact: true}).waitFor(); await page.getByRole('button', {name:'关闭提示'}).click();
   holdActionQuery = false; releaseHeldQuery();
   await page.waitForFunction(() => window.__heldQueryDelivered === true);
