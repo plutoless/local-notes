@@ -12,7 +12,7 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let writeGate = null, queryGate = null;
+  let writeGate = null, queryGate = null, failNoteSave = false;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = '# 资料整理约定\n\n保留原文，只整理入口。\n\n先确认本周需要推进的内容，再补充关联资料。\n';
@@ -43,7 +43,7 @@ try {
           return {notes, root: activeFixture.root};
         }
         case 'read': return {text: await readFile(path, 'utf8')};
-        case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
+        case 'save': if (failNoteSave) throw Error('Injected note save failure'); if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
         case 'create': await mkdir(join(path, '..'), {recursive: true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
         default: throw Error('Unhandled bridge command');
       }
@@ -59,6 +59,8 @@ try {
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   assert.equal(await page.getByRole('heading', {name: '当前重点', exact: true}).count(), 1);
+  assert.equal(await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).count(), 1);
+  assert.equal(await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).count(), 1);
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
   await page.screenshot({path: 'docs/validation/workspace-design/home.png'});
   await page.locator('[data-view=initiatives]').click();
@@ -76,6 +78,16 @@ try {
   await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
   assert.equal(await page.locator('#workspace-title').textContent(), '整理工作资料');
   assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
+  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
+  await page.waitForFunction(() => document.querySelector('#index-state').textContent === '');
+  assert.equal(await page.locator('#action-editor').isVisible(), true, 'Background refresh must preserve action detail and draft');
+  assert.match(await page.locator('#action-description').inputValue(), /安排时间/);
+  await page.locator('#action-initiative').selectOption(second.entityId);
+  fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
+  await page.locator('#initiative-new-action').click();
+  await page.locator('#action-save-state').filter({hasText: /操作未完成/}).waitFor();
+  assert.equal(await page.locator('#action-initiative').inputValue(), second.entityId, 'Failed save must preserve assignment when New action is requested');
+  await page.locator('#action-initiative').selectOption(first.entityId);
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#workspace-detail').evaluate(node => node.scrollTop = 0);
@@ -88,6 +100,12 @@ try {
   await page.screenshot({path: 'docs/validation/workspace-design/note.png'});
   await page.locator('#mode').click();
   await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
+  failNoteSave = true;
+  await page.locator('#initiative-new-action').click();
+  await page.locator('#notice').filter({hasText: /操作未完成/}).waitFor();
+  assert.equal(await page.locator('#editor').isVisible(), true, 'Failed note save must keep the note visible');
+  assert.match(await page.locator('#body').inputValue(), /已补充本周资料说明/);
+  failNoteSave = false; await page.getByRole('button', {name: '关闭提示'}).click();
   await page.locator('#workspace-overview').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
   assert.match(await readFile(sourcePath, 'utf8'), /已补充本周资料说明/);
@@ -96,6 +114,12 @@ try {
   await page.locator('#initiative-back').click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   await page.screenshot({path: 'docs/validation/workspace-design/mobile-context.png'});
+  await rm(sourcePath);
+  await page.locator('#workspace-notes button').click();
+  await page.locator('#notice').filter({hasText: /操作未完成/}).waitFor();
+  assert.equal(await page.locator('#workspace-context').isVisible(), true, 'Missing note must retain the context and its back control');
+  await page.getByRole('button', {name: '关闭提示'}).click();
+  await writeFile(sourcePath, original);
   await page.locator('#initiative-actions button').first().click();
   await page.locator('#action-editor').waitFor({state: 'visible'});
   await page.screenshot({path: 'docs/validation/workspace-design/mobile-detail.png'});
@@ -107,5 +131,5 @@ try {
   await page.locator('#initiative-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(), '准备下次评审');
   assert.deepEqual(errors, []);
-  console.log('PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed save blocks initiative switch, source save, selection, and narrow-pane navigation.');
+  console.log('PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed saves block initiative/New-action navigation, background refresh preserves drafts, missing notes preserve narrow-screen context, source save, selection, accessible action names, and narrow-pane navigation.');
 } finally { await browser.close(); await fixture.close(); }

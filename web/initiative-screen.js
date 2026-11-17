@@ -19,7 +19,7 @@ export class InitiativeScreen {
     $('#workspace-overview').onclick = () => this.edit(this.previous).catch(e => notice(e.message));
     $('#initiative-add-link').onclick = () => { this.addLink({path: '', quote: '', fingerprint: '', role: 'working-note'}); this.changed(); };
     $('#initiative-new-action').onclick = async () => {
-      if (!await this.flush() || !this.previous || this.previous.status === 'ended') return;
+      if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush() || !this.previous || this.previous.status === 'ended') return;
       this.detailKind = 'action'; $('.app').classList.add('detail-open');
       await this.actions.edit(null); $('#action-initiative').value = this.previous.entityId; this.actions.changed(); $('#initiative-editor').hidden = true;
     };

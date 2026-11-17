@@ -215,6 +215,7 @@ try {
   releaseWrite();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#initiative-back').click();
+  await page.locator('#workspace-back').click();
   let releaseQuery; queryGate = new Promise(resolve => { releaseQuery = resolve; });
   await page.locator('#search').fill('没有这个标题');
   await page.locator('#index-state').filter({hasText: '正在载入事项…'}).waitFor();

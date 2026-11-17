@@ -73,7 +73,7 @@ try {
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.reload();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
-  await page.getByRole('button', {name: '打开行动', exact: true}).click();
+  await page.getByRole('button', {name: /^打开行动：/}).click();
   await page.locator('#action-status').selectOption('waiting');
   await page.locator('#action-options').evaluate(node => node.open = true);
   await page.locator('#action-waiting').fill('Approval from Sam');
@@ -82,7 +82,7 @@ try {
   await page.locator('[data-view=focus]').click();
   await page.getByText('Approval from Sam', {exact: true}).waitFor();
   assert.equal(await page.getByText('已逾期', {exact: false}).count(), 0);
-  await page.getByRole('button', {name: '打开行动', exact: true}).click();
+  await page.getByRole('button', {name: /^打开行动：/}).click();
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('[data-view=focus]').click();
