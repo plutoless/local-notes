@@ -32,7 +32,7 @@ export class Library {
   sync() {
     if (this.running) { this.again = true; return this.running; }
     const generation = this.generation;
-    const operation = this.reconcile(generation).finally(() => { if (generation === this.generation) { this.running = null; if (this.again) { this.again = false; this.sync().catch(error => { this.warnings = [error.message]; this.changed(); }); } } });
+    const operation = this.reconcile(generation).finally(() => { if (generation === this.generation) { this.running = null; this.changed(); if (this.again) { this.again = false; this.sync().catch(error => { this.warnings = [error.message]; this.changed(); }); } } });
     this.running = operation; return operation;
   }
   async reconcile(generation) {
@@ -67,7 +67,7 @@ export class Library {
   }
   query(options = {}) { return this.request('referenceQuery', options); }
   async saveTopic(name, previous = null) {
-    if (!name?.trim()) throw Error('A topic needs a name');
+    if (!name?.trim()) throw Error('请填写主题名称');
     await this.topics.save({...previous, description: name.trim()}, previous);
     this.records = await allRecords(this.topics); this.changed();
   }
