@@ -7,7 +7,7 @@ export class SyncScreen {
     this.repositories = repositories; this.notice = notice; this.changed = changed;
     this.panel = document.createElement('section'); this.panel.hidden = true;
     this.panel.setAttribute('aria-label', '同步检查'); this.panel.className = 'sync-panel'; this.panel.setAttribute('role', 'dialog'); this.panel.setAttribute('aria-modal', 'true');
-    document.querySelector('.app').append(this.panel); bindDialog(this.panel);
+    document.body.append(this.panel); bindDialog(this.panel);
     const button = document.createElement('button'); button.textContent = '同步检查';
     button.onclick = () => this.refresh(true).catch(error => notice(error.message));
     document.querySelector('nav').append(button);

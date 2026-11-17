@@ -7,8 +7,8 @@ export class FocusScreen {
     Object.assign(this, {actions, initiatives, navigate, notice});
     this.limit = 7; this.waitingLimit = 50; this.initiativeLimit = 50;
   }
-  button(text, run) {
-    return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, {primary: text === '新建行动'});
+  button(text, run, options = {}) {
+    return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, options);
   }
   async show() {
     $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
@@ -25,7 +25,7 @@ export class FocusScreen {
     if (!this.active || repository !== this.actions.repository || request !== this.request) return;
     $('#index-state').textContent = ''; const list = $('#items'); list.replaceChildren();
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
-    tools.append(this.button('新建行动', async () => { await this.navigate('actions'); await this.actions.edit(null); }),
+    tools.append(this.button('新建行动', async () => { await this.navigate('actions'); await this.actions.edit(null); }, {primary: true}),
       this.button('全部行动', () => this.navigate('actions')),
       this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
       this.button('整理所选笔记', () => this.navigate('organize')),

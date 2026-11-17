@@ -129,7 +129,7 @@ export class ActionScreen {
   showForm(fields, previous) {
     this.previous = previous; this.retry = null;
     $('#action-focus').disabled = !previous || !['todo', 'in-progress'].includes(fields.status);
-    $('#action-focus').textContent = previous?.focusPosition == null ? '加入当前重点' : '移出重点 from 当前重点';
+    $('#action-focus').textContent = previous?.focusPosition == null ? '加入当前重点' : '移出当前重点';
     $('#action-description').value = fields.description || ''; $('#action-status').value = fields.status || 'todo';
     if (fields.initiativeId && ![...$('#action-initiative').options].some(o => o.value === fields.initiativeId)) $('#action-initiative').add(new Option(fields.initiativeId, fields.initiativeId));
     $('#action-initiative').value = fields.initiativeId || ''; $('#action-due').value = fields.dueDate || ''; $('#action-waiting').value = fields.waitingOn || '';
@@ -157,7 +157,7 @@ export class ActionScreen {
     if (this.saving) return this.saving;
     if (!this.dirty) return true;
     this.saving = (async () => {
-      this.state('Saving…'); $('#action-save').disabled = true; $('#action-form').inert = true;
+      this.state('正在保存…'); $('#action-save').disabled = true; $('#action-form').inert = true;
       try {
         const fields = this.fields();
         if (fields.initiativeId && fields.initiativeId !== this.previous?.initiativeId) {
@@ -166,7 +166,7 @@ export class ActionScreen {
         }
         for (const source of fields.sources) if (!source.fingerprint) {
           const result = await native('read', {path: source.path, workspaceId: this.repository.workspaceId}); source.fingerprint = fingerprint(result.text);
-          if (source.quote && !result.text.includes(source.quote)) throw Error(`引用原文 was not found in ${source.path}`);
+          if (source.quote && !result.text.includes(source.quote)) throw Error(`Quoted fragment was not found in ${source.path}`);
         }
         const result = await this.repository.save(fields, this.previous, this.retry);
         this.previous = result.record; this.retry = null; this.recoveredDraft = false; this.dirty = false; localStorage.removeItem(this.key());
