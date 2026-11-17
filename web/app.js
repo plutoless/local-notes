@@ -18,9 +18,10 @@ const actions = new ActionScreen(notice);
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
   if (!await flush()) return;
+  const origin = {view, action: !$('#action-editor').hidden ? actions.previous : null, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
-  sourceOrigin = {view, action: !$('#action-editor').hidden ? actions.previous : null, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
+  sourceOrigin = origin;
   focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); await load(path, loaded); $('#mode').focus();
@@ -32,9 +33,9 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async path => {
   if (!await flush()) return;
+  const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { notice(error.message); return; }
-  const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
   if (await navigate('notes')) { sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
 });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
