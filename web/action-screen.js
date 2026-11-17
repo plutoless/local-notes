@@ -47,7 +47,13 @@ export class ActionScreen {
           const row = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === this.previous?.entityId);
           (row || $('#action-new')).focus({preventScroll: true});
         }
-      } catch (error) { errorFeedback($('#action-save-state'), error.message); }
+      } catch (error) {
+        // Initiative rendering can fail after hiding the originating action.
+        this.showForm(this.fields(), this.previous);
+        this.initiatives.detailKind = 'action';
+        $('#initiative-editor').hidden = true; $('.app').classList.add('detail-open');
+        errorFeedback($('#action-save-state'), error.message); $('#action-back').focus();
+      }
     };
     $('#action-discard').onclick = () => { localStorage.removeItem(this.key()); this.recoveredDraft = false; this.dirty = false; this.retry = null; this.previous = null; $('#action-editor').hidden = true; $('#empty').hidden = false; $('.app').classList.remove('editing'); };
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
@@ -124,7 +130,7 @@ export class ActionScreen {
     for (const action of page.actions) {
       const row = selectionRow('', () => this.edit(action), {selected: action.entityId === this.previous?.entityId}); row.classList.add('card'); row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
       row.innerHTML = `<h3>${esc(action.description)}</h3><p>${labels[action.status]}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ' · 未设日期'}</p><small>${esc(this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动'))}${action.waitingOn ? ` · 等待：${esc(action.waitingOn)}` : ''}</small>`;
-      row.onclick = () => this.edit(action); $('#items').append(row);
+      $('#items').append(row);
     }
     if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有已确认行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
     $('#items').scrollTop = scroll;

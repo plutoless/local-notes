@@ -110,6 +110,20 @@ try {
   await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
   assert.equal(await page.locator('#action-status').inputValue(), 'todo');
   assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
+  await page.getByText('来源已修改，请核对引用', {exact:true}).waitFor();
+  await page.locator('.action-source summary').click();
+  await page.locator('.source-quote').fill('这段文字并不存在于来源');
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText:/内容需要核对/}).waitFor();
+  assert.equal(await page.locator('.source-quote').inputValue(), '这段文字并不存在于来源');
+  await page.locator('.source-quote').fill('Run the sample command');
+  await page.locator('#action-save').click();
+  await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+  await rename(sourcePath, join(fixture.root, 'unavailable.fixture'));
+  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click();
+  await page.getByText('来源不可用，请重新关联', {exact:true}).waitFor();
+  await rename(join(fixture.root, 'unavailable.fixture'), sourcePath);
+  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click();
   // Recover an externally moved source using the reference inventory fingerprints.
   const currentSource = await readFile(sourcePath, 'utf8');
   await page.locator('.action-source summary').click();
