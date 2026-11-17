@@ -1,3 +1,4 @@
+import {feedback} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -28,15 +29,15 @@ export class LibraryScreen {
     const sequence = ++this.sequence;
     const result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()});
     if (sequence !== this.sequence || !this.isActive()) return;
-    $('#view-title').textContent = 'Reference library';
-    $('#root-label').textContent = this.library.root || 'Local reference index';
+    $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
+    $('#root-label').textContent = this.library.root || '本地笔记';
     $('#note-count').textContent = `${this.offset + result.notes.length}${result.hasMore ? '+' : ''}`;
-    $('#library-progress').textContent = [this.library.progress, ...(this.library.warnings || [])].filter(Boolean).join(' · ');
+    if (this.library.warnings?.length) feedback($('#library-progress'), '部分笔记暂不可用，请检查目录后刷新。', this.library.warnings.join('\n')); else $('#library-progress').textContent = this.library.running ? '正在更新笔记列表…' : '';
     const select = $('#library-topic'); select.replaceChildren();
-    for (const [value, name] of [['', 'All topics'], ['uncategorized', 'Uncategorized'], ...(this.library.records || []).map(t => [t.entityId, t.description])]) { const option = document.createElement('option'); option.value = value; option.textContent = name; select.append(option); }
+    for (const [value, name] of [['', '全部主题'], ['uncategorized', '未分类'], ...(this.library.records || []).map(t => [t.entityId, t.description])]) { const option = document.createElement('option'); option.value = value; option.textContent = name; select.append(option); }
     select.value = this.topic;
     $('#library-rename-topic').disabled = !this.library.records?.some(t => t.entityId === this.topic);
-    $('#library-location').textContent = this.directory === '*' ? 'All directories' : this.directory || '/';
+    $('#library-location').textContent = this.directory === '*' ? '全部目录' : this.directory || '/';
     $('#library-previous').disabled = this.offset === 0; $('#library-next').disabled = !result.hasMore;
     const list = $('#items'); list.replaceChildren();
     if (!this.search && this.offset === 0) {
@@ -44,7 +45,7 @@ export class LibraryScreen {
       if (sequence !== this.sequence || !this.isActive()) return;
       const prefix = this.directory === '*' || this.directory === '' ? '' : this.directory + '/';
       const directories = new Set(inventory.filter(n => n.path.startsWith(prefix)).map(n => n.path.slice(prefix.length)).filter(p => p.includes('/')).map(p => prefix + p.split('/')[0]));
-      if (this.directory === '*') { const root = document.createElement('button'); root.textContent = 'Browse directories'; root.onclick = () => { this.directory = ''; this.render(); }; list.append(root); }
+      if (this.directory === '*') { const root = document.createElement('button'); root.textContent = '浏览目录'; root.onclick = () => { this.directory = ''; this.render(); }; list.append(root); }
       else for (const directory of [...directories].sort()) { const button = document.createElement('button'); button.textContent = '📁 ' + directory; button.onclick = () => { this.directory = directory; this.offset = 0; this.render(); }; list.append(button); }
     }
     for (const note of result.notes) {

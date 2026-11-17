@@ -1,0 +1,1 @@
+PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.

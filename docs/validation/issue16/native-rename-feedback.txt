@@ -1,0 +1,54 @@
+App=dev.localnotes.validation.issue16 (pid 59588)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库 1
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				113 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-16/build/issue16/Sync
+				16 button 选择本地目录 ↗
+			80 container
+				17 heading 笔记库
+				81 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…
+			82 pop up button 筛选主题, Value: 全部主题
+			83 button 新建主题
+			84 button (disabled) 重命名主题
+			85 button 刷新
+			86 button 上一级目录
+			114 text 全部目录
+			88 button (disabled) 上一页
+			89 button (disabled) 下一页
+			115 button 浏览目录
+			116 button Synthetic reference material ## OKRs - [ ] Improve trial conversion by 10% - [x] Publish last quarter's result ## Evaluation conditions - [ ] A proposal passes when all reviewers approve ## Process checklist - reference.md · 11/16/2026
+			96 container
+				97 text reference.md
+				98 button 收藏
+				99 button 移动 / 改名
+				100 text field (settable) 笔记标题, Value: Synthetic reference material, Placeholder: 无标题
+				101 text 已保存到本地
+				102 button 阅读
+				103 text entry area (settable) 笔记正文 ## OKRs - [ ] Improve trial conversion by 10% - [x] Publish last quarter's result  ## Evaluation conditions - [ ] A proposal passes when all reviewers approve  ## Process checklist - [ ] Run the sample command - [x] Read the instructions, Placeholder: 从这里开始…\n\n用 - [ ] 记下待办
+					104 text ## OKRs - [ ] Improve trial conversion by 10% - [x] Publish last quarter's result  ## Evaluation conditions - [ ] A proposal passes when all reviewers approve  ## Process checklist - [ ] Run the sample command - [x] Read the instructions
+			117 container
+				118 text 路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。
+				121 container (expanded)
+					119 summary (expanded) 查看技术详情, Value: 1
+					122 text 请使用有效的相对 Markdown 路径
+				120 button 关闭提示
+	75 close button
+	76 full screen button, Secondary Actions: zoom the window
+	77 minimize button
+	78 text 拾记 · Local Notes
+
+The focused UI element is 119 summary (expanded) 查看技术详情, Value: 1.
