@@ -1,0 +1,1 @@
+PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).

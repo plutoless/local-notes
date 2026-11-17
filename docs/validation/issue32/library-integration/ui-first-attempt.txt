@@ -1,0 +1,41 @@
+
+> local-notes@0.1.0 test:ui
+> node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs
+
+PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).
+PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).
+Contrast ratios: {
+  body: 14.619441077868746,
+  secondary: 5.650066807645137,
+  primary: 6.250978759757422,
+  border: 4.278605097267699,
+  focus: 5.969564700266222
+}
+PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; home reads no note bodies and explicit source validation reads one.
+Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: '打开来源', exact: true })[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-32/tests/library-ui.mjs:157:61 {
+  log: [
+    "  - waiting for getByRole('button', { name: '打开来源', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for getByRole('button', { name: '打开来源', exact: true })[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-32/tests/library-ui.mjs:157:61 {
+  log: [
+    "  - waiting for getByRole('button', { name: '打开来源', exact: true })"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

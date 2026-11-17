@@ -1,0 +1,11 @@
+{
+  "host": "Cocoa/WKWebView",
+  "identity": "dev.localnotes.validation.issue34",
+  "saveReadback": true,
+  "failedSaveBlocksReturn": true,
+  "retryReadback": true,
+  "restartReadback": true,
+  "backFocus": true,
+  "readingCheckboxWriteback": true,
+  "inputMethod": "DOM events via evaluateJavaScript; not physical keyboard/pointer"
+}

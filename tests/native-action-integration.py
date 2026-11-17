@@ -16,12 +16,15 @@ import subprocess
 spec = importlib.util.spec_from_file_location('probe', 'tests/native-candidate-review.py')
 m = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(m)
-m.OUT = Path.cwd() / 'build/native-issue32-integration'
+phase = os.environ.get('ACTION_INTEGRATION_PHASE', 'integration')
+assert phase in {'integration', 'library-integration'}
+identity = 'dev.localnotes.validation.issue32' + phase.replace('-', '')
+m.OUT = Path.cwd() / ('build/native-issue32-' + phase)
 m.APP = m.OUT / 'Actions32Integration.app'
-evidence = Path('docs/validation/issue32/integration')
+evidence = Path('docs/validation/issue32') / phase
 evidence.mkdir(parents=True, exist_ok=True)
 # Reuse the existing probe, changing only its isolated bundle identity.
-exec(inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue32integration'), m.__dict__)
+exec(inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', identity), m.__dict__)
 if m.OUT.exists():
     raise RuntimeError('Use a fresh isolated integration fixture; existing evidence is retained')
 m.OUT.mkdir(parents=True)
@@ -48,7 +51,7 @@ def record(name, expression):
     return value
 
 def snapshot(name):
-    result = json.loads(subprocess.check_output(['orca', 'computer', 'get-app-state', '--app', 'dev.localnotes.validation.issue32integration', '--json']))
+    result = json.loads(subprocess.check_output(['orca', 'computer', 'get-app-state', '--app', identity, '--json']))
     assert result['ok'], result
     shutil.copy(result['result']['screenshot']['path'], evidence / (name + '.png'))
 
@@ -100,8 +103,45 @@ try:
     w("document.querySelector('#action-editor').hidden && !!document.activeElement.dataset.actionId")
     record('native-existing-action-return', "({focus:document.activeElement.dataset.actionId,context:document.querySelector('#workspace-title').textContent})")
     snapshot('native-restarted-context')
+    if phase == 'library-integration':
+        # Exercise changed source/capture resource paths on the combined library base.
+        c("document.querySelector('nav [data-view=actions]').click()")
+        w("!!document.querySelector('#items .ui-row')")
+        c("document.querySelector('#search').value='合并';document.querySelector('#search').dispatchEvent(new Event('input'))")
+        w("!!document.querySelector('#items .ui-row')")
+        c("document.querySelector('#items .ui-row').click()")
+        w("!document.querySelector('#action-editor').hidden")
+        c("document.querySelector('#action-add-source').click()")
+        c("const path=document.querySelector('.source-path');path.value='reference.md';path.dispatchEvent(new Event('input',{bubbles:true}));const quote=document.querySelector('.source-quote');quote.value='仅作为来源内容';quote.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('#action-form').requestSubmit()")
+        w("document.querySelector('#action-save-state').textContent==='已保存到本地' && !!document.querySelector('.action-source > button')")
+        c("document.querySelector('.action-source > button').focus();document.querySelector('.action-source > button').click()")
+        w("!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent==='reference.md'")
+        source = m.OUT / 'Sync/reference.md'
+        subprocess.run(['chflags', 'uchg', str(source)], check=True)
+        try:
+            c("document.querySelector('#body').value+='\\n合并后来源保存';document.querySelector('#body').dispatchEvent(new Event('input'));document.querySelector('#back').click()")
+            w("document.querySelector('#save-state').textContent.includes('未保存')")
+            assert c("return !document.querySelector('#editor').hidden && window.hasUnsavedChanges()")
+            record('native-source-failed-return', "({state:document.querySelector('#save-state').textContent,body:document.querySelector('#body').value,visible:!document.querySelector('#editor').hidden})")
+        finally:
+            subprocess.run(['chflags', 'nouchg', str(source)], check=True)
+        c("document.querySelector('#note-save').click()")
+        w("document.querySelector('#save-state').textContent==='已保存到本地'")
+        assert '合并后来源保存' in source.read_text()
+        c("if (!document.querySelector('#notice').hidden) document.querySelector('#notice button').click()")
+        c("document.querySelector('#back').click()")
+        w("!document.querySelector('#action-editor').hidden && document.activeElement.id==='action-description'")
+        source_return = record('native-source-return', "({description:document.querySelector('#action-description').value,search:document.querySelector('#search').value,focus:document.activeElement.id})")
+        assert source_return['description'] == failed['description'] and source_return['search'] == '合并'
+        c("document.querySelector('#new').click()")
+        w("!document.querySelector('#capture-return').hidden && !document.querySelector('#editor').hidden")
+        c("document.querySelector('#title').value='合并随手记';document.querySelector('#title').dispatchEvent(new Event('input'));document.querySelector('#body').value='保留行动返回上下文';document.querySelector('#body').dispatchEvent(new Event('input'));document.querySelector('#capture-return').click()")
+        w("!document.querySelector('#action-editor').hidden && document.querySelector('#capture-return').hidden")
+        capture_return = record('native-capture-return', "({description:document.querySelector('#action-description').value,search:document.querySelector('#search').value})")
+        assert capture_return['description'] == failed['description']
+        snapshot('native-source-capture-return')
     (evidence / 'native-storage.json').write_text(json.dumps({'action': json.loads(protected.read_text()), 'source': (m.OUT / 'Sync/reference.md').read_text()}, ensure_ascii=False, indent=2) + '\n')
-    print('PASS: combined-resource actual WKWebView assigned-action save, protected-file failed Back and retained draft, retry, context focus, process restart/readback and existing-action return; isolated sample/private storage and exact web-resource hashes')
+    print('PASS: source/capture paths included when phase is library-integration; combined-resource actual WKWebView assigned-action save, protected-file failed Back and retained draft, retry, context focus, process restart/readback and existing-action return; isolated sample/private storage and exact web-resource hashes')
 finally:
     if protected and protected.exists():
         subprocess.run(['chflags', 'nouchg', str(protected)], check=True)
