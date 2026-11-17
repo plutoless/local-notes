@@ -1,0 +1,8 @@
+{
+  "engine": "Cocoa/WKWebView",
+  "phase": "before",
+  "pointerOpen": true,
+  "trustedEscapeGuard": false,
+  "createEditReopenCleanCancel": false,
+  "width": 393
+}

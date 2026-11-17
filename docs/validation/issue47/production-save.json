@@ -1,0 +1,68 @@
+{
+  "id": "005f347f-8b50-4432-a4fb-b3e992598138",
+  "ok": true,
+  "result": {
+    "action": {
+      "path": "accessibility",
+      "actionName": "AXPress",
+      "fallbackReason": null,
+      "delivery": "background",
+      "targetWindowId": 11381,
+      "verification": {
+        "state": "unverified",
+        "reason": "accessibility_action_unasserted"
+      }
+    },
+    "screenshot": {
+      "height": 1664,
+      "width": 2360,
+      "format": "png",
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/005f347f-8b50-4432-a4fb-b3e992598138-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-18T16:25:58.525Z"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue47production (pid 72509)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t54 container\n\t\t\t\t55 text 拾记\n\t\t\t\t56 button 随手记\n\t\t\t\t57 container 主导航\n\t\t\t\t\t58 button 当前重点\n\t\t\t\t\t59 button 笔记库\n\t\t\t\t\t60 button 已确认行动\n\t\t\t\t\t61 button 事项\n\t\t\t\t\t62 button 整理\n\t\t\t\t\t63 button 收藏\n\t\t\t\t\t64 button 同步检查\n\t\t\t\t65 summary Sync, Value: 0\n\t\t\t66 container\n\t\t\t\t67 heading 事项\n\t\t\t\t68 container\n\t\t\t\t\t69 text 搜索\n\t\t\t\t\t70 text field (settable) 搜索事项, Placeholder: 搜索事项…\n\t\t\t71 button 新建事项\n\t\t\t72 button (disabled) 上一页\n\t\t\t73 button (disabled) 下一页\n\t\t\t74 button 生产路径关闭守卫 进行中\n\t\t\t75 container\n\t\t\t\t76 container 事项上下文\n\t\t\t\t\t77 text 事项工作区\n\t\t\t\t\t78 button 生产路径关闭守卫 进行中 查看目标与进展 →\n\t\t\t\t\t79 heading 行动\n\t\t\t\t\t80 button 新建行动\n\t\t\t\t\t81 text 没有未完成行动。可新建下一步行动。\n\t\t\t\t\t82 summary 已完成和已取消, Value: 0\n\t\t\t\t\t83 heading 笔记与资料\n\t\t\t\t\t84 button 新建笔记\n\t\t\t\t\t85 heading 工作笔记\n\t\t\t\t\t86 text 尚未关联工作笔记。\n\t\t\t\t\t87 heading 参考资料\n\t\t\t\t\t88 text 尚未关联参考资料。\n\t\t\t\t89 button ‹ 行动与资料\n\t27 close button\n\t28 full screen button, Secondary Actions: zoom the window\n\t29 minimize button\n\t30 text 拾记 · Local Notes\n\nThe focused UI element is 61 button 事项.",
+      "focusedElementId": 61,
+      "id": "8CD23F38-8921-4527-AA44-5A68B88B7FE4",
+      "app": {
+        "bundleId": "dev.localnotes.validation.issue47production",
+        "pid": 72509,
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 11381,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 48,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 43,
+      "truncation": {
+        "maxDepth": 64,
+        "truncated": false,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 11381
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

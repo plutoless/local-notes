@@ -1,0 +1,25 @@
+{
+  "runningAfterCleanOSMenuQuit": false,
+  "savedRecords": 1,
+  "records": [
+    {
+      "title": "生产路径关闭守卫",
+      "goal": "",
+      "progress": "",
+      "status": "active",
+      "sources": [],
+      "formatVersion": 1,
+      "entityType": "initiative",
+      "workspaceId": "2475ad7f-e322-47d1-8aca-f815e7dc9752",
+      "entityId": "18b0a0c0-b925-4dea-9c35-b2094af29a9e",
+      "revision": "9538eeb0-38b1-49d9-b8b1-ed321fae5329",
+      "parents": [],
+      "description": "生产路径关闭守卫",
+      "initiativeId": null,
+      "focusPosition": null,
+      "dueDate": null,
+      "waitingOn": null,
+      "modifiedAt": "2026-11-17T16:25:58.398Z"
+    }
+  ]
+}
