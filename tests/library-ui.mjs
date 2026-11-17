@@ -150,7 +150,7 @@ try {
     const repository = new ActionRepository(fixture.adapter); await repository.open();
     const sourceText = await readFile(join(fixture.root,path),'utf8');
     await repository.save({description:'从行动打开资料再返回',status:'todo',sources:[{path,quote:sourceText.trim(),fingerprint:fingerprint(sourceText)}]});
-    await page.locator('nav [data-view=actions]').click();
+    await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
     await page.locator('#search').fill('打开资料');
     await page.getByRole('heading',{name:'从行动打开资料再返回',exact:true}).click();
     await page.locator('#action-source-options').evaluate(node=>node.open=true);
