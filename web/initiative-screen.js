@@ -57,32 +57,55 @@ export class InitiativeScreen {
       this.drawerContext.previous = record; this.drawerContext.committed = true;
     }
   }
-  closeDrawer(discard = false) {
-    if (discard) {
-      localStorage.removeItem(this.key()); this.dirty = false; this.recoveredDraft = false; this.retry = null;
-    }
-    this.drawerGuard.hidden = true; this.drawer.hide();
-    if (this.drawerContext) {
-      const context = this.drawerContext;
-      this.previous = context.previous;
-      if (context.nodes) for (const [selector, nodes] of Object.entries(context.nodes)) $(selector).replaceChildren(...nodes);
-      for (const [selector, text] of Object.entries(context.text)) $(selector).textContent = text;
-      if (context.committed) this.renderContext();
-      this.selectContext(context.selectedContext); this.detailKind = context.detailKind;
-      for (const [selector, hidden] of Object.entries(context.hidden)) $(selector).hidden = hidden;
-      $('.app').className = context.classes;
-      for (const [selector, scroll] of Object.entries(context.scroll)) $(selector).scrollTop = scroll;
-      $('#initiative-new-action').disabled = !this.previous || this.previous.status === 'ended';
-      $('#initiative-new-note').disabled = !this.previous;
-      this.drawerContext = null;
-      this.selectInitiative(this.previous);
-    }
+  async closeDrawer(discard = false) {
+    if (this.closing) return false;
+    this.closing = true;
+    try {
+      try {
+        if (this.drawerContext?.refreshWorkspace) {
+          await this.details();
+          this.drawerContext.nodes = null; this.drawerContext.text = {}; this.drawerContext.refreshWorkspace = false;
+        }
+        if (this.drawerContext?.refreshAction) {
+          const record = (await allRecords(this.actions.repository)).find(action => action.entityId === this.drawerContext.refreshAction);
+          if (!record) throw Error('所选行动暂不可用，请恢复目录后重试。');
+          if (!this.drawerContext.hidden['#action-editor']) { this.actions.showForm(record, record); this.actions.state('已保存到本地'); }
+          else this.actions.previous = record;
+          this.drawerContext.refreshAction = null;
+        }
+      } catch (error) {
+        this.dirty = true; this.draft(); errorFeedback($('#initiative-save-state'), error.message);
+        $('#initiative-save-state p').textContent = '关联行动尚未恢复，草稿仍保留。请重试关闭，或继续编辑。'; return false;
+      }
+      if (discard) {
+        localStorage.removeItem(this.key()); this.dirty = false; this.recoveredDraft = false; this.retry = null;
+      }
+      this.drawerGuard.hidden = true;
+      if (this.drawerContext) {
+        const context = this.drawerContext;
+        this.previous = context.previous;
+        if (context.nodes) for (const [selector, nodes] of Object.entries(context.nodes)) $(selector).replaceChildren(...nodes);
+        for (const [selector, text] of Object.entries(context.text)) $(selector).textContent = text;
+        if (context.committed) this.renderContext();
+        this.selectContext(context.selectedContext); this.detailKind = context.detailKind;
+        for (const [selector, hidden] of Object.entries(context.hidden)) $(selector).hidden = hidden;
+        $('.app').className = context.classes;
+        for (const [selector, scroll] of Object.entries(context.scroll)) $(selector).scrollTop = scroll;
+        $('#initiative-new-action').disabled = !this.previous || this.previous.status === 'ended';
+        $('#initiative-new-note').disabled = !this.previous;
+        this.drawerContext = null;
+        this.selectInitiative(this.previous);
+      }
+      this.drawer.hide();
+      return true;
+    } finally { this.closing = false; }
   }
   leaveDrawer() {
     if (!this.drawer.panel.open) return true;
-    if (this.saving) return false;
+    if (this.saving || this.closing) return false;
     if (this.dirty) { this.drawerGuard.hidden = false; this.drawerGuard.querySelector('button').focus(); return false; }
-    this.closeDrawer(); return true;
+    const refreshingContext = Boolean(this.drawerContext?.refreshAction || this.drawerContext?.refreshWorkspace);
+    this.closeDrawer(); return !refreshingContext;
   }
   openDrawer() {
     this.drawer.setTitle(this.previous ? '编辑事项' : '新建事项');
@@ -221,6 +244,7 @@ export class InitiativeScreen {
     if (record?.entityId === this.previous?.entityId) record = this.previous;
     this.listScroll = $('#items').scrollTop;
     if (metadata) this.drawerContext = {
+      actionId: record && this.actions.previous?.initiativeId === record.entityId ? this.actions.previous.entityId : null,
       previous: this.previous, selectedContext: this.selectedContext, detailKind: this.detailKind,
       classes: $('.app').className,
       nodes: Object.fromEntries(['#initiative-actions', '#initiative-retired', '#workspace-notes', '#workspace-references'].map(selector => [selector, [...$(selector).childNodes]])),
@@ -259,11 +283,12 @@ export class InitiativeScreen {
   }
   async details() {
     const decisions = this.pendingDecisions || this.decisions();
-    $('#initiative-actions').replaceChildren(); $('#initiative-retired').replaceChildren(); $('#initiative-decisions').replaceChildren();
+    const clear = () => { for (const selector of ['#initiative-actions', '#initiative-retired', '#initiative-decisions']) $(selector).replaceChildren(); };
     const record = this.previous; this.renderContext();
-    if (!record) { this.ending(); return; }
+    if (!record) { clear(); this.ending(); return; }
     const [actions, initiatives] = await Promise.all([allRecords(this.actions.repository), allRecords(this.repository)]);
     if (record !== this.previous) return;
+    clear();
     for (const action of actions.filter(a => a.initiativeId === record.entityId)) {
       const button = selectionRow(`${action.description} · ${statusLabel(action.status)}`, async () => {
         this.rememberContext();
@@ -334,18 +359,21 @@ export class InitiativeScreen {
             const [kind, target] = select.value.split(':'); decisions[select.dataset.action] = {kind, target};
           }
           // Keep the previous revision as the parent while committing the user's fields.
+          if (this.drawerContext) this.drawerContext.refreshWorkspace = true;
+          if (this.drawerContext?.actionId) this.drawerContext.refreshAction = this.drawerContext.actionId;
           result = await endInitiative(this.repository, this.actions.repository, this.previous, decisions, fields);
         } else result = await this.repository.save(fields, this.previous, this.retry);
         this.rememberCommit(result.record);
         this.recoveredDraft = false; this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.form(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地'); await this.list(); await this.details();
+        if (this.drawerContext) this.drawerContext.refreshWorkspace = false;
         if (this.drawer.panel.open) {
           const saved = result.record;
           if (this.drawerContext?.previous?.entityId === saved.entityId) {
             this.drawerContext.previous = saved; this.drawerContext.nodes = null;
             this.drawerContext.text = {};
           }
-          this.closeDrawer();
+          if (!await this.closeDrawer()) return false;
           if (this.previous?.entityId === saved.entityId) { this.previous = saved; this.renderContext(); }
         }
         return true;

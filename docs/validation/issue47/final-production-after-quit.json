@@ -1,25 +1,25 @@
 {
-  "id": "4632a06e-e763-4df2-99e6-41ca81dcee43",
+  "id": "8b5867b4-5bc5-4d81-b176-890e56f35b4b",
   "ok": true,
   "result": {
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue47productionfinal (pid 92630)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t42 container 新建事项\n\t\t\t\t43 container\n\t\t\t\t\t44 heading 新建事项\n\t\t\t\t\t45 button 关闭新建事项\n\t\t\t\t46 container\n\t\t\t\t\t47 container\n\t\t\t\t\t\t48 text 标题\n\t\t\t\t\t\t49 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t50 container\n\t\t\t\t\t\t51 text 目标\n\t\t\t\t\t\t52 text entry area (settable) 目标\n\t\t\t\t\t53 container\n\t\t\t\t\t\t54 text 当前进展\n\t\t\t\t\t\t55 text entry area (settable) 当前进展\n\t\t\t\t\t56 container\n\t\t\t\t\t\t57 text 状态\n\t\t\t\t\t\t58 pop up button 状态, Value: 进行中\n\t\t\t\t\t59 summary 结束与重新开启, Value: 0\n\t\t\t\t\t60 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t65 text 事项草稿尚未保存\n\t\t\t\t62 container\n\t\t\t\t\t63 button 取消\n\t\t\t\t\t64 button 创建事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 49 text field (settable) 标题, Value: 最终生产路径守卫.",
-      "focusedElementId": 49,
-      "id": "84AF5EBD-9565-47AD-8102-B909C6A6A01B",
+      "treeText": "App=dev.localnotes.validation.issue47productionfinal (pid 4765)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t44 container 新建事项\n\t\t\t\t45 container\n\t\t\t\t\t46 heading 新建事项\n\t\t\t\t\t47 button 关闭新建事项\n\t\t\t\t48 container\n\t\t\t\t\t49 container\n\t\t\t\t\t\t50 text 标题\n\t\t\t\t\t\t51 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t52 container\n\t\t\t\t\t\t53 text 目标\n\t\t\t\t\t\t54 text entry area (settable) 目标\n\t\t\t\t\t55 container\n\t\t\t\t\t\t56 text 当前进展\n\t\t\t\t\t\t57 text entry area (settable) 当前进展\n\t\t\t\t\t58 container\n\t\t\t\t\t\t59 text 状态\n\t\t\t\t\t\t60 pop up button 状态, Value: 进行中\n\t\t\t\t\t61 summary 结束与重新开启, Value: 0\n\t\t\t\t\t62 summary 管理笔记关联与来源引用, Value: 0\n\t\t\t\t\t67 text 事项草稿尚未保存\n\t\t\t\t64 container\n\t\t\t\t\t65 button 取消\n\t\t\t\t\t66 button 创建事项\n\t16 close button\n\t17 full screen button, Secondary Actions: zoom the window\n\t18 minimize button\n\t19 text 拾记 · Local Notes\n\nThe focused UI element is 51 text field (settable) 标题, Value: 最终生产路径守卫.",
+      "focusedElementId": 51,
+      "id": "7E4D4B9A-3C93-462B-B077-4C968241B5FA",
       "app": {
-        "bundleId": "dev.localnotes.validation.issue47productionfinal",
-        "pid": 92630,
-        "name": "LocalNotes"
+        "pid": 4765,
+        "name": "LocalNotes",
+        "bundleId": "dev.localnotes.validation.issue47productionfinal"
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 12213,
+        "id": 12728,
         "height": 832,
         "isOffscreen": false,
-        "y": 47,
+        "y": 48,
         "isMinimized": false,
         "platform": {
           "layer": 0
@@ -39,16 +39,16 @@
       "width": 2360,
       "height": 1664,
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/4632a06e-e763-4df2-99e6-41ca81dcee43-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/8b5867b4-5bc5-4d81-b176-890e56f35b4b-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-18T16:47:49.745Z"
+      "expiresAt": "2026-11-18T17:01:13.046Z"
     },
     "screenshotStatus": {
+      "state": "captured",
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 12213
-      },
-      "state": "captured"
+        "windowId": 12728
+      }
     }
   },
   "_meta": {
