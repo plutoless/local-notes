@@ -6,14 +6,17 @@ export const initiativeLabels = {active: '进行中', later: '以后再做', end
 export const sourceLabels = {unchanged: '来源未变', available: '来源可用', changed: '来源已修改，请核对引用', valid: '来源可用', unavailable: '来源不可用，请重新关联', missing: '来源缺失，请重新关联', moved: '来源已移动', ambiguous: '找到多个来源，请手动关联'};
 export const statusLabel = value => actionLabels[value] || initiativeLabels[value] || sourceLabels[value] || '需要核对';
 
-export function button(text, run, {primary = false} = {}) {
+export function button(text, run, {primary = false, variant = primary ? 'primary' : 'quiet', label} = {}) {
   const node = document.createElement('button'); node.type = 'button'; node.textContent = text;
-  if (primary) node.className = 'primary';
+  node.className = `ui-action ${variant}`;
+  if (label) node.setAttribute('aria-label', label);
   node.onclick = async () => { node.disabled = true; try { await run(); } finally { node.disabled = false; } };
   return node;
 }
 
 export function feedback(target, message, diagnostic = '') {
+  target.classList.add('ui-feedback');
+  target.dataset.state = diagnostic ? 'failed' : 'saved';
   target.replaceChildren();
   const explanation = document.createElement('p'); explanation.textContent = message; target.append(explanation);
   if (diagnostic) {
@@ -74,4 +77,42 @@ export function directoryLabel(root) {
   const label = document.querySelector('#root-label');
   label.textContent = root;
   document.querySelector('#root-name').textContent = root === 'Sample' ? '样本笔记' : root?.split(/[\\/]/).filter(Boolean).pop() || '本地笔记';
+}
+
+// These constructors own DOM presentation only; callers retain queries and mutations.
+export function disclosure(label, children = [], className = '') {
+  const node = document.createElement('details'); node.className = `ui-disclosure ${className}`;
+  const summary = document.createElement('summary'); summary.textContent = label;
+  node.append(summary, ...children); return node;
+}
+
+export function sectionHeading(text, {level = 2, className = ''} = {}) {
+  const node = document.createElement(`h${level}`); node.className = `ui-heading ${className}`;
+  node.textContent = text; return node;
+}
+
+export function field(label, control, {help = '', invalid = false} = {}) {
+  const node = document.createElement('label'); node.className = 'ui-field';
+  const name = document.createElement('span'); name.textContent = label;
+  control.setAttribute('aria-invalid', String(invalid));
+  node.append(name, control);
+  if (help) {
+    const hint = document.createElement('small'); hint.id = `field-help-${++field.sequence}`;
+    hint.textContent = help; node.append(hint); control.setAttribute('aria-describedby', hint.id);
+  }
+  return node;
+}
+field.sequence = 0;
+
+export function selectionRow(label, run, {selected = false} = {}) {
+  const node = button(label, run); node.classList.add('ui-row');
+  node.classList.toggle('selected', selected); node.setAttribute('aria-current', String(selected));
+  return node;
+}
+
+export function pagination(previous, next, {hasPrevious = false, hasNext = false} = {}) {
+  const node = document.createElement('div'); node.className = 'ui-pagination';
+  const back = button('上一页', previous, {variant: 'secondary'});
+  const forward = button('下一页', next, {variant: 'secondary'});
+  back.disabled = !hasPrevious; forward.disabled = !hasNext; node.append(back, forward); return node;
 }
