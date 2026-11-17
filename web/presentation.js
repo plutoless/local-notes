@@ -53,3 +53,25 @@ export function bindDialog(panel) {
     }
   });
 }
+
+// Icons are fixed presentation assets, never generated from user content.
+export function icon(name) {
+  const paths = {
+    focus: '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 12 3 3 5-6"/>',
+    notes: '<path d="M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7"/>',
+    actions: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
+    initiatives: '<rect x="3" y="4" width="7" height="6" rx="1.5"/><rect x="14" y="14" width="7" height="6" rx="1.5"/><path d="M6 10v7h8M10 7h8v7"/>',
+    organize: '<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/>',
+    favorites: '<path d="m12 3 2.8 5.8 6.4.9-4.6 4.5 1.1 6.3-5.7-3-5.7 3 1.1-6.3L2.8 9.7l6.4-.9z"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    folder: '<path d="M3 7V5h7l2 2h9v13H3z"/>',
+    sync: '<path d="M20 7a9 9 0 0 0-15-2L2 8m0-5v5h5M4 17a9 9 0 0 0 15 2l3-3m0 5v-5h-5"/>'
+  };
+  return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.notes}</svg>`;
+}
+
+export function directoryLabel(root) {
+  const label = document.querySelector('#root-label');
+  label.textContent = root;
+  document.querySelector('#root-name').textContent = root === 'Sample' ? '样本笔记' : root?.split(/[\\/]/).filter(Boolean).pop() || '本地笔记';
+}

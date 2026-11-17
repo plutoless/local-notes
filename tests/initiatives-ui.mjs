@@ -56,6 +56,7 @@ try {
   await page.locator('#initiative-title').fill('Release planning');
   await page.locator('#initiative-goal').fill('Ship the next version');
   await page.locator('#initiative-progress').fill('Validation in progress');
+  await page.locator('#initiative-link-details summary').click();
   await page.locator('#initiative-add-link').click();
   await page.locator('.initiative-source input').fill('reference.md');
   await page.locator('.initiative-source textarea').fill('Run the sample command');
@@ -104,7 +105,7 @@ try {
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#initiative-new-note').click();
   await page.locator('#editor').waitFor({state: 'visible'});
-  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await page.locator('#title').fill('Working log');
   await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
@@ -166,6 +167,7 @@ try {
   await page.locator('.source-state').filter({hasText: '来源已移至 moved-reference.md'}).waitFor();
   assert.equal(await readFile(join(fixture.root, 'moved-reference.md'), 'utf8'), original);
   // Separate roles, source warnings, and explicit note round trips.
+  await page.locator('#initiative-link-details').evaluate(node => node.open = true);
   const roleSelect = page.locator('.initiative-source select').first();
   await roleSelect.focus(); await roleSelect.selectOption('reference');
   assert.equal(await page.locator('#initiative-references select').evaluate(el => el === document.activeElement), true);
@@ -177,7 +179,7 @@ try {
   assert.equal(await page.locator('#initiative-working-notes .initiative-source').count(), 1);
   await page.locator('#initiative-working-notes .source-open').click();
   await page.locator('#editor').waitFor({state: 'visible'});
-  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索笔记');
+  assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await page.locator('#note-details').evaluate(node => node.open = true);
   await page.locator('#note-initiatives button').click();
   await page.locator('#initiative-editor').waitFor({state: 'visible'});
@@ -213,6 +215,7 @@ try {
   releaseWrite();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#initiative-back').click();
+  await page.locator('#workspace-back').click();
   let releaseQuery; queryGate = new Promise(resolve => { releaseQuery = resolve; });
   await page.locator('#search').fill('没有这个标题');
   await page.locator('#index-state').filter({hasText: '正在载入事项…'}).waitFor();

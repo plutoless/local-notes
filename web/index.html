@@ -13,7 +13,7 @@
     <div class="app home">
       <aside>
         <div class="brand">拾记</div>
-        <button id="new" class="primary">＋ 随手记</button>
+        <button id="new" class="primary">随手记</button>
         <nav aria-label="主导航">
           <button data-view="focus" class="active">当前重点</button
           ><button data-view="notes">
@@ -23,9 +23,12 @@
           ><button data-view="organize">整理</button
           ><button data-view="favorites">收藏</button>
         </nav>
-        <div class="folder-label">当前笔记目录</div>
-        <div id="root-label">样本笔记</div>
-        <button id="choose" class="quiet">选择本地目录 ↗</button>
+        <details class="directory-details">
+          <summary><span id="root-name">样本笔记</span></summary>
+          <div class="folder-label">当前笔记目录</div>
+          <div id="root-label">样本笔记</div>
+          <button id="choose" class="quiet">选择本地目录</button>
+        </details>
       </aside>
       <section class="collection">
         <header>
@@ -117,6 +120,19 @@
         <div id="items"></div>
       </section>
       <main>
+        <section id="workspace-context" aria-label="事项上下文" hidden>
+          <div class="workspace-context-heading"><button id="workspace-back" type="button">‹ 事项列表</button><span>事项工作区</span></div>
+          <button id="workspace-overview" type="button" class="workspace-overview"><strong id="workspace-title"></strong><span id="workspace-progress"></span><small>查看目标与进展 →</small></button>
+          <section class="workspace-section"><div class="section-heading"><h2>行动</h2><button type="button" id="initiative-new-action" aria-describedby="initiative-help">新建行动</button></div>
+            <p id="initiative-help">先保存事项，再添加行动或笔记；已结束事项不能添加行动。</p>
+            <div id="initiative-actions"></div>
+            <details><summary>已完成和已取消</summary><div id="initiative-retired"></div></details>
+          </section>
+          <section class="workspace-section"><div class="section-heading"><h2>笔记与资料</h2><button type="button" id="initiative-new-note" aria-describedby="initiative-help">新建笔记</button></div>
+            <div id="workspace-notes"></div>
+          </section>
+        </section>
+        <div id="workspace-detail">
         <div id="empty" class="empty">
           <h2>尚未打开内容</h2>
           <p>从列表选择内容，或使用「新建」开始记录。</p>
@@ -220,22 +236,6 @@
                 <option value="ended">已结束</option>
               </select></label
             >
-            <h3>未完成行动</h3>
-            <div id="initiative-actions"></div>
-            <p id="initiative-help">
-              先保存事项，再添加行动或笔记；已结束事项不能添加行动。
-            </p>
-            <button
-              aria-describedby="initiative-help"
-              type="button"
-              id="initiative-new-action"
-            >
-              在此事项中新建行动
-            </button>
-            <details>
-              <summary>已完成和已取消的行动</summary>
-              <div id="initiative-retired"></div>
-            </details>
             <details id="initiative-ending">
               <summary>结束与重新开启</summary>
               <h3>结束前处理未完成行动</h3>
@@ -244,22 +244,21 @@
               <div id="initiative-decisions"></div>
               <button type="button" id="initiative-cancel-ending">暂不结束</button>
             </details>
-            <h3>相关笔记</h3>
+            <details id="initiative-link-details"><summary>管理笔记关联与来源引用</summary>
             <p>工作笔记记录推进过程，参考资料提供依据。移除关联不会删除原文。</p>
             <div id="initiative-sources">
               <section><h4>工作笔记</h4><div id="initiative-working-notes"></div></section>
               <section><h4>参考资料</h4><div id="initiative-references"></div></section>
             </div>
             <button type="button" id="initiative-add-link">关联已有笔记</button
-            ><button type="button" aria-describedby="initiative-help" id="initiative-new-note">
-              在此事项中新建笔记
-            </button>
+            ></details>
             <div id="initiative-save-state" role="status"></div>
             <button type="submit" class="primary" id="initiative-save">保存事项</button
             ><button type="button" id="initiative-discard">
               放弃未保存的草稿
             </button>
           </form>
+        </div>
         </div>
       </main>
     </div>
