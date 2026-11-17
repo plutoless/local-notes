@@ -85,3 +85,9 @@ Downstream #32–#37 must:
 Issue #36 uses `comparisonRow(label, value, {changed})` inside a definition list. It wraps long user evidence, marks differing fields with Chinese text, and uses semantic text/divider tokens. Rows are read-only; version selection uses secondary actions, and resolution editing uses `field()`. Blocked incomplete/cyclic histories retain readable evidence while their controls are disabled. The catalogue demonstrates both unchanged and differing rows. The synchronization panel reuses the shell/Focus `selectionRow()` for record jump navigation, the capture field pattern, and the existing feedback and dialog catalogue states; no private palette or control variant is introduced.
 
 `bindDialog()` additionally returns `open()` for callers that need to capture an opener synchronously before focusing a newly visible panel. Existing hidden-attribute consumers remain supported. Closing restores that opener without replacing the underlying editor or its scroll surface.
+
+## Organization adoption (#35)
+
+Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
+
+The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, a 3px focus-within outline, and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
