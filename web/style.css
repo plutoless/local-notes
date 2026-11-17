@@ -422,3 +422,13 @@ details { overflow-wrap: anywhere; }
 #library-location { color: var(--muted); font-size: 13px; }
 #library-tools .ui-pagination { flex-basis: auto; margin-left: auto; }
 @media (max-width: 700px) { .ui-drawer { width: 100vw; } .library-filter-group { flex-basis: 100%; } }
+
+/* Initiative metadata shares the C task rhythm with a wider readable surface. */
+.ui-drawer-wide { width: min(460px, 100vw); }
+.ui-drawer-body .document { padding: 0; margin: 0; max-width: none; }
+.ui-drawer-body textarea, .ui-drawer-body select { min-width: 0; width: 100%; }
+@media (max-width: 700px) { .ui-drawer-wide { width: 100vw; } }
+.ui-drawer-body .document > .ui-field,
+.ui-drawer-body .document > .ui-disclosure { margin-block: 0; }
+.ui-drawer-body .document > .ui-field { gap: 8px; }
+.ui-drawer-body #initiative-ending { margin-block: 0; }

@@ -7,7 +7,7 @@
     "test": "node --test tests/*.test.js",
     "build:mac": "bash scripts/build-mac.sh",
     "build:android": "bash scripts/build-android.sh",
-    "test:ui": "node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs && node tests/topic-drawer-ui.mjs",
+    "test:ui": "node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs && node tests/topic-drawer-ui.mjs && node tests/initiative-drawer-ui.mjs",
     "check": "node --check web/presentation.js && node --check web/organization.js && node --check web/organize-screen.js && node --check web/library.js && node --check web/library-screen.js && node --check web/app.js && node --check web/actions.js && node --check web/action-screen.js && node --check web/bridge.js && node --check web/core.js && node --check web/initiatives.js && node --check web/initiative-screen.js && node --check web/focus-screen.js"
   }
 }

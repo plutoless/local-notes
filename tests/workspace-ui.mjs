@@ -89,11 +89,11 @@ try {
   await writeFile(sourcePath, original);
   await page.getByRole('button', {name: '关闭提示'}).click();
   await page.locator('#action-open-initiative').click();
-  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  await page.locator('#workspace-context').waitFor({state: 'visible'});
   assert.equal(await page.locator('nav [data-view=initiatives]').getAttribute('aria-current'), 'page');
   await page.locator('#initiative-actions button').filter({hasText:'把阅读摘录'}).click();
   await page.locator('#action-open-initiative').click();
-  await page.locator('#initiative-title').waitFor({state:'visible'});
+  await page.locator('#workspace-context').waitFor({state:'visible'});
   assert.equal(await page.locator('#workspace-return-action').isHidden(), false, 'Nested context action retains outer origin');
   await page.locator('#workspace-references button').click();
   await page.locator('#reading').waitFor({state: 'visible'});
@@ -176,11 +176,13 @@ try {
   assert.match(await page.locator('#body').inputValue(), /已补充本周资料说明/);
   failNoteSave = false; await page.getByRole('button', {name: '关闭提示'}).click();
   await page.locator('#workspace-overview').click();
-  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  await page.locator('#initiative-drawer').waitFor({state: 'visible'});
   assert.match(await readFile(sourcePath, 'utf8'), /已补充本周资料说明/);
   assert.equal(await page.locator('#initiative-title').inputValue(), '整理工作资料');
   await page.setViewportSize({width: 393, height: 852});
-  await page.locator('#initiative-back').click();
+  await page.locator('#initiative-discard').click();
+  await page.locator('#editor').waitFor({state:'visible'});
+  await page.locator('#back').click();
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   await page.screenshot({path: 'docs/validation/issue33/workspace-mobile-context.png'});
   await rm(sourcePath);
@@ -197,7 +199,7 @@ try {
   await page.locator('#workspace-context').waitFor({state: 'visible'});
   await page.locator('#workspace-back').click();
   await page.locator('#items .card', {hasText: '准备下次评审'}).click();
-  await page.locator('#initiative-title').waitFor({state: 'visible'});
+  await page.locator('#workspace-context').waitFor({state: 'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(), '准备下次评审');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await page.locator('#items [data-entity-id]').filter({hasText:'确定本周最重要'}).click();
