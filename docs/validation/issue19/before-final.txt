@@ -1,0 +1,39 @@
+App=dev.localnotes.validation.issue19 (pid 75169)
+Window: "拾记 · Local Notes", App: LocalNotes.
+
+0 standard window 拾记 · Local Notes
+	1 scroll area
+		2 HTML content 拾记 · Local Notes
+			3 container
+				4 text 拾记
+				5 button ＋ 随手记
+				6 container 主导航
+					7 button 当前重点
+					8 button 笔记库 1
+					9 button 已确认行动
+					10 button 事项
+					11 button 整理
+					12 button 收藏
+					13 button 同步检查
+				14 text 当前笔记目录
+				52 text /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-19/build/issue19/Sync
+				16 button 选择本地目录 ↗
+			36 container
+				17 heading 笔记库
+				37 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…
+			38 pop up button 筛选主题, Value: 全部主题
+			39 button 新建主题
+			40 button (disabled) 重命名主题
+			41 button 刷新
+			42 button 上一级目录
+			53 text 全部目录
+			44 button (disabled) 上一页
+			45 button (disabled) 下一页
+			54 button 浏览目录
+			55 button Synthetic reference material ## OKRs - [ ] Improve trial conversion by 10% - [x] Publish last quarter's result ## Evaluation conditions - [ ] A proposal passes when all reviewers approve ## Process checklist - reference.md · 11/16/2026
+	31 close button
+	32 full screen button, Secondary Actions: zoom the window
+	33 minimize button
+	34 text 拾记 · Local Notes
+
+No UI element is currently focused.
