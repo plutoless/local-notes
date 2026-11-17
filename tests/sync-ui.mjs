@@ -65,6 +65,11 @@ try {
   await panel.waitFor();
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
   await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
+  await page.setViewportSize({width:393,height:852});
+  assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-393px-long.png`,fullPage:true});
+  await page.setViewportSize({width:1180,height:800});
   const editor = panel.getByLabel('合并版本 JSON');
   delayFiles = true;
   await panel.getByRole('button',{name:'重新检查',exact:true}).click();
