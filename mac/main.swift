@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "presentation.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -14,7 +14,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
 }
 func failure(_ message: String) -> NSError { NSError(domain: "LocalNotes", code: 1, userInfo: [NSLocalizedDescriptionKey: message]) }
-final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate, NSWindowDelegate {
+final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate, NSWindowDelegate {
     var window: NSWindow!; var web: WKWebView!; var root: URL!; var support: URL!
     let fm = FileManager.default
     var watch: DispatchSourceFileSystemObject?
@@ -44,7 +44,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         } catch { fatalError(error.localizedDescription) }
         let config = WKWebViewConfiguration(); config.userContentController.add(self,name:"notes")
         config.setURLSchemeHandler(Assets(Bundle.main.resourceURL!.appendingPathComponent("web")),forURLScheme:"notes")
-        web = WKWebView(frame:.zero,configuration:config); web.navigationDelegate=self
+        web = WKWebView(frame:.zero,configuration:config); web.navigationDelegate=self; web.uiDelegate=self
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1180,height:800),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)
         window.title="拾记 · Local Notes"; window.minSize=NSSize(width:380,height:580); window.contentView=web; window.delegate=self; window.center(); window.makeKeyAndOrderFront(nil)
         let menu = NSMenu(); let item=NSMenuItem(); menu.addItem(item); let submenu=NSMenu(); submenu.addItem(withTitle:"退出拾记", action:#selector(NSApplication.terminate(_:)),keyEquivalent:"q"); item.submenu=submenu
@@ -60,18 +60,24 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
             let unsaved = value as? Bool ?? true
             if !unsaved { NSApp.terminate(nil) }
-            else { let alert=NSAlert();alert.messageText="还有内容未保存";alert.informativeText="请先处理保存提示，再关闭窗口。";alert.runModal() }
+            else { let alert=NSAlert();alert.messageText="还有内容未保存";alert.informativeText="请先处理保存提示，再关闭窗口。";alert.addButton(withTitle:"确定");alert.runModal() }
         }; return false
     }
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
         // Use same guard for Cmd+Q; response is asynchronous.
         web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
             let ok = !(value as? Bool ?? true)
-            if !ok { let a=NSAlert();a.messageText="还有内容未保存，请先处理保存提示。";a.runModal() }
+            if !ok { let a=NSAlert();a.messageText="还有内容未保存，请先处理保存提示。";a.addButton(withTitle:"确定");a.runModal() }
             sender.reply(toApplicationShouldTerminate:ok)
         };return .terminateLater
     }
     func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" ? .allow : .cancel)}
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        let alert = NSAlert(); alert.messageText = prompt
+        let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 24)); field.stringValue = defaultText ?? ""
+        alert.accessoryView = field; alert.addButton(withTitle: "确定"); alert.addButton(withTitle: "取消")
+        completionHandler(alert.runModal() == .alertFirstButtonReturn ? field.stringValue : nil)
+    }
     func resolved(_ path:String, allowMissing:Bool=false)throws->URL {
         let parts=path.split(separator:"/",omittingEmptySubsequences:false)
         guard !path.hasPrefix("/"),!path.contains("\\"),path.lowercased().hasSuffix(".md"),parts.allSatisfy({!$0.isEmpty && !$0.hasPrefix(".") && !["credentials", "localnotesdata"].contains($0.lowercased())}) else {throw failure("无效的笔记路径")}
@@ -99,7 +105,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         if cmd.hasPrefix("reference") { return try ReferenceIndex(privateRoot: support, workspaceId: req["workspaceId"] as! String).run(req) }
         switch cmd {
         case "choose":
-            let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"
+            let panel=NSOpenPanel();panel.canChooseDirectories=true;panel.canChooseFiles=false;panel.message="选择专用笔记目录（请勿选择包含密钥的上层目录）"; panel.prompt="选择目录"; panel.title="选择笔记目录"
             guard panel.runModal() == .OK,let url=panel.url else{return ["cancelled":true]}
             guard url.lastPathComponent.lowercased() != "credentials" else {throw failure("不能将 Credentials 作为笔记目录")}
             root=url;observeRoot();UserDefaults.standard.set(url.path,forKey:"root");return [:]

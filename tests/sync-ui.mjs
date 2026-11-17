@@ -44,11 +44,11 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
-  await page.getByRole('heading', {name: 'Current Focus', exact: true, level: 2}).waitFor();
+  await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   const {ActionRepository} = await import('../web/actions.js');
   const {randomUUID} = await import('node:crypto');
   const repo = new ActionRepository(fixture.adapter); await repo.open();
@@ -56,14 +56,14 @@ try {
   const local = (await repo.save({...base, description: 'Local description'}, base)).record;
   const remote = {...base, revision: randomUUID(), parents: [base.revision], description: 'Remote description', status: 'completed', focusPosition: null};
   await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `revisions/${base.entityId}/${remote.revision}.json`, text: JSON.stringify(remote)});
-  await page.getByRole('button', {name: 'Sync review / Refresh'}).click();
-  const panel = page.getByRole('region', {name: 'Synchronization review'});
+  await page.getByRole('button', {name: '同步检查'}).click();
+  const panel = page.getByRole('dialog', {name: '同步检查'});
   await panel.waitFor();
-  await panel.getByText('Conflicting versions: compare, select or merge below.').waitFor();
-  const editor = panel.getByLabel('Merged version JSON');
+  await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
+  const editor = panel.getByLabel('合并版本 JSON');
   await editor.fill(JSON.stringify({...local, description: 'Merged explicitly'}));
-  await panel.getByRole('button', {name: 'Save selected / merged resolution locally'}).click();
-  await panel.getByText('No unresolved conflicts found in the available revisions.').waitFor();
+  await panel.getByRole('button', {name: '将选定或合并的版本保存到本地'}).click();
+  await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
   await repo.recover();
   const result = (await repo.query()).actions[0];
   assert.equal(result.description, 'Merged explicitly'); assert.deepEqual(new Set(result.parents), new Set([local.revision, remote.revision]));
