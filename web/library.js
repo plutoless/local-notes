@@ -66,10 +66,11 @@ export class Library {
     this.lastReads = reads; this.changed();
   }
   query(options = {}) { return this.request('referenceQuery', options); }
-  async saveTopic(name, previous = null) {
+  async saveTopic(name, previous = null, retry = null) {
     if (!name?.trim()) throw Error('请填写主题名称');
-    await this.topics.save({...previous, description: name.trim()}, previous);
-    this.records = await allRecords(this.topics); this.changed();
+    const saved = await this.topics.save({...previous, description: name.trim()}, previous, retry);
+    try { this.records = await allRecords(this.topics); this.changed(); }
+    catch (error) { error.record = saved.record; error.revisionSaved = true; throw error; }
   }
   async link(topic, note, linked) {
     const sources = topic.sources.filter(source => source.path !== note.path);
