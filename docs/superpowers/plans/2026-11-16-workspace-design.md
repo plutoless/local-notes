@@ -1,6 +1,6 @@
 # Approved Workspace Implementation Plan
 
-> **For agentic workers:** Execute this approved plan inline, task by task. Steps use checkbox (`- [ ]`) syntax for tracking. Use a fresh code review after implementation.
+> **For agentic workers:** Execute this approved plan inline, task by task. Steps use checkbox (`- [x]`) syntax for tracking. Use a fresh code review after implementation.
 
 **Goal:** Deliver the approved tree workspace with restrained native light styling in the real application.
 
@@ -21,11 +21,11 @@
 
 **Interfaces:** Keep `FocusScreen.show()` and existing DOM IDs. Add shared `icon(name)` returning trusted inline SVG. Per-action disclosures own existing reorder/remove buttons.
 
-- [ ] Replace green tokens with neutral surfaces and blue selection; separate subtle dividers from high-contrast input boundaries. Apply shared row/control/typography rules without changing persisted data.
-- [ ] Render one home heading and one primary control. Keep existing action-open accessible names and seven-item/pagination behavior. Use `<details class="row-menu"><summary>管理</summary>…</details>` for secondary action controls.
-- [ ] Put the root basename in the directory summary and retain the complete path inside its details.
-- [ ] Run `node tests/focus-ui.mjs` and inspect desktop/mobile screenshots. Expected: focus creation, reorder, removal, recovery, keyboard focus, contrast, and pagination pass.
-- [ ] Commit the shell/home change with its design record.
+- [x] Replace green tokens with neutral surfaces and blue selection; separate subtle dividers from high-contrast input boundaries. Apply shared row/control/typography rules without changing persisted data.
+- [x] Render one home heading and one primary control. Keep existing action-open accessible names and seven-item/pagination behavior. Use `<details class="row-menu"><summary>管理</summary>…</details>` for secondary action controls.
+- [x] Put the root basename in the directory summary and retain the complete path inside its details.
+- [x] Run `node tests/focus-ui.mjs` and inspect desktop/mobile screenshots. Expected: focus creation, reorder, removal, recovery, keyboard focus, contrast, and pagination pass.
+- [x] Commit the shell/home change with its design record.
 
 ### Task 2: Context-preserving initiative workspace
 
@@ -33,11 +33,11 @@
 
 **Interfaces:** `InitiativeScreen` owns selected context and `renderContext()`; `openNote(path)` retains context when initiated within the workspace. Existing `flush()` gates switching, `load(path)` opens note details, and action editor persistence remains unchanged.
 
-- [ ] Add `#workspace-context` and `#workspace-detail`. Move existing initiative action controls into context; render source-link buttons there while retaining editable source evidence in the overview.
-- [ ] Keep `.workspace` active while overview/action/note details change. Explicit detail back controls restore overview, and the context back control returns to the initiative list on narrow screens.
-- [ ] Add integration assertions using the production storage adapter: selected initiative survives action opening, note opening/edit/save, overview return, failed save, and 393px navigation.
-- [ ] Run `node tests/workspace-ui.mjs` and `node tests/initiatives-ui.mjs`. Expected: workspace behavior and existing ending/recovery/source-link flows pass.
-- [ ] Commit the workspace change.
+- [x] Add `#workspace-context` and `#workspace-detail`. Move existing initiative action controls into context; render source-link buttons there while retaining editable source evidence in the overview.
+- [x] Keep `.workspace` active while overview/action/note details change. Explicit detail back controls restore overview, and the context back control returns to the initiative list on narrow screens.
+- [x] Add integration assertions using the production storage adapter: selected initiative survives action opening, note opening/edit/save, overview return, failed save, and 393px navigation.
+- [x] Run `node tests/workspace-ui.mjs` and `node tests/initiatives-ui.mjs`. Expected: workspace behavior and existing ending/recovery/source-link flows pass.
+- [x] Commit the workspace change.
 
 ### Task 3: Verify and provide an isolated preview
 

@@ -79,7 +79,7 @@ export class FocusScreen {
   actionRow(action) {
     const row = document.createElement('div'); row.className = 'card focus-row';
     const open = this.button('', async () => { if (await this.navigate('actions')) await this.actions.edit(action); });
-    open.className = 'focus-row-open'; open.setAttribute('aria-label', '打开行动');
+    open.className = 'focus-row-open'; open.setAttribute('aria-label', `打开行动：${action.description}`);
     open.innerHTML = `<span class="action-marker" aria-hidden="true"></span><span><h3>${esc(action.description)}</h3><span class="row-meta">${esc(statusLabel(action.status))}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ''}</span>${action.waitingOn ? `<span class="waiting-condition">${esc(action.waitingOn)}</span>` : ''}</span>`;
     row.append(open); return row;
   }
