@@ -228,14 +228,25 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(),'保留原任务的中文草稿');
   assert.equal(await page.locator('main').evaluate(el=>el.scrollTop),mainScroll);
   assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),true);
-  // Modal close must preserve each editor family, including unsaved values.
+  // The initiative task is itself modal: background review cannot stack on it.
   await page.locator('nav [data-view=initiatives]').click();
   await page.locator('#initiative-new').click();
   await page.locator('#initiative-title').fill('冲突检查返回事项草稿');
+  await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el.focus());
+  assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),false);
+  assert.equal(await panel.isVisible(),false);
+  await page.locator('#initiative-save').click();
+  await page.waitForFunction(()=>!document.querySelector('#initiative-drawer').open);
+  await page.locator('#items [data-initiative-id]').filter({hasText:'冲突检查返回事项草稿'}).click();
+  await page.locator('#workspace-overview').waitFor({state:'visible'});
+  await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
   await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+  await page.locator('#workspace-overview').click();
+  await page.locator('#initiative-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#initiative-title').inputValue(),'冲突检查返回事项草稿');
+  await page.locator('#initiative-discard').click();
   await page.locator('nav [data-view=notes]').click();
   if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('#items [data-path="reference.md"]').click();
