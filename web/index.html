@@ -13,7 +13,7 @@
     <div class="app home">
       <aside>
         <div class="brand">拾记</div>
-        <button id="new" class="primary">随手记</button>
+        <button id="new" class="ui-action secondary">随手记</button>
         <nav aria-label="主导航">
           <button data-view="focus" class="active">当前重点</button
           ><button data-view="notes">
@@ -27,7 +27,7 @@
           <summary><span id="root-name">样本笔记</span></summary>
           <div class="folder-label">当前笔记目录</div>
           <div id="root-label">样本笔记</div>
-          <button id="choose" class="quiet">选择本地目录</button>
+          <button id="choose" class="ui-action quiet">选择本地目录</button>
         </details>
       </aside>
       <section class="collection">
@@ -105,7 +105,7 @@
               <option value="">全部事项</option>
             </select></label
           >
-          <div class="action-pagination">
+          <div class="action-pagination ui-pagination">
             <button id="action-previous">上一页</button
             ><span id="action-page"></span
             ><button id="action-next">下一页</button>
@@ -140,6 +140,7 @@
         <div id="editor" hidden>
           <div class="toolbar">
             <button id="back">‹ 返回列表</button>
+            <button id="capture-return" class="ui-action quiet" hidden>保存并返回原任务</button><button id="note-save" class="ui-action secondary">保存笔记</button>
             <span id="note-mode">编辑笔记</span>
             <span id="save-state" role="status">已保存到本地</span>
             <button id="mode">阅读</button>
@@ -149,7 +150,7 @@
             <details id="note-details">
               <summary>笔记信息与整理</summary>
               <p>来源路径：<span id="file-path"></span></p>
-              <button id="star" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
+              <button id="star" class="ui-action icon-action" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
               <button id="rename">移动 / 改名</button>
               <button id="repair-links" hidden>重试更新关联</button>
               <h2>主题</h2><div id="note-topics"></div>
@@ -270,7 +271,7 @@
       aria-labelledby="conflict-heading"
       hidden
     >
-      <div class="dialog">
+      <div class="dialog ui-panel ui-dialog">
         <h2 id="conflict-heading">文件在其他地方发生了修改</h2>
         <p>你的编辑还在这里。可以另存一份，也可以查看磁盘上的版本。</p>
         <button id="copy" class="primary">将我的编辑另存为副本</button

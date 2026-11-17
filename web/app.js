@@ -1,4 +1,4 @@
-import {feedback, errorFeedback, bindDialog, icon} from './presentation.js';
+import {feedback, errorFeedback, bindDialog, icon, field} from './presentation.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -11,6 +11,7 @@ import {ActionScreen} from './action-screen.js';
 const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,blocked=false,readMode=false;const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=document.createElement('button');close.textContent='关闭提示';close.onclick=()=>$('#notice').hidden=true;$('#notice').append(close);}
 for (const button of document.querySelectorAll('nav [data-view]')) button.insertAdjacentHTML('afterbegin', icon(button.dataset.view));
+const search = $('#search'); const searchParent = search.parentNode; searchParent.append(field('搜索', search));
 $('#new').insertAdjacentHTML('afterbegin', icon('plus'));
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
@@ -34,6 +35,7 @@ const syncScreen = new SyncScreen(() => [actions.repository, initiatives.reposit
 });
 async function navigate(next) {
   if (!await flush(true)) return false;
+  captureOrigin = null; $('#capture-return').hidden = true;
   if (view === 'organize' && next !== 'organize') await organize.organization.cancel();
   $('#organize-tools').hidden = next !== 'organize';
   if (next === 'initiatives') initiatives.detailKind = 'overview';
@@ -41,6 +43,7 @@ async function navigate(next) {
   view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
   document.querySelector('nav .active')?.classList.remove('active'); document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
+  for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === next ? 'page' : 'false');
   $('.app').classList.remove('editing'); await refresh(); return true;
 }
 async function refreshBackground() {
@@ -64,8 +67,27 @@ function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiati
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
 function note(cmd,args={}){return native(cmd,{workspaceId:rootKey,...args});}
 function content(){return withTitle($('#body').value,$('#title').value||'无标题');}
-function updateStar(){const selected=stars.has(current);$('#star').textContent=selected?'★ 已收藏':'☆ 收藏';$('#star').setAttribute('aria-label',selected?'取消收藏笔记':'收藏笔记');$('#star').setAttribute('aria-pressed',String(selected));}
-function state(msg){$('#save-state').textContent=msg;}
+function updateStar(){const selected=stars.has(current);$('#star').textContent=selected?'★':'☆';$('#star').title=selected?'取消收藏笔记':'收藏笔记';$('#star').setAttribute('aria-label',selected?'取消收藏笔记':'收藏笔记');$('#star').setAttribute('aria-pressed',String(selected));}
+function state(msg){
+  $('#save-state').textContent=msg;
+  $('#save-state').dataset.state = /恢复/.test(msg) ? 'recovered' : /正在保存/.test(msg) ? 'saving' : /编辑中|尚有/.test(msg) ? 'dirty' : /未保存|外部修改/.test(msg) ? 'failed' : 'saved';
+}
+let captureOrigin = null;
+$('#note-save').onclick = () => save();
+$('#capture-return').onclick = async () => {
+  if (!captureOrigin || !await flush()) return;
+  const origin = captureOrigin;
+  if (!await navigate(origin.view)) return;
+  if (origin.initiative) {
+    await initiatives.edit(origin.initiative);
+    if (origin.note) await openContextNote(origin.note, origin.reading);
+    else if (origin.action) { initiatives.detailKind = 'action'; $('.app').classList.add('detail-open'); await actions.edit(origin.action); }
+  } else if (origin.action) await actions.edit(origin.action);
+  else if (origin.note) { await load(origin.note); if (readMode !== origin.reading) $('#mode').click(); }
+  captureOrigin = null; $('#capture-return').hidden = true;
+  if (origin.opener?.isConnected && origin.opener.getClientRects().length) origin.opener.focus();
+  else document.querySelector('nav .active')?.focus();
+};
 async function refresh(){const generation=workspaceGeneration;$('.app').classList.toggle('library-view',['notes','favorites'].includes(view));$('.app').classList.toggle('home', view === 'focus'); $('.app').classList.toggle('organization-view', view === 'organize'); $('.app').classList.toggle('workspace', view === 'initiatives'); $('#workspace-context').hidden = view !== 'initiatives' || (!initiatives.previous && !initiatives.dirty);
 if(view==='initiatives' && ((initiatives.detailKind === 'note' && !$('#editor').hidden) || (initiatives.detailKind === 'action' && !$('#action-editor').hidden))){await initiatives.list(); await initiatives.details(); return;}
 if(view==='organize'){await organize.show(libraryScreen.library);return;}
@@ -81,7 +103,7 @@ if(view==='focus'){
   return;
 }if(view==='initiatives'){await actions.show();actions.active=false;await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;legacyRoot=workspace.root==='Sample'?'Sample · 样本笔记':workspace.root||'';await libraryScreen.show();}
 function render(){if(['notes','favorites'].includes(view))libraryScreen.render().catch(e=>notice(e.message));}
-async function load(path, loaded = null){const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey)return;currentWorkspace=workspaceId;current=path;base=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;$('#title').value=titleOf(r.text,path);$('#body').value=r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');$('#file-path').textContent=path;updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');const draft=readDraft();if(draft){$('#title').value=titleOf(draft.text,path);$('#body').value=draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');dirty=true;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');timer=setTimeout(save,650);}}updateReading();render();await noteInitiatives(path);await libraryScreen.noteTopics(path);}
+async function load(path, loaded = null){$('#capture-return').hidden = true;const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey)return;currentWorkspace=workspaceId;current=path;base=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;$('#title').value=titleOf(r.text,path);$('#body').value=r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');$('#file-path').textContent=path;updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');const draft=readDraft();if(draft){$('#title').value=titleOf(draft.text,path);$('#body').value=draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');dirty=true;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');timer=setTimeout(save,650);}}updateReading();render();await noteInitiatives(path);await libraryScreen.noteTopics(path);}
 async function openContextNote(path, reading = true) {
   try {
     if (!await flush()) return;
@@ -108,6 +130,7 @@ for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filte
 async function createNote(initiativeId = null) {
   try {
     if (!await flush()) return;
+    const origin = !initiativeId ? {view, opener: document.activeElement, initiative: view === 'initiatives' ? initiatives.previous : null, action: !$('#action-editor').hidden ? actions.previous : null, note: !$('#editor').hidden ? current : null, reading: readMode} : null;
     const path = `Notes/note-${Date.now()}.md`, text = '# 无标题\n\n';
     await note('create', {path, text});
     if (initiativeId) {
@@ -118,11 +141,13 @@ async function createNote(initiativeId = null) {
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
     focus.active = false; $('#search').hidden = false; view = 'notes'; $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-    await validateReferences();await refresh(); await load(path); $('#title').focus(); $('#title').select();
+    document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=notes]').classList.add('active');
+    for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === 'notes' ? 'page' : 'false');
+    await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; $('#capture-return').hidden = !captureOrigin; if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
 }
 $('#new').onclick = () => createNote();
-$('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
 $('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) await initiatives.edit(initiatives.previous); return; } if(await flush()){$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.render();$('#items .selected')?.focus();}};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').disabled=readMode;$('#mode').textContent=readMode?'编辑':'阅读';$('#note-mode').textContent=readMode?'阅读笔记':'编辑笔记';updateReading();};
