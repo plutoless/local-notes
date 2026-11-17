@@ -44,7 +44,7 @@ export class OrganizeScreen {
     $('#ai-preview').disabled = running;
     $('#ai-send').disabled = running || !this.configured || !batches?.length || this.organization.covered === batches.length;
     $('#ai-send').textContent = this.organization.covered && this.organization.covered < batches?.length ? '继续分析剩余内容' : '发送并分析';
-    $('#ai-cancel').disabled = !running;
+    $('#ai-cancel').disabled = !this.organization.running;
     $('#ai-selection').inert = running; $('#ai-directory').disabled = running;
     $('#ai-notes-next').disabled = running || !this.selectionHasMore;
     $('#ai-notes-previous').disabled = running || !this.selectionOffset;

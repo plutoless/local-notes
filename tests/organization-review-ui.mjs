@@ -43,6 +43,7 @@ try {
  delayRead = true; await page.locator('#ai-selection input').check(); await page.locator('#ai-preview').click();
  await page.waitForFunction(() => document.querySelector('#ai-selection').inert);
  assert.equal(await page.locator('#ai-directory').isDisabled(), true);
+ assert.equal(await page.locator('#ai-cancel').isDisabled(), true);
  assert.equal(await page.locator('#ai-preview').isDisabled(), true);
  while (!releaseRead) await new Promise(resolve => setTimeout(resolve, 1)); delayRead = false; releaseRead();
  await page.waitForFunction(() => !document.querySelector('#ai-send').disabled); assert.equal(requests, 0);
