@@ -98,7 +98,7 @@ try {
   await page.getByRole('button', {name:'关闭提示'}).click();
   await page.locator('#workspace-return-action').click();
   await page.setViewportSize({width: 1180, height: 800});
-  await page.locator('#action-description').waitFor({state: 'visible'});
+  await page.waitForFunction(()=>document.activeElement.id === 'action-open-initiative' && document.querySelector('#action-description').value === '确定本周最重要的两件事');
   assert.equal(await page.locator('#action-description').inputValue(), '确定本周最重要的两件事');
   assert.equal(await page.locator('nav [data-view=actions]').getAttribute('aria-current'), 'page');
   assert.equal(await page.locator('#action-open-initiative').evaluate(node => node === document.activeElement), true);
