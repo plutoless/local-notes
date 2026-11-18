@@ -45,7 +45,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -124,7 +124,7 @@ try {
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();
-  await page.locator('#initiative-save-state').filter({hasText: /已恢复事项草稿/}).waitFor({state:'attached'});
+  await page.getByRole('button',{name:'恢复事项草稿',exact:true}).click(); await page.locator('#initiative-save-state').filter({hasText: /已恢复事项草稿/}).waitFor({state:'attached'});
   assert.equal(await page.locator('[data-action]').inputValue(), 'independent');
   await page.locator('#initiative-save').click();
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor({state:'attached'});
@@ -136,7 +136,7 @@ try {
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor({state:'attached'});
   await page.waitForFunction(()=>!document.querySelector('#initiative-drawer').open);
   await page.locator('#initiative-new-note').click();
-  await page.locator('#editor').waitFor({state: 'visible'});
+  await page.waitForFunction(()=>!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent.startsWith('Notes/') && document.querySelector('#title')===document.activeElement);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await page.locator('#title').fill('Working log');
   await closeNoteInfo(page); await page.locator('#body').fill('Manual research update');
@@ -144,6 +144,8 @@ try {
   failNoteSave = true;
   await closeNoteInfo(page); await page.locator('#body').fill('Manual research update draft');
   await page.locator('#workspace-overview').click();
+  await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
+  await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
   await page.locator('#save-state').filter({hasText: /未保存/}).waitFor();
   assert.equal(await page.locator('#editor').isVisible(), true);
   assert.equal(await page.locator('#body').inputValue(), 'Manual research update draft');
@@ -169,7 +171,7 @@ try {
   await page.locator('#action-initiative').selectOption(initiativeId);
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('revisions/'));
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText:/未保存的编辑仍保留/}).waitFor();
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByRole('button',{name:'恢复行动草稿',exact:true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
   assert.equal(await page.locator('#action-initiative').inputValue(), initiativeId);
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.locator('#action-open-initiative').click();
@@ -179,7 +181,7 @@ try {
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="notes"]').click();
-  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor().catch(async error=>{console.log('NOTE TRANSITION',await page.evaluate(()=>({classes:document.querySelector('.app').className,active:document.querySelector('nav [aria-current=page]')?.textContent,drawer:document.querySelector('#initiative-drawer').open,libraryHidden:document.querySelector('#library-tools').hidden,search:document.querySelector('#search').value,items:document.querySelector('#items').innerText,notice:document.querySelector('#notice').innerText,initiativeState:document.querySelector('#initiative-save-state').textContent,actionState:document.querySelector('#action-save-state').textContent})));console.log('NOTE FILES',await readdir(fixture.root));throw error;});
+  await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-create-topic').click();
   await page.locator('#topic-name').fill('Research topic');
   await page.locator('#topic-drawer button[type=submit]').click();

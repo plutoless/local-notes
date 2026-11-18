@@ -48,7 +48,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -78,7 +78,7 @@ try {
   await page.keyboard.press('Escape');
   await page.getByRole('button', {name: '继续编辑', exact: true}).click();
   assert.equal(await page.locator('#capture-title').inputValue(), '短表单真实存储');
-  assert.equal(await page.locator('#capture-title').evaluate(node=>node===document.activeElement),true);
+  assert.equal(await page.locator('#capture-body').evaluate(node=>node===document.activeElement),true);
   for (const dismiss of [()=>page.locator('#note-task-drawer .ui-drawer-header button').click(),()=>page.locator('#note-task-drawer .ui-drawer-footer button').first().click(),()=>page.mouse.click(20,200),()=>page.locator('[data-view=notes]').evaluate(node=>node.click())]) {
     await dismiss(); await page.getByRole('button',{name:'继续编辑',exact:true}).click();
     assert.equal(await page.locator('#capture-title').inputValue(),'短表单真实存储');
@@ -116,7 +116,7 @@ try {
   await page.locator('#new').click(); await page.locator('#capture-title').fill('恢复的输入');
   await page.reload(); await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
   await page.locator('#new').click(); assert.equal(await page.locator('#capture-title').inputValue(),'恢复的输入');
-  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃此次编辑',exact:true}).click();
+  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   assert.equal((await readdir(join(fixture.root,'Notes'))).length,1);
   await page.getByRole('button',{name:'全部行动',exact:true}).click();
   await page.locator('#action-new').click(); await page.locator('#action-save').click();
@@ -127,7 +127,9 @@ try {
   await page.locator('#action-save').click(); await page.waitForFunction(()=>document.querySelector('#action-form').inert);
   await page.locator('#action-form').evaluate(node=>{node.dispatchEvent(new Event('submit',{cancelable:true}));node.dispatchEvent(new Event('submit',{cancelable:true}));});
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),true);
-  releaseAction(); await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+  releaseAction(); await page.locator('#action-drawer').waitFor({state:'hidden'});
+  await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   for (const [width,height] of [[1180,800],[393,800],[393,340]]) {
     await page.setViewportSize({width,height});
     await page.locator('#action-drawer .ui-drawer-body').evaluate(node => node.scrollTop = 0);
@@ -139,6 +141,7 @@ try {
   await page.locator('#action-new').click(); await page.locator('#action-back').click();
   assert.equal(await page.locator('#action-new').evaluate(node=>node===document.activeElement),true,'Clean cancel restores the New action opener, not the prior selection');
   await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-description').inputValue(),'抽屉行动真实保存');
   await page.keyboard.press('Escape');
   await page.locator('[data-view=notes]').click(); await page.locator('#items [data-path="reference.md"]').click();

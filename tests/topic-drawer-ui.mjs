@@ -42,7 +42,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -119,7 +119,7 @@ try {
     await page.locator('#choose').evaluate(n=>n.click());
     await page.getByRole('button',{name:'继续编辑',exact:true}).click();
     assert.equal(await page.locator('#search').inputValue(),'Synthetic');
-    await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃主题编辑',exact:true}).click();
+    await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
     assert.equal(await page.locator('#items').innerText(),context);
     await page.locator('#search').fill('');
     await page.setViewportSize({width:1180,height:800});
@@ -134,7 +134,7 @@ try {
     assert.equal(await page.locator('#library-previous').isDisabled(),false);
     await open();await page.locator('#topic-name').fill('恢复的主题草稿');await page.reload();
     await page.locator('[data-view=notes]').click();await open(); assert.equal(await page.locator('#topic-name').inputValue(),'恢复的主题草稿');
-    await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃主题编辑',exact:true}).click();
+    await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
     const countBeforeRecovery=await page.locator('#library-topic option').count();
     await open(); await page.locator('#topic-name').fill('已提交待恢复'); fixture.fail(cmd=>cmd==='actionQuery'); await submit.click();
     await page.getByText('主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。',{exact:true}).waitFor();
