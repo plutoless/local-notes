@@ -25,5 +25,9 @@
   },
   "earlierProductionGuardAcceptance": true,
   "productionCheckpointHead": "fc9629bf9f83c9a72b30882b6950914adb10ee6c",
-  "finalProductionReplayPending": false
+  "finalProductionReplayPending": false,
+  "nativeHarnessSha256": {
+    "tests/native-remaining-termination.py": "1a6fef946c0fb3b9c2ca79d5f760faa1c8e0cc6593931467ec68e415fe85da8b",
+    "tests/native-owned-windows.swift": "349d387886ecdc44d08d8c5f3670dd7147edd640e6ac3575e5c12bed1bcf5baa"
+  }
 }

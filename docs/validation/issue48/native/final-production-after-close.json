@@ -1,31 +1,22 @@
 {
-  "id": "c25502a9-3372-42cb-a895-f7670505fe9d",
+  "id": "9f8e73c4-49cd-4066-87de-ad4afef56b84",
   "ok": true,
   "result": {
-    "screenshot": {
-      "format": "png",
-      "width": 2360,
-      "height": 1664,
-      "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/c25502a9-3372-42cb-a895-f7670505fe9d-screenshot.png",
-      "dataOmitted": true,
-      "expiresAt": "2026-11-19T06:07:01.642Z"
-    },
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 69929)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t7 scroll area\n\t\t8 HTML content 拾记 · Local Notes\n\t\t\t32 container 随手记\n\t\t\t\t33 container\n\t\t\t\t\t34 heading 随手记\n\t\t\t\t\t35 button 关闭随手记\n\t\t\t\t36 container\n\t\t\t\t\t37 container\n\t\t\t\t\t\t38 text 标题\n\t\t\t\t\t\t39 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t40 container\n\t\t\t\t\t\t41 text 正文\n\t\t\t\t\t\t42 text entry area (settable) 正文\n\t\t\t\t46 text 尚未保存\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t3 close button\n\t4 full screen button, Secondary Actions: zoom the window\n\t5 minimize button\n\t6 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
-      "focusedElementId": null,
-      "id": "B0F5524C-658B-428F-AD26-F43F1D7E5CC4",
+      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 77673)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t33 container 随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 heading 随手记\n\t\t\t\t\t36 button 关闭随手记\n\t\t\t\t37 container\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 标题\n\t\t\t\t\t\t40 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t41 container\n\t\t\t\t\t\t42 text 正文\n\t\t\t\t\t\t43 text entry area (settable) 正文\n\t\t\t\t47 text 尚未保存\n\t\t\t\t44 container\n\t\t\t\t\t45 button 取消\n\t\t\t\t\t46 button 创建笔记\n\t17 close button\n\t18 full screen button, Secondary Actions: zoom the window\n\t19 minimize button\n\t20 text 拾记 · Local Notes\n\nThe focused UI element is 40 text field (settable) 标题, Value: 最终生产路径守卫.",
+      "focusedElementId": 40,
+      "id": "FC7327F6-8712-49D7-8BAD-F58BA9946088",
       "app": {
-        "pid": 69929,
-        "name": "LocalNotes",
-        "bundleId": "dev.localnotes.validation.issue48productionfinal"
+        "bundleId": "dev.localnotes.validation.issue48productionfinal",
+        "pid": 77673,
+        "name": "LocalNotes"
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 15264,
+        "id": 15427,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -43,12 +34,21 @@
         "maxNodes": 1200
       }
     },
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/9f8e73c4-49cd-4066-87de-ad4afef56b84-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-19T06:14:53.875Z"
+    },
     "screenshotStatus": {
-      "state": "captured",
       "metadata": {
-        "windowId": 15264,
-        "engine": "screenCaptureKit"
-      }
+        "engine": "screenCaptureKit",
+        "windowId": 15427
+      },
+      "state": "captured"
     }
   },
   "_meta": {
