@@ -44,7 +44,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js', 'library.js', 'library-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js', 'library.js', 'library-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -127,7 +127,7 @@ try {
   await page.waitForFunction(() => document.querySelector('#initiative-progress').value === 'Saved user progress');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   assert.equal((await repository.query({search:'Unreviewed recovered draft'})).actions.length,0);
-  await page.getByText('放弃编辑', {exact: true}).click(); await page.locator('#action-discard').click(); await page.getByRole('button',{name:'放弃行动编辑',exact:true}).click();
+  await page.getByRole('button',{name:'恢复行动草稿',exact:true}).click(); await page.locator('#action-back').click(); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   await page.locator('#search').fill('No matching action');
   await page.locator('#action-initiative-filter').selectOption(initiative.entityId);
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();

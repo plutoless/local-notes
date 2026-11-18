@@ -1,8 +1,61 @@
-# Issue #55: isolated baseline reproduction
+# Issue #55: task-scoped lifecycle evidence
 
-Implementation is not complete. These artifacts establish defects on production
-baseline `ed75811831d42690606844352b3f8fced72dffe9`; they do not validate a fix.
-No production files have changed in this checkpoint.
+## Delivery validation
+
+The implementation applies one active-task Save and leave / Discard changes and
+leave / Continue editing decision to the delivered forms and native termination.
+See [lifecycle contract](../../design/task-lifecycle.md). The baseline and integration
+sections below are historical checkpoints, not the current delivery status.
+
+Final logs and native accessibility transcripts are in `final/`. `source-hashes.json`
+binds the delivered web resources to the uninstrumented native app; `validation-manifest.json`
+records hashes for the production sources and regression scripts. The PR records
+the exact committed head and separate final Standards/Spec review results.
+
+Executed validation:
+
+- `npm run check` and all 50 shared tests.
+- All 14 suites in `npm run test:ui`, using installed Chrome and isolated Swift-backed
+  storage fixtures. Coverage includes each decision, failed/invalid/conflicted
+  saves, queued/submitted writes, competing leave intents, retained unrelated
+  drafts, per-record recovery, partial business commits, stale note reads and
+  metadata opens (including navigation away and back), reload, context restoration,
+  and desktop/393px layouts. The confirmation traps forward/backward Tab and
+  Continue restores focus. Both decision screenshots were visually inspected.
+- `npm run build:mac` and isolated Cocoa/WKWebView form journeys with the delivered
+  resources, native Escape and both Tab boundaries, restart draft recovery, real
+  persistence, failed create/retry, note information/topic association, and location.
+- Uninstrumented production app: actual window-close control, application-menu
+  quit, OS-injected Cmd+Q, Continue, Discard, Save and leave, reentrant close during
+  a quit decision, and process restart. Discarded capture titles did not reappear;
+  Save and quit created exactly one Markdown note; four exits returned 0.
+- Separately instrumented native failure coverage: simulated content-loss delegate
+  callback, reload with retained draft, two ignored stale bridge replies, three
+  accepted tokens and exactly two replies for the two pending termination requests.
+  The native window/menu requests use real AppKit paths.
+
+Execution limits: OS-injected keys are not physical-keyboard testing. The
+content-loss case invokes the native delegate; it does not establish an actual
+WebKit crash. Native form fixtures use controlled DOM entry for long text and
+non-keyboard assertions; reduced-height capture uses a test-only minimum window
+size override, while the production minimum stays unchanged. Chromium storage fixtures do not establish native input behavior;
+those claims are limited to the separate Cocoa runs. Browser beforeunload uses
+its built-in protection because custom asynchronous decisions are unavailable
+there. Android-specific and standalone Syncthing tests remain deferred by user
+decision and are not reported as passed.
+
+Earlier validation runs exposed stale note/metadata continuations, committed
+revision restoration, and stale conflict recovery messaging; these were fixed
+and covered by regressions. Some old journeys also read hidden inputs before an
+asynchronous drawer reopen or edited the prior note before a new note finished
+opening; those tests now await the actual task. Final successful logs supersede
+those failed attempts. No unrelated drafts were used as test fixtures.
+
+## Isolated baseline reproduction
+
+These artifacts establish defects on production baseline
+`ed75811831d42690606844352b3f8fced72dffe9`; they do not validate a fix. Production
+files were unchanged at that checkpoint.
 
 ## Executed baseline checks
 

@@ -18,7 +18,7 @@ spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name(
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 m.OUT = output; m.APP = output/'Forms48.app'
 for folder in ['Sync', 'Private']: (output/folder).mkdir()
-source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue48'+args.phase)
+source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue55remaining'+args.phase)
 exec(source, m.__dict__); m.build()
 generated = output/'main.swift'
 generated.write_text(generated.read_text().replace('let wrapped =', '''if script == "__snapshot" {
@@ -168,7 +168,7 @@ try:
         draft_key = c("return Object.keys(localStorage).find(key=>key.startsWith('capture-draft:') && JSON.parse(localStorage.getItem(key))['capture-path']===document.querySelector('#capture-path').value)")
         persisted = False
         for _ in range(50):
-            for database in (Path.home()/('Library/WebKit/dev.localnotes.validation.issue48'+args.phase)).rglob('localstorage.sqlite3'):
+            for database in (Path.home()/('Library/WebKit/dev.localnotes.validation.issue55remaining'+args.phase)).rglob('localstorage.sqlite3'):
                 with sqlite3.connect('file:'+str(database)+'?mode=ro',uri=True) as connection:
                     row = connection.execute('SELECT length(value) FROM ItemTable WHERE key=?',(draft_key,)).fetchone()
                     persisted = bool(row and row[0] > 0)
@@ -179,7 +179,7 @@ try:
         process.terminate(); process.wait(timeout=10); launch()
         click('随手记'); w("document.querySelector('#note-task-drawer').open")
         assert c("return document.querySelector('#capture-title').value==='原生笔记48' && document.querySelector('#note-task-status').textContent.includes('已恢复')")
-        key(53); w("!document.querySelector('#note-task-drawer .draft-guard').hidden")
+        key(53); w("!!document.querySelector('#task-leave-decision')")
         click('继续编辑'); w("document.activeElement.id==='capture-title'")
         c("document.querySelector('#note-task-drawer .primary').focus()")
         key(48); w("document.activeElement===document.querySelector('#note-task-drawer .ui-drawer-header button')")

@@ -1,4 +1,4 @@
-import {feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
+import {requestTaskLeave, feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -29,24 +29,23 @@ export class LibraryScreen {
     const cancel = button('取消', () => this.leaveTopic(), {density: 'compact'}); cancel.id = 'topic-cancel';
     const submit = document.createElement('button'); submit.type = 'submit'; submit.setAttribute('form', form.id); submit.className = 'ui-action primary ui-compact';
     this.topicDrawer.footer.append(cancel, submit);
-    const guard = document.createElement('div'); guard.className = 'draft-guard'; guard.hidden = true;
-    const message = document.createElement('p'); message.textContent = '主题尚未保存，是否放弃此次编辑？';
-    guard.append(message, button('继续编辑', () => { guard.hidden = true; (this.topicRetry ? submit : input).focus(); }), button('放弃主题编辑', () => this.closeTopic()));
-    this.topicDrawer.body.append(guard); this.topicGuard = guard; this.topicGuardMessage = message;
     input.oninput = () => {
       input.setAttribute('aria-invalid', 'false'); error.replaceChildren();
       status.textContent = input.value === (this.editingTopic?.description || '') ? '' : '主题名称尚未保存。';
       try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic})); }
       catch { status.textContent = '草稿暂时无法在关闭后恢复，请保持窗口打开并保存。'; }
     };
-    form.onsubmit = async event => {
-      event.preventDefault(); if (this.topicSaving) return;
-      if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); error.textContent = '请填写主题名称。'; input.focus(); return; }
-      this.topicSaving = true; submit.disabled = true; input.disabled = true; guard.hidden = true;
+    form.onsubmit = event => { event.preventDefault(); this.saveTopicTask(); };
+    this.saveTopicTask = () => {
+      if (this.topicPending) return this.topicPending;
+      this.topicPending = (async () => {
+      await Promise.resolve();
+      if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); error.textContent = '请填写主题名称。'; input.focus(); return false; }
+      this.topicSaving = true; submit.disabled = true; input.disabled = true;
       status.textContent = '正在保存…'; error.replaceChildren();
       try {
         await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry);
-        this.closeTopic(); this.notice('主题已保存到本地。', true);
+        this.closeTopic(); this.notice('主题已保存到本地。', true); return true;
       } catch (failure) {
         if (failure.revisionSaved) {
           this.topicRetry = failure.record;
@@ -57,9 +56,11 @@ export class LibraryScreen {
           status.textContent = '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。';
           feedback(error, '恢复未完成，已保存的版本仍保留。', failure.message);
         } else { status.textContent = ''; errorFeedback(error, failure.message); }
-        error.focus(); submit.textContent = this.topicRetry ? '重试恢复' : '重试保存';
+        error.focus(); submit.textContent = this.topicRetry ? '重试恢复' : '重试保存'; return false;
       }
       finally { this.topicSaving = false; submit.disabled = false; input.disabled = Boolean(this.topicRetry); }
+      })();
+      return this.topicPending.finally(() => { this.topicPending = null; });
     };
     this.topicInput = input; this.topicSubmit = submit; this.topicStatus = status; this.topicError = error;
   }
@@ -78,24 +79,18 @@ export class LibraryScreen {
     this.topicDrawer.setTitle(topic ? '重命名主题' : '新建主题');
     this.topicSubmit.textContent = this.topicRetry ? '重试恢复' : topic ? '保存' : '创建';
     this.topicStatus.textContent = this.topicRetry ? '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。' : draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
-    this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false'); this.topicGuard.hidden = true;
+    this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false');
     this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput);
   }
   closeTopic() {
-    try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicGuard.hidden = true; this.topicDrawer.hide();
+    try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicDrawer.hide();
     $('.collection').scrollTop = this.topicBrowseScroll;
   }
-  leaveTopic() {
-    if (!this.topicDrawer.panel.open) return true;
-    if (this.topicSaving) return false;
-    if (this.topicDirty) {
-      this.topicGuardMessage.textContent = this.topicRetry ? '主题版本已保存，但恢复尚未完成。关闭只会清除本机恢复草稿，已保存的版本仍保留。' : '主题尚未保存，是否放弃此次编辑？';
-      const buttons = this.topicGuard.querySelectorAll('button');
-      buttons[0].textContent = this.topicRetry ? '继续恢复' : '继续编辑';
-      buttons[1].textContent = this.topicRetry ? '关闭并保留已保存版本' : '放弃主题编辑';
-      this.topicGuard.hidden = false; this.topicGuard.querySelector('button').focus(); return false; }
-    this.closeTopic(); return true;
+  topicTask() {
+    return {label: '主题', dirty: () => this.topicDirty, committed: () => Boolean(this.topicRetry), pending: () => this.topicPending,
+      save: () => this.saveTopicTask(), discard: () => this.closeTopic(), close: () => { if (this.topicDrawer.panel.open) this.closeTopic(); }};
   }
+  leaveTopic() { return this.topicDrawer.panel.open ? requestTaskLeave(this.topicTask()) : Promise.resolve(true); }
   async show() {
     this.failed = false;
     $('.app').classList.add('library-view');
@@ -166,30 +161,39 @@ export class LibraryScreen {
     $('.collection').scrollTop = this.browseScroll || 0;
   }
   async noteTopics(path) {
+    this.noteTopicPath = path;
     await this.library.open();
+    const workspaceId = this.library.workspaceId;
+    const ownsNote = () => this.noteTopicPath === path && this.library.workspaceId === workspaceId;
     const note = (await this.library.query({exactPath: path})).notes[0];
+    if (!ownsNote()) return;
     const container = $('#note-topics'); container.replaceChildren();
     if (!note) return;
     if (!this.library.records.length) { const message = document.createElement('p'); message.textContent = '尚未创建主题。可返回笔记库新建主题。'; container.append(message); }
     for (const topic of this.library.records) {
       const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'ui-selection'; checkbox.type = 'checkbox'; checkbox.checked = topic.sources.some(source => source.path === path);
-      checkbox.onchange = async () => {
+      checkbox.onchange = () => {
+        this.noteTopicPending = (async () => {
         this.noteTopicSaving = true; container.inert = true; checkbox.disabled = true;
-        try { await this.library.link(topic, note, checkbox.checked); await this.noteTopics(path); }
+        try { await this.library.link(topic, note, checkbox.checked); if (ownsNote()) await this.noteTopics(path); }
         catch (error) {
+          if (!ownsNote()) return;
           const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); container.append(failure);
           if (error.associationSaved) {
             for (const input of container.querySelectorAll('input')) input.disabled = true;
             feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', error.message);
             const retry = button('重试更新关联', async () => {
+              this.noteTopicPending = (async () => {
               this.noteTopicSaving = true; container.inert = true;
-              try { await this.library.sync(); await this.noteTopics(path); }
-              catch (recoveryError) { feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry); }
+              try { await this.library.sync(); if (ownsNote()) await this.noteTopics(path); }
+              catch (recoveryError) { if (!ownsNote()) return; feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry); }
               finally { this.noteTopicSaving = false; container.inert = false; }
+              })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
             });
             failure.append(retry);
           } else { errorFeedback(failure, error.message); checkbox.checked = !checkbox.checked; checkbox.disabled = false; }
         } finally { this.noteTopicSaving = false; container.inert = false; }
+        })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
       };
       label.append(checkbox, document.createTextNode(topic.description)); container.append(label);
     }
