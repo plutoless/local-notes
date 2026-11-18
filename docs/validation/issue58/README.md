@@ -20,7 +20,7 @@ Lookup owns an incremental indexing loop separate from Library topic recovery so
 - `npm run build:mac` passed. `npm run build:android` passed; this is build evidence only.
 - `python3 tests/native-search.py` passed on the native app: OS-delivered Command+K and repeated invocation, Escape/opener restoration, Enter expansion, Command+Enter, forward/backward Tab wrapping, 393px layout, default/attributed clipboard readback through `pbpaste`, and native Command+C of manually selected source text. The probe seeds 373 synthetic notes, opens/closes/reopens during initial indexing and preserves the underlying page. These are actual OS shortcuts, not DOM-dispatched keyboard events.
 
-The native test selects text through a DOM Range before sending native Command+C. It does not establish physical mouse-drag selection or real IME composition. Search controls remain normal native text inputs and selectable text surfaces; no claim of executed IME coverage is made.
+The original native test selects text through a DOM Range before sending native Command+C. It does not establish physical mouse-drag selection. Actual WeType IME and native text-editing shortcuts are now covered by the scoped [IME recovery](ime-recovery.md), which supersedes the earlier real-IME limitation. Search controls remain normal native text inputs and selectable text surfaces; no claim of executed IME coverage is made.
 
 ## Controlled corpus timing
 
@@ -36,6 +36,6 @@ Spec: no unresolved findings at the implementation head. Initialization, long-fr
 
 ## Limitations and deferred checks
 
-Android-specific runtime/device tests and standalone Syncthing tests are deferred by project policy; they are not passed checks. Physical mouse-drag selection, real IME input, device end-to-end checks and private-corpus relevance evaluation were not executed. Keyword ranking is intentionally limited to title priority and deterministic path order; matching is contiguous literal substring matching. Missing/changed context and copy failures preserve manual selectable text and provide refresh/retry feedback. Human review is recommended for interaction/relevance judgment, not required to resolve an unspecified implementation decision.
+Android-specific runtime/device tests and standalone Syncthing tests are deferred by project policy; they are not passed checks. Physical mouse-drag selection, device end-to-end checks and private-corpus relevance evaluation were not executed. Real WeType IME input is covered by the recovery regression; other input methods remain untested. Keyword ranking is intentionally limited to title priority and deterministic path order; matching is contiguous literal substring matching. Missing/changed context and copy failures preserve manual selectable text and provide refresh/retry feedback. Human review is recommended for interaction/relevance judgment, not required to resolve an unspecified implementation decision.
 
 Reproduce with `tests/search.test.js`, `tests/search-ui.mjs`, `tests/native-search.py` and `tests/search-benchmark.mjs`. Raw local logs and generated native app/probe remain under `build/issue58*`; only synthetic evidence is committed here.
