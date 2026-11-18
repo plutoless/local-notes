@@ -36,3 +36,18 @@ panel.body.append(field('主题名称',input,{density:'compact'}));
 panel.footer.append(button('取消',()=>panel.hide(),{density:'compact'}),button('创建',()=>panel.hide(),{primary:true,density:'compact'}));
 section.append(button('打开主题抽屉',()=>panel.open(input))); document.body.append(section);
 </script>
+
+<script type="module">
+import {drawer, button, field, disclosure} from '../../web/presentation.js';
+const section = document.createElement('section');
+section.innerHTML = '<h2>Remaining short tasks and layout exceptions</h2><p>Actions, capture and note location consume the existing wide drawer. Note information uses individually persisted association controls. Long Markdown, candidate review and multi-version conflict comparison retain their document or review families. This catalogue has no persistence; see the issue48 inventory and executed evidence.</p>';
+const task = drawer({id:'catalogue-short-task', title:'新建行动', onDismiss:()=>task.hide()});
+task.panel.classList.add('ui-drawer-wide');
+const form = document.createElement('form'); form.className = 'document';
+const description = document.createElement('textarea'); description.rows = 3;
+const date = document.createElement('input'); date.type = 'date';
+form.append(field('行动描述',description),disclosure('日期（可选）',[field('截止日期',date,{density:'compact'})]));
+task.body.append(form);
+task.footer.append(button('取消',()=>task.hide(),{density:'compact'}),button('创建',()=>task.hide(),{primary:true,density:'compact'}));
+section.append(button('打开多字段任务',()=>task.open(description))); document.body.append(section);
+</script>

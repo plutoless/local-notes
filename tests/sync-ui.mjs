@@ -1,3 +1,4 @@
+import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {execFileSync} from 'node:child_process';
 import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -60,7 +61,7 @@ try {
   const local = (await repo.save({...base, description: 'Local description'}, base)).record;
   const remote = {...base, revision: randomUUID(), parents: [base.revision], description: 'Remote description', status: 'completed', focusPosition: null};
   await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `revisions/${base.entityId}/${remote.revision}.json`, text: JSON.stringify(remote)});
-  await page.getByRole('button', {name: '同步检查'}).click();
+  await closeSavedAction(page); await page.getByRole('button', {name: '同步检查'}).click();
   const panel = page.getByRole('dialog', {name: '同步检查'});
   await panel.waitFor();
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
@@ -117,7 +118,7 @@ try {
   assert.equal((await repo.history(base.entityId)).length, 4);
   await panel.getByRole('button', {name:'关闭检查',exact:true}).click();
   assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),true);
-  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
   const {InitiativeRepository} = await import('../web/initiatives.js');
   const {TopicRepository} = await import('../web/library.js');
@@ -212,7 +213,7 @@ try {
   }
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   delayFiles=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
-  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   assert.equal(await panel.isVisible(),true);await panel.getByText('正在检查本地版本…').waitFor();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');delayFiles=false;
   assert.equal(await readFile(sourcePath,'utf8'),original);
@@ -221,11 +222,13 @@ try {
   await page.locator('#action-new').click();
   await page.locator('#action-description').fill('保留原任务的中文草稿');
   const mainScroll=await page.locator('main').evaluate(el=>{el.scrollTop=120;return el.scrollTop;});
-  await page.getByRole('button',{name:'同步检查',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
-  assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
-  await page.keyboard.press('Escape');
+  await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el.focus());
+  assert.equal(await panel.isVisible(),false,'Action tasks cannot stack background review');
   assert.equal(await page.locator('#action-description').inputValue(),'保留原任务的中文草稿');
+  await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
+  await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
+  await page.keyboard.press('Escape');
   assert.equal(await page.locator('main').evaluate(el=>el.scrollTop),mainScroll);
   assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),true);
   // The initiative task is itself modal: background review cannot stack on it.
@@ -240,7 +243,7 @@ try {
   await page.locator('#items [data-initiative-id]').filter({hasText:'冲突检查返回事项草稿'}).click();
   await page.locator('#workspace-overview').waitFor({state:'visible'});
   await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
-  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   if (!await page.locator('#workspace-overview').isVisible()) await page.locator('#initiative-back').click();
@@ -253,8 +256,8 @@ try {
   await page.locator('#items [data-path="reference.md"]').click();
   await page.locator('#editor').waitFor({state:'visible'});
   if (await page.locator('#body').evaluate(node=>node.hidden)) await page.locator('#mode').click();
-  await page.locator('#body').fill('冲突检查返回笔记编辑');
-  await page.getByRole('button',{name:'同步检查',exact:true}).click();
+  await closeNoteInfo(page); await page.locator('#body').fill('冲突检查返回笔记编辑');
+  await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   assert.equal(await page.locator('#body').inputValue(),'冲突检查返回笔记编辑');

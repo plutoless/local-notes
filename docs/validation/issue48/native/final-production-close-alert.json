@@ -1,0 +1,23 @@
+{
+  "engine": "macOS screencapture",
+  "ownedWindow": {
+    "kCGWindowAlpha": 1,
+    "kCGWindowBounds": {
+      "Height": 202,
+      "Width": 260,
+      "X": 626,
+      "Y": 205
+    },
+    "kCGWindowIsOnscreen": true,
+    "kCGWindowLayer": 8,
+    "kCGWindowMemoryUsage": 2368,
+    "kCGWindowName": "",
+    "kCGWindowNumber": 15436,
+    "kCGWindowOwnerName": "LocalNotes",
+    "kCGWindowOwnerPID": 77673,
+    "kCGWindowSharingState": 1,
+    "kCGWindowStoreType": 1
+  },
+  "assertedAlertText": "还有内容未保存, 请先处理保存提示，再关闭窗口。\n",
+  "reason": "Orca omitted the modal panel from its layer-zero enumeration"
+}
