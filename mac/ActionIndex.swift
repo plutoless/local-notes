@@ -28,6 +28,10 @@ final class ActionIndex {
                     try execute(opened, "COMMIT")
                 } catch { try? execute(opened, "ROLLBACK"); throw error }
             }
+            if !columns.contains("searchText") {
+                try execute(opened, "ALTER TABLE actions ADD COLUMN searchText TEXT NOT NULL DEFAULT ''")
+                try execute(opened, "UPDATE actions SET searchText=description || char(10) || coalesce(json_extract(record,'$.title'),'') || char(10) || coalesce(json_extract(record,'$.goal'),'') || char(10) || coalesce(json_extract(record,'$.progress'),'') || char(10) || coalesce(json_extract(record,'$.waitingOn'),'')")
+            }
             try execute(opened, "CREATE INDEX IF NOT EXISTS focus_order ON actions(status, focus, id)")
             try execute(opened, "CREATE INDEX IF NOT EXISTS initiative_filter ON actions(initiative, status, id)")
             return opened
@@ -49,7 +53,7 @@ final class ActionIndex {
             return
         }
         var statement: OpaquePointer?
-        guard sqlite3_prepare_v2(db, "INSERT OR REPLACE INTO actions (id,status,description,record,initiative,focus) VALUES (?,?,?,?,?,?)", -1, &statement, nil) == SQLITE_OK, let stmt = statement else { throw failure("Cannot prepare action index update") }
+        guard sqlite3_prepare_v2(db, "INSERT OR REPLACE INTO actions (id,status,description,record,initiative,focus,searchText) VALUES (?,?,?,?,?,?,?)", -1, &statement, nil) == SQLITE_OK, let stmt = statement else { throw failure("Cannot prepare action index update") }
         defer { sqlite3_finalize(stmt) }
         bind(stmt, 1, record["entityId"] as? String ?? "")
         bind(stmt, 2, record["status"] as? String ?? "")
@@ -57,6 +61,7 @@ final class ActionIndex {
         bind(stmt, 4, String(data: try JSONSerialization.data(withJSONObject: record), encoding: .utf8)!)
         bind(stmt, 5, record["initiativeId"] as? String ?? "")
         if let focus = record["focusPosition"] as? Double { sqlite3_bind_double(stmt, 6, focus) } else { sqlite3_bind_null(stmt, 6) }
+        bind(stmt, 7, ["description", "title", "goal", "progress", "waitingOn"].compactMap { record[$0] as? String }.joined(separator: "\n"))
         guard sqlite3_step(stmt) == SQLITE_DONE else { throw failure("Cannot update action index") }
     }
     func run(_ req: [String: Any]) throws -> [String: Any] {
@@ -76,9 +81,11 @@ final class ActionIndex {
         }
         var statement: OpaquePointer?
         let focus = req["focus"] as? Bool == true
-        let conditions = "(?='' OR status=?) AND instr(lower(description),lower(?))>0 AND (?='' OR initiative=?) AND (?='' OR id=?)"
+        let global = req["globalSearch"] as? Bool == true
+        let searchable = global ? "searchText" : "description"
+        let conditions = "(?='' OR status=?) AND instr(lower(\(searchable)),lower(?))>0 AND (?='' OR initiative=?) AND (?='' OR id=?)"
         let selection = focus ? " AND status IN ('todo','in-progress') AND focus IS NOT NULL" : ""
-        let order = req["lastFocus"] as? Bool == true ? "focus DESC, id DESC" : focus ? "focus, id" : "id"
+        let order = global ? "CASE WHEN instr(lower(coalesce(json_extract(record,'$.title'),description)),lower(?))>0 THEN 0 ELSE 1 END, id" : req["lastFocus"] as? Bool == true ? "focus DESC, id DESC" : focus ? "focus, id" : "id"
         let sql = "SELECT record FROM actions WHERE \(conditions)\(selection) ORDER BY \(order) LIMIT ? OFFSET ?"
         guard sqlite3_prepare_v2(db, sql, -1, &statement, nil) == SQLITE_OK, let stmt = statement else { throw failure("Cannot query action index") }
         defer { sqlite3_finalize(stmt) }
@@ -87,7 +94,9 @@ final class ActionIndex {
         let limit = min(100, max(1, req["limit"] as? Int ?? 30)); let offset = max(0, req["offset"] as? Int ?? 0)
         let initiative = req["initiativeId"] as? String ?? "", entityId = req["entityId"] as? String ?? ""
         bind(stmt, 4, initiative); bind(stmt, 5, initiative); bind(stmt, 6, entityId); bind(stmt, 7, entityId)
-        sqlite3_bind_int(stmt, 8, Int32(limit + 1)); sqlite3_bind_int(stmt, 9, Int32(min(offset, Int(Int32.max))))
+        if global { bind(stmt, 8, req["search"] as? String ?? "") }
+        let paging: Int32 = global ? 9 : 8
+        sqlite3_bind_int(stmt, paging, Int32(limit + 1)); sqlite3_bind_int(stmt, paging + 1, Int32(min(offset, Int(Int32.max))))
         var rows = [[String: Any]](); var step = sqlite3_step(stmt)
         while step == SQLITE_ROW {
             let text = String(cString: sqlite3_column_text(stmt, 0))
