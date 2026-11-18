@@ -1,0 +1,18 @@
+{
+  "baseline": "0e2c8e7",
+  "hiddenAction": true,
+  "unsavedOnCleanLibrary": true,
+  "noteBlockedByHiddenAction": false,
+  "hiddenError": "已恢复行动草稿，请核对后保存。",
+  "privateDraftByteUnchanged": true,
+  "noteUnchanged": true,
+  "retainedDraft": {
+    "fields": {
+      "description": "",
+      "status": "todo",
+      "sources": []
+    },
+    "previous": null,
+    "retry": null
+  }
+}

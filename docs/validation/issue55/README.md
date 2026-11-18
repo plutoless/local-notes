@@ -61,3 +61,32 @@ Implementation and regression coverage must include notes, actions, initiatives,
 topics, contextual return paths, invalid/failed/conflicted saves, delayed writes,
 clean-page navigation with retained unrelated drafts, and actual native restart.
 The coordinator owns merge. Issue #48's worktree is outside this assignment.
+
+## PR54 integration checkpoint
+
+Baseline evidence above remains attached to its original `ed75811` production
+source. PR54 was verified merged as `ed3ae2617b3b705fa3b01f6ce4cc5b3608049320`.
+The baseline artifacts were preserved in `127eaa2`; `origin/main` was integrated
+without conflicts in `0e2c8e7d5cb181d39c73347d2bacdf67fa2eddd1`. A fast-forward was
+unavailable because of the preservation commit; a normal merge retained both
+histories. No force push or changes to the issue48 worktree occurred.
+
+Integration checks on that source passed: syntax, all 46 shared tests, all 13 UI
+suites, the Mac build, and the delivered remaining-form Cocoa/WKWebView journeys
+(14 settled captures, native Escape and forward/backward Tab boundaries, controlled
+DOM entry/assertions for remaining cases). Uninstrumented production window-close
+and application-menu quit also passed the existing acknowledgement-warning
+baseline assertions, retained the draft, saved exactly one record, and exited
+cleanly. This confirms that the trap remains; it does not validate issue55's
+required three-way close behavior. Logs and resource hashes are in `integration/`.
+
+Re-running the targeted browser fixture with `--integrated` establishes that the
+hidden recovered invalid action no longer blocks note opening on PR54. The draft
+is now byte-identical and the note unchanged. The global unsaved flag is still
+true on the clean library. See `integrated-hidden-action.json`; preserve this
+improvement while replacing the remaining global flag and flush behavior.
+
+Test-generated changes to 60 historical validation images were restored after
+the suites. New evidence is confined to issue55. Implementation, new lifecycle
+regressions, corrected native close/Cmd+Q/restart evidence, and separate final-head
+Standards/Spec reviews remain outstanding. There is no PR or merge-ready claim.

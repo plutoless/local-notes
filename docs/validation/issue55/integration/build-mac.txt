@@ -1,0 +1,6 @@
+
+> local-notes@0.1.0 build:mac
+> bash scripts/build-mac.sh
+
+/Users/zhangqianze/orca/workspaces/local-notes/make-unsaved-change-handling-page-scoped-and-all/dist/LocalNotes.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/make-unsaved-change-handling-page-scoped-and-all/dist/LocalNotes.app
