@@ -17,7 +17,7 @@ try {
   const actions = new ActionRepository(fixture.adapter), initiatives = new InitiativeRepository(fixture.adapter);
   await actions.open(); await initiatives.open();
   await actions.save({description:'latency 行动', waitingOn:'latency 等待答复'});
-  await initiatives.save({status:'active', description:'Stored initiative', title:'latency 事项', goal:'latency 目标', progress:'latency 进展'});
+  await initiatives.save({status:'active', description:'Stored initiative', title:'latency 事项', goal:'latency 目标', progress:'latency 进展',sources:[{path:'a.md',quote:'latency',fingerprint:(await import('../web/initiatives.js')).fingerprint(original),role:'working-note'}]});
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.exposeFunction('bridge', async r => {
@@ -86,6 +86,18 @@ try {
   const classes = await page.locator('.app').getAttribute('class');
   await lookup('note'); await open('打开原文'); await page.locator('.search-return:visible').waitFor(); await back();
   assert.equal(await page.locator('.app').getAttribute('class'),classes); await page.keyboard.press('Escape');
+  // Unavailable initiative-linked invocation note keeps return ownership for retry.
+  await page.locator('nav [data-view=initiatives]').click();
+  await page.locator('#items button').filter({hasText:'latency 事项'}).first().click();
+  await page.locator('#workspace-notes button[data-path="a.md"]').click();
+  await lookup('action'); await open('打开行动'); await page.locator('.search-return:visible').waitFor();
+  await rename(join(fixture.root,'a.md'),join(fixture.root,'unavailable.md'));
+  await page.locator('.search-return:visible').click();
+  await page.locator('#notice').filter({hasText:'ENOENT'}).waitFor();
+  assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);
+  await rename(join(fixture.root,'unavailable.md'),join(fixture.root,'a.md'));
+  await back(); assert.equal(await page.locator('#file-path').textContent(),'a.md');
+  await page.keyboard.press('Escape');
   // Dirty active note: continue, failed save, discard and successful save all keep search reachable.
   await page.locator('nav [data-view=notes]').click();
   await page.locator('#items [data-path="a.md"]').click();

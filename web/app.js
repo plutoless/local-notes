@@ -185,7 +185,7 @@ async function restoreSearchInvocation(origin, valid) {
   const owns = () => valid() && workspace === workspaceGeneration && page === pageGeneration && request === noteLoadRequest;
   if (origin.initiative) {
     await initiatives.edit(origin.initiative); if (!owns()) return false;
-    if (origin.note) { request = noteLoadRequest + 1; await openContextNote(origin.note, origin.reading); if (!owns()) return false; }
+    if (origin.note) { request = noteLoadRequest + 1; if (!await openContextNote(origin.note, origin.reading) || !owns()) return false; }
     initiatives.selectContext(origin.selectedContext);
   } else if (origin.note) {
     if (!await load(origin.note, null, request = ++noteLoadRequest) || !owns()) return false;
@@ -261,7 +261,8 @@ async function openContextNote(path, reading = true) {
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
     if (!await load(path, loaded, request)) return; initiatives.selectContext(path); $('#workspace-detail').scrollTop = 0;
     if (readMode !== reading) $('#mode').click();
-  } catch (error) { notice(error.message); }
+    return true;
+  } catch (error) { notice(error.message); return false; }
 }
 async function openNote(path){try{if(await flush()){if(await load(path)) $('#mode').focus();}}catch(e){notice(e.message);}}
 async function save() {
