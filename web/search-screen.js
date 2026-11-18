@@ -139,7 +139,7 @@ export class SearchScreen {
         this.navigation.error('来源打开失败，可返回搜索结果后重试');
       }
       if (valid()) {
-        this.continuation = null;
+        this.continuation = null; this.navigation.returnAvailable(false);
         if (!this.panel.open) this.resume(focus);
         this.status.textContent = '来源已移动、改变或不可读取，请刷新后重试；搜索与原页面仍可返回';
       }
