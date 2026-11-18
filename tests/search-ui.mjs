@@ -28,7 +28,7 @@ try {
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   let releaseWorkspace; workspaceDelay = new Promise(resolve=>releaseWorkspace=resolve);
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
-  const input = page.locator('#global-search-input'); await input.fill('latency'); releaseWorkspace(); workspaceDelay = null;
+  const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
   await page.keyboard.press('Meta+k'); assert.equal(await input.inputValue(), 'latency'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await page.keyboard.press('Meta+Enter'); await page.getByText('已复制片段', {exact:true}).waitFor();
