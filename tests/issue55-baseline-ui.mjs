@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const evidence = 'docs/validation/issue55';
+const integrated = process.argv.includes('--integrated');
 const fixture = await storageFixture();
 let activeFixture = fixture, alternateFixture;
 let delayTopic = false, releaseTopic;
@@ -54,16 +55,17 @@ try {
   await page.locator('[data-view=notes]').click();
   await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='笔记库');
   const before = await readFile(sourcePath, 'utf8');
-  const result = {baseline: 'ed75811', hiddenAction: await page.locator('#action-editor').isHidden(), unsavedOnCleanLibrary: await page.evaluate(()=>window.hasUnsavedChanges())};
+  const result = {baseline: integrated ? '0e2c8e7' : 'ed75811', hiddenAction: await page.locator('#action-editor').isHidden(), unsavedOnCleanLibrary: await page.evaluate(()=>window.hasUnsavedChanges())};
   assert.equal(result.hiddenAction, true);
   assert.equal(result.unsavedOnCleanLibrary, true);
   await page.getByRole('button', {name:/reference/}).first().click();
-  await page.waitForFunction(()=>document.querySelector('#action-description').getAttribute('aria-invalid')==='true');
+  if (integrated) await page.locator('#editor').waitFor({state:'visible'});
+  else await page.waitForFunction(()=>document.querySelector('#action-description').getAttribute('aria-invalid')==='true');
   result.noteBlockedByHiddenAction = await page.locator('#editor').isHidden();
   result.hiddenError = await page.locator('#action-save-state').textContent();
   result.privateDraftByteUnchanged = await page.evaluate(({key,privateDraft})=>localStorage.getItem(key)===JSON.stringify(privateDraft), {key,privateDraft});
   result.noteUnchanged = before===await readFile(sourcePath,'utf8');
-  assert.equal(result.noteBlockedByHiddenAction, true);
+  assert.equal(result.noteBlockedByHiddenAction, !integrated);
   result.retainedDraft = await page.evaluate(key=>JSON.parse(localStorage.getItem(key)), key);
   assert.equal(result.retainedDraft.fields.description, privateDraft.fields.description);
   assert.equal(result.retainedDraft.previous, null);
@@ -71,9 +73,9 @@ try {
   assert.equal(fixture.calls.filter(call=>call.cmd==='actionWrite').length, 0);
   for (const width of [1180,393]) {
     await page.setViewportSize({width,height:800});
-    await page.screenshot({path:join(evidence,`baseline-hidden-action-${width}.png`)});
+    await page.screenshot({path:join(evidence,`${integrated ? 'integrated' : 'baseline'}-hidden-action-${width}.png`)});
   }
-  await writeFile(join(evidence,'baseline-hidden-action.json'),JSON.stringify(result,null,2)+'\n');
+  await writeFile(join(evidence,`${integrated ? 'integrated' : 'baseline'}-hidden-action.json`),JSON.stringify(result,null,2)+'\n');
   assert.deepEqual(errors, []);
-  console.log('REPRODUCED: clean library reports unsaved; opening note validates unrelated hidden recovered blank action and remains blocked; draft retained; note unchanged');
+  console.log(integrated ? 'INTEGRATED: hidden recovered action no longer blocks note opening; global unsaved remains true on clean library; draft retained and note unchanged' : 'REPRODUCED: clean library reports unsaved; opening note validates unrelated hidden recovered blank action and remains blocked; draft retained; note unchanged');
 } finally { await browser.close(); await fixture.close(); }
