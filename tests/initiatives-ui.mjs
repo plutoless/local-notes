@@ -164,6 +164,8 @@ try {
   assert.equal(new Set(names).size, 2);
   assert.ok(names.every(name => name.startsWith('打开来源：')));
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
+  // Dismiss the injected save-failure receipt before opening the row beneath it.
+  if (await page.locator('#notice').isVisible()) await page.locator('#notice').getByRole('button', {name:'关闭提示',exact:true}).click();
   await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
   const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
