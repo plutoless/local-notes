@@ -8,6 +8,8 @@ args = parser.parse_args()
 out = Path(args.output).resolve()
 out.mkdir(parents=True, exist_ok=False)
 evidence = out
+window_probe = out/'owned-windows'
+subprocess.run(['swiftc','-module-cache-path','build/swift-cache','tests/native-owned-windows.swift','-o',str(window_probe)],check=True)
 app = out / 'Forms48Production.app'
 shutil.copytree('dist/LocalNotes.app', app, dirs_exist_ok=True)
 subprocess.run(['/usr/libexec/PlistBuddy', '-c', 'Set :CFBundleIdentifier dev.localnotes.validation.issue48productionfinal', str(app/'Contents/Info.plist')], check=True)
@@ -17,12 +19,16 @@ assert all(hashlib.sha256((app/'Contents/Resources/web'/name).read_bytes()).hexd
 (out/'source-hashes.json').write_text(json.dumps(hashes, indent=2)+'\n')
 for folder in ['Sync', 'Private']: (out/folder).mkdir(exist_ok=True)
 p = subprocess.Popen([str(app/'Contents/MacOS/LocalNotes')], env={**os.environ, 'LOCAL_NOTES_TEST_ROOT': str(out/'Sync'), 'LOCAL_NOTES_TEST_PRIVATE': str(out/'Private')}, stdout=open(out/'app.log', 'w'), stderr=subprocess.STDOUT)
+(out/'pid').write_text(str(p.pid))
 def ax(script, wait=True):
     args=['osascript', '-e', f'tell application "System Events" to tell (first application process whose unix id is {p.pid})', '-e', script, '-e', 'end tell']
     return subprocess.run(args, capture_output=True, text=True, check=True).stdout if wait else subprocess.Popen(args, stdout=open(out/'action.log','a'), stderr=subprocess.STDOUT)
 def state(name=None):
-    response=subprocess.run(['orca','computer','get-app-state','--app',f'pid:{p.pid}','--json'],capture_output=True,text=True)
+    command=['orca','computer','get-app-state','--app',f'pid:{p.pid}','--json']
+    response=subprocess.run(command,capture_output=True,text=True)
     result=json.loads(response.stdout)
+    (out/'last-state-command.json').write_text(json.dumps(command)+'\n')
+    (out/'last-state.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     if not result.get('ok'):
         if result.get('error',{}).get('code') in ['app_not_found','window_not_found']: raise LookupError(json.dumps(result,ensure_ascii=False))
         raise RuntimeError(json.dumps(result,ensure_ascii=False))
@@ -38,17 +44,28 @@ def alert(expected, filename):
         time.sleep(.1)
     assert expected in text,text
     (evidence/filename).write_text(text)
-    ax('set frontmost to true')
+    ax('set frontmost to true\nperform action "AXRaise" of window 1')
     target=None
-    for _ in range(30):
+    for _ in range(3):
         windows=json.loads(subprocess.run(['orca','computer','list-windows','--app',f'pid:{p.pid}','--json'],capture_output=True,text=True,check=True).stdout)['result']['windows']
         target=next((window for window in windows if window['title']==''),None)
         if target: break
         time.sleep(.1)
-    assert target,windows
-    capture=json.loads(subprocess.run(['orca','computer','get-app-state','--app',f'pid:{p.pid}','--window-id',str(target['id']),'--json'],capture_output=True,text=True,check=True).stdout)
-    assert capture['ok'] and expected in capture['result']['snapshot']['treeText']
-    shutil.copy(capture['result']['screenshot']['path'],evidence/(Path(filename).stem+'.png'))
+    destination=evidence/(Path(filename).stem+'.png')
+    if target:
+        capture=json.loads(subprocess.run(['orca','computer','get-app-state','--app',f'pid:{p.pid}','--window-id',str(target['id']),'--json'],capture_output=True,text=True,check=True).stdout)
+        assert capture['ok'] and expected in capture['result']['snapshot']['treeText']
+        shutil.copy(capture['result']['screenshot']['path'],destination)
+    else:
+        # AppKit may place this real modal panel at layer 8. Orca only lists
+        # layer-zero windows; discover this PID's exact observed alert frame.
+        frame=[int(value.strip()) for value in ax('get {position, size} of window 1').strip().split(',')]
+        owned=json.loads(subprocess.run([str(window_probe),str(p.pid)],capture_output=True,text=True,check=True).stdout)
+        target=next((window for window in owned if window.get('kCGWindowIsOnscreen') and [window['kCGWindowBounds'][key] for key in ['X','Y','Width','Height']]==frame),None)
+        assert target,owned
+        subprocess.run(['screencapture','-x','-o','-l'+str(target['kCGWindowNumber']),str(destination)],check=True)
+        assert destination.stat().st_size>0
+        capture={'engine':'macOS screencapture','ownedWindow':target,'assertedAlertText':text,'reason':'Orca omitted the modal panel from its layer-zero enumeration'}
     (evidence/(Path(filename).stem+'.json')).write_text(json.dumps(capture,ensure_ascii=False,indent=2)+'\n')
     ax('click button "确定" of window 1')
     time.sleep(.4)
