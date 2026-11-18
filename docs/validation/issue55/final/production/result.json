@@ -1,0 +1,16 @@
+{
+  "productionAssets": true,
+  "actualWindowClose": true,
+  "actualMenuQuit": true,
+  "osCommandQ": true,
+  "continuePreservesDraft": true,
+  "discardDoesNotReappearAfterRestart": true,
+  "saveAndQuitPersistedOneNote": true,
+  "reentrantCloseOneDecision": true,
+  "cleanExitCodes": [
+    0,
+    0,
+    0,
+    0
+  ]
+}

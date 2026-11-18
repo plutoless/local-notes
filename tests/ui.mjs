@@ -1,3 +1,4 @@
+import {saveAndLeave} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -45,7 +46,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -74,7 +75,7 @@ try {
   assert.equal(await readFile(sourcePath, 'utf8'), original);
   assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
   await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-status').inputValue(), 'waiting');
   assert.equal(await page.locator('#action-waiting').inputValue(), 'Reviewer feedback');
   assert.equal(await page.locator('#action-description').evaluate(node => node.closest('.ui-field') !== null), true);
@@ -87,7 +88,7 @@ try {
   await closeSavedAction(page);
   await page.locator('#action-filter').selectOption('todo'); await page.getByText('没有符合条件的行动。请调整搜索词或筛选条件。').waitFor(); assert.equal(await page.locator('.card').count(), 0);
   await page.locator('#action-filter').selectOption('completed');
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-history').click(); await page.waitForFunction(() => document.querySelectorAll('#action-revisions p').length === 3);
@@ -114,9 +115,10 @@ try {
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
   await page.locator('#mode').click(); await page.locator('#reading input').first().check();
+  await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('todo');
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-status').inputValue(), 'todo');
   assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
   await page.getByText('来源已修改，请核对引用', {exact:true}).waitFor();
@@ -130,11 +132,11 @@ try {
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await rename(sourcePath, join(fixture.root, 'unavailable.fixture'));
   await closeSavedAction(page);
-  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click();
+  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源不可用，请重新关联', {exact:true}).waitFor();
   await rename(join(fixture.root, 'unavailable.fixture'), sourcePath);
   await closeSavedAction(page);
-  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click();
+  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   // Recover an externally moved source using the reference inventory fingerprints.
   const currentSource = await readFile(sourcePath, 'utf8');
   await page.locator('.action-source summary').click();
@@ -143,14 +145,14 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page);
   await rename(sourcePath, join(fixture.root, 'relocated.md'));
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源已移动', {exact: true}).waitFor();
   assert.equal(await page.locator('.source-path').inputValue(), 'relocated.md');
-  await page.getByRole('button', {name: /^打开来源：/}).click();
+  await page.getByRole('button', {name: /^打开来源：/}).click(); await saveAndLeave(page);
   await page.waitForFunction(() => document.querySelector('#file-path').textContent === 'relocated.md');
   await rename(join(fixture.root, 'relocated.md'), sourcePath);
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click();
+  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源已移动', {exact: true}).waitFor();
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
@@ -163,13 +165,13 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
   assert.equal(await page.locator('#action-drawer').isVisible(), true);
   await page.screenshot({path: 'build/actions-failed.png'});
-  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
+  await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.getByRole('button',{name:'恢复行动草稿',exact:true}).click(); await page.getByText(/已恢复行动草稿/).waitFor();
   assert.equal(await page.locator('#action-description').inputValue(), 'Draft retained after a failed save');
   await page.locator('#action-save').click(); await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   // A committed but unrecovered edit remains the parent of subsequent user edits.
   fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith('actions/'), 2);
   await page.locator('#action-description').fill('Committed during a current-record failure');
-  await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText:/未保存的编辑仍保留/}).waitFor();
+  await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText:/版本已保存，恢复尚未完成/}).waitFor();
   await page.locator('#action-description').fill('Draft retained after a failed save');
   await page.locator('#action-save').click(); await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   const actionWorkspace = await fixture.adapter('workspace');
@@ -183,7 +185,7 @@ try {
   await page.getByText('路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。', {exact: true}).waitFor();
   assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
   assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
-  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃此次编辑',exact:true}).click();
+  await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await closeNoteInfo(page); await page.locator('#body').fill('Unsaved local edit');
   await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
   await page.locator('#conflict').waitFor({state: 'visible'});
@@ -194,6 +196,7 @@ try {
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
   await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).click();
+  await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-description').focus();
   await page.keyboard.press('Tab');
   assert.equal(await page.locator('#action-status').evaluate(node => node === document.activeElement), true);
@@ -227,6 +230,7 @@ try {
   await page.locator('#editor').waitFor({state: 'visible'});
   if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
   await closeNoteInfo(page); await page.locator('#body').fill('An intentional edit in the new workspace');
+  await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);
   assert.equal(await readFile(sourcePath, 'utf8'), oldSource);
@@ -235,6 +239,7 @@ try {
   await page.evaluate(root => localStorage.setItem(`draft:${root}:legacy.md`, JSON.stringify({text: '# Legacy note\n\nRecovered old editor draft', base: '# Legacy note\n\nOriginal body'})), otherFixture.root);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
   await page.getByRole('heading', {name: 'Legacy note', exact: true}).click();
+  await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地' && document.querySelector('#body').value.includes('Recovered old editor draft'));
   assert.match(await readFile(join(otherFixture.root, 'legacy.md'), 'utf8'), /Recovered old editor draft/);
   // A delayed query from B cannot repopulate the list after failed initialization of A.

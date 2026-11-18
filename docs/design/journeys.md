@@ -44,3 +44,27 @@ Use the [finite entry-point inventory](../validation/issue48/inventory.md), rath
 - [ ] Observe actual production Mac close and OS-menu Quit with dirty/pending tasks; direct delegate invocation and browser `hasUnsavedChanges()` assertions are insufficient.
 
 These checklist items are review requirements, not blanket assertions that every check has passed. See [issue48 execution evidence](../validation/issue48/README.md) for browser/native input boundaries, production close/quit results and unrun checks. Async openers that temporarily disable themselves must explicitly preserve their identity for focus return; check this in WKWebView as well as Chromium.
+
+
+## Task lifecycle coverage (#55)
+
+- `tests/task-lifecycle-ui.mjs`: shared three-way decisions for notes, actions,
+  initiatives, topics and capture; clean/reverted and blank invalid input;
+  failed/conflicted writes; submitted delayed note/autosave and action writes;
+  competing navigation; hidden unrelated private drafts; saved-new-action followup
+  recovery; discarded/reverted capture reload; delayed note-open ownership;
+  desktop and 393px confirmation layout.
+- `tests/task-drafts.test.js`: workspace/record legacy migration, colliding valid
+  candidates, malformed target preservation, and workspace isolation.
+- `tests/native-task-lifecycle.py`: unchanged production bundle assets in an
+  isolated app, actual window close, app-menu quit and OS Cmd+Q, reentrant close,
+  all three decisions, exact saved record count and app restart after discard.
+- `tests/native-task-lifecycle-failures.py`: test-only native command channel and
+  accepted-token log; real AppKit quit/window requests, injected content-process
+  loss delegate, reload recovery, stale bridge replies, one accepted termination
+  reply per request. This does not claim an actual WebKit crash was induced.
+
+Existing journey suites explicitly resolve dirty leave decisions and request
+private draft recovery. They no longer rely on hidden forms auto-saving or
+recovered drafts committing on entry. Retain the transaction decisions and
+committed action results when ending an initiative partially succeeds.
