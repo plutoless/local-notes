@@ -21,4 +21,6 @@ Browser screenshots are prefixed `summaries-`; native screenshots are prefixed `
 
 ## Risks
 
+An initial Spec review reproduced operator/identifier corruption from emphasis cleanup. The fix protects inline and fenced code and applies conservative prose delimiter boundaries; regression coverage preserves multiplication and underscores. No Standards violations or accepted unresolved minor suggestions were reported. Final review results are included in the PR handoff.
+
 Excerpt cleanup intentionally supports common Markdown presentation syntax, not complete YAML or Markdown parsing. A complete delimited leading block is treated as frontmatter; unmatched delimiters are retained. A first run after upgrade reads each stale body once in the background. Original bodies and fingerprints remain authoritative.

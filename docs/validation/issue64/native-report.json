@@ -1,10 +1,10 @@
 {
-  "head": "6c61d024320341760e46ca18143c1830b458d802",
+  "head": "d6ddd74303f1dd712eef987ba566ba896d0c3f87",
   "hardware": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
   "cpu": "Apple M4",
   "corpus": 500,
   "cold": {
-    "ms": 1200.0000000000002,
+    "ms": 899,
     "reads": 500
   },
   "assets": {
@@ -15,7 +15,7 @@
     "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
     "actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
     "initiative-screen.js": "cf66708a023a4be85316c632e3da323c69e12369c5122b033e24a211b3682579",
-    "library.js": "2b45af8d72999b112ab11472de0e425940c91ad62cd21d5c2359e2012f9b07c3",
+    "library.js": "12b8209b7f5aa9e28e7d3374d418cb1f4cc16e373a8180f3bc12801225bd1af1",
     "focus-screen.js": "0df3e015737f1c58056309a5424fdd692d940f2ad83bd76487d759b3cb90bf9b",
     "global-search.js": "ee29606d03ba06da5569ebc10aed2bd75fe628583d4caa847f9f40e40ec8c435",
     "task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
@@ -30,11 +30,11 @@
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
   },
   "warm": {
-    "ms": 451,
+    "ms": 300.9999999999991,
     "reads": 0
   },
   "open": {
-    "ms": 101,
+    "ms": 100.00000000000091,
     "reads": 1
   },
   "input": "DOM-driven Cocoa/WKWebView; no physical or OS-injected input",

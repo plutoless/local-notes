@@ -16,14 +16,20 @@ function referenceBody(text) {
   return text.replace(/^\uFEFF?---[^\S\r\n]*\r?\n[\s\S]*?\r?\n(?:---|\.\.\.)[^\S\r\n]*(?:\r?\n|$)/, '');
 }
 function referenceExcerpt(body) {
-  return body.replace(/^# .+\r?\n?/m, '')
-    .replace(/^\s*(`{3,}|~{3,}).*$/gm, '')
-    .replace(/!?(\[([^\]]*)\])\([^\n)]*\)/g, '$2')
-    .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2').replace(/\[\[([^\]]+)\]\]/g, '$1')
-    .replace(/^\s*(?:#{1,6}\s+|>\s?|[-+*]\s+(?:\[[ xX]\]\s*)?|\d+[.)]\s+)/gm, '')
-    .replace(/(\*\*|__|~~|`)([^\n]+?)\1/g, '$2')
-    .replace(/\*([^\s][^\n]*?)\*/g, '$1').replace(/(?<!\w)_([^\s][^\n]*?)_(?!\w)/g, '$1')
-    .replace(/\s+/g, ' ').trim().slice(0, 180);
+  let fence = null;
+  const lines = body.replace(/^# .+\r?\n?/m, '').split(/\r?\n/).map(line => {
+    const marker = line.match(/^\s*(`{3,}|~{3,})/);
+    if (marker && (!fence || (marker[1][0] === fence[0] && marker[1].length >= fence.length))) {
+      fence = fence ? null : marker[1]; return '';
+    }
+    if (fence) return line;
+    return line.replace(/^\s*(?:#{1,6}\s+|>\s?|[-+*]\s+(?:\[[ xX]\]\s*)?|\d+[.)]\s+)/, '')
+      .split(/(`+[^`]*`+)/g).map((part, index) => index % 2 ? part.replace(/^`+|`+$/g, '') : part
+        .replace(/!?\[([^\]]*)\]\([^\n)]*\)/g, '$1')
+        .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2').replace(/\[\[([^\]]+)\]\]/g, '$1')
+        .replace(/(?<![\p{L}\p{N}_])(\*\*|__|~~|\*|_)(?=\S)(.+?)\1(?![\p{L}\p{N}_])/gu, '$2')).join('');
+  });
+  return lines.join(' ').replace(/\s+/g, ' ').trim().slice(0, 180);
 }
 export function referenceRecord(note, text) {
   const directory = note.path.includes('/') ? note.path.slice(0, note.path.lastIndexOf('/')) : '';
