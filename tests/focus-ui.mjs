@@ -1,3 +1,4 @@
+import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -70,7 +71,7 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click();
   await page.getByRole('button', {name: '移出当前重点'}).waitFor();
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.reload();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
@@ -84,13 +85,13 @@ try {
   await page.locator('#action-waiting').fill('Approval from Sam');
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByText('Approval from Sam', {exact: true}).waitFor();
   assert.equal(await page.getByText('已逾期', {exact: false}).count(), 0);
   await page.getByRole('button', {name: /^打开行动：/}).click();
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByText('还没有重点行动。', {exact: false}).waitFor();
   // Seed nine explicit focused actions through the same production adapter.
   const {ActionRepository} = await import('../web/actions.js');
@@ -125,16 +126,17 @@ try {
   await page.getByRole('button', {name: '打开事项', exact: true}).click();
   await page.waitForFunction(() => document.querySelector('#initiative-progress').value === 'Saved user progress');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByText('放弃编辑', {exact: true}).click(); await page.locator('#action-discard').click();
+  assert.equal((await repository.query({search:'Unreviewed recovered draft'})).actions.length,0);
+  await page.getByText('放弃编辑', {exact: true}).click(); await page.locator('#action-discard').click(); await page.getByRole('button',{name:'放弃行动编辑',exact:true}).click();
   await page.locator('#search').fill('No matching action');
   await page.locator('#action-initiative-filter').selectOption(initiative.entityId);
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByRole('button', {name: '全部等待行动'}).click();
   await page.waitForFunction(() => document.querySelector('#items h3')?.textContent.startsWith('Waiting item'));
   assert.equal(await page.locator('#search').inputValue(), '');
   assert.equal(await page.locator('#action-initiative-filter').inputValue(), '');
   assert.equal(await page.locator('#action-filter').inputValue(), 'waiting');
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await writeFile(join(fixture.root, 'LocalNotesData/actions/broken.json'), '{');
   await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '刷新本地记录'}).click();
@@ -159,7 +161,7 @@ try {
   assert.equal(await page.locator('.source-quote').inputValue(), 'This quotation is not in the source');
   await page.locator('.action-source button').click(); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
-  await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   for (const node of await page.locator('nav button').all()) assert.equal(await node.evaluate(n => n.getBoundingClientRect().height >= 44), true);
   await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name:'整理所选笔记'}).click();

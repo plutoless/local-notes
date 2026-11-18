@@ -1,0 +1,9 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/build/native48-final-head-873729f-production/Forms48Production.app: replacing existing signature
+Traceback (most recent call last):
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/native-remaining-termination.py", line 65, in <module>
+    alert('还有内容未保存','final-production-close-alert.txt');close.wait(timeout=10)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/native-remaining-termination.py", line 48, in alert
+    assert target,windows
+           ^^^^^^
+AssertionError: [{'index': 0, 'screenIndex': 0, 'id': 15391, 'isMinimized': False, 'height': 832, 'isMain': None, 'app': {'bundleId': 'dev.localnotes.validation.issue48productionfinal', 'pid': 75840, 'name': 'LocalNotes'}, 'platform': {'layer': 0, 'alpha': 1}, 'title': '拾记 · Local Notes', 'width': 1180, 'y': 47, 'x': 166, 'isOffscreen': False}]

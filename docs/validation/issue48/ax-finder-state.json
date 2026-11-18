@@ -1,0 +1,17 @@
+{
+  "id": "7058a5ee-4332-4b41-83db-7813d15ee37b",
+  "ok": false,
+  "error": {
+    "code": "permission_denied",
+    "message": "app 'Finder' has visible windows but no accessibility window (AX reads stayed blocked for 1500ms after retries). macOS Accessibility may need Orca Computer Use toggled off and on again in System Settings.",
+    "data": {
+      "nextSteps": [
+        "Run `orca computer permissions --json`, or `orca computer permissions --id accessibility --json` / `--id screenshots --json` when the message names one missing permission.",
+        "For remote or SSH targets, verify the command is running inside an active graphical desktop session."
+      ]
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

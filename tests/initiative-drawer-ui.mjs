@@ -1,3 +1,4 @@
+import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -55,9 +56,17 @@ try {
   if (!process.env.INITIATIVE_ASSETS_DIR) {
     await page.setViewportSize({width:1180,height:800});
     const submit=page.locator('#initiative-save'), panel=page.locator('#initiative-drawer');
-    const closed=()=>page.waitForFunction(()=>!document.querySelector('#initiative-drawer').open);
-    const open=async()=>{await page.locator('#initiative-new').click();await panel.waitFor({state:'visible'});};
-    const edit=async()=>{await page.locator('#workspace-overview').click();await panel.waitFor({state:'visible'});};
+    let resumeAction;
+    const closed=async()=>{
+      await page.waitForFunction(()=>!document.querySelector('#initiative-drawer').open);
+      if (resumeAction) {
+        const row=page.locator(`[data-action-id="${resumeAction}"]`);
+        if (!await row.isVisible()) await page.getByText('已完成和已取消',{exact:true}).click();
+        await row.click(); await page.locator('#action-drawer').waitFor({state:'visible'}); resumeAction=null;
+      }
+    };
+    const open=async()=>{await closeSavedAction(page);await page.locator('#initiative-new').click();await panel.waitFor({state:'visible'});};
+    const edit=async()=>{if(await page.locator('#action-drawer').evaluate(n=>n.open)) resumeAction=await page.locator('#action-id').textContent();await closeSavedAction(page);await page.locator('#workspace-overview').click();await panel.waitFor({state:'visible'});};
     await page.locator('#initiative-discard').click(); await closed();
     assert.equal(await page.locator('#items [data-initiative-id]').count(),0);
     await open(); await submit.click(); assert.equal(await page.locator('#initiative-title').getAttribute('aria-invalid'),'true');
@@ -106,12 +115,14 @@ try {
     await edit();assert.equal(await page.locator('#initiative-status').inputValue(),'ended');
     await page.locator('#initiative-status').selectOption('active');await submit.click();await closed();
     await edit();assert.equal(await page.locator('#initiative-status').inputValue(),'active');await page.locator('#initiative-discard').click();await closed();
+    await page.locator('#initiative-new-action').click();await page.locator('#action-back').click();
+    assert.equal(await page.locator('#initiative-new-action').evaluate(node=>node===document.activeElement),true);
     await page.locator('#initiative-new-action').click();await page.locator('#action-description').fill('结束时处理的已选行动');await page.locator('#action-save').click();
     await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
     await edit();await page.setViewportSize({width:393,height:800});await page.locator('#initiative-discard').click();await closed();
     assert.equal(await page.locator('#action-description').evaluate(n=>n===document.activeElement),true);await page.setViewportSize({width:1180,height:800});
     await edit();await page.locator('#initiative-status').selectOption('ended');await page.locator('[data-action]').selectOption('completed');await submit.click();await closed();
-    assert.equal(await page.locator('#action-editor').isVisible(),true);assert.equal(await page.locator('#action-status').inputValue(),'completed');
+    assert.equal(await page.locator('#action-drawer').isVisible(),true);assert.equal(await page.locator('#action-status').inputValue(),'completed');
     await page.locator('#action-description').fill('结束后继续编辑已选行动');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
     await edit();await page.locator('#initiative-status').selectOption('active');await submit.click();await closed();
     await page.locator('#action-status').selectOption('todo');await page.locator('#action-save').click();await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
