@@ -113,7 +113,7 @@ try {
   await page.waitForFunction(() => document.querySelectorAll('#action-revisions details').length >= 8);
   assert.equal(await page.locator('#items .card[aria-current="true"]').count(), 1);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
-  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#mode').click(); await page.locator('#reading input').first().check();
   await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
@@ -177,7 +177,7 @@ try {
   const actionWorkspace = await fixture.adapter('workspace');
   const actionPage = await fixture.adapter('actionQuery', {workspaceId: actionWorkspace.workspaceId});
   assert.equal(actionPage.actions.length, 1);
-  await closeSavedAction(page); await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await closeSavedAction(page); await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
   await page.locator('#note-info-open').click();
   const beforeInvalidRename = await readFile(sourcePath, 'utf8');
@@ -211,7 +211,7 @@ try {
   // Failed initialization of B must hide A's editors before any further edit can be made.
   await page.setViewportSize({width: 1180, height: 800});
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
-  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
   const oldWorkspace = (await fixture.adapter('workspace')).workspaceId;
   const oldSource = await readFile(sourcePath, 'utf8');
@@ -226,7 +226,7 @@ try {
   assert.match(stale.error, /Workspace changed/);
   assert.equal(await readFile(otherSource, 'utf8'), oldSource);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
-  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md ·/})}).click();
+  await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
   if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
   await closeNoteInfo(page); await page.locator('#body').fill('An intentional edit in the new workspace');
