@@ -101,3 +101,10 @@ test('source-faithful summaries survive cached upgrade and index rebuild without
     await fixture.removeIndex(); await library.sync(); await check(); assert.equal(reads, cases.length * 2);
   } finally { await fixture.close(); }
 });
+
+
+test('summary cleanup preserves literal operators and code syntax', async () => {
+  const {referenceRecord} = await import('../web/library.js');
+  const source = '# Calculation\n\n2*3*4 = 24; prefix__identifier__suffix\nUse `a*b*c` and `__init__`.\n```js\nconst value = a*b*c; // **literal**\n```\n**Useful** prose';
+  assert.equal(referenceRecord({path:'code.md'}, source).excerpt, '2*3*4 = 24; prefix__identifier__suffix Use a*b*c and __init__. const value = a*b*c; // **literal** Useful prose');
+});

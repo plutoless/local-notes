@@ -4,6 +4,7 @@ import hashlib, importlib.util, inspect, json, os, platform, shutil, subprocess,
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+evidence = Path(os.environ.get('LIBRARY_EVIDENCE_DIR', 'docs/validation/issue64')); evidence.mkdir(parents=True, exist_ok=True)
 m.OUT = Path.cwd() / 'build/native-issue64'; m.APP = m.OUT / 'Library64.app'
 if m.OUT.exists(): shutil.rmtree(m.OUT)
 m.OUT.mkdir(parents=True)
@@ -47,14 +48,15 @@ try:
     cold['reads'] = c('__reads')
     assert cold['reads'] == 500, cold
     report = dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), hardware=platform.platform(), cpu=subprocess.check_output(['sysctl','-n','machdep.cpu.brand_string'],text=True).strip(), corpus=500, cold=cold, assets=assets)
-    c('__snapshot'); shutil.copy(m.OUT/'snapshot.png',Path('docs/validation/issue64')/'native-browse.png')
+    c('__snapshot'); shutil.copy(m.OUT/'snapshot.png',evidence/'native-browse.png')
     c("document.querySelector('#search').value='长中文';document.querySelector('#search').dispatchEvent(new Event('input'))")
     w("document.querySelectorAll('#items .card').length===1")
     for width,height in [(1180,800),(760,600),(393,852),(800,400)]:
         c(f'__size:{width}:{height}'); time.sleep(.3)
         assert c("return [...document.querySelectorAll('#items .card')].every(row=>{const r=row.getBoundingClientRect();const parts=[...row.children].map(n=>n.getBoundingClientRect());return parts.every((p,i)=>p.left>=r.left && p.right<=r.right+1 && p.bottom<=r.bottom+1 && (!i || p.top>=parts[i-1].bottom))})")
         assert c('return document.documentElement.scrollWidth<=innerWidth')
-        c('__snapshot'); shutil.copy(m.OUT/'snapshot.png',Path('docs/validation/issue64')/f'native-{width}-{height}.png')
+        c("document.querySelector('#items .card').scrollIntoView({block:'start'})"); time.sleep(.2)
+        c('__snapshot'); shutil.copy(m.OUT/'snapshot.png',evidence/f'native-{width}-{height}.png')
     c('__size:1180:800')
     c("window.warmStart=performance.now();document.querySelector('#library-refresh').click()")
     w("!document.querySelector('#library-refresh').disabled && !document.querySelector('#library-progress').textContent")
@@ -74,7 +76,7 @@ try:
     assert not list(root.glob('LocalNotesData/revisions/*/*.json'))
     report['input'] = 'DOM-driven Cocoa/WKWebView; no physical or OS-injected input'
     report['timingScope'] = 'UI automation wall-clock including polling; cold waits for full indexing; warm is manual refresh; open one selected source'
-    Path('docs/validation/issue64/native-report.json').write_text(json.dumps(report,indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(report,indent=2))
     print(json.dumps(report,indent=2))
 finally:
     process.terminate(); process.wait(timeout=10)
