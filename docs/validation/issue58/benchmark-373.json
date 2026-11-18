@@ -1,0 +1,23 @@
+{
+  "head": "258a66480921fd26c1e566a720250ee3ddd6c842",
+  "hardware": "Apple M4",
+  "memoryGiB": 16,
+  "platform": "darwin",
+  "count": 373,
+  "bytes": 1761420,
+  "index": "fresh private SQLite then cached; actual isolated files; no private notes inspected",
+  "coldIndexMs": 931.8198339999999,
+  "warmReconcileMs": 447.99683300000015,
+  "queryMs": [
+    5.150708000000122,
+    4.6557920000000195,
+    4.4461670000000595,
+    4.418292000000292,
+    4.194167000000107,
+    3.9896669999998267
+  ],
+  "coldReads": 373,
+  "warmReads": 0,
+  "eventLoopTicks": 91,
+  "maxTickMs": 11.117499999999836
+}
