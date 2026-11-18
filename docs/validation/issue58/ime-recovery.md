@@ -22,7 +22,7 @@ The first native script packages the built production code with the existing iso
 
 The real regression verifies:
 
-- zhongwen composes and Space commits 中文 with trusted compositionend;
+- zhongwen composes and Space commits a Chinese candidate with trusted compositionend (the exact candidate depends on the installed IME dictionary/history);
 - Escape cancels active nihao composition while search stays open, then a separate Escape closes it;
 - candidate ArrowDown/Enter commits real IME text while search remains open;
 - Command+A/C copies input text verified with pbpaste, Command+X/V cuts/pastes, Command+Z undoes paste, Command+Left and Command+Shift+Right move/select the line, and Option+Backspace deletes the word;

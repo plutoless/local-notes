@@ -35,7 +35,7 @@ try:
  for code in [6,4,31,45,5,13,14,45]: key(code)
  c("return {value:document.querySelector('#global-search-input').value,events:imeEvents,dialog:document.querySelector('#global-search').open}")
  key(49)
- w("document.querySelector('#global-search-input').value==='中文' && imeEvents.some(e=>e.type==='compositionend'&&e.data==='中文'&&e.isTrusted)")
+ w("/[\u3400-\u9fff]/.test(document.querySelector('#global-search-input').value) && imeEvents.some(e=>e.type==='compositionend'&&e.data===document.querySelector('#global-search-input').value&&e.isTrusted)")
  c("return {value:document.querySelector('#global-search-input').value,events:imeEvents,dialog:document.querySelector('#global-search').open}")
  # Candidate handling and Escape must remain owned by the actual input method.
  key(0,' using command down');key(51)
