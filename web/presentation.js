@@ -166,3 +166,61 @@ export function drawer({id, title, onDismiss}) {
     hide() { panel.close(); (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
   };
 }
+
+// One leave intent owns one captured task. A second navigation cannot reuse its result.
+let leavingTask = false;
+export function taskLeavePending() { return leavingTask; }
+export async function requestTaskLeave(task) {
+  if (!task) return true;
+  if (leavingTask) return false;
+  leavingTask = true;
+  task.suspend?.();
+  try {
+    // Submitted writes are not cancellable. Establish their result before discarding
+    // any remaining input; a committed revision is never silently rolled back.
+    await task.pending?.();
+    let failure = '';
+    while (task.dirty()) {
+      const choice = await taskLeaveChoice(task.label, failure, task.committed?.());
+      if (choice === 'continue') return false;
+      if (choice === 'discard') { await task.discard(); break; }
+      try {
+        if (await task.save()) continue;
+        failure = '保存尚未完成。可重试保存、放弃尚未提交的更改，或继续编辑。已保存的版本仍保留。';
+      } catch (error) { failure = '保存尚未完成：' + error.message; }
+    }
+    return await task.close?.() !== false;
+  } finally { leavingTask = false; task.resume?.(); }
+}
+
+function taskLeaveChoice(label, failure, committed) {
+  return new Promise(resolve => {
+    const origin = document.activeElement;
+    const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
+    panel.setAttribute('aria-labelledby', 'task-leave-title');
+    const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;
+    const message = document.createElement('p'); message.textContent = committed ? '版本已保存，恢复尚未完成。保存并离开会重试恢复；放弃更改并离开只会清除本机待处理状态，已保存版本仍保留。' : '当前编辑尚未保存。请选择保存并离开、放弃更改并离开，或继续编辑。';
+    const status = document.createElement('p'); status.setAttribute('role', 'alert'); status.textContent = failure;
+    const footer = document.createElement('div'); footer.className = 'ui-actions';
+    const keep = button('继续编辑', () => finish('continue'));
+    footer.append(keep,
+      button('放弃更改并离开', () => finish('discard'), {variant: 'danger'}),
+      button('保存并离开', () => finish('save'), {primary: true}));
+    panel.append(title, message, status, footer); document.body.append(panel);
+    panel.addEventListener('cancel', event => { event.preventDefault(); finish('continue'); });
+    panel.addEventListener('keydown', event => {
+      if (event.key !== 'Tab') return;
+      const controls = [...footer.querySelectorAll('button')], index = controls.indexOf(document.activeElement);
+      if (event.shiftKey ? index <= 0 : index === controls.length - 1) {
+        event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0].focus();
+      }
+    });
+    function finish(choice) {
+      panel.close(); panel.remove(); origin?.focus({preventScroll:true}); resolve(choice);
+      // An async dismissal button is re-enabled only after its leave promise
+      // settles. Restore that opener after its event handler has completed.
+      setTimeout(() => { if (!document.getElementById('task-leave-decision') && origin?.isConnected) origin.focus({preventScroll:true}); }, 0);
+    }
+    panel.showModal(); keep.focus();
+  });
+}

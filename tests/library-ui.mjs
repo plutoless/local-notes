@@ -43,7 +43,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -111,7 +111,9 @@ try {
   await page.reload(); await page.locator('[data-view=notes]').click();
   await page.locator('#library-refresh').click();
   await page.locator('.card').filter({has:page.locator('small').filter({hasText:copied})}).click();
-  await page.waitForFunction(()=>document.querySelector('#title').value==='恢复的中文草稿' && document.querySelector('#save-state').textContent==='已保存到本地');
+  await page.waitForFunction(()=>document.querySelector('#title').value==='恢复的中文草稿');
+  await page.locator('#note-save').click();
+  await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.locator('#title').fill('恢复的中文草稿：长期研究资料与工作记录'.repeat(6));
   await closeNoteInfo(page); await page.locator('#body').fill(('中文长段落用于验证持续阅读、换行和滚动，不改变任何其他笔记。'.repeat(15)+'\n\n').repeat(4));
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');

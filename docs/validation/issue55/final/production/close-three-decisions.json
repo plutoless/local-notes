@@ -1,0 +1,57 @@
+{
+  "id": "ff15d325-6ff2-4fe1-be23-72eecc30dc46",
+  "ok": true,
+  "result": {
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/ff15d325-6ff2-4fe1-be23-72eecc30dc46-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-19T07:25:19.812Z"
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue55production (pid 42145)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t45 container 离开随手记\n\t\t\t\t46 heading 离开随手记\n\t\t\t\t47 text 当前编辑尚未保存。请选择保存并离开、放弃更改并离开，或继续编辑。\n\t\t\t\t48 button 继续编辑\n\t\t\t\t49 button 放弃更改并离开\n\t\t\t\t50 button 保存并离开\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 48 button 继续编辑.",
+      "focusedElementId": 48,
+      "id": "E313CA35-0E5B-4F1F-8122-2E56E1814890",
+      "app": {
+        "bundleId": "dev.localnotes.validation.issue55production",
+        "pid": 42145,
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 17127,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 48,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 13,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "windowId": 17127,
+        "engine": "screenCaptureKit"
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}
