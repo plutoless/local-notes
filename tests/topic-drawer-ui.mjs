@@ -125,7 +125,9 @@ try {
     await page.setViewportSize({width:1180,height:800});
     await page.locator('#library-topic').selectOption('');
     for(let i=0;i<65;i++) await writeFile(join(fixture.root,`page-${i}.md`),`# 上下文笔记 ${i}\n\n分页与滚动`);
-    await page.locator('#library-refresh').click(); await page.waitForFunction(()=>!document.querySelector('#library-next').disabled);
+    await page.locator('#library-refresh').click();
+    await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled && !document.querySelector('#library-progress').textContent);
+    await page.waitForFunction(()=>!document.querySelector('#library-next').disabled);
     await page.locator('#library-next').click(); await page.waitForFunction(()=>!document.querySelector('#library-previous').disabled);
     await page.locator('#items .card').last().focus();
     const browsing=await page.evaluate(()=>({scroll:document.querySelector('.collection').scrollTop,text:document.querySelector('#items').innerText,filter:document.querySelector('#library-topic').value}));
