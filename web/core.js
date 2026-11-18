@@ -4,7 +4,7 @@ export function toggleTask(text,index,done){const lines=text.split('\n');if(!tas
 export function withTitle(text,title){return /^# .+$/m.test(text)?text.replace(/^# .+$/m,()=>`# ${title}`):`# ${title}\n\n${text}`;}
 export function safePath(path){return !path.startsWith('/') && !path.includes('\\') && path.split('/').every(p=>p && p!=='.' && p!=='..' && !p.startsWith('.') && !['credentials','localnotesdata'].includes(p.toLowerCase())) && /\.md$/i.test(path);}
 export const escapeHTML=s=>s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-export function renderMarkdown(text) {
+export function renderMarkdown(text, {sourceLines = false} = {}) {
   let fenced = false, list = '';
   const closeList = () => { const end = list ? `</${list}>` : ''; list = ''; return end; };
   const lines = text.split('\n');
@@ -21,6 +21,6 @@ export function renderMarkdown(text) {
     if (heading) return end + `<h${heading[1].length}>${heading[2]}</h${heading[1].length}>`;
     if (value.startsWith('&gt; ')) return end + `<blockquote>${value.slice(5)}</blockquote>`;
     return end + (value ? `<p>${value}</p>` : '');
-  }).join('\n');
+  }).map((html, index) => sourceLines ? html.replace(/<(h[1-6]|p|li|label|blockquote|pre)(?=[ >])/, `<$1 data-source-line="${index}"`) : html).join('\n');
   return html + closeList() + (fenced ? '</code></pre>' : '');
 }
