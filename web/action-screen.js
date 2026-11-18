@@ -171,9 +171,15 @@ export class ActionScreen {
   }
   async assignments(selected = $('#action-initiative').value || '') {
     if (!this.initiatives?.repository.ready) return;
-    const records = await allRecords(this.initiatives.repository);
+    const repository = this.initiatives.repository, editRequest = this.editRequest;
+    const request = this.assignmentRequest = (this.assignmentRequest || 0) + 1;
+    const select = $('#action-initiative'), initial = select.value;
+    const records = await allRecords(repository);
+    if (repository !== this.initiatives.repository || editRequest !== this.editRequest || request !== this.assignmentRequest) return;
+    // Loading options must not undo a choice made while the drawer was usable.
+    if (select.value !== initial) selected = select.value;
     this.initiativeNames = new Map(records.map(record => [record.entityId, record.title]));
-    const select = $('#action-initiative'); select.replaceChildren(new Option('独立行动', ''));
+    select.replaceChildren(new Option('独立行动', ''));
     for (const record of records.filter(i => i.status !== 'ended' || i.entityId === selected)) select.add(new Option(record.title, record.entityId));
     if (selected && !records.some(i => i.entityId === selected)) select.add(new Option('事项不可用，请重新选择', selected));
     select.value = selected;

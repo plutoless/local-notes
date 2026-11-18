@@ -68,6 +68,24 @@ try {
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
   await page.screenshot({path: 'docs/validation/issue33/workspace-home.png'});
   await page.screenshot({path: 'docs/validation/issue37/home-desktop.png'});
+  // An assignment query may finish after the user has changed the open drawer.
+  const focusAction = page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true});
+  await focusAction.click();
+  await page.locator(`#action-initiative option[value="${second.entityId}"]`).waitFor({state:'attached'});
+  await page.locator('#action-back').click();
+  await page.waitForFunction(()=>document.activeElement.getAttribute('aria-label')==='打开行动：确定本周最重要的两件事');
+  let releaseAssignments;
+  queryGate = new Promise(resolve=>{releaseAssignments=resolve;});
+  await focusAction.click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  assert.equal(queryGate,null,'The assignment query must be pending while the user edits');
+  await page.locator('#action-initiative').focus();
+  await page.locator('#action-initiative').selectOption(second.entityId);
+  releaseAssignments();
+  await page.waitForFunction(()=>document.activeElement.id==='action-description');
+  assert.equal(await page.locator('#action-initiative').inputValue(),second.entityId,'Late assignment options must preserve the current user choice');
+  await page.locator('#action-back').click();
+  await page.getByRole('button',{name:'放弃行动编辑',exact:true}).click();
+  await page.waitForFunction(()=>document.activeElement.getAttribute('aria-label')==='打开行动：确定本周最重要的两件事');
   // Cross-page return must survive note editing and preserve the originating action.
   await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
   await page.locator('#action-drawer').waitFor({state: 'visible'});

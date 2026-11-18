@@ -1,0 +1,8 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/build/native48-production-layer-aware/Forms48Production.app: replacing existing signature
+Traceback (most recent call last):
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/native-remaining-termination.py", line 71, in <module>
+    if 'button 事项' in state(): break
+                        ~~~~~^^
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-48/tests/native-remaining-termination.py", line 30, in state
+    raise RuntimeError(json.dumps(result,ensure_ascii=False))
+RuntimeError: {"id": "90c08535-8728-4621-ac23-0ae8e35c8aa6", "ok": false, "error": {"code": "permission_denied", "message": "app 'LocalNotes' has visible windows but no accessibility window (AX reads stayed blocked for 1500ms after retries). macOS Accessibility may need Orca Computer Use toggled off and on again in System Settings.", "data": {"nextSteps": ["Run `orca computer permissions --json`, or `orca computer permissions --id accessibility --json` / `--id screenshots --json` when the message names one missing permission.", "For remote or SSH targets, verify the command is running inside an active graphical desktop session."]}}, "_meta": {"runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"}}
