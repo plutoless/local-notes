@@ -32,3 +32,11 @@ export async function moveNote(page, target) {
   await page.locator('#note-location').fill(target);
   await page.locator('#note-task-drawer .ui-drawer-footer .primary').click();
 }
+
+export async function saveAndLeave(page) {
+  await page.waitForFunction(async () => !(await import('/presentation.js')).taskLeavePending() || document.querySelector('#task-leave-decision'));
+  if (await page.locator('#task-leave-decision').count()) {
+    await page.locator('#task-leave-decision').getByRole('button', {name:'保存并离开',exact:true}).click();
+    await page.waitForFunction(async () => !(await import('/presentation.js')).taskLeavePending());
+  }
+}

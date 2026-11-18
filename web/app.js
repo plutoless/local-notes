@@ -1,5 +1,5 @@
 import {SearchScreen} from './search-screen.js';
-import {feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
+import {requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -9,7 +9,7 @@ import {InitiativeScreen} from './initiative-screen.js';
 import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {FocusScreen} from './focus-screen.js';
 import {ActionScreen} from './action-screen.js';
-const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,blocked=false,readMode=false;const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
+const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=document.createElement('button');close.textContent='关闭提示';close.onclick=()=>$('#notice').hidden=true;$('#notice').append(close);}
 for (const button of document.querySelectorAll('nav [data-view]')) button.insertAdjacentHTML('afterbegin', icon(button.dataset.view));
 const globalSearch = new SearchScreen();
@@ -18,33 +18,34 @@ const search = $('#search'); const searchParent = search.parentNode; searchParen
 $('#new').insertAdjacentHTML('afterbegin', icon('plus'));
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
+actions.owner = () => `${workspaceGeneration}:${pageGeneration}:${view}`;
 const initiatives = new InitiativeScreen(actions, notice, async path => {
   if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
   const sourceAction = !$('#action-editor').hidden ? actions.previous : null;
   if (!await flush(false, true)) return;
   const origin = {view, actionReturn: actions.returnToFocus, action: sourceAction, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
-  const generation = workspaceGeneration;
+  const generation = workspaceGeneration, request = ++noteLoadRequest;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) { if (actions.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); else notice(error.message); } return; }
-  if (generation !== workspaceGeneration || view !== origin.view) return;
+  if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
   actions.closeDrawer();
   sourceOrigin = origin;
   focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-  await refresh(); if (generation !== workspaceGeneration) return; await load(path, loaded); $('#mode').focus();
+  await refresh(); if (generation !== workspaceGeneration || request !== noteLoadRequest) return; await load(path, loaded, request); $('#mode').focus();
 }, id => createNote(id), async () => {
   // Explicit missing-source recovery may build the reference index without visiting Notes.
   await libraryScreen.library.open(); await libraryScreen.library.sync();
   return libraryScreen.library.inventory();
-}, () => save());
+}, () => flush());
 actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async path => {
   if (!await flush()) return;
   const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
-  const generation = workspaceGeneration;
+  const generation = workspaceGeneration, request = ++noteLoadRequest;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
-  if (generation !== workspaceGeneration || view !== origin.view) return;
+  if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
   if (await navigate('notes')) { if (generation !== workspaceGeneration) return; sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
 });
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
@@ -53,6 +54,7 @@ const syncScreen = new SyncScreen(() => [actions.repository, initiatives.reposit
   else await refresh();
 });
 function selectNavigation(next) {
+  pageGeneration++;
   document.querySelector('nav .active')?.classList.remove('active');
   document.querySelector(`nav [data-view="${next}"]`)?.classList.add('active');
   for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === next ? 'page' : 'false');
@@ -60,6 +62,7 @@ function selectNavigation(next) {
 let actionOrigin = null;
 async function navigate(next) {
   if (!await flush(true)) return false;
+  const request = ++noteLoadRequest;
   actions.returnToFocus = null;
   actionOrigin = null; $('#workspace-return-action').hidden = true;
   captureOrigin = null; sourceOrigin = null; $('#capture-return').hidden = true;
@@ -71,6 +74,7 @@ async function navigate(next) {
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
   selectNavigation(next);
   $('.app').classList.remove('editing'); await refresh();
+  if (request !== noteLoadRequest) return false;
   if (next === 'actions') { $('#view-title').tabIndex = -1; $('#view-title').focus(); }
   return true;
 }
@@ -138,7 +142,7 @@ $('#capture-return').onclick = async () => {
   if (origin.opener?.isConnected && origin.opener.getClientRects().length) origin.opener.focus();
   else document.querySelector('nav .active')?.focus();
 };
-async function refresh(){const generation=workspaceGeneration;$('.app').classList.toggle('library-view',['notes','favorites'].includes(view));$('.app').classList.toggle('home', view === 'focus'); $('.app').classList.toggle('organization-view', view === 'organize'); $('.app').classList.toggle('workspace', view === 'initiatives'); $('#workspace-context').hidden = view !== 'initiatives' || (!initiatives.previous && !initiatives.dirty);
+async function refresh(){const requestedView=view;const generation=workspaceGeneration;$('.app').classList.toggle('library-view',['notes','favorites'].includes(view));$('.app').classList.toggle('home', view === 'focus'); $('.app').classList.toggle('organization-view', view === 'organize'); $('.app').classList.toggle('workspace', view === 'initiatives'); $('#workspace-context').hidden = view !== 'initiatives' || (!initiatives.previous && !initiatives.dirty);
 if(view==='initiatives' && ((initiatives.detailKind === 'note' && !$('#editor').hidden) || (initiatives.detailKind === 'action' && !$('#action-editor').hidden))){await initiatives.list(); await initiatives.details(); return;}
 if(view==='organize'){await organize.show(libraryScreen.library);return;}
 if(view==='focus'){
@@ -146,33 +150,86 @@ if(view==='focus'){
   if(generation!==workspaceGeneration)return;
   rootKey=actions.repository.workspaceId;
   await prepareInitiatives(true);
-  if(generation!==workspaceGeneration)return;
+  if(generation!==workspaceGeneration||requestedView!==view)return;
   actions.active=false;initiatives.active=false;focus.active=true;
   await focus.show();
   clearTimeout(focus.backgroundTimer); focus.backgroundTimer=setTimeout(()=>refreshBackground().catch(e=>notice(e.message)),1000);
   return;
 }if(view==='initiatives'){await actions.show({recover:false});actions.active=false;await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;legacyRoot=workspace.root==='Sample'?'Sample · 样本笔记':workspace.root||'';await libraryScreen.show();}
 function render(){if(['notes','favorites'].includes(view))libraryScreen.render().catch(e=>notice(e.message));}
-async function load(path, loaded = null){$('#capture-return').hidden = true;const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey)return;currentWorkspace=workspaceId;current=path;base=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;$('#title').value=titleOf(r.text,path);$('#body').value=r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');$('#file-path').textContent=path;updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');const draft=readDraft();if(draft){$('#title').value=titleOf(draft.text,path);$('#body').value=draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');dirty=true;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');timer=setTimeout(save,650);}}updateReading();render();await noteInitiatives(path);await libraryScreen.noteTopics(path);}
+async function load(path, loaded = null, request = ++noteLoadRequest){$('#capture-return').hidden = true;const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;$('#title').value=titleOf(r.text,path);$('#body').value=r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');$('#file-path').textContent=path;updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=readDraft();if(draft){$('#title').value=titleOf(draft.text,path);$('#body').value=draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,'');dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}updateReading();render();await noteInitiatives(path);if(request!==noteLoadRequest)return false;await libraryScreen.noteTopics(path);return request===noteLoadRequest;}
 async function openContextNote(path, reading = true) {
   try {
     if (!await flush(false, true)) return;
-    const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId;
+    const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId, request = ++noteLoadRequest;
     const loaded = await note('read', {path});
-    if (workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
+    if (request !== noteLoadRequest || workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
     actions.closeDrawer();
     initiatives.rememberContext(); initiatives.detailKind = 'note'; $('.app').classList.add('workspace', 'detail-open', 'editing');
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
-    await load(path, loaded); initiatives.selectContext(path); $('#workspace-detail').scrollTop = 0;
+    if (!await load(path, loaded, request)) return; initiatives.selectContext(path); $('#workspace-detail').scrollTop = 0;
     if (readMode !== reading) $('#mode').click();
   } catch (error) { notice(error.message); }
 }
-async function openNote(path){try{if(await flush()){await load(path); $('#mode').focus();}}catch(e){notice(e.message);}}
-async function save(){if(saving){await saving;return save();}if(!dirty)return true;if(blocked)return false;clearTimeout(timer);const path=current,text=content(),expected=base;state('正在保存…');saving=(async()=>{try{await note('save',{path,text,expected,workspaceId:currentWorkspace});base=text;dirty=content()!==text;if(!dirty)localStorage.removeItem(draftKey());state(dirty?'尚有编辑未保存':'已保存到本地');validateReferences();await refresh();return true;}catch(e){state('未保存 · 编辑仍保留');if(e.message.includes('CONFLICT')){blocked=true;$('#conflict').hidden=false;}else notice(e.message);return false;}finally{saving=null;}})();return saving;}
-async function flush(navigation = false, retainAction = false){if(!leaveShortTask())return false;if(libraryScreen.noteTopicSaving)return false;if(noteInfo.panel.open)noteInfo.hide();if(!retainAction&&!actions.leaveDrawer())return false;if(!initiatives.leaveDrawer())return false;if(!libraryScreen.leaveTopic())return false;clearTimeout(timer);if((!navigation||!initiatives.recoveredDraft)&&!await initiatives.flush())return false;if((!navigation||!actions.recoveredDraft)&&!await actions.flush())return false;return save();}
+async function openNote(path){try{if(await flush()){if(await load(path)) $('#mode').focus();}}catch(e){notice(e.message);}}
+async function save() {
+  if (saving) { if (!await saving) return false; return save(); }
+  if (!dirty) return true;
+  if (blocked) return false;
+  clearTimeout(timer);
+  const path = current, workspaceId = currentWorkspace, text = content(), expected = base;
+  const generation = noteGeneration, key = draftKey();
+  state('正在保存…');
+  saving = (async () => {
+    try {
+      await note('save', {path, text, expected, workspaceId});
+      if (generation !== noteGeneration || workspaceId !== currentWorkspace || path !== current) return true;
+      base = text; savedText = text; noteBaseline = text; dirty = content() !== text;
+      if (!dirty) localStorage.removeItem(key);
+      else localStorage.setItem(key, JSON.stringify({text: content(), base}));
+      state(dirty ? '尚有编辑未保存' : '已保存到本地');
+      validateReferences(); await refresh(); return true;
+    } catch (error) {
+      if (generation !== noteGeneration) return false;
+      state('未保存 · 编辑仍保留');
+      if (error.message.includes('CONFLICT')) { blocked = true; $('#conflict').hidden = false; }
+      else notice(error.message);
+      return false;
+    } finally { saving = null; }
+  })();
+  return saving;
+}
+function visibleNote() { return Boolean(current && !$('#editor').hidden && ['notes', 'favorites', 'initiatives'].includes(view)); }
+function noteTask() {
+  return {label: '笔记', dirty: () => dirty, pending: () => saving,
+    suspend: () => clearTimeout(timer), save,
+    discard: () => {
+      clearTimeout(timer); noteGeneration++; localStorage.removeItem(draftKey());
+      base = savedText; blocked = false; dirty = false;
+      $('#title').value = titleOf(savedText, current);
+      $('#body').value = savedText.replace(/^# .+\r?\n?/m, '').replace(/^\r?\n/, '');
+      noteBaseline = content(); $('#conflict').hidden = true; state('已放弃未保存更改'); updateReading();
+    }};
+}
+function activeTask() {
+  // The frontmost editing surface owns the leave intent. Hidden/recovered
+  // editors remain private and never participate in this decision.
+  if (shortDrawer.panel.open) return shortTaskAdapter();
+  if (libraryScreen.topicDrawer.panel.open) return libraryScreen.topicTask();
+  if (actions.drawer.panel.open) return actions.task();
+  if (initiatives.drawer.panel.open) return initiatives.task();
+  if (!syncScreen.panel.hidden) return syncScreen.task();
+  if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
+    pending: () => libraryScreen.noteTopicPending, close: () => noteInfo.hide()};
+  return visibleNote() ? noteTask() : null;
+}
+async function flush(navigation = false, retainAction = false) {
+  const task = activeTask();
+  return requestTaskLeave(retainAction && actions.drawer.panel.open ? {...task, close: undefined} : task);
+}
 function draftKey(){return 'draft:'+(currentWorkspace||rootKey)+':'+current;}
 function readDraft(){const key=draftKey(),legacyKey='draft:'+legacyRoot+':'+current;let value=localStorage.getItem(key);if(value===null&&legacyRoot){value=localStorage.getItem(legacyKey);if(value!==null){localStorage.setItem(key,value);localStorage.removeItem(legacyKey);}}return JSON.parse(value||'null');}
-function changed(){dirty=true;localStorage.setItem(draftKey(),JSON.stringify({text:content(),base}));state('编辑中…');clearTimeout(timer);timer=setTimeout(save,650);}
+function changed(){noteLoadRequest++;dirty=content()!==noteBaseline;if(dirty)localStorage.setItem(draftKey(),JSON.stringify({text:content(),base}));else localStorage.removeItem(draftKey());state(dirty?'编辑中…':'已保存到本地');clearTimeout(timer);if(dirty&&!taskLeavePending()){const generation=noteGeneration;timer=setTimeout(()=>{if(generation===noteGeneration&&visibleNote()&&!document.querySelector('dialog[open]'))save();},650);}}
 function updateReading(){$('#reading').innerHTML=renderMarkdown(content());}
 $('#title').oninput=$('#body').oninput=changed;
 $('#search').oninput=()=>{if(view==='initiatives'){initiatives.search=$('#search').value;initiatives.offset=0;initiatives.list().catch(e=>notice(e.message));}else if(view==='actions'){actions.search=$('#search').value;actions.offset=0;actions.list().catch(e=>notice(e.message));}else {libraryScreen.search=$('#search').value;libraryScreen.offset=0;render();}};
@@ -201,12 +258,11 @@ const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismis
 shortDrawer.panel.classList.add('ui-drawer-wide');
 const shortForm = document.createElement('form'); shortForm.id = 'note-task-form'; shortForm.className = 'document'; shortForm.noValidate = true;
 const shortStatus = document.createElement('div'); shortStatus.id = 'note-task-status'; shortStatus.setAttribute('role', 'status');
-const shortGuard = document.createElement('div'); shortGuard.className = 'draft-guard'; shortGuard.hidden = true;
-shortGuard.append('内容尚未保存，是否放弃此次编辑？', button('继续编辑', () => { shortGuard.hidden = true; shortForm.querySelector('input:not([type=hidden]),textarea')?.focus(); }), button('放弃此次编辑', () => closeShortTask()));
-shortDrawer.body.append(shortForm, shortStatus, shortGuard);
+shortDrawer.body.append(shortForm, shortStatus);
 const shortSubmit = document.createElement('button'); shortSubmit.type = 'submit'; shortSubmit.setAttribute('form', shortForm.id); shortSubmit.className = 'ui-action primary ui-compact';
 shortDrawer.footer.append(button('取消', () => leaveShortTask(), {density: 'compact'}), shortSubmit);
-function shortDirty() { return Boolean(shortTask && JSON.stringify(shortTask.values()) !== shortTask.initial); }
+function shortInput() { return JSON.stringify(Object.fromEntries(Object.entries(shortTask.values()).filter(([id]) => !shortForm.querySelector('#' + id)?.matches('input[type=hidden]')))); }
+function shortDirty() { return Boolean(shortTask && shortInput() !== shortTask.initial); }
 function closeShortTask() {
   if (shortSaving) return false;
   if (shortTask?.key) localStorage.removeItem(shortTask.key);
@@ -214,18 +270,18 @@ function closeShortTask() {
   if (!document.activeElement?.getClientRects().length || document.activeElement === document.body) ($('#note-info-open').getClientRects().length ? $('#note-info-open') : $('#new')).focus({preventScroll: true});
   return true;
 }
-function leaveShortTask() {
-  if (!shortTask) return true;
-  if (shortSaving) return false;
-  if (shortDirty()) { shortGuard.hidden = false; shortGuard.querySelector('button').focus(); return false; }
-  return closeShortTask();
+function shortTaskAdapter() {
+  return {label: shortDrawer.panel.querySelector('h2')?.textContent || '当前编辑',
+    dirty: shortDirty, pending: () => shortSaving,
+    save: () => saveShortTask(false), discard: () => closeShortTask(), close: () => closeShortTask()};
 }
+function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
 function openShortTask({title, controls, key, values, save, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
   shortForm.replaceChildren(...controls);
   for (const control of shortForm.querySelectorAll('input:not([type=hidden]),textarea')) control.setAttribute('aria-describedby', [control.getAttribute('aria-describedby'), 'note-task-status'].filter(Boolean).join(' '));
-  shortStatus.replaceChildren(); shortGuard.hidden = true;
-  shortTask = {key, values, save, initial: JSON.stringify(values())};
+  shortStatus.replaceChildren();
+  shortTask = {key, values, save}; shortTask.initial = shortInput();
   let draft; try { draft = JSON.parse(localStorage.getItem(key)); } catch { /* Ignore invalid private drafts. */ }
   if (draft) {
     for (const [id, value] of Object.entries(draft)) { const input = shortForm.querySelector('#' + id); if (input) input.value = value; }
@@ -236,18 +292,30 @@ function openShortTask({title, controls, key, values, save, submit = '保存'}) 
 }
 shortForm.oninput = () => {
   if (!shortTask?.key) return;
-  try { localStorage.setItem(shortTask.key, JSON.stringify(shortTask.values())); shortStatus.textContent = '尚未保存'; }
+  try { if (shortDirty()) localStorage.setItem(shortTask.key, JSON.stringify(shortTask.values())); else localStorage.removeItem(shortTask.key); shortStatus.textContent = shortDirty() ? '尚未保存' : ''; }
   catch { shortStatus.textContent = '草稿无法在关闭后恢复，请保持窗口打开并保存。'; }
 };
-shortForm.onsubmit = async event => {
-  event.preventDefault(); if (!shortTask || shortSaving) return;
-  shortSaving = true; shortForm.inert = true; shortSubmit.disabled = true; shortStatus.textContent = '正在保存…';
-  try {
-    const afterSave = await shortTask.save(); shortSaving = false; closeShortTask();
-    await afterSave?.();
-  } catch (error) { errorFeedback(shortStatus, error.message); }
-  finally { shortSaving = false; shortForm.inert = false; shortSubmit.disabled = false; shortForm.querySelector('[aria-invalid=true]')?.focus(); }
-};
+shortForm.onsubmit = event => { event.preventDefault(); saveShortTask(true); };
+function saveShortTask(openSaved) {
+  if (shortSaving) return shortSaving;
+  if (!shortTask) return Promise.resolve(true);
+  const task = shortTask;
+  shortSaving = (async () => {
+    await Promise.resolve();
+    shortForm.inert = true; shortSubmit.disabled = true; shortStatus.textContent = '正在保存…';
+    try {
+      const afterSave = await task.save();
+      if (task !== shortTask) return true;
+      task.initial = shortInput(); localStorage.removeItem(task.key);
+      // Explicit submit may reveal its saved note. A leave intent must finish
+      // the originally requested navigation/termination instead.
+      if (openSaved) { shortSaving = false; closeShortTask(); await afterSave?.(); }
+      return true;
+    } catch (error) { errorFeedback(shortStatus, error.message); return false; }
+    finally { shortSaving = false; shortForm.inert = false; shortSubmit.disabled = false; shortForm.querySelector('[aria-invalid=true]')?.focus(); }
+  })();
+  return shortSaving;
+}
 function taskInput(id, value = '', multiline = false) {
   const input = document.createElement(multiline ? 'textarea' : 'input'); input.id = id; input.value = value;
   input.setAttribute('aria-describedby', 'note-task-status'); input.addEventListener('input', () => input.setAttribute('aria-invalid', 'false'));
@@ -273,16 +341,16 @@ async function openCapture() {
       return () => createNote(null, {path: path.value, text, persisted: true});
     }});
 }
-const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => { if (!libraryScreen.noteTopicSaving) noteInfo.hide(); }});
+const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => flush()});
 noteInfo.panel.classList.add('ui-drawer-wide');
 const details = $('#note-details');
 const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); noteInfo.open($('#star'), infoOpen); }); infoOpen.id = 'note-info-open';
 for (const child of [...details.children].filter(node => node.tagName !== 'SUMMARY')) noteInfo.body.append(child);
 details.replaceWith(infoOpen);
-noteInfo.footer.append(button('完成', () => { if (!libraryScreen.noteTopicSaving) noteInfo.hide(); }, {primary: true, density: 'compact'}));
+noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
 
 $('#new').onclick = () => openCapture();
-$('#choose').onclick=async()=>{try{if(!syncScreen.canLeave())return;if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;globalSearch.reset();libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;globalSearch.reset();noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
 $('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}};
 $('#mode').onclick=()=>{readMode=!readMode;$('#body').hidden=readMode;$('#reading').hidden=!readMode;$('#title').readOnly=readMode;$('#mode').textContent=readMode?'编辑':'阅读';$('#note-mode').textContent=readMode?'阅读笔记':'编辑笔记';updateReading();};
@@ -307,9 +375,15 @@ $('#rename').onclick = async () => {
 };
 $('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
 $('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
-window.hasUnsavedChanges=()=>shortDirty()||shortSaving||Boolean(libraryScreen.noteTopicSaving)||libraryScreen.topicDirty||Boolean(libraryScreen.topicSaving)||syncScreen.dirty||Boolean(syncScreen.saving)||dirty||actions.dirty||initiatives.dirty||Boolean(initiatives.saving)||Boolean(saving)||Boolean(actions.saving);
-window.addEventListener('beforeunload',e=>{if(window.hasUnsavedChanges()){e.preventDefault();e.returnValue='';}});
-window.addEventListener('blur',()=>{if(dirty)save();});
+window.hasUnsavedChanges = () => { const task = activeTask(); return Boolean(task && (task.dirty() || task.pending?.())); };
+window.requestNativeLeave = token => {
+  flush().then(allowed => native('leaveResult', {token, allowed}), error => {
+    notice('离开请求未完成：' + error.message);
+    return native('leaveResult', {token, allowed: false});
+  });
+};
+window.addEventListener('beforeunload', event => { if (window.hasUnsavedChanges()) { event.preventDefault(); event.returnValue = ''; } });
+window.addEventListener('blur', () => { if (visibleNote() && dirty && !taskLeavePending() && !document.querySelector('dialog[open]')) save(); });
 async function validateReferences(){if(!['notes','favorites'].includes(view))return;try{await libraryScreen.library.open();await libraryScreen.library.sync();}catch(e){feedback($('#save-state'), '参考资料暂不可用，请检查目录后重试。', e.message);}}
 window.addEventListener('reference-change',validateReferences);
 window.addEventListener('focus',validateReferences);
@@ -325,7 +399,7 @@ async function noteInitiatives(path) {
   $('#note-initiatives').replaceChildren();
   for (const record of records.filter(i => i.sources.some(source => source.path === path))) {
     const button = document.createElement('button'); button.className = 'ui-action quiet'; button.textContent = `事项：${record.title}`;
-    button.onclick = async () => { if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; document.querySelector('nav .active')?.classList.remove('active'); document.querySelector('nav [data-view=initiatives]').classList.add('active'); await initiatives.show(); await initiatives.edit(record); } };
+    button.onclick = async () => { if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; selectNavigation('initiatives'); await initiatives.show(); await initiatives.edit(record); } };
     $('#note-initiatives').append(button);
   }
 }
