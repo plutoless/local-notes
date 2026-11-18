@@ -46,7 +46,7 @@ try:
  assert escapeKeptOpen, 'IME cancellation Escape dismissed search'
  key(53);w("!document.querySelector('#global-search').open");key(40,' using command down');w("document.activeElement.id==='global-search-input'")
  c("return {afterCompositionEscape:document.querySelector('#global-search-input').value,events:imeEvents}")
- 
+
  key(0,' using command down');key(51)
  for code in [6,4,31,45,5,13,14,45]:key(code)
  key(125);key(36)
