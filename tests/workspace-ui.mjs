@@ -56,7 +56,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'read') window.__readDelivered = true; if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await mkdir('docs/validation/workspace-design', {recursive: true});
@@ -84,7 +84,7 @@ try {
   await page.waitForFunction(()=>document.activeElement.id==='action-description');
   assert.equal(await page.locator('#action-initiative').inputValue(),second.entityId,'Late assignment options must preserve the current user choice');
   await page.locator('#action-back').click();
-  await page.getByRole('button',{name:'放弃行动编辑',exact:true}).click();
+  await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   await page.waitForFunction(()=>document.activeElement.getAttribute('aria-label')==='打开行动：确定本周最重要的两件事');
   // Cross-page return must survive note editing and preserve the originating action.
   await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).click();
@@ -185,11 +185,14 @@ try {
   await closeNoteInfo(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
   await page.locator('#initiative-new-action').click();
+  await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
+  await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
   await page.locator('#notice').filter({hasText: /操作未完成/}).waitFor();
   assert.equal(await page.locator('#editor').isVisible(), true, 'Failed note save must keep the note visible');
   assert.match(await page.locator('#body').inputValue(), /已补充本周资料说明/);
   failNoteSave = false; await page.getByRole('button', {name: '关闭提示'}).click();
   await page.locator('#workspace-overview').click();
+  await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#initiative-drawer').waitFor({state: 'visible'});
   assert.match(await readFile(sourcePath, 'utf8'), /已补充本周资料说明/);
   assert.equal(await page.locator('#initiative-title').inputValue(), '整理工作资料');

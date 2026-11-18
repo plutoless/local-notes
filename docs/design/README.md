@@ -118,7 +118,7 @@ The production `button(..., {density: 'compact'})` opts into the compact treatme
 
 Use vertically arranged labeled fields, not placeholder-only names. Optional metadata/source links use disclosures unless hiding them would conceal an actionable warning. Long Chinese text, paths and validation wrap without horizontal scrolling. Footer Cancel is quiet and precedes the sole primary Create/Save action; save/error feedback has a separate readable region. Destructive discard is not an equal primary beside Save.
 
-Opening captures the opener and focuses the first meaningful field or heading. Tab/Shift+Tab stay within the drawer; closing restores the opener or a meaningful surviving replacement. Close, Cancel, Escape, backdrop, navigation and native termination share existing unsaved guards. Backdrop never silently discards. Dirty forms offer keep editing, save or explicit discard where supported. Clean cancellation creates no record; repeated submission creates no duplicates; reopening reads saved data. Recovery stays scoped to workspace/entity. Preserve source guards, serialized writes, immutable revisions and conflicts.
+Opening captures the opener and focuses the first meaningful field or heading. Tab/Shift+Tab stay within the drawer; closing restores the opener or a meaningful surviving replacement. Close, Cancel, Escape, backdrop, navigation and native termination share existing unsaved guards. Backdrop never silently discards. Dirty tasks always offer Save and leave, Discard changes and leave, or Continue editing through the [task lifecycle](task-lifecycle.md). Clean cancellation creates no record; repeated submission creates no duplicates; reopening reads saved data. Recovery stays scoped to workspace/entity. Preserve source guards, serialized writes, immutable revisions and conflicts.
 
 | State | Required behavior and text evidence |
 | --- | --- |
@@ -136,13 +136,13 @@ Application copy/accessibility labels remain Simplified Chinese; user text, enum
 
 ### Consumed drawer: topic creation and rename (#46)
 
-`presentation.drawer()` supplies a native modal `<dialog>` in the top layer with a titled header/close control, independently scrolling body and reachable fixed footer. `LibraryScreen` is its first real consumer; no initiative or action form adopts it here. Native dialog semantics make the workspace inert and contain keyboard focus. Dismissal is delegated to the consumer, which blocks saving dismissal and offers Continue editing or explicit Discard for dirty input. Navigation uses the same guard; native termination uses `hasUnsavedChanges`. Private workspace/entity-scoped drafts recover on reopening after process loss, retaining the original revision for conflict safety. Invalid and failed saves retain input, with in-drawer accessible feedback and retry. Creation never resets the active topic filter; the new topic appears in the filter selector.
+`presentation.drawer()` supplies a native modal `<dialog>` in the top layer with a titled header/close control, independently scrolling body and reachable fixed footer. `LibraryScreen` is its first real consumer; the initiative and action consumers are described below. Native dialog semantics make the workspace inert and contain keyboard focus. Dismissal is delegated to the consumer, which waits for submitted writes and offers the shared three-way decision for dirty input. Navigation and native termination await the same task-scoped decision. Private workspace/entity-scoped drafts recover on reopening after process loss, retaining the original revision for conflict safety. Invalid and failed saves retain input, with in-drawer accessible feedback and retry. Creation never resets the active topic filter; the new topic appears in the filter selector.
 
 The rendered catalogue imports the same constructor. Topic surfaces use 390px on desktop and full width below 700px, 24px body padding, shared compact fields/actions, and independent body scrolling at reduced heights. Validation evidence is in `docs/validation/issue46/`.
 
 ### Consumed drawer: initiative metadata (#47)
 
-`InitiativeScreen` reuses `presentation.drawer()` with the wide 460px surface and the shared header/body/footer rhythm. Selecting an initiative retains the contextual action/reference workspace; its metadata action opens the drawer. Title, goal, progress and status share vertically labeled field groups. Sources and lifecycle decisions remain disclosures that open automatically for actionable warnings. Cancellation restores the prior selected document/action and browsing context; successful creation makes the record reachable in the existing list. The existing initiative repository, source evidence and end/reopen transaction behavior remain unchanged. Dirty close, Cancel, Escape, backdrop and navigation share an explicit Continue/Discard guard; native termination reads the same dirty/saving state. See [executed validation and limitations](../validation/issue47/README.md).
+`InitiativeScreen` reuses `presentation.drawer()` with the wide 460px surface and the shared header/body/footer rhythm. Selecting an initiative retains the contextual action/reference workspace; its metadata action opens the drawer. Title, goal, progress and status share vertically labeled field groups. Sources and lifecycle decisions remain disclosures that open automatically for actionable warnings. Cancellation restores the prior selected document/action and browsing context; successful creation makes the record reachable in the existing list. The existing initiative repository, source evidence and end/reopen transaction behavior remain unchanged. Dirty close, Cancel, Escape, backdrop, navigation and native termination share the asynchronous Save/Discard/Continue task decision. See [executed validation and limitations](../validation/issue47/README.md).
 
 ### Remaining short-form consumers (#48)
 
@@ -151,3 +151,14 @@ The [finite entry-point inventory](../validation/issue48/inventory.md) records t
 Long Markdown editing, initiative working-note creation, candidate review, privacy/request scope and multi-version conflict comparison remain in their documented layout families. The shared compact fields/actions and drawer-body rhythm cover short forms; source/history disclosures retain evidence. Finishing one task precedes opening another; modal tasks cannot stack background conflict review. Recovered action drafts are never implicitly confirmed just by navigating to another page.
 
 The catalogue demonstrates the same wide constructor and field geometry without persistence. [Issue 48 execution status](../validation/issue48/README.md) separates browser/storage results, controlled native journeys and observed production close/quit evidence; the catalogue does not establish acceptance. Async openers can pass `drawer.open(first, origin)` explicitly when disabling the trigger would otherwise blur it in WKWebView.
+
+
+### Task-scoped leave decisions (#55)
+
+[The editing-task lifecycle](task-lifecycle.md) is authoritative for baseline,
+private recovery, autosave, submitted writes and explicit discard. A centered
+confirmation dialog asks about the captured active task; it does not stack another
+contextual editing drawer. Continue restores input and focus; Save and leave
+persists that task only; Discard and leave bypasses its invalid/failed/conflicted
+save while retaining completed writes and other tasks' private drafts. A clean
+visible page ignores hidden recovered editors.

@@ -1,4 +1,4 @@
-import {actionLabels, initiativeLabels, statusLabel, bindDialog, button, feedback, icon, field, disclosure, sectionHeading, selectionRow, comparisonRow} from './presentation.js';
+import {requestTaskLeave, actionLabels, initiativeLabels, statusLabel, bindDialog, button, feedback, icon, field, disclosure, sectionHeading, selectionRow, comparisonRow} from './presentation.js';
 import {escapeHTML as esc} from './core.js';
 
 const types = {action: '行动', initiative: '事项', topic: '主题', candidate: '建议'};
@@ -31,11 +31,12 @@ export class SyncScreen {
     feedback(this.status, '还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');
     return false;
   }
-  close() {
-    if (!this.canLeave()) return;
-    document.querySelector('.app').inert = false;
-    this.panel.hidden = true;
+  task() {
+    return {label: '冲突解决', committed: () => Boolean(this.resolutionCommitted), dirty: () => this.dirty, pending: () => this.savePending,
+      save: () => this.saveResolution?.(), discard: () => { this.dirty = false; this.resolutionCommitted = false; this.saved = ''; this.render(); },
+      close: () => { document.querySelector('.app').inert = false; this.panel.hidden = true; }};
   }
+  close() { return requestTaskLeave(this.task()); }
   async refresh(show) {
     if (show) { this.dialog.open(); document.querySelector('.app').inert = true; }
     if (this.running || this.saving) return;
@@ -82,7 +83,7 @@ export class SyncScreen {
       const editor = document.createElement('div'); editor.className = 'sync-editor';
       const editStatus = document.createElement('p'); editStatus.setAttribute('role', 'status'); editStatus.textContent = '尚未选择解决版本。请先选择，再审核与编辑。';
       let selected = false, retryRecord = null;
-      const markDirty = () => { selected = true; this.dirty = true; discard.disabled = false; save.disabled = false; for (const other of this.panel.querySelectorAll('article')) if (other !== article) other.inert = true; editStatus.textContent = '解决内容尚未保存。原版本均会保留。'; };
+      const markDirty = () => { this.saveResolution = saveResolution; selected = true; this.dirty = true; discard.disabled = false; save.disabled = false; for (const other of this.panel.querySelectorAll('article')) if (other !== article) other.inert = true; editStatus.textContent = '解决内容尚未保存。原版本均会保留。'; };
       const advanced = disclosure('高级：完整 JSON 与版本诊断');
       const json = document.createElement('textarea'); json.rows = 12; json.setAttribute('aria-label', '合并版本 JSON');
       const renderEditor = () => {
@@ -110,7 +111,7 @@ export class SyncScreen {
         details.append(values);
         const choose = button(`选择版本 ${index + 1}`, () => {
           if (this.dirty) { feedback(this.status, '选择其他版本会替换尚未保存的编辑。请先保存，或点击「放弃编辑」。'); return; }
-          selected = true; draft.value = structuredClone(version); renderEditor(); markDirty(); editor.querySelector('textarea, input, select')?.focus();
+          this.resolutionCommitted = false; selected = true; draft.value = structuredClone(version); renderEditor(); markDirty(); editor.querySelector('textarea, input, select')?.focus();
         }, {variant: 'secondary', label: `${recordName}：选择版本 ${index + 1}`}); choose.disabled = Boolean(blocked); details.append(choose); article.append(details);
       }
       const heading = document.createElement('h4'); heading.textContent = '2. 审核与编辑解决内容'; article.append(heading, editStatus, editor);
@@ -125,16 +126,20 @@ export class SyncScreen {
           for (const control of editor.querySelectorAll('[data-field]')) { control.disabled = Boolean(blocked); control.value = parsed[control.dataset.field] ?? ''; }
         } catch { json.setAttribute('aria-invalid', 'true'); editStatus.textContent = 'JSON 格式无效。请修正后保存，编辑仍保留。'; for (const control of editor.querySelectorAll('[data-field]')) control.disabled = true; }
       }; advanced.append(diagnostics, json); article.append(advanced);
-      const discard = button('放弃编辑', () => { selected = false; this.dirty = false; this.saved = ''; this.render(); this.panel.querySelector('button')?.focus(); }, {variant: 'danger'}); discard.disabled = true; article.append(discard);
+      const discard = button('放弃编辑', () => { selected = false; this.dirty = false; this.resolutionCommitted = false; this.saved = ''; this.render(); this.panel.querySelector('button')?.focus(); }, {variant: 'danger'}); discard.disabled = true; article.append(discard);
       const consequence = document.createElement('p'); consequence.textContent = '保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。'; article.append(consequence);
-      const save = button('3. 保存解决结果到本地', async () => {
+      const saveResolution = () => {
+        if (this.savePending) return this.savePending;
+        this.savePending = (async () => {
+        await Promise.resolve();
         if (!selected) { feedback(this.status, '请先选择一个版本，再审核需要保留的内容。'); return; }
         this.saving = true; article.inert = true; feedback(editStatus, '正在保存解决结果…'); editStatus.dataset.state = 'saving';
         try {
           const result = retryRecord ? await repo.save({}, null, retryRecord) : await repo.resolve(id, JSON.parse(json.value), conflict.tips.map(record => record.revision));
-          this.dirty = false; this.saved = (result.recovered || retryRecord) ? '解决结果已从保留版本恢复并保存到本地；无法确认其他设备是否收到。' : '解决结果已保存到本地；无法确认其他设备是否收到。';
+          this.dirty = false; this.resolutionCommitted = false; this.saved = (result.recovered || retryRecord) ? '解决结果已从保留版本恢复并保存到本地；无法确认其他设备是否收到。' : '解决结果已保存到本地；无法确认其他设备是否收到。';
         } catch (error) {
           if (error.revisionSaved) {
+            this.resolutionCommitted = true;
             retryRecord = error.record;
             for (const control of editor.querySelectorAll('input, textarea, select')) control.disabled = true;
             json.disabled = true;
@@ -142,7 +147,11 @@ export class SyncScreen {
           feedback(editStatus, retryRecord ? '版本已保留，恢复尚未完成。请点击保存重试恢复；已保留的内容暂不能编辑。' : '未保存 · 编辑仍保留'); feedback(this.status, retryRecord ? '版本已保留，本地恢复未完成。请点击保存重试恢复；无法确认其他设备是否收到。' : '解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。', error.message); }
         finally { this.saving = false; article.inert = false; }
         if (!this.dirty) await this.refresh(true);
-      }, {primary: true}); save.disabled = Boolean(blocked) || !selected; article.append(save); this.panel.append(article);
+        return !this.dirty;
+        })();
+        return this.savePending.finally(() => { this.savePending = null; });
+      };
+      const save = button('3. 保存解决结果到本地', saveResolution, {primary: true}); save.disabled = Boolean(blocked) || !selected; article.append(save); this.panel.append(article);
     }
     if (!count && this.checked) this.panel.append(Object.assign(document.createElement('p'), {textContent: this.warnings?.length ? '未发现可解决的冲突，请先核对上方异常详情。' : '现有版本中未发现待处理冲突。'}));
   }

@@ -49,7 +49,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', 'e8a869b:web/' + name]) : await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -91,8 +91,9 @@ try {
   }
   await panel.getByRole('button', {name: /选择版本 /}).first().click();
   await panel.getByRole('button', {name: '关闭检查', exact: true}).click();
-  await panel.getByText('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。').waitFor();
-  await page.keyboard.press('Escape'); assert.equal(await panel.isVisible(), true);
+  await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
+  await page.waitForFunction(async()=>!(await import('/presentation.js')).taskLeavePending());
+  await page.keyboard.press('Escape'); await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click(); assert.equal(await panel.isVisible(), true);
   await panel.getByText('高级：完整 JSON 与版本诊断', {exact:true}).click();
   await editor.fill('{bad json');
   await panel.getByRole('button', {name: '3. 保存解决结果到本地'}).click();
@@ -185,6 +186,11 @@ try {
   await panel.getByRole('button',{name:'重新检查',exact:true}).click();
   const first=panel.locator('article').filter({hasText:'多冲突键盘检查0'});
   await first.getByRole('button',{name:/选择版本/}).first().click();
+  await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+  await page.getByRole('button',{name:'继续编辑',exact:true}).waitFor();
+  assert.match(await page.locator('#task-leave-decision').innerText(),/当前编辑尚未保存/);
+  assert.doesNotMatch(await page.locator('#task-leave-decision').innerText(),/版本已保存，恢复尚未完成/);
+  await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   await first.getByRole('button',{name:'3. 保存解决结果到本地'}).focus(); await page.keyboard.press('Tab');
   assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
   await first.getByRole('button',{name:'放弃编辑',exact:true}).click();

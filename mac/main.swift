@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "presentation.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -55,21 +55,42 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         web.load(URLRequest(url:URL(string:"notes://local/index.html")!))
     }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender:NSApplication)->Bool {true}
-    func windowShouldClose(_ sender: NSWindow) -> Bool {
-        // JS confirmation protects unsaved edits, including failed writes.
-        web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
-            let unsaved = value as? Bool ?? true
-            if !unsaved { NSApp.terminate(nil) }
-            else { let alert=NSAlert();alert.messageText="还有内容未保存";alert.informativeText="请先处理保存提示，再关闭窗口。";alert.addButton(withTitle:"确定");alert.runModal() }
-        }; return false
+    var leaveToken: String?
+    var terminationPending = false
+    var allowTermination = false
+    func requestLeave() {
+        guard leaveToken == nil else { return }
+        let token = UUID().uuidString; leaveToken = token
+        web.evaluateJavaScript("window.requestNativeLeave('\(token)')") { _, error in
+            guard self.leaveToken == token, error != nil else { return }
+            // The page could not answer. Do not pretend its draft was discarded.
+            let alert = NSAlert(); alert.messageText = "离开请求未完成"
+            alert.informativeText = "无法确认当前编辑的保存状态。可继续编辑，或关闭并保留本机草稿，稍后重新打开核对。"
+            alert.addButton(withTitle: "继续编辑"); alert.addButton(withTitle: "关闭并保留草稿")
+            self.finishLeave(token, alert.runModal() == .alertSecondButtonReturn)
+        }
     }
+    func finishLeave(_ token: String, _ allowed: Bool) {
+        guard leaveToken == token else { return }
+        leaveToken = nil
+        if terminationPending {
+            terminationPending = false; allowTermination = allowed
+            NSApp.reply(toApplicationShouldTerminate: allowed)
+        } else if allowed { allowTermination = true; NSApp.terminate(nil) }
+    }
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        guard let token = leaveToken else { webView.reload(); return }
+        let alert = NSAlert(); alert.messageText = "编辑页面已停止响应"
+        alert.informativeText = "无法确认最后一次保存。可重新载入并恢复草稿，或关闭并保留草稿，稍后核对已保存版本。"
+        alert.addButton(withTitle: "重新载入"); alert.addButton(withTitle: "关闭并保留草稿")
+        let close = alert.runModal() == .alertSecondButtonReturn
+        finishLeave(token, close)
+        if !close { webView.reload() }
+    }
+    func windowShouldClose(_ sender: NSWindow) -> Bool { requestLeave(); return false }
     func applicationShouldTerminate(_ sender:NSApplication)->NSApplication.TerminateReply {
-        // Use same guard for Cmd+Q; response is asynchronous.
-        web.evaluateJavaScript("Boolean(window.hasUnsavedChanges?.())") { value,_ in
-            let ok = !(value as? Bool ?? true)
-            if !ok { let a=NSAlert();a.messageText="还有内容未保存，请先处理保存提示。";a.addButton(withTitle:"确定");a.runModal() }
-            sender.reply(toApplicationShouldTerminate:ok)
-        };return .terminateLater
+        if allowTermination { return .terminateNow }
+        terminationPending = true; requestLeave(); return .terminateLater
     }
     func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" ? .allow : .cancel)}
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
@@ -128,6 +149,10 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     func userContentController(_ controller:WKUserContentController,didReceive message:WKScriptMessage){
         guard message.frameInfo.isMainFrame,let str=message.body as? String,let data=str.data(using:.utf8),let req=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let id=req["id"] as? Int else{return}
+        if req["cmd"] as? String == "leaveResult", let token = req["token"] as? String {
+            finishLeave(token, req["allowed"] as? Bool ?? false)
+            web.evaluateJavaScript("window.nativeReply(\(id),{})", completionHandler: nil); return
+        }
         if req["cmd"] as? String == "aiAnalyze" {
             ai.analyze(req) { result in
                 if let data = try? JSONSerialization.data(withJSONObject: result), let json = String(data: data, encoding: .utf8) {
