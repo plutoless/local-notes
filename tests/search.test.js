@@ -63,6 +63,8 @@ test('scoped real formal indexes: stored fields, typed identities, bounded pages
     await actions.save({...action, description: 'Changed'}, action);
     await assert.rejects(service.context(all.find(r=>r.entityId===action.entityId), 'latency'), /changed/i);
     const foreign = await second.adapter('workspace'); await assert.rejects(service.context({...notes.notes[0], workspaceId:foreign.workspaceId}, 'latency'), /Workspace/);
+    await fixture.removeIndex(); await service.sync();
+    assert.ok((await service.query('latency',0,'initiative')).notes.length);
     service.reset(); assert.equal(service.repositories, null);
   } finally { await fixture.close(); await second.close(); }
 });
@@ -78,6 +80,10 @@ test('bounded prefix merge uses native ordering across more than fifty mixed-cas
     const returned = [];
     for (let offset=0; offset<80; offset+=20) returned.push(...(await service.query('pagination', offset, 'note')).notes.map(row=>row.path));
     assert.deepEqual(returned, paths.sort()); assert.equal(new Set(returned).size, 80);
+    for (const [i,path] of paths.entries()) await writeFile(join(fixture.root,path), i < 50 ? '# é title\n\noriginal' : '# É title\n\né original');
+    await service.sync(); const accented=[];
+    for(let offset=0;offset<80;offset+=20) accented.push(...(await service.query('é',offset,'note')).notes.map(row=>row.identity));
+    assert.equal(new Set(accented).size,80);
   } finally { await fixture.close(); }
 });
 
