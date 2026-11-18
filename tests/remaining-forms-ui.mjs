@@ -169,6 +169,14 @@ try {
     await page.setViewportSize({width,height});
     await screenshot(join(evidence,`note-info-${width}-${height}.png`));
   }
+  await page.locator('#note-info-drawer .ui-drawer-footer button').click();
+  assert.equal(await page.locator('#note-info-open').evaluate(node=>node===document.activeElement),true);
+  // WKWebView blurs a focused opener while the async button helper disables it.
+  await page.locator('#note-info-open').evaluate(node=>{node.blur();node.click();});
+  await page.locator('#note-info-drawer').waitFor({state:'visible'});
+  await page.locator('#note-info-drawer .ui-drawer-footer button').click();
+  assert.equal(await page.locator('#note-info-open').evaluate(node=>node===document.activeElement),true);
+  await page.locator('#note-info-open').click();
   await page.locator('#rename').click();
   for (const [width,height] of [[1180,800],[393,800],[393,340]]) { await page.setViewportSize({width,height}); await screenshot(join(evidence,`location-${width}-${height}.png`)); }
   await page.locator('#note-location').fill('../invalid.md');

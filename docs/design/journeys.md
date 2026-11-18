@@ -43,4 +43,4 @@ Use the [finite entry-point inventory](../validation/issue48/inventory.md), rath
 - [ ] Capture settled desktop, 393px and reduced-height task views, including body scrolling and a reachable footer; visually reject duplicate/tiled captures. Keep before/after browser and native evidence separate.
 - [ ] Observe actual production Mac close and OS-menu Quit with dirty/pending tasks; direct delegate invocation and browser `hasUnsavedChanges()` assertions are insufficient.
 
-These checklist items are review requirements, not blanket assertions that every check has passed. See the issue48 validation status for executed checks and the unresolved native AX blocker.
+These checklist items are review requirements, not blanket assertions that every check has passed. See [issue48 execution evidence](../validation/issue48/README.md) for browser/native input boundaries, production close/quit results and unrun checks. Async openers that temporarily disable themselves must explicitly preserve their identity for focus return; check this in WKWebView as well as Chromium.

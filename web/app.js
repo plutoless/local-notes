@@ -273,7 +273,7 @@ async function openCapture() {
 const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => { if (!libraryScreen.noteTopicSaving) noteInfo.hide(); }});
 noteInfo.panel.classList.add('ui-drawer-wide');
 const details = $('#note-details');
-const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); noteInfo.open($('#star')); }); infoOpen.id = 'note-info-open';
+const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); noteInfo.open($('#star'), infoOpen); }); infoOpen.id = 'note-info-open';
 for (const child of [...details.children].filter(node => node.tagName !== 'SUMMARY')) noteInfo.body.append(child);
 details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => { if (!libraryScreen.noteTopicSaving) noteInfo.hide(); }, {primary: true, density: 'compact'}));

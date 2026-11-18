@@ -19,3 +19,9 @@ Base: ed75811831d42690606844352b3f8fced72dffe9. Both native and textual blockers
 | Workspace chooser, sync refresh, favorite toggle, focus ordering | Native chooser/direct command exception | No multi-field task; existing controls and guards apply |
 
 No page-wide redesign or unrelated geometry normalization is authorized. Shared drawer rhythm and compact field/action geometry apply to the adopted forms; retained document and specialized review surfaces retain the presentation tokens already adopted in #31–#37.
+
+## Evidence boundaries
+
+New adoption has browser before/after desktop/393px evidence and [native before/after evidence](native/contact-sheet.png) for capture, actions, note information/topic association and naming/location. Delivered native snapshots also cover the retained initiative document at desktop/393px. The [validation report](README.md) states actual input, persistence and reduced-height boundaries.
+
+Unchanged topic and initiative drawers retain their delivered [#46](../issue46/README.md) and [#47](../issue47/README.md) evidence; both are exercised during the issue48 native integration journey. Retained organization/candidate and conflict families retain [#35](../issue35/README.md) and [#36](../issue36/README.md) evidence. Those historical native views are not claimed as fresh issue48 captures. Their maintained shared/UI suites were rerun; this issue does not restyle or reimplement them. Native chooser/direct commands have no new form layout to compare.

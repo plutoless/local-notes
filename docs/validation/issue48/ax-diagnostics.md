@@ -15,3 +15,9 @@ No native acceptance is claimed. The failed production attempt used isolated dat
 The matching Finder and unrelated LocalNotes failures make an isolated validation-app identity/window defect less likely. This supports a provider-wide AX-read failure as an inference, not a confirmed root cause. Window enumeration remains available. The tool's suggested permission toggle requires coordinator/user action; this worker has not performed it following the coordinator's read-only restriction.
 
 External window titles are redacted in committed enumeration evidence; raw read-only responses remain in ignored local build storage. Window counts, dimensions and provider errors are retained.
+
+## Maintainer-authorized resume
+
+The previous failure did not persist. A fresh uniquely identified production copy with final web assets returned a complete AX tree with `orca computer get-app-state --app pid:15097 --no-screenshot --json` (`ok: true`, bundle `dev.localnotes.validation.issue48productionresume`). The prior owned copy had stale resources and was not used: its mismatch was detected before launch, then a new copy was made from the matching production build. Original fixtures were retained. No permission changes, TCC reset, Orca restart or external-process termination occurred.
+
+The completed [native checks and screenshots](native/) supersede the old permission gate. A later background AX tree omitted reopened web controls; that attempt was not counted as a pass. Fresh isolated Cocoa/WKWebView journeys and a separate uninstrumented production executable completed the verified assertions documented in the [validation report](README.md). Actual close/quit alerts were targeted by their enumerated native window IDs after foreground activation, rather than assuming the main-window snapshot contained the alert. Only owned validation apps were stopped; their fixtures and failed attempts remain in local build storage.

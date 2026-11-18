@@ -1,0 +1,57 @@
+{
+  "id": "c8960d3e-87cb-45d4-b7f0-e61045bddcd4",
+  "ok": true,
+  "result": {
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 32228)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文\n\t\t\t\t44 text 尚未保存\n\t\t\t\t41 container\n\t\t\t\t\t42 button 取消\n\t\t\t\t\t43 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
+      "focusedElementId": null,
+      "id": "CAFB3B33-9278-4C58-A68F-088469155BAA",
+      "app": {
+        "name": "LocalNotes",
+        "bundleId": "dev.localnotes.validation.issue48productionfinal",
+        "pid": 32228
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 14716,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 22,
+      "truncation": {
+        "truncated": false,
+        "maxDepth": 64,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshot": {
+      "format": "png",
+      "width": 2360,
+      "height": 1664,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/c8960d3e-87cb-45d4-b7f0-e61045bddcd4-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-19T04:16:56.202Z"
+    },
+    "screenshotStatus": {
+      "metadata": {
+        "engine": "screenCaptureKit",
+        "windowId": 14716
+      },
+      "state": "captured"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}

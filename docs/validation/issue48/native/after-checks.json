@@ -1,0 +1,1156 @@
+[
+  {
+    "assertion": "document.querySelector('#index-state')?.textContent === ''",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-save-state').textContent==='已保存到本地'",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!!document.querySelector('#items [data-entity-id]')",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 1180 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 340",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35214",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "7884a51b-36ad-4b0f-bfb6-6964b045a36a",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 事项\n\t\t\t\t\t10 button 整理\n\t\t\t\t\t11 button 收藏\n\t\t\t\t\t12 button 同步检查\n\t\t\t\t13 summary Sync, Value: 0\n\t\t\t14 container\n\t\t\t\t15 heading 行动\n\t\t\t\t16 container\n\t\t\t\t\t17 text 搜索\n\t\t\t\t\t18 text field (settable) 搜索行动, Placeholder: 搜索行动…\n\t\t\t19 button ＋ 新建行动\n\t\t\t20 container\n\t\t\t\t21 text 状态\n\t\t\t\t22 pop up button 状态, Value: 全部状态\n\t\t\t23 container\n\t\t\t\t24 text 事项\n\t\t\t\t25 pop up button 事项, Value: 全部事项\n\t\t\t26 button (disabled) 上一页\n\t\t\t27 text 第 1 页\n\t\t\t28 button (disabled) 下一页\n\t\t\t29 button 原生首页行动48 待办 · 未设日期 独立行动\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 29 button 原生首页行动48 待办 · 未设日期 独立行动.",
+          "focusedElementId": 29,
+          "id": "B3A22669-162F-44E9-BA1A-A86487A1C09F",
+          "app": {
+            "name": "LocalNotes",
+            "pid": 35214,
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 34,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35214",
+      "--element-index",
+      "5",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "6ea05153-530d-404a-b584-4ad23bb59765",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t34 container 随手记\n\t\t\t\t35 container\n\t\t\t\t\t36 heading 随手记\n\t\t\t\t\t37 button 关闭随手记\n\t\t\t\t38 container\n\t\t\t\t\t39 container\n\t\t\t\t\t\t40 text 标题\n\t\t\t\t\t\t41 text field (settable) 标题\n\t\t\t\t\t42 container\n\t\t\t\t\t\t43 text 正文\n\t\t\t\t\t\t44 text entry area (settable) 正文\n\t\t\t\t45 container\n\t\t\t\t\t46 button 取消\n\t\t\t\t\t47 button 创建笔记\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 41 text field (settable) 标题.",
+          "focusedElementId": 41,
+          "id": "D220027E-DBF4-41BA-9B33-D40D3AEB2158",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35214
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 21,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        },
+        "action": {
+          "path": "accessibility",
+          "actionName": "AXPress",
+          "fallbackReason": null,
+          "delivery": "background",
+          "targetWindowId": 14792,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.querySelector('#note-task-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#note-task-drawer').open",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35214",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "738f396e-5581-4e71-bc81-31a8f60ee080",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t48 container\n\t\t\t\t49 text 拾记\n\t\t\t\t50 button 随手记\n\t\t\t\t51 container 主导航\n\t\t\t\t\t52 button 当前重点\n\t\t\t\t\t53 button 笔记库\n\t\t\t\t\t54 button 事项\n\t\t\t\t\t55 button 整理\n\t\t\t\t\t56 button 收藏\n\t\t\t\t\t57 button 同步检查\n\t\t\t\t58 summary Sync, Value: 0\n\t\t\t59 container\n\t\t\t\t60 heading 行动\n\t\t\t\t61 container\n\t\t\t\t\t62 text 搜索\n\t\t\t\t\t63 text field (settable) 搜索行动, Placeholder: 搜索行动…\n\t\t\t64 button ＋ 新建行动\n\t\t\t65 container\n\t\t\t\t66 text 状态\n\t\t\t\t67 pop up button 状态, Value: 全部状态\n\t\t\t68 container\n\t\t\t\t69 text 事项\n\t\t\t\t70 pop up button 事项, Value: 全部事项\n\t\t\t71 button (disabled) 上一页\n\t\t\t72 text 第 1 页\n\t\t\t73 button (disabled) 下一页\n\t\t\t74 button 原生首页行动48 待办 · 未设日期 独立行动\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 50 button 随手记.",
+          "focusedElementId": 50,
+          "id": "5C94B3EA-8734-4FC0-80F6-F5EED44E272F",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35214,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 34,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35214",
+      "--element-index",
+      "50",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "0c85c459-0529-4cae-a58c-3f2a804b729c",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t75 container 随手记\n\t\t\t\t76 container\n\t\t\t\t\t77 heading 随手记\n\t\t\t\t\t78 button 关闭随手记\n\t\t\t\t79 container\n\t\t\t\t\t80 container\n\t\t\t\t\t\t81 text 标题\n\t\t\t\t\t\t82 text field (settable) 标题\n\t\t\t\t\t83 container\n\t\t\t\t\t\t84 text 正文\n\t\t\t\t\t\t85 text entry area (settable) 正文\n\t\t\t\t86 container\n\t\t\t\t\t87 button 取消\n\t\t\t\t\t88 button 创建笔记\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 82 text field (settable) 标题.",
+          "focusedElementId": 82,
+          "id": "92C88401-F8F4-45F4-8FE5-31FC2797E14C",
+          "app": {
+            "name": "LocalNotes",
+            "pid": 35214,
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 21,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        },
+        "action": {
+          "path": "accessibility",
+          "actionName": "AXPress",
+          "fallbackReason": null,
+          "delivery": "background",
+          "targetWindowId": 14792,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.querySelector('#note-task-drawer').open",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35214",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "4edacad5-99a8-47be-b381-3d23810636b8",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t75 container 随手记\n\t\t\t\t76 container\n\t\t\t\t\t77 heading 随手记\n\t\t\t\t\t78 button 关闭随手记\n\t\t\t\t79 container\n\t\t\t\t\t80 container\n\t\t\t\t\t\t81 text 标题\n\t\t\t\t\t\t82 text field (settable) 标题\n\t\t\t\t\t83 container\n\t\t\t\t\t\t84 text 正文\n\t\t\t\t\t\t85 text entry area (settable) 正文\n\t\t\t\t86 container\n\t\t\t\t\t87 button 取消\n\t\t\t\t\t88 button 创建笔记\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 82 text field (settable) 标题.",
+          "focusedElementId": 82,
+          "id": "D8C87269-B20A-4E19-9B98-665B60018FA1",
+          "app": {
+            "pid": 35214,
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 21,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35214",
+      "--element-index",
+      "88",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "4f0e4b08-db32-44ea-b91f-938edd8b7c32",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35214)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t75 container 随手记\n\t\t\t\t76 container\n\t\t\t\t\t77 heading 随手记\n\t\t\t\t\t78 button 关闭随手记\n\t\t\t\t79 container\n\t\t\t\t\t80 container\n\t\t\t\t\t\t81 text 标题\n\t\t\t\t\t\t82 text field (settable) 标题\n\t\t\t\t\t83 container\n\t\t\t\t\t\t84 text 正文\n\t\t\t\t\t\t85 text entry area (settable) 正文\n\t\t\t\t89 container\n\t\t\t\t\t90 text 内容需要核对。请检查必填项、日期和来源引用后重新保存。\n\t\t\t\t\t91 summary 查看技术详情, Value: 0\n\t\t\t\t86 container\n\t\t\t\t\t87 button 取消\n\t\t\t\t\t88 button 创建笔记\n\t30 close button\n\t31 full screen button, Secondary Actions: zoom the window\n\t32 minimize button\n\t33 text 拾记 · Local Notes\n\nThe focused UI element is 82 text field (settable) 标题.",
+          "focusedElementId": 82,
+          "id": "6FF96ACC-0AAA-48E1-874E-F3BCD94C73F6",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35214,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14792,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 24,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        },
+        "action": {
+          "path": "accessibility",
+          "fallbackReason": null,
+          "actionName": "AXPress",
+          "delivery": "background",
+          "targetWindowId": 14792,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.querySelector('#note-task-status').textContent.includes('内容需要核对')",
+    "passed": true
+  },
+  {
+    "nativePrivateDraftObservedOnDisk": true
+  },
+  {
+    "assertion": "document.querySelector('#index-state')?.textContent === ''",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35366",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "5db86b31-bebd-4d08-ac9f-47cd4cc63eba",
+      "ok": true,
+      "result": {
+        "screenshot": null,
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 container\n\t\t\t\t4 text 拾记\n\t\t\t\t5 button 随手记\n\t\t\t\t6 container 主导航\n\t\t\t\t\t7 button 当前重点\n\t\t\t\t\t8 button 笔记库\n\t\t\t\t\t9 button 事项\n\t\t\t\t\t10 button 整理\n\t\t\t\t\t11 button 收藏\n\t\t\t\t\t12 button 同步检查\n\t\t\t\t13 summary Sync, Value: 0\n\t\t\t14 heading 当前重点\n\t\t\t15 summary 更多操作, Value: 0\n\t\t\t16 button 新建行动\n\t\t\t17 button 全部行动\n\t\t\t18 heading 优先处理\n\t\t\t19 text 还没有重点行动。可从「全部行动」选择已确认的下一步。\n\t\t\t20 button 选择重点行动\n\t\t\t21 heading 等待与跟进\n\t\t\t22 text 没有等待中的行动。\n\t\t\t23 heading 继续推进\n\t\t\t24 text 还没有进行中的事项。\n\t\t\t25 button 创建第一个事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "B5FF247E-D67D-42B4-AA2B-4611F0CA2326",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35366
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 30,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35366",
+      "--element-index",
+      "5",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "b3d8729f-19bc-4771-b1c5-7e2ee0d803c4",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 原生笔记48\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t\t\t\t41 text 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t42 text 已恢复未保存草稿，请核对后保存。\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 37 text field (settable) 标题, Value: 原生笔记48.",
+          "focusedElementId": 37,
+          "id": "20135F83-7AE9-4F03-9FB0-F2418EA07525",
+          "app": {
+            "pid": 35366,
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 23,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        },
+        "action": {
+          "path": "accessibility",
+          "actionName": "AXPress",
+          "fallbackReason": null,
+          "delivery": "background",
+          "targetWindowId": 14801,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.querySelector('#note-task-drawer').open",
+    "passed": true
+  },
+  {
+    "nativeKeyCode": 53,
+    "modifiers": ""
+  },
+  {
+    "assertion": "!document.querySelector('#note-task-drawer .draft-guard').hidden",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35366",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "167b0aa8-b181-4cb8-b067-88da66c70c93",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 原生笔记48\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t\t\t\t41 text 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t42 text 已恢复未保存草稿，请核对后保存。\n\t\t\t\t46 text 内容尚未保存，是否放弃此次编辑？\n\t\t\t\t47 button 继续编辑\n\t\t\t\t48 button 放弃此次编辑\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 47 button 继续编辑.",
+          "focusedElementId": 47,
+          "id": "08340E92-7431-4915-A9FF-FB43F559A8CB",
+          "app": {
+            "name": "LocalNotes",
+            "pid": 35366,
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 26,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35366",
+      "--element-index",
+      "47",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "73713ec9-07b2-4586-9029-f23e0d0980b9",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nChanges since the previous snapshot (~ changed, - removed). Unchanged elements are omitted and keep their indexes.\n- 46-48\n\nThe focused UI element is 37 text field (settable) 标题, Value: 原生笔记48.",
+          "focusedElementId": 37,
+          "id": "6BFACB4D-AEDB-4302-B2EF-89CFEC14BFDA",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35366
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 23,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "08340E92-7431-4915-A9FF-FB43F559A8CB",
+            "changed": 0,
+            "added": 0,
+            "removed": 3
+          }
+        },
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        },
+        "action": {
+          "path": "accessibility",
+          "actionName": "AXPress",
+          "fallbackReason": null,
+          "delivery": "background",
+          "targetWindowId": 14801,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.activeElement.id==='capture-title'",
+    "passed": true
+  },
+  {
+    "nativeKeyCode": 48,
+    "modifiers": ""
+  },
+  {
+    "assertion": "document.activeElement===document.querySelector('#note-task-drawer .ui-drawer-header button')",
+    "passed": true
+  },
+  {
+    "nativeKeyCode": 48,
+    "modifiers": " using shift down"
+  },
+  {
+    "assertion": "document.activeElement===document.querySelector('#note-task-drawer .primary')",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 1180 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 340",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35366",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "ce262b7d-bf94-43e6-9f11-498c0e910702",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 原生笔记48\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t\t\t\t41 text 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t42 text 已恢复未保存草稿，请核对后保存。\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 45 button 创建笔记.",
+          "focusedElementId": 45,
+          "id": "194B4313-B571-4CE6-A531-27A122E27F75",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35366,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 23,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35366",
+      "--element-index",
+      "45",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "be86d37d-72d3-4f1b-b1fa-4cfa95f6f597",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 原生笔记48\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t\t\t\t41 text 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t49 container\n\t\t\t\t\t50 text 操作未完成。请检查目录是否可用，然后重试；未保存的编辑仍保留。\n\t\t\t\t\t51 summary 查看技术详情, Value: 0\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "518BA7AD-8280-496A-A943-2B319FC07F7B",
+          "app": {
+            "name": "LocalNotes",
+            "pid": 35366,
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 25,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        },
+        "action": {
+          "path": "accessibility",
+          "actionName": "AXPress",
+          "fallbackReason": null,
+          "delivery": "background",
+          "targetWindowId": 14801,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "document.querySelector('#note-task-status').textContent.includes('未保存的编辑仍保留')",
+    "passed": true
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "get-app-state",
+      "--app",
+      "pid:35366",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "a2e66871-8954-46a2-896b-cb923e580a7f",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 原生笔记48\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t\t\t\t41 text 保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。保留原生正文与恢复保护。\n\t\t\t\t49 container\n\t\t\t\t\t50 text 操作未完成。请检查目录是否可用，然后重试；未保存的编辑仍保留。\n\t\t\t\t\t51 summary 查看技术详情, Value: 0\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "47E2D7AA-3A6C-4A58-9932-8B0726D394D5",
+          "app": {
+            "pid": 35366,
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue48after"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 25,
+          "truncation": {
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200,
+            "truncated": false
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "reason": "no_screenshot_flag",
+          "state": "skipped"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "command": [
+      "orca",
+      "computer",
+      "click",
+      "--app",
+      "pid:35366",
+      "--element-index",
+      "45",
+      "--json",
+      "--no-screenshot"
+    ],
+    "response": {
+      "id": "47c546d8-ea0d-4696-a57d-1be7923df917",
+      "ok": true,
+      "result": {
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue48after (pid 35366)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t52 container\n\t\t\t\t53 text 拾记\n\t\t\t\t54 button 随手记\n\t\t\t\t55 container 主导航\n\t\t\t\t\t56 button 当前重点\n\t\t\t\t\t57 button 笔记库\n\t\t\t\t\t58 button 事项\n\t\t\t\t\t59 button 整理\n\t\t\t\t\t60 button 收藏\n\t\t\t\t\t61 button 同步检查\n\t\t\t\t62 summary Sync, Value: 0\n\t\t\t63 heading 当前重点\n\t\t\t64 summary 更多操作, Value: 0\n\t\t\t65 button 新建行动\n\t\t\t66 button 全部行动\n\t\t\t67 heading 优先处理\n\t\t\t68 text 还没有重点行动。可从「全部行动」选择已确认的下一步。\n\t\t\t69 button 选择重点行动\n\t\t\t70 heading 等待与跟进\n\t\t\t71 text 没有等待中的行动。\n\t\t\t72 heading 继续推进\n\t\t\t73 text 还没有进行中的事项。\n\t\t\t74 button 创建第一个事项\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nThe focused UI element is 54 button 随手记.",
+          "focusedElementId": 54,
+          "id": "B1892E20-9B20-4FAB-A880-A9E26CCB62C4",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue48after",
+            "pid": 35366,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 14801,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 30,
+          "truncation": {
+            "truncated": false,
+            "maxDepth": 64,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        },
+        "action": {
+          "path": "accessibility",
+          "fallbackReason": null,
+          "actionName": "AXPress",
+          "delivery": "background",
+          "targetWindowId": 14801,
+          "verification": {
+            "state": "unverified",
+            "reason": "accessibility_action_unasserted"
+          }
+        },
+        "screenshot": null
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "assertion": "!document.querySelector('#note-task-drawer').open && !document.querySelector('#editor').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#library-tools').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#topic-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#topic-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!!document.querySelector('#items [data-path]')",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#editor').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#note-info-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#note-topics').inert && document.querySelector('#note-topics input').checked",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 1180 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 340",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#note-info-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#note-info-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#note-task-drawer').open && !document.querySelector('#note-info-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 1180 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 340",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#note-task-status').textContent.includes('路径无效')",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#note-task-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#initiative-tools').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#initiative-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#initiative-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#workspace-title').textContent==='原生事项48'",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-save-state').textContent==='已保存到本地'",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#action-save-state').textContent==='已保存到本地'",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#action-drawer').open",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#editor').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#save-state').textContent==='已保存到本地'",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 1180 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "innerWidth === 393 && innerHeight === 800",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#editor').hidden && document.querySelector('#workspace-title').textContent==='原生事项48'",
+    "passed": true
+  },
+  {
+    "assertion": "!document.querySelector('#editor').hidden",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#save-state').textContent==='已保存到本地'",
+    "passed": true
+  },
+  {
+    "assertion": "document.querySelector('#editor').hidden",
+    "passed": true
+  }
+]
