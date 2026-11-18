@@ -331,6 +331,10 @@ details { overflow-wrap: anywhere; }
 /* Library adopts shared list/detail controls without touching Markdown source lines. */
 .library-view #items .ui-row.selected { background: var(--selected); color: var(--selected-text); }
 .library-view .card h3 { font-size: 15px; }
+/* Keep intrinsic row heights when the collection is shorter than its contents. */
+.library-view:not(.editing) #items { flex-shrink: 0; grid-auto-rows: max-content; }
+.library-view #items .card { display: block; height: auto; white-space: normal; }
+.library-view #items .card > * { display: block; overflow-wrap: anywhere; }
 #library-tools .ui-pagination { flex-basis: 100%; }
 #library-progress { flex-basis: 100%; font-size: 13px; }
 #library-progress:empty { display: none; }

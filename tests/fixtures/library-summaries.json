@@ -1,0 +1,8 @@
+[
+  {"path":"Current/repeated.md","text":"---\ntitle: metadata field dump\ncreated: 2000-01-01\n---\n# 重复标题\n\n- [ ] **Useful** [source](other.md) and `code`."},
+  {"path":"Archive/repeated.md","text":"---\ntags: [hidden]\n---\n# 重复标题\n\n> 不同来源的中文摘要"},
+  {"path":"metadata.md","text":"---\ntags: [metadata only]\n---\n"},
+  {"path":"plain.md","text":"Plain <script>alert(1)</script> & source a_b_c"},
+  {"path":"malformed.md","text":"---\nUnclosed metadata retains useful text"},
+  {"path":"long/长期参考资料与研究记录/English-source-context-with-a-long-name/长中文与English文件路径.md","text":"# 长中文标题与EnglishTitleWithoutSpacesRepeated长中文标题与EnglishTitleWithoutSpacesRepeated长中文标题与EnglishTitleWithoutSpacesRepeated\n\n长中文正文与 English prose，保留可识别的信息。"}
+]

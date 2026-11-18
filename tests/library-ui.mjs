@@ -1,5 +1,5 @@
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
-import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
+import {readFile, writeFile, readdir, stat, utimes, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -7,7 +7,7 @@ import {storageFixture} from './action-adapter.js';
 const evidence = process.env.LIBRARY_EVIDENCE_DIR || 'docs/validation/issue19';
 const fixture = await storageFixture();
 let activeFixture = fixture, alternateFixture;
-let releaseMetadata, delayMetadata = false;
+let releaseMetadata, metadataStartedResolve, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -16,7 +16,7 @@ try {
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
-      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve;});
+      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve; metadataStartedResolve?.();});
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -46,10 +46,44 @@ try {
     if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
+  const summaryCases = JSON.parse(await readFile('tests/fixtures/library-summaries.json', 'utf8'));
+  for (const note of summaryCases) {
+    await mkdir(join(fixture.root, note.path, '..'), {recursive:true});
+    await writeFile(join(fixture.root, note.path), note.text);
+    await utimes(join(fixture.root, note.path), 1000, 1000);
+  }
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   await mkdir(evidence, {recursive:true});
   await page.locator('[data-view=notes]').click();
+  await page.waitForFunction(()=>document.querySelectorAll('#items .card').length===7 && !document.querySelector('#library-progress').textContent);
+  for (const viewport of [{width:1180,height:800},{width:760,height:600},{width:393,height:852},{width:800,height:400}]) {
+    await page.setViewportSize(viewport);
+    const geometry = await page.locator('#items .card').evaluateAll(rows=>rows.every(row=>{
+      const parts=[...row.children].map(n=>n.getBoundingClientRect());
+      const rect=row.getBoundingClientRect();
+      return parts.every((part,i)=>part.left>=rect.left && part.right<=rect.right+1 && part.bottom<=rect.bottom+1 && (!i || part.top>=parts[i-1].bottom));
+    }));
+    assert.equal(geometry,true,'row title/excerpt/metadata must not overlap');
+    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+    await page.screenshot({path:join(evidence, `summaries-${viewport.width}-${viewport.height}.png`)});
+  }
+  assert.equal(await page.locator('#items script').count(),0);
+  assert.equal(await page.locator('#items').innerText().then(t=>t.includes('metadata field dump')),false);
+  assert.equal(await page.getByRole('heading',{name:'重复标题',exact:true}).count(),2);
+  assert.equal(await page.locator('[data-path="metadata.md"] p').innerText(),'暂无正文摘要');
+  assert.match(await page.locator('[data-path="Current/repeated.md"]').innerText(),/Useful source and code\./);
+  await page.setViewportSize({width:1180,height:800});
+  await page.locator('#search').fill('code');
+  await page.waitForFunction(()=>document.querySelectorAll('#items .card').length===1);
+  await page.locator('#items .card').focus(); await page.keyboard.press('Enter');
+  await page.locator('#editor').waitFor({state:'visible'});
+  assert.equal(await page.locator('#file-path').innerText(),'Current/repeated.md');
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.activeElement.dataset.path==='Current/repeated.md');
+  assert.equal(await page.locator('#search').inputValue(),'code');
+  for(const note of summaryCases) assert.equal(await readFile(join(fixture.root,note.path),'utf8'),note.text);
+  await page.locator('#search').fill('');
   await page.getByRole('heading', {name:'Synthetic reference material', exact:true}).click();
   await page.locator('#editor').waitFor({state:'visible'});
   await page.screenshot({path:join(evidence, 'after-editor.png')});
@@ -182,11 +216,12 @@ try {
   }
   await page.waitForFunction(()=>!document.querySelector('#library-progress').textContent);
   await page.waitForTimeout(150); // Let queued incremental refresh receipts settle before fault injection.
+  const metadataStarted = new Promise(resolve=>{metadataStartedResolve=resolve;});
   delayMetadata=true; await page.locator('#library-refresh').click();
   await page.getByText('正在更新笔记列表…',{exact:true}).waitFor();
   assert.equal(await page.locator('#library-refresh').isDisabled(),true);
   await page.screenshot({path:join(evidence, 'after-loading.png')});
-  delayMetadata=false; releaseMetadata(); await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled);
+  await metadataStarted; delayMetadata=false; releaseMetadata(); await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled);
   fixture.fail(cmd=>cmd==='metadata'); await page.locator('#library-refresh').click();
   await page.getByText('目录暂不可用，请检查目录权限后刷新，或重新选择目录。',{exact:true}).waitFor();
   await page.screenshot({path:join(evidence, 'after-error.png')});
@@ -195,7 +230,7 @@ try {
   await page.getByRole('button',{name:'目录：工作资料',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#library-location').textContent==='工作资料');
   await page.locator('#library-back').click(); await page.locator('#library-back').click();
-  for (const name of await readdir(fixture.root)) if(name.endsWith('.md') || ['工作资料','Notes'].includes(name)) await rm(join(fixture.root,name),{recursive:true});
+  for (const name of await readdir(fixture.root)) if(name.endsWith('.md') || ['工作资料','Notes','Current','Archive','long'].includes(name)) await rm(join(fixture.root,name),{recursive:true});
   await page.locator('#library-refresh').click();
   await page.getByText('笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。',{exact:true}).waitFor();
   await page.screenshot({path:join(evidence, 'after-empty-library.png')});

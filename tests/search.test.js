@@ -105,3 +105,55 @@ test('distant note passages stay independently selectable and formal title expan
     assert.equal(await service.context(record,'latency'),'latency title\n\nOriginal goal\n\nOriginal progress');
   } finally {await fixture.close();}
 });
+
+test('cached summary upgrade keeps typed passage offsets and expanded context aligned', async () => {
+  const {WorkspaceSearch} = await import('../web/global-search.js');
+  const {referenceRecord} = await import('../web/library.js');
+  const fixture = await storageFixture();
+  try {
+    const bodies = [
+      '\uFEFF---\n' + 'category: metadata\n'.repeat(150) + '---\n',
+      '---\r\n' + 'category: metadata\r\n'.repeat(150) + '...\r\n',
+      '---\n---\n',
+    ].map(header => header + '# Source\n\n' + 'intro\n'.repeat(300) + 'needle first source passage\n' + 'intervening prose\n'.repeat(150) + 'needle second source passage\n');
+    for (const [i, text] of bodies.entries()) await writeFile(join(fixture.root, `source-${i}.md`), text);
+    let reads = 0;
+    const service = new WorkspaceSearch(async (cmd, args) => {
+      if (cmd === 'read') { reads++; return {text: await readFile(join(fixture.root, args.path), 'utf8')}; }
+      return fixture.adapter(cmd, args);
+    });
+    await service.open();
+    // Simulate cached records from main before the summary normalization upgrade.
+    const metadata = await fixture.adapter('metadata', {workspaceId:service.workspaceId});
+    for (const note of metadata.notes) {
+      const text = await readFile(join(fixture.root, note.path), 'utf8');
+      const record = referenceRecord(note, text); delete record.summaryVersion;
+      await service.call('referencePut', {record, search: `${record.title}\n${text}`});
+    }
+    const cached = (await service.query('needle', 0, 'note')).notes;
+    async function checkSelected(results) {
+      assert.equal(results.length, 6);
+      for (const result of results) {
+        const selected = result.passage.includes('needle second source passage') ? 'needle second source passage' : 'needle first source passage';
+        assert.ok((await service.context(result, 'needle')).includes(selected), 'cached descriptors must expand their original source occurrence');
+      }
+    }
+    await checkSelected(cached);
+    const beforeUpgrade = reads;
+    await service.sync(); assert.equal(reads, beforeUpgrade + metadata.notes.length);
+    await checkSelected(cached); // A descriptor captured before refresh remains valid after it.
+    assert.ok((await service.call('referenceInventory')).notes.every(n=>n.summaryVersion===1 && n.searchVersion===1));
+    const results = (await service.query('needle', 0, 'note')).notes;
+    assert.equal(results.length, 6); assert.equal(new Set(results.map(n=>n.identity)).size, 6);
+    for (const result of results) {
+      assert.equal(result.type, 'note');
+      const context = await service.context(result, 'needle');
+      const selected = result.passage.includes('needle second source passage') ? 'needle second source passage' : 'needle first source passage';
+      assert.ok(context.includes(selected), 'expanded context must contain the selected source occurrence');
+      assert.ok(context.includes('needle')); assert.ok(!context.includes('category: metadata'));
+      assert.equal(await readFile(join(fixture.root, result.path), 'utf8'), bodies[Number(result.path.match(/source-(\d)/)[1])]);
+    }
+    const before = reads; await service.sync(); await service.query('needle', 0, 'note'); assert.equal(reads, before);
+    assert.ok(!fixture.calls.some(call=>['actionWrite','save','create'].includes(call.cmd)));
+  } finally { await fixture.close(); }
+});
