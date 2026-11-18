@@ -15,7 +15,8 @@ original = '# Native search 中文\n\n- latency 延迟 alpha\n| metric | value |
 (m.OUT/'Sync/source.md').write_text(original)
 for i in range(372): (m.OUT/f'Sync/corpus-{i:04}.md').write_text('# Controlled corpus\n' + 'background indexing material\n'*150)
 m.build()
-p = m.OUT/'main.swift'; p.write_text(p.read_text().replace('let wrapped =', '''if script == "__narrow" { self?.window.setContentSize(NSSize(width:393,height:760)); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
+p = m.OUT/'main.swift'; p.write_text(p.read_text().replace('let wrapped =', '''if script == "__focus" { self?.window.makeKeyAndOrderFront(nil); self?.window.makeFirstResponder(self?.web); NSApp.activate(ignoringOtherApps:true); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
+if script == "__narrow" { self?.window.setContentSize(NSSize(width:393,height:760)); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
  if let tiff=image?.tiffRepresentation, let bitmap=NSBitmapImageRep(data:tiff),let png=bitmap.representation(using:.png,properties:[:]) {try? png.write(to:reviewProbe.directory.appendingPathComponent("native.png"))}
  try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")) }; return }
@@ -30,10 +31,18 @@ def c(script):
 def w(expression):
  m.wait(expression);log.append({'assertion':expression,'passed':True})
 def key(code,modifiers=''):
- subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e',f'tell application "System Events" to key code {code}'+modifiers],check=True)
- log.append({'OSKeyCode':code,'modifiers':modifiers})
+ names={40:'K',36:'Return',53:'Escape',48:'Tab',8:'C'}
+ chord=('CmdOrCtrl+' if 'command' in modifiers else 'Shift+' if 'shift' in modifiers else '')+names[code]
+ command='hotkey' if modifiers else 'press-key'
+ result=subprocess.run(['orca','computer',command,'--app',f'pid:{process.pid}','--key',chord,'--no-screenshot','--json'],capture_output=True,text=True)
+ assert result.returncode == 0, result.stdout + result.stderr
+ receipt=json.loads(result.stdout)
+ assert receipt.get('ok',True),receipt
+ log.append({'nativeKey':chord,'delivery':receipt})
 try:
  w("!!document.querySelector('.home-tools')")
+ c("__focus")
+ c("window.nativeKeys=[];document.addEventListener('keydown', e=>window.nativeKeys.push({key:e.key,meta:e.metaKey,target:e.target.id}),true)")
  c("document.querySelector('#global-search-open').focus()")
  key(40,' using command down');w("document.querySelector('#global-search').open && document.activeElement.id==='global-search-input'")
  key(53);w("!document.querySelector('#global-search').open");key(40,' using command down');w("document.activeElement.id==='global-search-input'")
