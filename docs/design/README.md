@@ -170,3 +170,9 @@ contextual editing drawer. Continue restores input and focus; Save and leave
 persists that task only; Discard and leave bypasses its invalid/failed/conflicted
 save while retaining completed writes and other tasks' private drafts. A clean
 visible page ignores hidden recovered editors.
+
+## Scoped compact search (issue #59)
+
+The same compact A dialog now starts with All content and exposes 全部内容 / 笔记 / 事项 / 行动 inside the modal. Scope buttons use shared actions with `aria-pressed`, wrap at narrow widths and retain the query. Same-workspace reopen retains the session; workspace reset clears scope/query and fences delayed replies. `WorkspaceSearch` extends the existing query/context boundary with typed workspace/entity/passage identities and bounded merging of private reference and confirmed-record index results. The library remains note-only and independent.
+
+Formal results expose original title/goal/progress or action description/waiting text as separately identifiable passages. Expansion and verified copying use the same selection, keyboard, attribution and receipt flow. Read-only reconciliation may update private indexes but never repairs or writes synchronized records. Conflicted/incomplete records are omitted with an incomplete-index receipt. Source opening remains #60 and meaning retrieval remains #61. No new frontend assets or presentation primitives are introduced.
