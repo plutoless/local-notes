@@ -142,7 +142,7 @@ export class LibraryScreen {
     }
     for (const note of result.notes) {
       const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
-      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt)}</p><small>${esc(note.path)} · ${new Date(note.modified * 1000).toLocaleDateString()}</small>`;
+      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt || '暂无正文摘要')}</p><small>${esc(note.path)}</small><small>${Number.isFinite(note.modified) ? '文件修改：' + new Date(note.modified * 1000).toLocaleDateString() : '文件修改时间未知'}</small>`;
       list.append(card);
     }
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
