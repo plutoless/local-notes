@@ -29,6 +29,7 @@ final class ReferenceIndex {
                 let directory = request["directory"] as? String ?? "*", topic = request["topic"] as? String ?? ""
                 values += [request["search"] as? String ?? "", directory, directory, topic, topic, topic]
             }
+            if global { sql += " AND json_extract(record, '$.searchVersion')=1" }
             if let path = request["exactPath"] as? String { sql += inventory ? " WHERE path=?" : " AND path=?"; values.append(path) }
             if let paths = request["paths"] as? [String] { sql += paths.isEmpty ? " AND 0" : " AND path IN (" + Array(repeating: "?", count: paths.count).joined(separator: ",") + ")"; values += paths }
             if global {

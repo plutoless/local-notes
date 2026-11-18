@@ -440,7 +440,6 @@ details { overflow-wrap: anywhere; }
 .search-result { padding: 12px 0; border-bottom: 1px solid var(--divider); }
 .search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; }
 .search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
-.search-select[aria-current=true] { background: var(--selected); color: var(--selected-text); font-weight: 650; }
 .search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; user-select: text; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
 .search-attribution { display: flex; align-items: center; min-height: 44px; gap: 8px; }
 .search-attribution input { width: auto; }

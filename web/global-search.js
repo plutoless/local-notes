@@ -1,15 +1,15 @@
-import {referenceRecord} from './library.js';
+import {referenceRecord, referenceSearchText} from './library.js';
 import {fingerprint} from './initiatives.js';
 import {safePath} from './core.js';
 
 // One workspace-aware boundary for indexed descriptors and validated source context.
 export class NoteSearch {
   constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; }
-  reset() { this.generation++; this.workspaceId = null; this.running = null; }
-  async open() { const workspace = await this.adapter('workspace'); if (workspace.workspaceId !== this.workspaceId) { this.reset(); this.workspaceId = workspace.workspaceId; } }
+  reset() { this.generation++; this.workspaceId = null; this.running = null; this.again = false; }
+  async open() { const generation = this.generation; const workspace = await this.adapter('workspace'); if (generation !== this.generation) throw Error('Workspace changed'); if (workspace.workspaceId !== this.workspaceId) { this.reset(); this.workspaceId = workspace.workspaceId; } }
   call(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   sync() {
-    if (this.running) return this.running;
+    if (this.running) { this.again = true; return this.running; }
     const generation = this.generation, workspaceId = this.workspaceId;
     const call = (cmd, args = {}) => this.adapter(cmd, {workspaceId, ...args});
     this.indexing = true; this.error = false;
@@ -21,8 +21,8 @@ export class NoteSearch {
         if (generation !== this.generation) return;
         if (!safePath(note.path)) continue;
         seen.add(note.path); const old = previous.get(note.path);
-        if (!old || old.modified !== note.modified || old.size !== note.size) {
-          try { const {text} = await call('read', {path: note.path}); await call('referencePut', {record: referenceRecord(note, text), search: `${referenceRecord(note, text).title}\n${text}`}); }
+        if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1) {
+          try { const {text} = await call('read', {path: note.path}); const record = referenceRecord(note, text); await call('referencePut', {record, search: referenceSearchText(record.title, text)}); }
           catch { failed = true; }
         }
         // Yield between bodies so input and dismissal never wait for indexing.
@@ -31,7 +31,7 @@ export class NoteSearch {
       if (!failed) for (const path of previous.keys()) if (!seen.has(path)) await call('referenceRemove', {path});
       if (generation === this.generation) this.error = failed;
     })().catch(() => { if (generation === this.generation) this.error = true; }).finally(() => {
-      if (generation === this.generation) { this.indexing = false; this.running = null; this.changed(); }
+      if (generation === this.generation) { this.indexing = false; this.running = null; this.changed(); if (this.again) { this.again = false; this.sync(); } }
     }); return this.running;
   }
   async query(search, offset = 0) {
