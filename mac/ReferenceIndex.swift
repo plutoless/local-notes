@@ -29,11 +29,11 @@ final class ReferenceIndex {
                 let directory = request["directory"] as? String ?? "*", topic = request["topic"] as? String ?? ""
                 values += [request["search"] as? String ?? "", directory, directory, topic, topic, topic]
             }
-            if global { sql += " AND json_extract(record, '$.searchVersion')=1" }
+            if global { sql += " AND (instr(record, '\"searchVersion\":1,')>0 OR instr(record, '\"searchVersion\":1}')>0)" }
             if let path = request["exactPath"] as? String { sql += inventory ? " WHERE path=?" : " AND path=?"; values.append(path) }
             if let paths = request["paths"] as? [String] { sql += paths.isEmpty ? " AND 0" : " AND path IN (" + Array(repeating: "?", count: paths.count).joined(separator: ",") + ")"; values += paths }
             if global {
-                sql += " ORDER BY CASE WHEN instr(lower(json_extract(record, '$.title')),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"
+                sql += " ORDER BY CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"
                 values.append(request["search"] as? String ?? "")
             } else { sql += " ORDER BY path LIMIT ? OFFSET ?" }
             let limit = min(100, max(1, request["limit"] as? Int ?? 50))
