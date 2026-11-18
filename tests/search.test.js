@@ -130,7 +130,18 @@ test('cached summary upgrade keeps typed passage offsets and expanded context al
       const record = referenceRecord(note, text); delete record.summaryVersion;
       await service.call('referencePut', {record, search: `${record.title}\n${text}`});
     }
-    await service.sync(); assert.equal(reads, metadata.notes.length);
+    const cached = (await service.query('needle', 0, 'note')).notes;
+    async function checkSelected(results) {
+      assert.equal(results.length, 6);
+      for (const result of results) {
+        const selected = result.passage.includes('needle second source passage') ? 'needle second source passage' : 'needle first source passage';
+        assert.ok((await service.context(result, 'needle')).includes(selected), 'cached descriptors must expand their original source occurrence');
+      }
+    }
+    await checkSelected(cached);
+    const beforeUpgrade = reads;
+    await service.sync(); assert.equal(reads, beforeUpgrade + metadata.notes.length);
+    await checkSelected(cached); // A descriptor captured before refresh remains valid after it.
     assert.ok((await service.call('referenceInventory')).notes.every(n=>n.summaryVersion===1 && n.searchVersion===1));
     const results = (await service.query('needle', 0, 'note')).notes;
     assert.equal(results.length, 6); assert.equal(new Set(results.map(n=>n.identity)).size, 6);

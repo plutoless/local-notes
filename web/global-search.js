@@ -53,7 +53,8 @@ export class NoteSearch {
   async context(note, query) {
     const {text} = await this.call('read', {path: note.path});
     if (fingerprint(text) !== note.fingerprint) throw Error('来源已改变，请刷新搜索结果');
-    const body = referenceBody(text);
+    // Cached descriptors keep offsets in their original normalization until refreshed.
+    const body = note.summaryVersion === 1 ? referenceBody(text) : text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
     const position = note.passageStart ? Array.from(body).slice(0, note.passageStart - 1).join('').length : Math.max(0, body.toLowerCase().indexOf(query.toLowerCase()));
     const start = Math.max(0, body.lastIndexOf('\n', Math.max(0, position - 300)) + 1);
     const end = body.indexOf('\n', position + Math.max(query.length, 600));
