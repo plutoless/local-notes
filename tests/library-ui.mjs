@@ -7,7 +7,7 @@ import {storageFixture} from './action-adapter.js';
 const evidence = process.env.LIBRARY_EVIDENCE_DIR || 'docs/validation/issue19';
 const fixture = await storageFixture();
 let activeFixture = fixture, alternateFixture;
-let releaseMetadata, delayMetadata = false;
+let releaseMetadata, metadataStartedResolve, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -16,7 +16,7 @@ try {
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
-      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve;});
+      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve; metadataStartedResolve?.();});
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -216,11 +216,12 @@ try {
   }
   await page.waitForFunction(()=>!document.querySelector('#library-progress').textContent);
   await page.waitForTimeout(150); // Let queued incremental refresh receipts settle before fault injection.
+  const metadataStarted = new Promise(resolve=>{metadataStartedResolve=resolve;});
   delayMetadata=true; await page.locator('#library-refresh').click();
   await page.getByText('正在更新笔记列表…',{exact:true}).waitFor();
   assert.equal(await page.locator('#library-refresh').isDisabled(),true);
   await page.screenshot({path:join(evidence, 'after-loading.png')});
-  delayMetadata=false; releaseMetadata(); await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled);
+  await metadataStarted; delayMetadata=false; releaseMetadata(); await page.waitForFunction(()=>!document.querySelector('#library-refresh').disabled);
   fixture.fail(cmd=>cmd==='metadata'); await page.locator('#library-refresh').click();
   await page.getByText('目录暂不可用，请检查目录权限后刷新，或重新选择目录。',{exact:true}).waitFor();
   await page.screenshot({path:join(evidence, 'after-error.png')});
