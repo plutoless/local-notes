@@ -44,6 +44,7 @@ try {
   }
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);
   await page.keyboard.press('Meta+k'); await input.waitFor();
+  await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent.startsWith('本页'));
   await page.keyboard.press('Meta+k'); assert.equal(await input.inputValue(), 'latency'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await page.keyboard.press('Meta+Enter'); await page.getByText('已复制片段', {exact:true}).waitFor();
   assert.equal(clipboard, await page.locator('.search-select[aria-current=true]').locator('..').locator('pre').textContent()); assert.ok(original.includes(clipboard));
