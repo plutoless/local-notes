@@ -8,7 +8,7 @@ import {storageFixture} from './action-adapter.js';
 test('real isolated search index: bilingual grounding, boundaries, incremental reads, stale context', async () => {
   const fixture = await storageFixture();
   try {
-    const text = '---\ncategory: metadata\n---\n# 重复标题\n\n' + 'intro\n'.repeat(400) + '- 延迟 latency 混合词\n| metric | value |\n| p99 | 20 |\n[link](https://example.com)';
+    const text = '---\n' + 'category: metadata\n'.repeat(150) + '---\n# 重复标题\n\n' + 'intro\n'.repeat(400) + '- 延迟 latency 混合词\n| metric | value |\n| p99 | 20 |\n[link](https://example.com)';
     for (const dir of ['Archive', 'Current', '.hidden', 'Credentials']) { await mkdir(join(fixture.root, dir)); await writeFile(join(fixture.root, dir, 'note.md'), text); }
     await symlink(join(fixture.root, 'Current'), join(fixture.root, 'linked'));
     let reads = 0;

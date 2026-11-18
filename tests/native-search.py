@@ -10,6 +10,7 @@ m.OUT.mkdir(parents=True, exist_ok=True)
 for name in ['Sync','Private']: (m.OUT/name).mkdir(exist_ok=True)
 original = '# Native search 中文\n\n- latency 延迟 alpha\n| metric | value |\n| p99 | 20 |\n[link](https://example.com)'
 (m.OUT/'Sync/source.md').write_text(original)
+for i in range(372): (m.OUT/f'Sync/corpus-{i:04}.md').write_text('# Controlled corpus\n' + 'background indexing material\n'*150)
 m.build()
 p = m.OUT/'main.swift'; p.write_text(p.read_text().replace('let wrapped =', '''if script == "__narrow" { self?.window.setContentSize(NSSize(width:393,height:760)); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
@@ -32,12 +33,16 @@ try:
  w("!!document.querySelector('.home-tools')")
  c("document.querySelector('#global-search-open').focus()")
  key(40,' using command down');w("document.querySelector('#global-search').open && document.activeElement.id==='global-search-input'")
+ key(53);w("!document.querySelector('#global-search').open");key(40,' using command down');w("document.activeElement.id==='global-search-input'")
  c("const n=document.querySelector('#global-search-input');n.value='latency';n.dispatchEvent(new Event('input'))")
  w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('#global-search [role=status]').textContent.includes('更新')")
  key(40,' using command down');w("document.activeElement.id==='global-search-input' && document.activeElement.value==='latency'")
  key(36);time.sleep(.2);key(36,' using command down');w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
  clipboard=subprocess.check_output(['pbpaste']).decode();assert clipboard==c("return document.querySelector('.search-passage').textContent");assert clipboard in original
  log.append({'OSClipboard':clipboard})
+ c("const n=document.querySelector('.search-passage');const range=document.createRange();range.selectNodeContents(n);const selection=getSelection();selection.removeAllRanges();selection.addRange(range)")
+ key(8,' using command down');time.sleep(.2);assert subprocess.check_output(['pbpaste']).decode()==clipboard
+ log.append({'manualNativeSelectionCopy':True})
  c("document.querySelector('.search-attribution input').click();document.querySelector('#global-search-input').focus()")
  key(36,' using command down');time.sleep(.3);assert subprocess.check_output(['pbpaste']).decode().endswith('Native search 中文\nsource.md')
  c("[...document.querySelectorAll('#global-search button')].at(-1).focus()")

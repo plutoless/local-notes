@@ -31,6 +31,7 @@ final class ReferenceIndex {
                     String directory = r.optString("directory", "*"), topic = r.optString("topic");
                     Collections.addAll(args, r.optString("search"), directory, directory, topic, topic, topic);
                 }
+                if (global) sql += " AND json_extract(record, '$.searchVersion')=1";
                 if (r.has("exactPath")) { sql += command.equals("referenceInventory") ? " WHERE path=?" : " AND path=?"; args.add(r.getString("exactPath")); }
                 if (r.has("paths")) { JSONArray paths = r.getJSONArray("paths"); sql += paths.length() == 0 ? " AND 0" : " AND path IN (" + String.join(",", Collections.nCopies(paths.length(), "?")) + ")"; for (int i = 0; i < paths.length(); i++) args.add(paths.getString(i)); }
                 if (global) { sql += " ORDER BY CASE WHEN instr(lower(json_extract(record, '$.title')),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"; args.add(r.optString("search")); }
