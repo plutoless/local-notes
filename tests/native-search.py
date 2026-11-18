@@ -7,7 +7,10 @@ spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name(
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 m.OUT = Path(os.environ.get('SEARCH_NATIVE_OUT', 'build/issue58-native')).resolve(); m.APP = m.OUT/'Search58.app'
 m.OUT.mkdir(parents=True, exist_ok=True)
-for name in ['Sync','Private']: (m.OUT/name).mkdir(exist_ok=True)
+for name in ['Sync','Private']:
+ if (m.OUT/name).exists(): shutil.rmtree(m.OUT/name)
+ (m.OUT/name).mkdir()
+(m.OUT/'result.json').unlink(missing_ok=True)
 original = '# Native search 中文\n\n- latency 延迟 alpha\n| metric | value |\n| p99 | 20 |\n[link](https://example.com)'
 (m.OUT/'Sync/source.md').write_text(original)
 for i in range(372): (m.OUT/f'Sync/corpus-{i:04}.md').write_text('# Controlled corpus\n' + 'background indexing material\n'*150)
@@ -63,6 +66,8 @@ try:
  key(53);w("!document.querySelector('#global-search').open && document.activeElement.id==='global-search-open'")
  c("__narrow");key(40,' using command down');w("innerWidth===393 && document.querySelector('#global-search').open")
  assert c("return document.querySelector('#global-search').getBoundingClientRect().width<=innerWidth")
+ w("document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+ c("document.querySelector('#global-search').scrollTop=0")
  c('__snapshot');key(53)
  (m.OUT/'result.json').write_text(json.dumps({'passed':True,'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'checks':log},ensure_ascii=False,indent=2))
  print('PASS native Command+K/repeat, Enter/context, Command+Enter, OS clipboard, Tab cycles, Escape/opener, 393px')

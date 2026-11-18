@@ -57,7 +57,7 @@ test('scoped real formal indexes: stored fields, typed identities, bounded pages
     assert.equal(all.length, 30); assert.equal(new Set(all.map(r=>r.identity)).size, all.length);
     assert.deepEqual(new Set(all.map(r=>r.type)), new Set(['note','action','initiative']));
     for (const result of all.filter(r=>r.entityId === action.entityId || r.entityId === initiative.entityId)) {
-      const context = await service.context(result, 'latency'); assert.equal(context, result.passage); assert.ok(!context.includes('entityId'));
+      const context = await service.context(result, 'latency'); assert.ok(context.includes(result.passage)); assert.ok(!context.includes('entityId'));
     }
     assert.ok(!fixture.calls.slice(start).some(c=>['actionWrite','save','create'].includes(c.cmd)));
     await actions.save({...action, description: 'Changed'}, action);
@@ -65,4 +65,37 @@ test('scoped real formal indexes: stored fields, typed identities, bounded pages
     const foreign = await second.adapter('workspace'); await assert.rejects(service.context({...notes.notes[0], workspaceId:foreign.workspaceId}, 'latency'), /Workspace/);
     service.reset(); assert.equal(service.repositories, null);
   } finally { await fixture.close(); await second.close(); }
+});
+
+test('bounded prefix merge uses native ordering across more than fifty mixed-case note paths', async () => {
+  const {WorkspaceSearch} = await import('../web/global-search.js');
+  const fixture = await storageFixture();
+  try {
+    const paths = Array.from({length: 80}, (_, i) => `${i % 2 ? 'a' : 'Z'}-${i}.md`);
+    for (const path of paths) await writeFile(join(fixture.root, path), '# pagination overlap\n\nOriginal passage');
+    const service = new WorkspaceSearch(async (cmd, args) => cmd === 'read' ? {text:await readFile(join(fixture.root,args.path),'utf8')} : fixture.adapter(cmd,args));
+    await service.open(); await service.sync();
+    const returned = [];
+    for (let offset=0; offset<80; offset+=20) returned.push(...(await service.query('pagination', offset, 'note')).notes.map(row=>row.path));
+    assert.deepEqual(returned, paths.sort()); assert.equal(new Set(returned).size, 80);
+  } finally { await fixture.close(); }
+});
+
+test('distant note passages stay independently selectable and formal title expansion includes stored context', async () => {
+  const {WorkspaceSearch} = await import('../web/global-search.js');
+  const {InitiativeRepository} = await import('../web/initiatives.js');
+  const fixture = await storageFixture();
+  try {
+    const text = '# Two passages\n\nlatency first passage\n' + 'unrelated filler\n'.repeat(150) + '\nlatency second passage';
+    await writeFile(join(fixture.root,'long.md'),text);
+    const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
+    await initiatives.save({status:'active',description:'Stored initiative',title:'latency title',goal:'Original goal',progress:'Original progress'});
+    const service = new WorkspaceSearch(async(cmd,args)=>cmd==='read'?{text:await readFile(join(fixture.root,args.path),'utf8')}:fixture.adapter(cmd,args));
+    await service.open();await service.sync();
+    const notes=(await service.query('latency',0,'note')).notes;
+    assert.equal(notes.length,2);assert.notEqual(notes[0].identity,notes[1].identity);
+    assert.ok((await service.context(notes[1],'latency')).includes('second passage'));
+    const record=(await service.query('latency',0,'initiative')).notes[0];
+    assert.equal(await service.context(record,'latency'),'latency title\n\nOriginal goal\n\nOriginal progress');
+  } finally {await fixture.close();}
 });
