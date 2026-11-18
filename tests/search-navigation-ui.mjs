@@ -7,7 +7,7 @@ import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {})});
-let clipboard = '', deny = false, delay = null, failQuery = false, workspaceDelay = null, saves = 0, failSave = false, readDelay = null, readStarted;
+let clipboard = '', deny = false, delay = null, failQuery = false, workspaceDelay = null, saves = 0, failSave = false, readDelay = null, readStarted, readCounter = 0, readDelayAt = 1;
 const readBegun = () => new Promise(resolve => { readStarted = resolve; });
 try {
   await mkdir(join(fixture.root, 'Archive'));
@@ -25,7 +25,7 @@ try {
       if (r.cmd === 'workspace' && workspaceDelay) await workspaceDelay;
       if (r.cmd === 'save') { saves++; if (failSave) throw Error('Controlled failed save'); await writeFile(join(fixture.root, r.path), r.text); return {}; }
       if (r.cmd === 'clipboardWrite') { if (deny) throw Error('denied'); clipboard = r.text; return {}; }
-      if (r.cmd === 'read' && readDelay) { readStarted?.(); await readDelay; }
+      if (r.cmd === 'read' && readDelay && ++readCounter === readDelayAt) { const pending = readDelay; readStarted?.(); await pending; }
       if (r.cmd === 'read') return {text: await readFile(join(fixture.root, r.path), 'utf8')};
       if (r.cmd === 'referenceSearch') { if (delay) await delay; if (failQuery) throw Error('query unavailable'); }
       return await fixture.adapter(r.cmd, r);
@@ -76,6 +76,13 @@ try {
       }
     }
   }
+  // A selected initiative can remain remembered while the narrow list is visible.
+  await page.locator('nav [data-view=initiatives]').click();
+  await page.locator('#items button').filter({hasText:'latency 事项'}).first().click();
+  await page.locator('#workspace-back').click();
+  const classes = await page.locator('.app').getAttribute('class');
+  await lookup('note'); await open('打开原文'); await page.locator('.search-return:visible').waitFor(); await back();
+  assert.equal(await page.locator('.app').getAttribute('class'),classes); await page.keyboard.press('Escape');
   // Dirty active note: continue, failed save, discard and successful save all keep search reachable.
   await page.locator('nav [data-view=notes]').click();
   await page.locator('#items [data-path="a.md"]').click();
@@ -93,10 +100,13 @@ try {
   await page.locator('.search-return:visible').waitFor(); await back(); await page.keyboard.press('Escape');
   failSave = false;
   if (await page.locator('#body').isHidden()) await page.locator('#mode').click();
-  await page.locator('#body').fill('saved origin latency'); await lookup('action');
+  await page.locator('#body').fill('saved origin latency');
+  await page.locator('#body').evaluate(n=>n.setSelectionRange(3,9,'backward'));
+  await lookup('action');
   await open('打开行动'); await page.getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#action-drawer[open]').waitFor(); await back(); await page.keyboard.press('Escape');
   assert.ok((await readFile(join(fixture.root,'a.md'),'utf8')).includes('saved origin latency'));
+  assert.deepEqual(await page.locator('#body').evaluate(n=>[n.selectionStart,n.selectionEnd,n.selectionDirection]),[3,9,'backward']);
   // Exact-path stale sources fail, without silently choosing the duplicate title.
   await lookup('note');
   const stalePath = await page.locator('.search-result p').first().textContent();
@@ -112,10 +122,21 @@ try {
   await open('打开原文'); await page.getByText('来源已移动、改变或不可读取，请刷新后重试；搜索与原页面仍可返回',{exact:true}).waitFor();
   await writeFile(join(fixture.root,path),saved);
   // Dismiss a delayed source read: a late reply must never navigate or reopen search.
-  let release; const begun = readBegun(); readDelay = new Promise(resolve => release=resolve);
+  readCounter = 0; readDelayAt = 1; let release; const begun = readBegun(); readDelay = new Promise(resolve => release=resolve);
   await open('打开原文'); await begun; await page.keyboard.press('Escape'); release(); readDelay=null;
   await page.waitForTimeout(200); assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);
   assert.equal(await page.locator('.search-return:visible').count(),0);
+  // Hold the final source validation after navigation, then select a competing note.
+  await lookup('note'); readCounter = 0; readDelayAt = 3;
+  const finalReadBegun = readBegun(); readDelay = new Promise(resolve=>release=resolve);
+  await open('打开原文'); await Promise.race([finalReadBegun, new Promise((_, reject)=>setTimeout(()=>reject(Error('Final read not reached: '+readCounter)),10000))]); readDelay = null;
+  await page.locator('#items [data-path="a.md"]').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='a.md');
+  if (await page.locator('#body').isHidden()) await page.locator('#mode').click();
+  await page.locator('#body').fill('newer competing draft');
+  release(); await page.waitForTimeout(150);
+  assert.equal(await page.locator('#body').inputValue(),'newer competing draft');
+  assert.equal(await page.locator('#file-path').textContent(),'a.md');
   assert.deepEqual(errors, []);
   console.log('PASS issue60 real UI/bridge/storage/index: all origin/destination types, desktop/393px, expansion/scroll return, dirty continue/discard/save/failure, stale and dismissed delayed reads.');
 } finally { await browser.close(); await fixture.close(); }

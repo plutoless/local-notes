@@ -125,13 +125,14 @@ $('#workspace-return-action').onclick = async () => {
 };
 // The search continuation owns a bounded navigation snapshot, never a second draft store.
 function captureSearchInvocation() {
-  return {workspace: workspaceGeneration, page: pageGeneration, request: noteLoadRequest, view,
+  return {classes: $('.app').className, contextReturn: initiatives.contextReturn, workspace: workspaceGeneration, page: pageGeneration, request: noteLoadRequest, view,
     browse: libraryScreen.captureContext(), search: $('#search').value,
     note: visibleNote() ? current : null, reading: readMode,
     initiative: view === 'initiatives' ? initiatives.previous : null,
     detailKind: initiatives.detailKind, selectedContext: initiatives.selectedContext,
     action: actions.previous, actionList: {search: actions.search, offset: actions.offset, status: actions.status}, initiativeList: {search: initiatives.search, offset: initiatives.offset}, actionReturn: actions.returnToFocus,
     sourceOrigin, captureOrigin, actionOrigin,
+    selection: Object.fromEntries(['#title', '#body'].map(selector => { const node = $(selector); return [selector, [node.selectionStart, node.selectionEnd, node.selectionDirection]]; })),
     scroll: Object.fromEntries(['.collection', '#items', '#workspace-context', '#workspace-detail', '#reading', '#body', 'main'].map(selector => [selector, $(selector).scrollTop]))};
 }
 async function openSearchSource(result, origin, valid) {
@@ -142,12 +143,13 @@ async function openSearchSource(result, origin, valid) {
   const next = source.type === 'note' ? 'notes' : source.type === 'initiative' ? 'initiatives' : 'actions';
   if (!await navigate(next)) return false;
   const workspace = workspaceGeneration, page = pageGeneration;
-  const owns = () => workspace === workspaceGeneration && page === pageGeneration;
+  let request = noteLoadRequest;
+  const owns = () => workspace === workspaceGeneration && page === pageGeneration && request === noteLoadRequest;
   if (!owns()) return false;
   source = await globalSearch.service.source(result);
   if (!owns()) return false;
   if (source.type === 'note') {
-    if (!await load(source.path, {text: source.text}, ++noteLoadRequest, false) || !owns()) return false;
+    if (!await load(source.path, {text: source.text}, request = ++noteLoadRequest, false) || !owns()) return false;
     if (!readMode) $('#mode').click();
     $('#reading').innerHTML = renderMarkdown(source.text, {sourceLines: true});
     const query = globalSearch.input.value.trim();
@@ -191,9 +193,11 @@ async function restoreSearchInvocation(origin, valid) {
   if (['notes', 'favorites'].includes(origin.view)) { await libraryScreen.restoreContext(origin.browse); if (!owns()) return false; }
   if (origin.view === 'actions') { Object.assign(actions, origin.actionList); await actions.list(); if (!owns()) return false; }
   if (origin.view === 'initiatives') { Object.assign(initiatives, origin.initiativeList); await initiatives.list(); if (!owns()) return false; }
+  $('.app').className = origin.classes; initiatives.contextReturn = origin.contextReturn; initiatives.detailKind = origin.detailKind;
   $('#search').value = origin.search;
   sourceOrigin = origin.sourceOrigin; captureOrigin = origin.captureOrigin; actionOrigin = origin.actionOrigin;
   $('#capture-return').hidden = !captureOrigin; $('#workspace-return-action').hidden = !actionOrigin;
+  for (const [selector, selection] of Object.entries(origin.selection)) $(selector).setSelectionRange(...selection);
   for (const [selector, scroll] of Object.entries(origin.scroll)) $(selector).scrollTop = scroll;
   // A later explicit lookup captures its own owner after the restored navigation.
   globalSearch.invocation = {...origin, page: pageGeneration, request: noteLoadRequest};
