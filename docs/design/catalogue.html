@@ -51,3 +51,7 @@ task.body.append(form);
 task.footer.append(button('取消',()=>task.hide(),{density:'compact'}),button('创建',()=>task.hide(),{primary:true,density:'compact'}));
 section.append(button('打开多字段任务',()=>task.open(description))); document.body.append(section);
 </script>
+<section><h2>Compact notes search states (#58)</h2><p>The real consumer is the shared search modal. Single column, bounded scrollable results, selectable bordered copy range, explicit source context and optional attribution. These static fixtures do not claim retrieval.</p>
+<div class="ui-panel"><label class="ui-field">关键词<input value="延迟 latency" aria-label="关键词示例"></label><p role="status">索引正在更新；以下为已有结果</p><div class="search-results"><section class="search-result"><button class="ui-action search-select" aria-current="true">历史性能记录</button><p>笔记 · Archive/performance.md</p><pre class="search-passage" aria-label="复制范围示例">- 原始记录中的<mark>延迟</mark> latency
+| 指标 | 数值 |
+| p99 | 20 |</pre><button class="ui-action secondary">复制片段</button></section></div><label class="search-attribution"><input type="checkbox">附带来源</label><p>没有匹配的笔记</p><p>来源已改变或不可读取，请刷新重试</p><p>未能复制，请刷新重试或手动选择文字复制</p></div></section>

@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "global-search.js", "search-screen.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -132,6 +132,10 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
             root=url;observeRoot();UserDefaults.standard.set(url.path,forKey:"root");return [:]
         case "list", "metadata":
             return try referenceMetadata(root)
+        case "clipboardWrite":
+            NSPasteboard.general.clearContents()
+            guard NSPasteboard.general.setString(req["text"] as? String ?? "", forType: .string) else { throw failure("Clipboard write failed") }
+            return [:]
         case "read":return ["text":try String(contentsOf:resolved(path),encoding:.utf8)]
         case "create":
             let url=try resolved(path);guard !fm.fileExists(atPath:url.path) else{throw failure("目标文件已存在")}
@@ -167,7 +171,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
                 DispatchQueue.main.async { self.web.evaluateJavaScript("window.nativeReply(\(id),\(json))", completionHandler: nil) }
             }
         }
-        if req["cmd"] as? String == "choose" { worker.async { DispatchQueue.main.sync(execute: perform) } }
+        if req["cmd"] as? String == "choose" || req["cmd"] as? String == "clipboardWrite" { worker.async { DispatchQueue.main.sync(execute: perform) } }
         else { worker.async(execute: perform) }
     }
 }
