@@ -32,3 +32,37 @@ test('real isolated search index: bilingual grounding, boundaries, incremental r
     try { const workspace = await alternate.adapter('workspace'); await assert.rejects(fixture.adapter('referenceSearch', {workspaceId: workspace.workspaceId, search: 'latency'}), /Workspace/); } finally { await alternate.close(); }
   } finally { await fixture.close(); }
 });
+
+test('scoped real formal indexes: stored fields, typed identities, bounded pages and read-only refresh', async () => {
+  const {WorkspaceSearch} = await import('../web/global-search.js');
+  const {ActionRepository} = await import('../web/actions.js');
+  const {InitiativeRepository} = await import('../web/initiatives.js');
+  const fixture = await storageFixture(), second = await storageFixture();
+  try {
+    const actions = new ActionRepository(fixture.adapter), initiatives = new InitiativeRepository(fixture.adapter);
+    await actions.open(); await initiatives.open();
+    const initiative = (await initiatives.save({status:'active', description:'Stored initiative', title: 'latency 同名', goal: 'latency 目标', progress: 'latency 已记录进展'})).record;
+    const action = (await actions.save({description: 'latency 同名', waitingOn: 'latency 等待答复', initiativeId: initiative.entityId})).record;
+    await actions.save({description: 'unrelated', waitingOn: 'secret waiting'});
+    for (let i = 0; i < 24; i++) await actions.save({description: `latency ${i}`});
+    await mkdir(join(fixture.root, 'Archive'));
+    await writeFile(join(fixture.root, 'Archive/history.md'), '# latency 同名\n\nHistorical latency text\n- [ ] checkbox latency');
+    const service = new WorkspaceSearch(async (cmd, args) => cmd === 'read' ? {text: await readFile(join(fixture.root, args.path), 'utf8')} : fixture.adapter(cmd, args));
+    await service.open();
+    const start = fixture.calls.length; await service.sync();
+    const notes = await service.query('latency', 0, 'note'); assert.equal(notes.notes.length, 1); assert.equal(notes.notes[0].type, 'note');
+    const initiativePage = await service.query('latency', 0, 'initiative'); assert.equal(initiativePage.notes.length, 3); assert.ok(initiativePage.notes.every(r=>r.entityId === initiative.entityId));
+    const actionPage = await service.query('latency', 0, 'action'); assert.equal(actionPage.notes.length, 20); assert.equal(actionPage.hasMore, true);
+    const all = [...(await service.query('latency')).notes, ...(await service.query('latency', 20)).notes];
+    assert.equal(all.length, 30); assert.equal(new Set(all.map(r=>r.identity)).size, all.length);
+    assert.deepEqual(new Set(all.map(r=>r.type)), new Set(['note','action','initiative']));
+    for (const result of all.filter(r=>r.entityId === action.entityId || r.entityId === initiative.entityId)) {
+      const context = await service.context(result, 'latency'); assert.equal(context, result.passage); assert.ok(!context.includes('entityId'));
+    }
+    assert.ok(!fixture.calls.slice(start).some(c=>['actionWrite','save','create'].includes(c.cmd)));
+    await actions.save({...action, description: 'Changed'}, action);
+    await assert.rejects(service.context(all.find(r=>r.entityId===action.entityId), 'latency'), /changed/i);
+    const foreign = await second.adapter('workspace'); await assert.rejects(service.context({...notes.notes[0], workspaceId:foreign.workspaceId}, 'latency'), /Workspace/);
+    service.reset(); assert.equal(service.repositories, null);
+  } finally { await fixture.close(); await second.close(); }
+});

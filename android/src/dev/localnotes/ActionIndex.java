@@ -19,6 +19,8 @@ final class ActionIndex {
         values.put("description", record.getString("description")); values.put("record", record.toString());
         values.put("initiative", record.optString("initiativeId", ""));
         if (record.isNull("focusPosition")) values.putNull("focus"); else values.put("focus", record.getDouble("focusPosition"));
+        values.put("searchTitle", record.optString("title", record.optString("description", "")));
+        values.put("searchText", record.optString("description", "") + "\n" + record.optString("title", "") + "\n" + record.optString("goal", "") + "\n" + record.optString("progress", "") + "\n" + record.optString("waitingOn", ""));
         if (db.insertWithOnConflict("actions", null, values, SQLiteDatabase.CONFLICT_REPLACE) == -1) throw new IOException("Cannot update action index");
     }
     JSONObject run(JSONObject request) throws Exception {
@@ -30,15 +32,17 @@ final class ActionIndex {
         else if (!databaseFile.exists()) throw new IOException("INDEX_REBUILD_REQUIRED: Local action index is missing");
         try (SQLiteDatabase db = SQLiteDatabase.openOrCreateDatabase(databaseFile, null)) {
             db.execSQL("CREATE TABLE IF NOT EXISTS actions (id TEXT PRIMARY KEY, status TEXT NOT NULL, description TEXT NOT NULL, record TEXT NOT NULL)");
-            boolean hasFocus = false, hasInitiative = false;
+            boolean hasFocus = false, hasInitiative = false, hasSearch = false, hasTitle = false;
             try (Cursor columns = db.rawQuery("PRAGMA table_info(actions)", null)) {
-                while (columns.moveToNext()) { if (columns.getString(1).equals("focus")) hasFocus = true; if (columns.getString(1).equals("initiative")) hasInitiative = true; }
+                while (columns.moveToNext()) { if (columns.getString(1).equals("searchTitle")) hasTitle = true; if (columns.getString(1).equals("searchText")) hasSearch = true; if (columns.getString(1).equals("focus")) hasFocus = true; if (columns.getString(1).equals("initiative")) hasInitiative = true; }
             }
-            if (!hasFocus || !hasInitiative) {
+            if (!hasFocus || !hasInitiative || !hasSearch || !hasTitle) {
                 db.beginTransaction();
                 try {
                 if (!hasInitiative) db.execSQL("ALTER TABLE actions ADD COLUMN initiative TEXT NOT NULL DEFAULT ''");
                 if (!hasFocus) db.execSQL("ALTER TABLE actions ADD COLUMN focus REAL");
+                if (!hasTitle) db.execSQL("ALTER TABLE actions ADD COLUMN searchTitle TEXT NOT NULL DEFAULT ''");
+                if (!hasSearch) db.execSQL("ALTER TABLE actions ADD COLUMN searchText TEXT NOT NULL DEFAULT ''");
                 // Populate new query columns from existing confirmed records once.
                 JSONArray existing = new JSONArray();
                 try (Cursor rows = db.rawQuery("SELECT record FROM actions", null)) {
@@ -62,10 +66,15 @@ final class ActionIndex {
             String status = request.optString("status", ""); JSONArray actions = new JSONArray(); boolean hasMore;
             boolean focus = request.optBoolean("focus", false);
             String selection = focus ? " AND status IN ('todo','in-progress') AND focus IS NOT NULL" : "";
-            String order = request.optBoolean("lastFocus", false) ? "focus DESC, id DESC" : focus ? "focus, id" : "id";
+            boolean global = request.optBoolean("globalSearch", false);
+            String searchable = global ? "searchText" : "description";
+            String order = global ? "CASE WHEN instr(lower(searchTitle),lower(?))>0 THEN 0 ELSE 1 END, id" : request.optBoolean("lastFocus", false) ? "focus DESC, id DESC" : focus ? "focus, id" : "id";
             String initiative = request.optString("initiativeId", ""), entityId = request.optString("entityId", "");
-            try (Cursor cursor = db.rawQuery("SELECT record FROM actions WHERE (?='' OR status=?) AND instr(lower(description),lower(?))>0 AND (?='' OR initiative=?) AND (?='' OR id=?)" + selection + " ORDER BY " + order + " LIMIT ? OFFSET ?",
-                new String[]{status, status, request.optString("search", ""), initiative, initiative, entityId, entityId, Integer.toString(limit + 1), Integer.toString(offset)})) {
+            java.util.ArrayList<String> args = new java.util.ArrayList<>(java.util.Arrays.asList(status, status, request.optString("search", ""), initiative, initiative, entityId, entityId));
+            if (global) args.add(request.optString("search", ""));
+            args.add(Integer.toString(limit + 1)); args.add(Integer.toString(offset));
+            try (Cursor cursor = db.rawQuery("SELECT record FROM actions WHERE (?='' OR status=?) AND instr(lower(" + searchable + "),lower(?))>0 AND (?='' OR initiative=?) AND (?='' OR id=?)" + selection + " ORDER BY " + order + " LIMIT ? OFFSET ?",
+                args.toArray(new String[0]))) {
                 while (cursor.moveToNext() && actions.length() < limit) actions.put(new JSONObject(cursor.getString(0)));
                 hasMore = actions.length() == limit && !cursor.isAfterLast();
             }

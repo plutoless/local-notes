@@ -1,5 +1,6 @@
 import {referenceRecord, referenceSearchText} from './library.js';
-import {fingerprint} from './initiatives.js';
+import {fingerprint, InitiativeRepository} from './initiatives.js';
+import {ActionRepository} from './actions.js';
 import {safePath} from './core.js';
 
 // One workspace-aware boundary for indexed descriptors and validated source context.
@@ -57,5 +58,86 @@ export class NoteSearch {
     const start = Math.max(0, body.lastIndexOf('\n', Math.max(0, position - 300)) + 1);
     const end = body.indexOf('\n', position + Math.max(query.length, 600));
     return body.slice(start, end < 0 ? Math.min(body.length, position + 900) : end);
+  }
+}
+
+// The dialog knows descriptors, never the formal-record storage protocol.
+export class WorkspaceSearch extends NoteSearch {
+  reset() { super.reset(); this.repositories = null; this.entitiesRunning = null; this.entityErrors = false; }
+  async open() {
+    await super.open();
+    if (!this.repositories) {
+      const workspaceId = this.workspaceId;
+      // Pin every repository request to this workspace, including delayed reconciliation.
+      const adapter = (cmd, args = {}) => this.adapter(cmd, {workspaceId, ...args});
+      this.repositories = [new ActionRepository(adapter), new InitiativeRepository(adapter)];
+      for (const repository of this.repositories) { repository.workspaceId = workspaceId; repository.ready = true; }
+    }
+  }
+  sync() {
+    const notes = super.sync();
+    if (!this.entitiesRunning && this.repositories) {
+      const generation = this.generation;
+      const operation = Promise.allSettled(this.repositories.map(repository => repository.serialize(() => repository.recover({readOnly: true}))));
+      this.entitiesRunning = operation;
+      operation.then(results => {
+        if (generation !== this.generation) return;
+        this.entityErrors = results.some(result => result.status === 'rejected' || result.value.warnings.length);
+        this.entitiesRunning = null; this.changed();
+      });
+    }
+    return Promise.all([notes, this.entitiesRunning]);
+  }
+  async query(search, offset = 0, scope = 'all') {
+    if (!['all', 'note', 'initiative', 'action'].includes(scope)) throw Error('Unsupported search scope');
+    const generation = this.generation, workspaceId = this.workspaceId;
+    const types = scope === 'all' ? ['note', 'initiative', 'action'] : [scope];
+    const pages = await Promise.allSettled(types.map(async type => {
+      const found = [];
+      // Merge only the bounded prefixes needed for this page, not the entire collection.
+      for (let position = 0; found.length < offset + 21; position += 50) {
+        const page = type === 'note'
+          ? await this.adapter('referenceSearch', {workspaceId, search, offset: position, limit: 50})
+          : await this.adapter('actionQuery', {workspaceId, entityType: type, globalSearch: true, search, offset: position, limit: 50});
+        for (const source of type === 'note' ? page.notes : page.actions) {
+          if (type !== 'note' && (source.deleted || source.syncState || source.workspaceId !== workspaceId)) continue;
+          const title = type === 'note' ? source.title : type === 'initiative' ? source.title : source.description;
+          const fields = type === 'note' ? [['body', source.passage]] : type === 'initiative' ? [['title', source.title], ['goal', source.goal], ['progress', source.progress]] : [['description', source.description], ['waitingOn', source.waitingOn]];
+          const matches = fields.filter(([, text]) => text?.toLowerCase().includes(search.toLowerCase()));
+          // A title match still needs a visible, grounded excerpt.
+          if (!matches.length && type === 'note') matches.push(fields[0]);
+          const seen = new Set();
+          for (const [passageId, passage] of matches) {
+            if (seen.has(passage)) continue; seen.add(passage);
+            const entityId = type === 'note' ? source.path : source.entityId;
+            const position = Math.max(0, passage.toLowerCase().indexOf(search.toLowerCase()) - 180);
+            const excerpt = passage.slice(position, position + 900);
+            found.push({...source, title, type, entityId, workspaceId, passageId, passage: excerpt,
+              contextLabel: {body: source.path, title: '标题', goal: '目标', progress: '进展', description: '正文', waitingOn: '等待条件'}[passageId],
+              identity: JSON.stringify([workspaceId, type, entityId, passageId]),
+              locator: type === 'note' ? source.path : `${type === 'initiative' ? '事项' : '行动'}：${title}`});
+          }
+        }
+        if (!page.hasMore) break;
+      }
+      return found;
+    }));
+    if (generation !== this.generation) throw Error('Workspace changed');
+    const results = pages.flatMap(page => page.status === 'fulfilled' ? page.value : []);
+    const partial = (scope !== 'note' && this.entityErrors) || pages.some(page => page.status === 'rejected');
+    if (pages.every(page => page.status === 'rejected')) throw Error('Search unavailable');
+    results.sort((a, b) => Number(!a.title.toLowerCase().includes(search.toLowerCase())) - Number(!b.title.toLowerCase().includes(search.toLowerCase())) || a.identity.localeCompare(b.identity));
+    return {notes: results.slice(offset, offset + 20), hasMore: results.length > offset + 20, partial};
+  }
+  async context(result, query) {
+    if (result.workspaceId !== this.workspaceId) throw Error('Workspace changed');
+    if (result.type === 'note') return super.context(result, query);
+    const repository = this.repositories.find(repository => repository.entityType === result.type);
+    await repository.serialize(() => repository.recover({readOnly: true}));
+    const page = await repository.request('actionQuery', {entityId: result.entityId, limit: 1});
+    const current = page.actions[0];
+    if (!current || current.deleted || current.syncState || current.revision !== result.revision) throw Error('Source changed');
+    // Original stored field only: no JSON wrappers, lifecycle labels or hidden fields.
+    return current[result.passageId];
   }
 }

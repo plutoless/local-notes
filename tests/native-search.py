@@ -5,7 +5,7 @@ sys.dont_write_bytecode = True
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-m.OUT = Path('build/issue58-native').resolve(); m.APP = m.OUT/'Search58.app'
+m.OUT = Path(os.environ.get('SEARCH_NATIVE_OUT', 'build/issue58-native')).resolve(); m.APP = m.OUT/'Search58.app'
 m.OUT.mkdir(parents=True, exist_ok=True)
 for name in ['Sync','Private']: (m.OUT/name).mkdir(exist_ok=True)
 original = '# Native search 中文\n\n- latency 延迟 alpha\n| metric | value |\n| p99 | 20 |\n[link](https://example.com)'
@@ -45,6 +45,18 @@ try:
  log.append({'manualNativeSelectionCopy':True})
  c("document.querySelector('.search-attribution input').click();document.querySelector('#global-search-input').focus()")
  key(36,' using command down');time.sleep(.3);assert subprocess.check_output(['pbpaste']).decode().endswith('Native search 中文\nsource.md')
+ c("document.querySelector('.search-attribution input').checked=false")
+ c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();await a.save({description:'latency native action',waitingOn:'latency waiting'});await i.save({status:'active', description:'Stored initiative', title:'latency native initiative',goal:'latency native goal',progress:'latency native progress'})")
+ c("[...document.querySelectorAll('#global-search button')].find(n=>n.textContent==='刷新索引').click()")
+ w("document.querySelectorAll('.search-result').length===6 && document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+ for scope,count in [('note',1),('initiative',3),('action',2),('all',6)]:
+  c(f"document.querySelector('[data-scope={scope}]').focus()")
+  key(36)
+  w(f"document.querySelectorAll('.search-result').length==={count} && document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+  c("document.querySelector('#global-search-input').focus()")
+  key(36);time.sleep(.2);key(36,' using command down')
+  w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
+  assert subprocess.check_output(['pbpaste']).decode()==c("return document.querySelector('.search-select[aria-current=true]').parentElement.querySelector('pre').textContent")
  c("[...document.querySelectorAll('#global-search button')].at(-1).focus()")
  key(48);w("document.activeElement.id==='global-search-input'")
  key(48,' using shift down');w("document.activeElement===[...document.querySelectorAll('#global-search button')].at(-1)")

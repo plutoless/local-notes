@@ -448,3 +448,6 @@ details { overflow-wrap: anywhere; }
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid var(--divider); border-radius: var(--radius-panel); color: var(--text); background: var(--surface); box-shadow: var(--shadow-panel); }
 .task-leave-decision::backdrop { background: #18233455; }
 .task-leave-decision .ui-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+
+.search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); }
+.search-scopes [aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
