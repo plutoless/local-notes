@@ -54,7 +54,7 @@ export class NoteSearch {
     const {text} = await this.call('read', {path: note.path});
     if (fingerprint(text) !== note.fingerprint) throw Error('来源已改变，请刷新搜索结果');
     const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
-    const position = Math.max(0, body.toLowerCase().indexOf(query.toLowerCase()));
+    const position = note.passageStart ? Array.from(body).slice(0, note.passageStart - 1).join('').length : Math.max(0, body.toLowerCase().indexOf(query.toLowerCase()));
     const start = Math.max(0, body.lastIndexOf('\n', Math.max(0, position - 300)) + 1);
     const end = body.indexOf('\n', position + Math.max(query.length, 600));
     return body.slice(start, end < 0 ? Math.min(body.length, position + 900) : end);
@@ -102,7 +102,7 @@ export class WorkspaceSearch extends NoteSearch {
         for (const source of type === 'note' ? page.notes : page.actions) {
           if (type !== 'note' && (source.deleted || source.syncState || source.workspaceId !== workspaceId)) continue;
           const title = type === 'note' ? source.title : type === 'initiative' ? source.title : source.description;
-          const fields = type === 'note' ? [['body', source.passage]] : type === 'initiative' ? [['title', source.title], ['goal', source.goal], ['progress', source.progress]] : [['description', source.description], ['waitingOn', source.waitingOn]];
+          const fields = type === 'note' ? [[`body:${source.passageStart}`, source.passage]] : type === 'initiative' ? [['title', source.title], ['goal', source.goal], ['progress', source.progress]] : [['description', source.description], ['waitingOn', source.waitingOn]];
           const matches = fields.filter(([, text]) => text?.toLowerCase().includes(search.toLowerCase()));
           // A title match still needs a visible, grounded excerpt.
           if (!matches.length && type === 'note') matches.push(fields[0]);
@@ -110,12 +110,12 @@ export class WorkspaceSearch extends NoteSearch {
           for (const [passageId, passage] of matches) {
             if (seen.has(passage)) continue; seen.add(passage);
             const entityId = type === 'note' ? source.path : source.entityId;
-            const position = Math.max(0, passage.toLowerCase().indexOf(search.toLowerCase()) - 180);
+            const position = type === 'note' ? 0 : Math.max(0, passage.toLowerCase().indexOf(search.toLowerCase()) - 180);
             const excerpt = passage.slice(position, position + 900);
             found.push({...source, title, type, entityId, workspaceId, passageId, passage: excerpt,
-              contextLabel: {body: source.path, title: '标题', goal: '目标', progress: '进展', description: '正文', waitingOn: '等待条件'}[passageId],
+              contextLabel: type === 'note' ? `${source.path} · ${source.passageStart}` : {title: '标题', goal: '目标', progress: '进展', description: '正文', waitingOn: '等待条件'}[passageId] + ` · ${source.modifiedAt} · ${source.entityId.slice(0, 8)}`,
               identity: JSON.stringify([workspaceId, type, entityId, passageId]),
-              locator: type === 'note' ? source.path : `${type === 'initiative' ? '事项' : '行动'}：${title}`});
+              locator: type === 'note' ? source.path : `${type === 'initiative' ? '事项' : '行动'}：${title} · ${source.entityId.slice(0, 8)}`});
           }
         }
         if (!page.hasMore) break;
@@ -126,7 +126,13 @@ export class WorkspaceSearch extends NoteSearch {
     const results = pages.flatMap(page => page.status === 'fulfilled' ? page.value : []);
     const partial = (scope !== 'note' && this.entityErrors) || pages.some(page => page.status === 'rejected');
     if (pages.every(page => page.status === 'rejected')) throw Error('Search unavailable');
-    results.sort((a, b) => Number(!a.title.toLowerCase().includes(search.toLowerCase())) - Number(!b.title.toLowerCase().includes(search.toLowerCase())) || a.identity.localeCompare(b.identity));
+    // Match SQLite BINARY ordering when extending each bounded source prefix.
+    const binary = (a, b) => {
+      const left = Array.from(a, char => char.codePointAt(0)), right = Array.from(b, char => char.codePointAt(0));
+      for (let i = 0; i < Math.min(left.length, right.length); i++) if (left[i] !== right[i]) return left[i] - right[i];
+      return left.length - right.length;
+    };
+    results.sort((a, b) => Number(!a.title.toLowerCase().includes(search.toLowerCase())) - Number(!b.title.toLowerCase().includes(search.toLowerCase())) || binary(a.type, b.type) || binary(a.entityId, b.entityId) || (a.type === 'note' ? a.passageStart - b.passageStart : binary(a.passageId, b.passageId)));
     return {notes: results.slice(offset, offset + 20), hasMore: results.length > offset + 20, partial};
   }
   async context(result, query) {
@@ -138,6 +144,6 @@ export class WorkspaceSearch extends NoteSearch {
     const current = page.actions[0];
     if (!current || current.deleted || current.syncState || current.revision !== result.revision) throw Error('Source changed');
     // Original stored field only: no JSON wrappers, lifecycle labels or hidden fields.
-    return current[result.passageId];
+    return (result.type === 'initiative' ? [current.title, current.goal, current.progress] : [current.description, current.waitingOn]).filter(text => text?.trim()).join('\n\n');
   }
 }
