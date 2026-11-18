@@ -105,6 +105,7 @@ test('source-faithful summaries survive cached upgrade and index rebuild without
 
 test('summary cleanup preserves literal operators and code syntax', async () => {
   const {referenceRecord} = await import('../web/library.js');
+  assert.equal(referenceRecord({path:'code-first.md'}, '```sh\n# Back up the source before deleting it\nrm source.md\n```').excerpt, '# Back up the source before deleting it rm source.md');
   const source = '# Calculation\n\n2*3*4 = 24; prefix__identifier__suffix\nUse `a*b*c` and `__init__`.\n```js\nconst value = a*b*c; // **literal**\n```\n**Useful** prose';
   assert.equal(referenceRecord({path:'code.md'}, source).excerpt, '2*3*4 = 24; prefix__identifier__suffix Use a*b*c and __init__. const value = a*b*c; // **literal** Useful prose');
 });
