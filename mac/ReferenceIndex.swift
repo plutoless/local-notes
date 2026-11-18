@@ -39,6 +39,11 @@ final class ReferenceIndex {
             let limit = min(100, max(1, request["limit"] as? Int ?? 50))
             values += [String(limit + 1), String(max(0, request["offset"] as? Int ?? 0))]
         }
+        if command == "referenceSearch" {
+            sql = "WITH RECURSIVE sources AS (SELECT path,record,substr(search,instr(search,char(10))+1) AS body, CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END AS rank FROM notes WHERE instr(lower(search),lower(?))>0 AND (instr(record, '\"searchVersion\":1,')>0 OR instr(record, '\"searchVersion\":1}')>0)), passages(path,record,body,rank,start) AS (SELECT path,record,body,rank,max(1,instr(lower(body),lower(?))-180) FROM sources UNION ALL SELECT path,record,body,rank,start+899+instr(lower(substr(body,start+900)),lower(?)) FROM passages WHERE instr(lower(substr(body,start+900)),lower(?))>0) SELECT record,substr(body,start,900),start FROM passages ORDER BY rank,path,start LIMIT ? OFFSET ?"
+            let term = request["search"] as? String ?? ""
+            values = Array(repeating: term, count: 5) + [String(min(100, max(1, request["limit"] as? Int ?? 50)) + 1), String(max(0, request["offset"] as? Int ?? 0))]
+        }
         var pointerStatement: OpaquePointer?
         guard sqlite3_prepare_v2(db, sql, -1, &pointerStatement, nil) == SQLITE_OK, let stmt = pointerStatement else { throw failure("Cannot prepare reference query") }
         defer { sqlite3_finalize(stmt) }
@@ -46,7 +51,7 @@ final class ReferenceIndex {
         var rows = [[String: Any]](); var step = sqlite3_step(stmt)
         while step == SQLITE_ROW {
             var record = try JSONSerialization.jsonObject(with: Data(String(cString: sqlite3_column_text(stmt, 0)).utf8)) as! [String: Any]
-            if command == "referenceSearch" { record["passage"] = String(cString: sqlite3_column_text(stmt, 1)) }
+            if command == "referenceSearch" { record["passage"] = String(cString: sqlite3_column_text(stmt, 1)); record["passageStart"] = Int(sqlite3_column_int(stmt, 2)) }
             rows.append(record); step = sqlite3_step(stmt)
         }
         guard step == SQLITE_DONE else { throw failure("Reference index operation failed") }

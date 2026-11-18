@@ -37,11 +37,16 @@ final class ReferenceIndex {
                 if (global) { sql += " ORDER BY CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"; args.add(r.optString("search")); }
                 else sql += " ORDER BY path LIMIT ? OFFSET ?";
                 Collections.addAll(args, String.valueOf(limit + 1), String.valueOf(Math.max(0, r.optInt("offset"))));
+                if (global) {
+                    sql = "WITH RECURSIVE sources AS (SELECT path,record,substr(search,instr(search,char(10))+1) AS body, CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END AS rank FROM notes WHERE instr(lower(search),lower(?))>0 AND (instr(record, '\"searchVersion\":1,')>0 OR instr(record, '\"searchVersion\":1}')>0)), passages(path,record,body,rank,start) AS (SELECT path,record,body,rank,max(1,instr(lower(body),lower(?))-180) FROM sources UNION ALL SELECT path,record,body,rank,start+899+instr(lower(substr(body,start+900)),lower(?)) FROM passages WHERE instr(lower(substr(body,start+900)),lower(?))>0) SELECT record,substr(body,start,900),start FROM passages ORDER BY rank,path,start LIMIT ? OFFSET ?";
+                    args.clear(); for (int i=0;i<5;i++) args.add(r.optString("search"));
+                    Collections.addAll(args, String.valueOf(limit+1), String.valueOf(Math.max(0,r.optInt("offset"))));
+                }
                 JSONArray notes = new JSONArray(); boolean more;
                 try (Cursor cursor = db.rawQuery(sql, args.toArray(new String[0]))) {
                     while (cursor.moveToNext() && notes.length() < limit) {
                         JSONObject record = new JSONObject(cursor.getString(0));
-                        if (global) record.put("passage", cursor.getString(1));
+                        if (global) record.put("passage", cursor.getString(1)).put("passageStart", cursor.getInt(2));
                         notes.put(record);
                     }
                     more = !cursor.isAfterLast();

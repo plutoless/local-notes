@@ -56,7 +56,7 @@ export class ActionRepository {
     this.ready = true;
     return {...workspace, ...recovery};
   }
-  async recover() {
+  async recover({readOnly = false} = {}) {
     this.progress?.('Reading confirmed revisions…');
     const result = await this.request('actionFiles', {known: this.fileStamps || {}});
     const fileWarnings = result.warnings || [];
@@ -91,7 +91,7 @@ export class ActionRepository {
         const history = revisions.get(record.entityId) || new Map();
         if (history.has(record.revision) && JSON.stringify(history.get(record.revision)) !== JSON.stringify(record)) throw Error('Revision identity has incompatible content');
         // Preserve a current file or Syncthing conflict copy before any repair can replace it.
-        if (path !== revisionPath && !Object.hasOwn(files, revisionPath)) await this.request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
+        if (!readOnly && path !== revisionPath && !Object.hasOwn(files, revisionPath)) await this.request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
         history.set(record.revision, record);
         revisions.set(record.entityId, history);
         if (path === `${this.collection}/${record.entityId}.json`) currents.set(record.entityId, record);
@@ -108,7 +108,7 @@ export class ActionRepository {
         continue;
       }
       const record = state.tips[0];
-      if (!damaged.has(`${this.collection}/${id}.json`) && (currents.get(id)?.revision !== record.revision || JSON.stringify(currents.get(id)) !== JSON.stringify(record))) {
+      if (!readOnly && !damaged.has(`${this.collection}/${id}.json`) && (currents.get(id)?.revision !== record.revision || JSON.stringify(currents.get(id)) !== JSON.stringify(record))) {
         await this.request('actionWrite', {path: `${this.collection}/${id}.json`, text: JSON.stringify(record)});
       }
       records.push(record);
