@@ -17,7 +17,7 @@ function referenceBody(text) {
 }
 function referenceExcerpt(body) {
   let fence = null;
-  const lines = body.replace(/^# .+\r?\n?/m, '').split(/\r?\n/).map(line => {
+  const lines = body.replace(/^# .+\r?\n?/, '').split(/\r?\n/).map(line => {
     const marker = line.match(/^\s*(`{3,}|~{3,})/);
     if (marker && (!fence || (marker[1][0] === fence[0] && marker[1].length >= fence.length))) {
       fence = fence ? null : marker[1]; return '';
