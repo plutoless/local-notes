@@ -2,6 +2,8 @@ import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
+import {ActionRepository} from '../web/actions.js';
+import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {})});
@@ -11,6 +13,10 @@ try {
   const original = '# 重复标题\n\n- latency 延迟 alpha\n| 指标 | 数值 |\n| p99 | 20 |\n[链接](https://example.com)';
   await writeFile(join(fixture.root, 'a.md'), original);
   await writeFile(join(fixture.root, 'Archive/a.md'), original);
+  const actions = new ActionRepository(fixture.adapter), initiatives = new InitiativeRepository(fixture.adapter);
+  await actions.open(); await initiatives.open();
+  await actions.save({description:'latency 行动', waitingOn:'latency 等待答复'});
+  await initiatives.save({status:'active', description:'Stored initiative', title:'latency 事项', goal:'latency 目标', progress:'latency 进展'});
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const errors = []; page.on('pageerror', e => errors.push(e.message));
   await page.exposeFunction('bridge', async r => {
@@ -28,6 +34,8 @@ try {
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   let releaseWorkspace; workspaceDelay = new Promise(resolve=>releaseWorkspace=resolve);
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
+  assert.equal(await page.locator('[data-scope=all]').getAttribute('aria-pressed'), 'true');
+  await page.locator('[data-scope=note]').click();
   const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
   // Deterministic event-order regression; actual IME evidence is native-search-ime.py.
@@ -63,7 +71,23 @@ try {
   assert.equal(await page.locator('#global-search').evaluate(n=>n.getBoundingClientRect().width <= innerWidth),true);
   await page.locator('#global-search button').last().focus(); await page.keyboard.press('Tab'); assert.equal(await input.evaluate(n=>n===document.activeElement),true); await page.keyboard.press('Shift+Tab'); assert.equal(await page.locator('#global-search button').last().evaluate(n=>n===document.activeElement),true);
   await mkdir('build/issue58', {recursive:true}); await page.screenshot({path:'build/issue58/narrow.png'});
+  await page.locator('[data-scope=note]').click();
   failQuery = true; await input.fill('alpha'); await page.getByText('搜索失败，请刷新重试',{exact:true}).waitFor(); failQuery = false; await input.fill('latency'); await page.locator('.search-result').first().waitFor();
   let release; delay = new Promise(resolve=>release=resolve); await input.fill('alpha'); await page.keyboard.press('Escape'); release(); delay = null; await page.waitForTimeout(150); assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);
+  await page.keyboard.press('Meta+k'); await input.fill('latency');
+  await page.locator('.search-attribution input').uncheck();
+  for (const [scope, count, type] of [['all',7,null], ['initiative',3,'事项'], ['action',2,'行动'], ['note',2,'笔记']]) {
+    await page.locator(`[data-scope=${scope}]`).click();
+    await page.waitForFunction(count => document.querySelectorAll('.search-result').length === count && document.querySelector('#global-search [role=status]').textContent.startsWith('本页'), count);
+    if (type) assert.ok((await page.locator('.search-result p').allTextContents()).every(text=>text.startsWith(type)));
+    await input.focus(); await page.keyboard.press('Enter'); await page.keyboard.press('Meta+Enter'); await page.getByText('已复制片段',{exact:true}).waitFor();
+    const selected = page.locator('.search-select[aria-current=true]').locator('..').locator('pre'); assert.equal(clipboard, await selected.textContent());
+  }
+  let releaseScope; delay = new Promise(resolve=>releaseScope=resolve);
+  await input.fill('alpha'); await page.locator('[data-scope=action]').click();
+  await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent === '没有匹配的内容');
+  releaseScope(); delay = null; await page.waitForTimeout(100); assert.equal(await page.locator('.search-result').count(),0);
+  await input.fill('latency'); await page.locator('.search-result').first().waitFor(); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k');
+  assert.equal(await input.inputValue(),'latency'); assert.equal(await page.locator('[data-scope=action]').getAttribute('aria-pressed'),'true');
   assert.deepEqual(errors, []); console.log('PASS: real UI/bridge/Swift SQLite search, grounding/copy, optional attribution/failure, pages, repeated shortcut, dismissal fencing, narrow focus cycle.');
 } finally { await browser.close(); await fixture.close(); }
