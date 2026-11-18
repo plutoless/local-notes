@@ -20,7 +20,7 @@ Lookup owns an incremental indexing loop separate from Library topic recovery so
 - `npm run build:mac` passed. `npm run build:android` passed; this is build evidence only.
 - `python3 tests/native-search.py` passed on the native app: OS-delivered Command+K and repeated invocation, Escape/opener restoration, Enter expansion, Command+Enter, forward/backward Tab wrapping, 393px layout, default/attributed clipboard readback through `pbpaste`, and native Command+C of manually selected source text. The probe seeds 373 synthetic notes, opens/closes/reopens during initial indexing and preserves the underlying page. These are actual OS shortcuts, not DOM-dispatched keyboard events.
 
-The original native test selects text through a DOM Range before sending native Command+C. It does not establish physical mouse-drag selection. Actual WeType IME and native text-editing shortcuts are now covered by the scoped [IME recovery](ime-recovery.md), which supersedes the earlier real-IME limitation. Search controls remain normal native text inputs and selectable text surfaces; no claim of executed IME coverage is made.
+The original native test selects text through a DOM Range before sending native Command+C. It does not establish physical mouse-drag selection. Actual WeType IME and native text-editing shortcuts are now covered by the scoped [IME recovery](ime-recovery.md), which supersedes the earlier real-IME limitation. Search controls remain normal native text inputs and selectable text surfaces; the recovery evidence covers the installed WeType IME specifically.
 
 ## Controlled corpus timing
 
