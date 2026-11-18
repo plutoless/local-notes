@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Real isolated Cocoa/WKWebView search with OS keyboard and clipboard readback."""
-import hashlib, importlib.util, json, os, shutil, subprocess, time
+import hashlib, importlib.util, json, os, shutil, subprocess, time, sys
+sys.dont_write_bytecode = True
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
