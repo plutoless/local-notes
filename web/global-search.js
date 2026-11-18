@@ -5,8 +5,19 @@ import {safePath} from './core.js';
 // One workspace-aware boundary for indexed descriptors and validated source context.
 export class NoteSearch {
   constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; }
-  reset() { this.generation++; this.workspaceId = null; this.running = null; this.again = false; }
-  async open() { const generation = this.generation; const workspace = await this.adapter('workspace'); if (generation !== this.generation) throw Error('Workspace changed'); if (workspace.workspaceId !== this.workspaceId) { this.reset(); this.workspaceId = workspace.workspaceId; } }
+  reset() { this.generation++; this.workspaceId = null; this.running = null; this.again = false; this.opening = null; }
+  open() {
+    if (this.opening) return this.opening;
+    const generation = this.generation;
+    const operation = (async () => {
+      const workspace = await this.adapter('workspace');
+      if (generation !== this.generation) throw Error('Workspace changed');
+      if (workspace.workspaceId !== this.workspaceId) { this.reset(); this.workspaceId = workspace.workspaceId; }
+    })();
+    this.opening = operation;
+    operation.finally(() => { if (this.opening === operation) this.opening = null; }).catch(() => {});
+    return operation;
+  }
   call(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   sync() {
     if (this.running) { this.again = true; return this.running; }
