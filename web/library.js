@@ -12,7 +12,7 @@ export class TopicRepository extends ActionRepository {
   }
 }
 // Strip only a complete leading frontmatter block; malformed/plain text stays source text.
-function referenceBody(text) {
+export function referenceBody(text) {
   return text.replace(/^\uFEFF?---[^\S\r\n]*\r?\n(?:[\s\S]*?\r?\n)?(?:---|\.\.\.)[^\S\r\n]*(?:\r?\n|$)/, '');
 }
 function referenceExcerpt(body) {
