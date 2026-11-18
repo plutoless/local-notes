@@ -1,6 +1,6 @@
 # Scoped native IME Escape recovery
 
-Recovery starts at `2c2cd22ee29634f710281352c568bcab7c2ec1a5`, preserving existing PR62. Fetched origin/main remains `ed3ae2617b3b705fa3b01f6ce4cc5b3608049320`; no base merge was needed. This recovery changes only search's composition-aware Escape ownership and its regression/evidence material.
+Recovery starts at `2c2cd22ee29634f710281352c568bcab7c2ec1a5`, preserving existing PR62. Initial origin/main was `ed3ae2617b3b705fa3b01f6ce4cc5b3608049320`. After PR56 merged, coordinator requested integration of `245c978ae6f06d3357380066e35ba61628db5fbd`; it is merged without rewriting feature-branch history. Shared asset allowlists, validation scripts and shell integration retain both changes, including the delivered task-leave lifecycle. This recovery changes only search's composition-aware Escape ownership and its regression/evidence material.
 
 ## Reproduced defect and correction
 
