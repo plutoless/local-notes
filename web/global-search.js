@@ -36,7 +36,7 @@ export class NoteSearch {
   }
   async query(search, offset = 0) {
     const page = await this.call('referenceSearch', {search, offset, limit: 20});
-    return {...page, notes: page.notes.map(note => ({...note, passage: cleanPassage(note.passage)}))};
+    return page;
   }
   async context(note, query) {
     const {text} = await this.call('read', {path: note.path});
@@ -48,4 +48,3 @@ export class NoteSearch {
     return body.slice(start, end < 0 ? Math.min(body.length, position + 900) : end);
   }
 }
-function cleanPassage(text) { return text.replace(/^([^\n]*)\n(?=---\r?\n)/, '').replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, ''); }

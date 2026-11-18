@@ -58,7 +58,7 @@ export class SearchScreen {
       this.results.replaceChildren(); this.rows = page.notes.map(note => { const row = this.row(note, query); const old = previous.find(item => item.note.path === note.path && item.note.fingerprint === note.fingerprint && item.query === query); if (old) { row.text = old.text; this.highlight(row.passage, row.text, query); } return row; });
       this.previous.disabled = this.offset === 0; this.next.disabled = !page.hasMore;
       const selected = this.rows.find(row => row.note.path === this.selected) || this.rows[0]; if (selected) this.select(selected, false);
-      if (focusedRow && focusedButton >= 0) this.rows.find(row => row.note.path === focusedRow.note.path)?.node.querySelectorAll('button')[focusedButton]?.focus({preventScroll: true});
+      if (focusedRow && focusedButton >= 0) (this.rows.find(row => row.note.path === focusedRow.note.path)?.node.querySelectorAll('button')[focusedButton] || this.input).focus({preventScroll: true});
       this.results.scrollTop = scroll;
       this.status.textContent = this.service.error ? '索引未完整更新，请刷新重试；以下为缓存结果' : this.service.indexing ? '索引正在更新；以下为已有结果' : this.rows.length ? `本页 ${this.rows.length} 条笔记` : '没有匹配的笔记';
     } catch { if (token === this.sequence && this.panel.open) this.status.textContent = '搜索失败，请刷新重试'; }
