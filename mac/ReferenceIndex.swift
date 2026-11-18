@@ -15,8 +15,8 @@ final class ReferenceIndex {
         let command = request["cmd"] as? String ?? ""
         var values = [String](); var sql = ""
         if command == "referencePut", let record = request["record"] as? [String: Any] {
-            sql = "INSERT INTO notes VALUES(?,?,?,?,?) ON CONFLICT(path) DO UPDATE SET search=excluded.search, directory=excluded.directory, record=excluded.record"
-            values = [record["path"] as? String ?? "", request["search"] as? String ?? "", "", record["directory"] as? String ?? "", String(data: try JSONSerialization.data(withJSONObject: record), encoding: .utf8)!]
+            sql = "INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)"
+            values = [record["path"] as? String ?? "", request["search"] as? String ?? "", record["path"] as? String ?? "", record["directory"] as? String ?? "", String(data: try JSONSerialization.data(withJSONObject: record), encoding: .utf8)!]
         } else if command == "referenceRemove" { sql = "DELETE FROM notes WHERE path=?"; values = [request["path"] as? String ?? ""]
         } else if command == "referenceTags" { sql = "UPDATE notes SET topics=? WHERE path=?"; values = [request["topics"] as? String ?? "", request["path"] as? String ?? ""]
         } else {

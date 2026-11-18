@@ -17,7 +17,7 @@ final class ReferenceIndex {
             String command = r.getString("cmd");
             if (command.equals("referencePut")) {
                 JSONObject record = r.getJSONObject("record");
-                db.execSQL("INSERT INTO notes VALUES(?,?,?,?,?) ON CONFLICT(path) DO UPDATE SET search=excluded.search, directory=excluded.directory, record=excluded.record", new Object[]{record.getString("path"), r.optString("search"), "", record.optString("directory"), record.toString()});
+                db.execSQL("INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)", new Object[]{record.getString("path"), r.optString("search"), record.getString("path"), record.optString("directory"), record.toString()});
             } else if (command.equals("referenceRemove")) db.execSQL("DELETE FROM notes WHERE path=?", new Object[]{r.getString("path")});
             else if (command.equals("referenceTags")) db.execSQL("UPDATE notes SET topics=? WHERE path=?", new Object[]{r.optString("topics"), r.getString("path")});
             else {
