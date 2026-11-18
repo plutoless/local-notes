@@ -2,7 +2,7 @@
 
 Starting base: `ed3ae2617b3b705fa3b01f6ce4cc5b3608049320` (clean isolated Orca branch, also `origin/main` at start). GitHub native `blocked_by` was empty and the issue's textual blocker section was “None”. Parent #57 is the umbrella; #55/#59/#60/#61 were not implemented.
 
-Reviewed implementation head: `258a66480921fd26c1e566a720250ee3ddd6c842`. The subsequent evidence commit changes documentation only. Native evidence includes the executing head and SHA-256 hashes of shipped frontend assets, copied into an isolated Cocoa/WKWebView bundle from the built application. The probe adds only a test command/snapshot channel; production bridge, storage and SQLite code execute unchanged against synthetic files and private indexes.
+Reviewed implementation head: `9e696cba225e62ad8844a5e8195364627efde492`. The subsequent evidence commit changes documentation only. Native evidence includes the executing head and SHA-256 hashes of shipped frontend assets, copied into an isolated Cocoa/WKWebView bundle from the built application. The probe adds only a test command/snapshot channel; production bridge, storage and SQLite code execute unchanged against synthetic files and private indexes.
 
 ## Delivered behavior
 
@@ -26,7 +26,7 @@ The native test selects text through a DOM Range before sending native Command+C
 
 `SEARCH_CORPUS_NOTES=372 REVIEW_HEAD=<implementation-head> node tests/search-benchmark.mjs` creates 373 real isolated Markdown files (including the common fixture), matching the note count disclosed in parent #57. The 372 generated files total 1,761,420 bytes, plus the shared reference fixture. No private notes were read or published. This size-controlled corpus is less diverse than the private corpus and is not a claim of identical content distribution.
 
-On Apple M4 / 16 GiB macOS, a fresh private SQLite index took 931.82 ms with 373 body reads. Warm reconciliation took 448.00 ms with zero body reads. Six bounded cached queries took 5.15, 4.66, 4.45, 4.42, 4.19 and 3.99 ms. The event loop continued ticking during cold indexing (91 ticks, maximum 11.12 ms interval). These observations establish no latency guarantee. Native open/close during indexing and cached bounded results are verified separately from this process-level timing.
+On Apple M4 / 16 GiB macOS, a fresh private SQLite index took 1006.24 ms with 373 body reads. Warm reconciliation took 453.45 ms with zero body reads. Six bounded cached queries took 7.11, 5.68, 5.27, 4.81, 11.59 and 15.52 ms. The event loop continued ticking during cold indexing (99 ticks, maximum 11.06 ms interval). These observations establish no latency guarantee. Native open/close during indexing and cached bounded results are verified separately from this process-level timing.
 
 ## Independent reviews
 
