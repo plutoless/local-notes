@@ -62,3 +62,51 @@ test('production Mac traversal excludes protected ranges and returns only metada
     await rm(fixture.root, {recursive: true}); await assert.rejects(fixture.adapter('metadata'), /unavailable/);
   } finally { await fixture.close(); }
 });
+
+test('source-faithful summaries survive cached upgrade and index rebuild without source writes', async () => {
+  const {referenceRecord} = await import('../web/library.js');
+  const cases = [
+    ['one/repeated.md', '---\ntitle: Hidden metadata\ntags: [private]\n---\n# Repeated\n\n- [ ] **Useful** [source](local.md) and `code`.'],
+    ['two/repeated.md', '\uFEFF---\r\ncreated: 2000-01-01\r\n...\r\n# Repeated\r\n\r\n> 中文原文'],
+    ['metadata.md', '---\ntags: [only]\n---\n'],
+    ['blank.md', '  \n'],
+    ['plain.md', 'Plain <script>alert(1)</script> & source a_b_c'],
+    ['malformed.md', '---\nUnclosed metadata retains useful text'],
+  ];
+  const expected = ['Useful source and code.', '中文原文', '', '', 'Plain <script>alert(1)</script> & source a_b_c', '--- Unclosed metadata retains useful text'];
+  const fixture = await storageFixture();
+  let reads = 0;
+  try {
+    const notes = cases.map(([path, text]) => ({path, text, size: text.length, modified: 1}));
+    const adapter = (cmd, args) => {
+      if (cmd === 'metadata') return {root: fixture.root, notes: notes.map(({text, ...note}) => note)};
+      if (cmd === 'read') { reads++; return {text: notes.find(n => n.path === args.path).text}; }
+      assert.ok(!['save', 'create', 'actionWrite'].includes(cmd), 'summary operations cannot write sources or formal records');
+      return fixture.adapter(cmd, args);
+    };
+    const library = new Library(adapter); await library.open();
+    // An old cached summary with identical file metadata must be replaced once.
+    for (const {text, ...note} of notes) await library.request('referencePut', {record: {...referenceRecord(note, text), summaryVersion: undefined, excerpt: 'stale frontmatter'}, search: text});
+    await library.sync(); assert.equal(reads, cases.length);
+    async function check() {
+      for (let i = 0; i < cases.length; i++) {
+        const [note] = (await library.query({exactPath: cases[i][0]})).notes;
+        assert.equal(note.excerpt, expected[i]);
+        assert.equal(note.title, i < 2 ? 'Repeated' : cases[i][0].replace('.md', ''));
+        assert.equal(note.modified, 1);
+      }
+      assert.equal((await library.query({search: 'Hidden metadata'})).notes.length, 0);
+    }
+    await check(); await library.sync(); await check(); assert.equal(reads, cases.length);
+    await fixture.removeIndex(); await library.sync(); await check(); assert.equal(reads, cases.length * 2);
+  } finally { await fixture.close(); }
+});
+
+
+test('summary cleanup preserves literal operators and code syntax', async () => {
+  const {referenceRecord} = await import('../web/library.js');
+  assert.equal(referenceRecord({path:'code-first.md'}, '```sh\n# Back up the source before deleting it\nrm source.md\n```').excerpt, '# Back up the source before deleting it rm source.md');
+  assert.equal(referenceRecord({path:'empty-frontmatter.md'}, '---\n---\n').excerpt, '');
+  const source = '# Calculation\n\n2*3*4 = 24; prefix__identifier__suffix\nUse `a*b*c` and `__init__`.\n```js\nconst value = a*b*c; // **literal**\n```\n**Useful** prose';
+  assert.equal(referenceRecord({path:'code.md'}, source).excerpt, '2*3*4 = 24; prefix__identifier__suffix Use a*b*c and __init__. const value = a*b*c; // **literal** Useful prose');
+});

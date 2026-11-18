@@ -11,11 +11,32 @@ export class TopicRepository extends ActionRepository {
     }});
   }
 }
+// Strip only a complete leading frontmatter block; malformed/plain text stays source text.
+export function referenceBody(text) {
+  return text.replace(/^\uFEFF?---[^\S\r\n]*\r?\n(?:[\s\S]*?\r?\n)?(?:---|\.\.\.)[^\S\r\n]*(?:\r?\n|$)/, '');
+}
+function referenceExcerpt(body) {
+  let fence = null;
+  const lines = body.replace(/^# .+\r?\n?/, '').split(/\r?\n/).map(line => {
+    const marker = line.match(/^\s*(`{3,}|~{3,})/);
+    if (marker && (!fence || (marker[1][0] === fence[0] && marker[1].length >= fence.length))) {
+      fence = fence ? null : marker[1]; return '';
+    }
+    if (fence) return line;
+    return line.replace(/^\s*(?:#{1,6}\s+|>\s?|[-+*]\s+(?:\[[ xX]\]\s*)?|\d+[.)]\s+)/, '')
+      .split(/(`+[^`]*`+)/g).map((part, index) => index % 2 ? part.replace(/^`+|`+$/g, '') : part
+        .replace(/!?\[([^\]]*)\]\([^\n)]*\)/g, '$1')
+        .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2').replace(/\[\[([^\]]+)\]\]/g, '$1')
+        .replace(/(?<![\p{L}\p{N}_])(\*\*|__|~~|\*|_)(?=\S)(.+?)\1(?![\p{L}\p{N}_])/gu, '$2')).join('');
+  });
+  return lines.join(' ').replace(/\s+/g, ' ').trim().slice(0, 180);
+}
 export function referenceRecord(note, text) {
   const directory = note.path.includes('/') ? note.path.slice(0, note.path.lastIndexOf('/')) : '';
-  return {...note, searchVersion: 1, directory, title: titleOf(text, note.path), excerpt: text.replace(/^# .+\r?\n?/m, '').replace(/\s+/g, ' ').trim().slice(0, 180), fingerprint: fingerprint(text)};
+  const body = referenceBody(text);
+  return {...note, searchVersion: 1, summaryVersion: 1, directory, title: titleOf(body, note.path), excerpt: referenceExcerpt(body), fingerprint: fingerprint(text)};
 }
-export function referenceSearchText(title, text) { return `${title}\n${text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '')}`; }
+export function referenceSearchText(title, text) { return `${title}\n${referenceBody(text)}`; }
 // One body at a time keeps editor requests responsive while the initial index fills.
 export class Library {
   constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; this.topics = new TopicRepository(adapter); this.running = null; }
@@ -50,7 +71,7 @@ export class Library {
       if (generation !== this.generation) return;
       if (!safePath(note.path)) continue;
       seen.add(note.path); const old = previous.get(note.path);
-      if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1) {
+      if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1 || old.summaryVersion !== 1) {
         try {
           const {text} = await call('read', {path: note.path}); reads++;
           const record = referenceRecord(note, text);
