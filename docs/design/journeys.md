@@ -23,10 +23,24 @@ No typography, spacing, icon, palette, breakpoint or control variant is added. T
 - [ ] Replay Focus → action → initiative → linked note → edit/save → context → original action. Verify record identity, navigation selection, focus and scroll, including narrow context/detail/list back paths.
 - [ ] Remove/change a synthetic source after rendering its opener. Failure must retain origin/input and permit retry after restoring it.
 - [ ] Replay library selection → exact preview (no request) → controlled Send → edited candidate decision → confirmed record/source navigation and reload. Check cancellation, stale preview, partial failure and durable recovery.
-- [ ] Open local conflict review over dirty action/note/initiative editors when changing those boundaries. Check invalid resolution, failed save/retry, background refresh, guarded close, restored draft/focus and workspace isolation.
+- [ ] Keep action/initiative modal tasks exclusive: background conflict review cannot stack over them. Finish or explicitly discard the task before review. For document notes, check invalid conflict resolution, failed save/retry, background refresh, guarded close, restored draft/focus and workspace isolation.
 - [ ] Exercise applicable empty/loading/invalid/disabled/dirty/saving/failed/recovered states, Tab/Shift+Tab/Escape, long Chinese text, 393px overflow, 44px primary targets, 4.5:1 text and 3:1 boundaries/focus.
 - [ ] Audit visible/accessibility/dynamic/error copy: retain evidence/privacy/unsaved warnings; shorten repetition; move diagnostics to details; remove slogans and unsupported promises.
 - [ ] Preserve immutable revisions, private drafts, SQLite indexes, source guards, bounded loading and storage format; failed saves must block destructive transitions.
 - [ ] Run shared syntax/unit/UI checks, Mac build and isolated actual WKWebView probes on final product head; bind resource hashes to evidence. Distinguish native DOM events from physical input.
 
 See [execution evidence](../validation/issue37/README.md). Android-specific checks/builds and standalone Syncthing are deferred. Physical native input and two-device E2E are unrun; synthetic local revision coverage is not transport proof. Catalogue token contrast is not certification of every rendered pixel. Human visual judgment remains necessary.
+
+
+## Remaining forms checklist (#48)
+
+Use the [finite entry-point inventory](../validation/issue48/inventory.md), rather than treating every form as a drawer candidate. Maintained coverage is in `remaining-forms-ui`, `ui`, `focus-ui`, `library-ui`, `initiatives-ui`, `workspace-ui`, `initiative-drawer-ui`, `design-system-ui` and `sync-ui`.
+
+- [ ] Replay Home → new action → save → close → open, retaining Home behind the task and restoring focus/scroll.
+- [ ] Replay Library → selected note → information → topic association → Done, preserving search/filter/page/selection/document scroll; failures must be reachable inside the modal.
+- [ ] Replay initiative → action or note → edit/save → return, including source unavailability and lifecycle changes before further action edits.
+- [ ] Exercise blank/invalid fields, prerequisites, pending saves, duplicate submit events, failed writes/retry, all dirty exits and recovered drafts against isolated real storage. Opening or canceling a clean capture must create nothing.
+- [ ] Capture settled desktop, 393px and reduced-height task views, including body scrolling and a reachable footer; visually reject duplicate/tiled captures. Keep before/after browser and native evidence separate.
+- [ ] Observe actual production Mac close and OS-menu Quit with dirty/pending tasks; direct delegate invocation and browser `hasUnsavedChanges()` assertions are insufficient.
+
+These checklist items are review requirements, not blanket assertions that every check has passed. See [issue48 execution evidence](../validation/issue48/README.md) for browser/native input boundaries, production close/quit results and unrun checks. Async openers that temporarily disable themselves must explicitly preserve their identity for focus return; check this in WKWebView as well as Chromium.

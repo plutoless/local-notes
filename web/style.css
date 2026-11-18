@@ -196,7 +196,6 @@ details { overflow-wrap: anywhere; }
 #action-editor .document { max-width: 960px; }
 #action-editor details { border-bottom: 1px solid var(--divider); margin: 8px 0 16px; }
 #action-editor small { color: var(--muted); overflow-wrap: anywhere; }
-.action-save-controls { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 24px; }
 .action-utilities { border-top: 1px solid var(--divider); padding-top: 16px; }
 .action-utilities p { color: var(--muted); }
 /* Organization is one task surface, with ordered stages rather than an empty editor. */
@@ -244,11 +243,6 @@ details { overflow-wrap: anywhere; }
 .library-view .toolbar { position: sticky; top: 0; z-index: 1; }
 #note-mode { font-weight: 500; font-size: 13px; }
 #save-state { color: var(--muted); margin-left: auto; font-size: 12px; }
-#note-details { margin: 12px 0 24px; border-block: 1px solid var(--divider); font-size: 13px; }
-#note-details h2 { font-size: 14px; margin-bottom: 8px; }
-#note-details label { display: flex; align-items: center; margin: 8px 0; }
-#note-details input[type="checkbox"] { width: 20px; flex: 0 0 20px; }
-#note-details p, #topic-help { color: var(--muted); }
 #topic-help { flex-basis: 100%; font-size: 12px; }
 #library-location { overflow-wrap: anywhere; }
 @media (max-width: 1150px) {
@@ -341,7 +335,6 @@ details { overflow-wrap: anywhere; }
 #library-progress { flex-basis: 100%; font-size: 13px; }
 #library-progress:empty { display: none; }
 #topic-form { width: 100%; }
-#note-details label { min-height: 44px; gap: var(--space); }
 #reading h2 { font-size: 22px; line-height: 1.5; }
 #reading h3 { font-size: 18px; line-height: 1.5; }
 #title[readonly] { color: var(--text); }
@@ -411,7 +404,7 @@ details { overflow-wrap: anywhere; }
 .ui-drawer-header h2 { margin: 0; font-size: 18px; }
 .ui-drawer-body { padding: 24px; overflow: auto; min-height: 0; flex: 1; overflow-wrap: anywhere; }
 .ui-drawer-body form { display: grid; gap: 20px; }
-.ui-drawer-body input { min-width: 0; width: 100%; }
+.ui-drawer-body input:not([type="checkbox"]) { min-width: 0; width: 100%; }
 .ui-drawer-footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 12px 24px; border-top: 1px solid var(--divider); flex: none; }
 .ui-drawer [role=alert]:empty, .ui-drawer [role=status]:empty { display: none; }
 .ui-drawer .draft-guard { display: grid; gap: 8px; margin-top: 20px; }
@@ -432,3 +425,7 @@ details { overflow-wrap: anywhere; }
 .ui-drawer-body .document > .ui-disclosure { margin-block: 0; }
 .ui-drawer-body .document > .ui-field { gap: 8px; }
 .ui-drawer-body #initiative-ending { margin-block: 0; }
+
+/* Short tasks use the shared field rhythm, including optional field groups. */
+.ui-drawer-body .ui-field { margin-block: 0; }
+.ui-drawer-body .ui-disclosure > .ui-field { margin-block: 20px; }

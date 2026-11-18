@@ -172,8 +172,25 @@ export class LibraryScreen {
     if (!note) return;
     if (!this.library.records.length) { const message = document.createElement('p'); message.textContent = '尚未创建主题。可返回笔记库新建主题。'; container.append(message); }
     for (const topic of this.library.records) {
-      const label = document.createElement('label'), checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.checked = topic.sources.some(source => source.path === path);
-      checkbox.onchange = async () => { checkbox.disabled = true; try { await this.library.link(topic, note, checkbox.checked); await this.noteTopics(path); } catch (error) { this.notice(error.message); checkbox.checked = !checkbox.checked; checkbox.disabled = false; } };
+      const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'ui-selection'; checkbox.type = 'checkbox'; checkbox.checked = topic.sources.some(source => source.path === path);
+      checkbox.onchange = async () => {
+        this.noteTopicSaving = true; container.inert = true; checkbox.disabled = true;
+        try { await this.library.link(topic, note, checkbox.checked); await this.noteTopics(path); }
+        catch (error) {
+          const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); container.append(failure);
+          if (error.associationSaved) {
+            for (const input of container.querySelectorAll('input')) input.disabled = true;
+            feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', error.message);
+            const retry = button('重试更新关联', async () => {
+              this.noteTopicSaving = true; container.inert = true;
+              try { await this.library.sync(); await this.noteTopics(path); }
+              catch (recoveryError) { feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry); }
+              finally { this.noteTopicSaving = false; container.inert = false; }
+            });
+            failure.append(retry);
+          } else { errorFeedback(failure, error.message); checkbox.checked = !checkbox.checked; checkbox.disabled = false; }
+        } finally { this.noteTopicSaving = false; container.inert = false; }
+      };
       label.append(checkbox, document.createTextNode(topic.description)); container.append(label);
     }
   }

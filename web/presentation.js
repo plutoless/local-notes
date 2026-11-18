@@ -162,7 +162,7 @@ export function drawer({id, title, onDismiss}) {
   });
   let opener;
   return {panel, body, footer, close, setTitle(text) { heading.textContent = text; close.setAttribute('aria-label', '关闭' + text); },
-    open(first) { if (panel.open) return; opener = document.activeElement; panel.showModal(); first?.focus(); },
+    open(first, origin = document.activeElement) { if (panel.open) return; opener = origin; panel.showModal(); first?.focus(); },
     hide() { panel.close(); (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
   };
 }

@@ -86,15 +86,16 @@ export class FocusScreen {
   }
   async openAction(action) {
     const scroll = $('.collection').scrollTop;
-    if (!await this.navigate('actions')) return;
     await this.actions.edit(action);
     this.actions.returnToFocus = async () => {
-      if (!await this.navigate('focus')) return;
+      if (!this.active) { if (!await this.navigate('focus')) return; }
+      else await this.show();
       const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
       (opener || $('.home-tools .primary')).focus({preventScroll: true});
       $('.collection').scrollTop = scroll;
     };
   }
+
   actionRow(action) {
     const row = document.createElement('div'); row.className = 'card focus-row';
     const open = selectionRow('', async () => { try { await this.openAction(action); } catch (error) { this.notice(error.message); } });
