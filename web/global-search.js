@@ -78,7 +78,7 @@ export class WorkspaceSearch extends NoteSearch {
     const notes = super.sync();
     if (!this.entitiesRunning && this.repositories) {
       const generation = this.generation;
-      const operation = Promise.allSettled(this.repositories.map(repository => repository.serialize(() => repository.recover({readOnly: true}))));
+      const operation = Promise.allSettled(this.repositories.map(repository => this.refresh(repository)));
       this.entitiesRunning = operation;
       operation.then(results => {
         if (generation !== this.generation) return;
@@ -87,6 +87,16 @@ export class WorkspaceSearch extends NoteSearch {
       });
     }
     return Promise.all([notes, this.entitiesRunning]);
+  }
+  refresh(repository) {
+    return repository.serialize(async () => {
+      try { await repository.request('actionQuery', {limit: 1}); }
+      catch (error) {
+        if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error;
+        repository.indexedSnapshot = null;
+      }
+      return repository.recover({readOnly: true});
+    });
   }
   async query(search, offset = 0, scope = 'all') {
     if (!['all', 'note', 'initiative', 'action'].includes(scope)) throw Error('Unsupported search scope');
@@ -132,14 +142,15 @@ export class WorkspaceSearch extends NoteSearch {
       for (let i = 0; i < Math.min(left.length, right.length); i++) if (left[i] !== right[i]) return left[i] - right[i];
       return left.length - right.length;
     };
-    results.sort((a, b) => Number(!a.title.toLowerCase().includes(search.toLowerCase())) - Number(!b.title.toLowerCase().includes(search.toLowerCase())) || binary(a.type, b.type) || binary(a.entityId, b.entityId) || (a.type === 'note' ? a.passageStart - b.passageStart : binary(a.passageId, b.passageId)));
+    const fold = text => text.replace(/[A-Z]/g, character => character.toLowerCase());
+    results.sort((a, b) => Number(!fold(a.title).includes(fold(search))) - Number(!fold(b.title).includes(fold(search))) || binary(a.type, b.type) || binary(a.entityId, b.entityId) || (a.type === 'note' ? a.passageStart - b.passageStart : binary(a.passageId, b.passageId)));
     return {notes: results.slice(offset, offset + 20), hasMore: results.length > offset + 20, partial};
   }
   async context(result, query) {
     if (result.workspaceId !== this.workspaceId) throw Error('Workspace changed');
     if (result.type === 'note') return super.context(result, query);
     const repository = this.repositories.find(repository => repository.entityType === result.type);
-    await repository.serialize(() => repository.recover({readOnly: true}));
+    await this.refresh(repository);
     const page = await repository.request('actionQuery', {entityId: result.entityId, limit: 1});
     const current = page.actions[0];
     if (!current || current.deleted || current.syncState || current.revision !== result.revision) throw Error('Source changed');
