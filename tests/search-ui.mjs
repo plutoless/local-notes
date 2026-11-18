@@ -30,6 +30,20 @@ try {
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
   const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
+  // Deterministic event-order regression; actual IME evidence is native-search-ime.py.
+  for (const route of ['keyboard', 'cancel']) {
+    assert.equal(await page.evaluate(route => {
+      const input = document.querySelector('#global-search-input'), panel = document.querySelector('#global-search');
+      input.dispatchEvent(new CompositionEvent('compositionstart', {bubbles:true}));
+      input.dispatchEvent(new CompositionEvent('compositionend', {bubbles:true, data:''}));
+      if (route === 'keyboard') input.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape', bubbles:true, cancelable:true}));
+      else panel.dispatchEvent(new Event('cancel', {cancelable:true}));
+      return panel.open;
+    }, route), true);
+    await page.waitForTimeout(20);
+  }
+  await page.keyboard.press('Escape'); assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);
+  await page.keyboard.press('Meta+k'); await input.waitFor();
   await page.keyboard.press('Meta+k'); assert.equal(await input.inputValue(), 'latency'); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Enter');
   await page.keyboard.press('Meta+Enter'); await page.getByText('已复制片段', {exact:true}).waitFor();
   assert.equal(clipboard, await page.locator('.search-select[aria-current=true]').locator('..').locator('pre').textContent()); assert.ok(original.includes(clipboard));

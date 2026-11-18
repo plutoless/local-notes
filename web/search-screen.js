@@ -20,10 +20,19 @@ export class SearchScreen {
     panel.append(title, field('关键词', this.input), button('关闭搜索', () => this.close()), this.status, this.results, paging, include, button('刷新索引', () => { this.service.sync(); return this.query(); }));
     const help = document.createElement('small'); help.textContent = '笔记 · 本地关键词 · ↑↓ 选择 · Enter 展开 · ⌘Enter 复制'; panel.append(help);
     document.body.append(panel); bindDialog(panel);
+    // WebKit may end IME composition before delivering its cancelling Escape.
+    // Protect that same event turn, without swallowing a later ordinary Escape.
+    let composing = false, compositionEndedThisTurn = false, compositionTurn;
+    this.input.addEventListener('compositionstart', () => { composing = true; compositionEndedThisTurn = false; clearTimeout(compositionTurn); });
+    this.input.addEventListener('compositionend', () => {
+      composing = false; compositionEndedThisTurn = true;
+      compositionTurn = setTimeout(() => { compositionEndedThisTurn = false; }, 0);
+    });
+    const imeOwnsEscape = event => composing || compositionEndedThisTurn || event.isComposing || event.keyCode === 229;
     this.input.oninput = () => { this.offset = 0; this.query(); };
-    panel.addEventListener('cancel', event => { event.preventDefault(); this.close(); });
+    panel.addEventListener('cancel', event => { event.preventDefault(); if (!imeOwnsEscape(event)) this.close(); });
     panel.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !event.isComposing) { event.preventDefault(); this.close(); return; }
+      if (event.key === 'Escape') { event.preventDefault(); if (!imeOwnsEscape(event)) this.close(); return; }
       if (event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.shiftKey) return;
       if (event.key === 'Enter' && event.metaKey) { event.preventDefault(); this.copy(this.rows.find(row => row.note.path === this.selected)); return; }
       if (event.metaKey || !(event.target === this.input || event.target.classList.contains('search-select'))) return;
