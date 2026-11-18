@@ -1,22 +1,31 @@
 {
-  "id": "8e8d5b48-52ca-4582-9f37-cb129f6a5fc7",
+  "id": "1424503b-9e09-4b13-bbab-b651367dec16",
   "ok": true,
   "result": {
+    "screenshot": {
+      "format": "png",
+      "width": 524,
+      "height": 352,
+      "scale": 2,
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/1424503b-9e09-4b13-bbab-b651367dec16-screenshot.png",
+      "dataOmitted": true,
+      "expiresAt": "2026-11-19T06:07:03.903Z"
+    },
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 32228)\nWindow: \"\", App: LocalNotes.\n\n0 dialog alert\n\t1 image LocalNotes alert\n\t2 text 还有内容未保存，请先处理保存提示。\n\t3 text\n\t4 button 确定\n\nThe focused UI element is 0 dialog alert.",
+      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 69929)\nWindow: \"\", App: LocalNotes.\n\n0 dialog alert\n\t1 image LocalNotes alert\n\t2 text 还有内容未保存，请先处理保存提示。\n\t3 text\n\t4 button 确定\n\nThe focused UI element is 0 dialog alert.",
       "focusedElementId": 0,
-      "id": "FE6486EF-4A16-433F-ABCE-9FC18E861796",
+      "id": "4B9BA7BE-8AE5-4970-85F1-DDC79D60A118",
       "app": {
-        "bundleId": "dev.localnotes.validation.issue48productionfinal",
-        "pid": 32228,
-        "name": "LocalNotes"
+        "name": "LocalNotes",
+        "pid": 69929,
+        "bundleId": "dev.localnotes.validation.issue48productionfinal"
       },
       "window": {
         "x": 625,
         "screenIndex": 0,
         "title": "",
         "width": 262,
-        "id": 14737,
+        "id": 15280,
         "height": 176,
         "isOffscreen": false,
         "y": 211,
@@ -34,20 +43,11 @@
         "maxNodes": 1200
       }
     },
-    "screenshot": {
-      "format": "png",
-      "width": 524,
-      "height": 352,
-      "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/8e8d5b48-52ca-4582-9f37-cb129f6a5fc7-screenshot.png",
-      "dataOmitted": true,
-      "expiresAt": "2026-11-19T04:16:59.413Z"
-    },
     "screenshotStatus": {
       "state": "captured",
       "metadata": {
         "engine": "screenCaptureKit",
-        "windowId": 14737
+        "windowId": 15280
       }
     }
   },

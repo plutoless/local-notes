@@ -3,7 +3,7 @@
   "browserFunctionalEngine": "system Chrome",
   "browserVisualEngine": "Chromium headless shell 1234",
   "nativeBuildAssetsMatch": true,
-  "nativeRuntimeAcceptance": false,
+  "nativeRuntimeAcceptance": true,
   "sha256": {
     "web/action-screen.js": "8ad455fb614589b948be4367630a280d606110c65fad15a1a20aa4b7eae9bd7e",
     "web/actions.js": "7b4b3e1632615b7269f9b672b6b38524fa49a19373b21cdc371fa3453ba6b7d2",
@@ -24,6 +24,6 @@
     "web/sync-screen.js": "7aa1ef6a4a284b97b16f1834b630d555935019928f5af5f99cb8c3848f3c24eb"
   },
   "earlierProductionGuardAcceptance": true,
-  "productionCheckpointHead": "59a70b019cb0dcff0249b935ed092df32294feb4",
-  "finalProductionReplayPending": true
+  "productionCheckpointHead": "fc9629bf9f83c9a72b30882b6950914adb10ee6c",
+  "finalProductionReplayPending": false
 }

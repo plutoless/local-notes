@@ -1,22 +1,22 @@
 {
-  "id": "ea4f1145-6085-472c-9d53-bdf6446b74d2",
+  "id": "416b37b3-089f-4216-81ca-c1f4e52cdb85",
   "ok": true,
   "result": {
     "snapshot": {
-      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 32228)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t30 container 随手记\n\t\t\t\t31 container\n\t\t\t\t\t32 heading 随手记\n\t\t\t\t\t33 button 关闭随手记\n\t\t\t\t34 container\n\t\t\t\t\t35 container\n\t\t\t\t\t\t36 text 标题\n\t\t\t\t\t\t37 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t38 container\n\t\t\t\t\t\t39 text 正文\n\t\t\t\t\t\t40 text entry area (settable) 正文\n\t\t\t\t44 text 尚未保存\n\t\t\t\t41 container\n\t\t\t\t\t42 button 取消\n\t\t\t\t\t43 button 创建笔记\n\t26 close button\n\t27 full screen button, Secondary Actions: zoom the window\n\t28 minimize button\n\t29 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
+      "treeText": "App=dev.localnotes.validation.issue48productionfinal (pid 69929)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t7 scroll area\n\t\t8 HTML content 拾记 · Local Notes\n\t\t\t32 container 随手记\n\t\t\t\t33 container\n\t\t\t\t\t34 heading 随手记\n\t\t\t\t\t35 button 关闭随手记\n\t\t\t\t36 container\n\t\t\t\t\t37 container\n\t\t\t\t\t\t38 text 标题\n\t\t\t\t\t\t39 text field (settable) 标题, Value: 最终生产路径守卫\n\t\t\t\t\t40 container\n\t\t\t\t\t\t41 text 正文\n\t\t\t\t\t\t42 text entry area (settable) 正文\n\t\t\t\t46 text 尚未保存\n\t\t\t\t43 container\n\t\t\t\t\t44 button 取消\n\t\t\t\t\t45 button 创建笔记\n\t3 close button\n\t4 full screen button, Secondary Actions: zoom the window\n\t5 minimize button\n\t6 text 拾记 · Local Notes\n\nNo UI element is currently focused.",
       "focusedElementId": null,
-      "id": "2D254353-1300-4729-BD48-9E08BAADC814",
+      "id": "3529921F-81FF-4EC9-9F00-B51560EC6946",
       "app": {
-        "pid": 32228,
-        "name": "LocalNotes",
-        "bundleId": "dev.localnotes.validation.issue48productionfinal"
+        "bundleId": "dev.localnotes.validation.issue48productionfinal",
+        "pid": 69929,
+        "name": "LocalNotes"
       },
       "window": {
         "x": 166,
         "screenIndex": 0,
         "title": "拾记 · Local Notes",
         "width": 1180,
-        "id": 14716,
+        "id": 15264,
         "height": 832,
         "isOffscreen": false,
         "y": 47,
@@ -39,15 +39,15 @@
       "width": 2360,
       "height": 1664,
       "scale": 2,
-      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/ea4f1145-6085-472c-9d53-bdf6446b74d2-screenshot.png",
+      "path": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/416b37b3-089f-4216-81ca-c1f4e52cdb85-screenshot.png",
       "dataOmitted": true,
-      "expiresAt": "2026-11-19T04:17:00.292Z"
+      "expiresAt": "2026-11-19T06:07:04.769Z"
     },
     "screenshotStatus": {
       "state": "captured",
       "metadata": {
-        "windowId": 14716,
-        "engine": "screenCaptureKit"
+        "engine": "screenCaptureKit",
+        "windowId": 15264
       }
     }
   },

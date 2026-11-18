@@ -1,6 +1,6 @@
 # Read-only AX diagnosis
 
-No native acceptance is claimed. The failed production attempt used isolated data and a unique bundle ID; only its owned process and app were stopped. Subsequent diagnostics did not relaunch it, restart Orca, reset TCC, change permissions or terminate external processes.
+The initial failed attempts below did not establish native acceptance. The final successful production replay is recorded at the end. The failed production attempt used isolated data and a unique bundle ID; only its owned process and app were stopped. Subsequent diagnostics did not relaunch it, restart Orca, reset TCC, change permissions or terminate external processes.
 
 ## Exact observations
 
@@ -31,3 +31,11 @@ The fresh read-only command `orca computer get-app-state --app com.apple.finder 
 Coordinator escalation `msg_92ff7cfad300` requests the smallest tool-suggested user action: toggle Orca Computer Use Accessibility off/on in System Settings, then notify this worker for a fresh check. The latest complete form journey passed with the assignment fix, but its renewed uninstrumented production close/quit/save/clean-exit test remains mandatory and incomplete.
 
 A distinct capture diagnosis found that macOS sometimes places the real observed alert at CG layer 8 while Orca enumerates only its layer-zero main window. Read-only discovery matched the owned PID, visible 260×202 frame and native alert's AX position/size. A system-window screenshot fallback prototype and raw diagnostics remain in ignored build storage; they do not waive AX or production acceptance and were not represented as completed validation.
+
+## Final successful recheck and production replay
+
+On the next user-requested status check, the same read-only Finder sentinel command returned `ok: true`. Its unrelated window title/content was not copied into project evidence. No root cause or external permission change is inferred; this worker did not change permissions, reset TCC or restart Orca.
+
+`python3 tests/native-remaining-termination.py --output build/native48-fc9629b-restored-production` then passed against the assignment-fixed resources. The unchanged maintained test drove the real titlebar close and OS-menu Quit, asserted both native alerts, retained the same input, saved exactly one Markdown record and observed clean menu exit code 0. Both alert screenshots were visually inspected; they contain no duplicated/tiled artifacts. The experimental layer-aware screenshot fallback was not needed or included in maintained code.
+
+Current production resource hashes match the delivered application, including `action-screen.js`; they are recorded in `native/production-source-hashes.json`. This successful observed production replay resolves the earlier execution gap and supersedes the blocked status recorded by the earlier escalations. Failed attempts remain preserved rather than relabeled as passes.
