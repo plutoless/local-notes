@@ -17,25 +17,33 @@ final class ReferenceIndex {
             String command = r.getString("cmd");
             if (command.equals("referencePut")) {
                 JSONObject record = r.getJSONObject("record");
-                db.execSQL("INSERT OR REPLACE INTO notes VALUES(?,?,?,?,?)", new Object[]{record.getString("path"), r.optString("search"), "", record.optString("directory"), record.toString()});
+                db.execSQL("INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)", new Object[]{record.getString("path"), r.optString("search"), record.getString("path"), record.optString("directory"), record.toString()});
             } else if (command.equals("referenceRemove")) db.execSQL("DELETE FROM notes WHERE path=?", new Object[]{r.getString("path")});
             else if (command.equals("referenceTags")) db.execSQL("UPDATE notes SET topics=? WHERE path=?", new Object[]{r.optString("topics"), r.getString("path")});
             else {
                 int limit = Math.max(1, Math.min(100, r.optInt("limit", 50)));
-                String sql = "SELECT record FROM notes";
+                boolean global = command.equals("referenceSearch");
+                String sql = global ? "SELECT record, substr(substr(search,instr(search,char(10))+1), max(1,instr(lower(substr(search,instr(search,char(10))+1)),lower(?))-180),900) FROM notes" : "SELECT record FROM notes";
                 ArrayList<String> args = new ArrayList<>();
+                if (global) args.add(r.optString("search"));
                 if (!command.equals("referenceInventory")) {
                     sql += " WHERE instr(lower(search),lower(?))>0 AND (?='*' OR directory=?) AND (?='' OR (?='uncategorized' AND topics='') OR instr(topics,?)>0)";
                     String directory = r.optString("directory", "*"), topic = r.optString("topic");
                     Collections.addAll(args, r.optString("search"), directory, directory, topic, topic, topic);
                 }
+                if (global) sql += " AND (instr(record, '\"searchVersion\":1,')>0 OR instr(record, '\"searchVersion\":1}')>0)";
                 if (r.has("exactPath")) { sql += command.equals("referenceInventory") ? " WHERE path=?" : " AND path=?"; args.add(r.getString("exactPath")); }
                 if (r.has("paths")) { JSONArray paths = r.getJSONArray("paths"); sql += paths.length() == 0 ? " AND 0" : " AND path IN (" + String.join(",", Collections.nCopies(paths.length(), "?")) + ")"; for (int i = 0; i < paths.length(); i++) args.add(paths.getString(i)); }
-                sql += " ORDER BY path LIMIT ? OFFSET ?";
+                if (global) { sql += " ORDER BY CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"; args.add(r.optString("search")); }
+                else sql += " ORDER BY path LIMIT ? OFFSET ?";
                 Collections.addAll(args, String.valueOf(limit + 1), String.valueOf(Math.max(0, r.optInt("offset"))));
                 JSONArray notes = new JSONArray(); boolean more;
                 try (Cursor cursor = db.rawQuery(sql, args.toArray(new String[0]))) {
-                    while (cursor.moveToNext() && notes.length() < limit) notes.put(new JSONObject(cursor.getString(0)));
+                    while (cursor.moveToNext() && notes.length() < limit) {
+                        JSONObject record = new JSONObject(cursor.getString(0));
+                        if (global) record.put("passage", cursor.getString(1));
+                        notes.put(record);
+                    }
                     more = !cursor.isAfterLast();
                 }
                 return new JSONObject().put("notes", notes).put("hasMore", more);

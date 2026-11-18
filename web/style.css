@@ -430,6 +430,21 @@ details { overflow-wrap: anywhere; }
 .ui-drawer-body .ui-field { margin-block: 0; }
 .ui-drawer-body .ui-disclosure > .ui-field { margin-block: 20px; }
 
+/* Compact single-column lookup; the native dialog owns background inertness. */
+.global-header { height: 52px; display: flex; justify-content: flex-end; align-items: center; padding: 4px 16px; border-bottom: 1px solid var(--divider); background: var(--surface); }
+.app, .app.home, .app.workspace, .app.library-view:not(.editing) { height: calc(100dvh - 52px); }
+.search-dialog { width: min(620px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); color: var(--text); overflow: auto; }
+.search-dialog::backdrop { background: rgb(0 0 0 / .18); }
+.search-dialog h2 { margin: 0 0 16px; }
+.search-results { max-height: 48dvh; overflow: auto; }
+.search-result { padding: 12px 0; border-bottom: 1px solid var(--divider); }
+.search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; }
+.search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
+.search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; user-select: text; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
+.search-attribution { display: flex; align-items: center; min-height: 44px; gap: 8px; }
+.search-attribution input { width: auto; }
+@media (max-width: 600px) { .search-dialog { padding: 16px; } }
+
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid var(--divider); border-radius: var(--radius-panel); color: var(--text); background: var(--surface); box-shadow: var(--shadow-panel); }
 .task-leave-decision::backdrop { background: #18233455; }
 .task-leave-decision .ui-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }

@@ -152,6 +152,14 @@ Long Markdown editing, initiative working-note creation, candidate review, priva
 
 The catalogue demonstrates the same wide constructor and field geometry without persistence. [Issue 48 execution status](../validation/issue48/README.md) separates browser/storage results, controlled native journeys and observed production close/quit evidence; the catalogue does not establish acceptance. Async openers can pass `drawer.open(first, origin)` explicitly when disabling the trigger would otherwise blur it in WKWebView.
 
+## Notes-only compact search (issue #58)
+
+The shared top-right entry opens a native modal in the compact single-column A family. `SearchScreen` consumes the existing `field`, `button`, `.ui-panel` and `bindDialog` behavior; the native dialog makes the underlying task inert. Repeated Command+K refocuses its input, Escape closes and restores its opener, and an existing protected modal retains ownership. Lookup never calls the current page's save or leave handler. Library filters remain independent.
+
+`NoteSearch` owns workspace-aware query/context access and incremental reference-index reconciliation. Descriptors are bounded to 20 results and 900 excerpt characters, title matches precede body-only matches, context loads on demand and verifies the source fingerprint. Keyword results include eligible archive paths; the path distinguishes duplicate titles. Render original text through text nodes and safe marks, keeping list/table/link notation selectable. The bordered passage is precisely the copy range, including after expansion. Attribution starts off and adds title plus workspace-relative path; no shareable URL is implied. Clipboard receipts follow the native write result.
+
+Loading, updating/partial cache, empty, query failure, unavailable/changed context and clipboard failure have distinct Chinese status text and a refresh path. This delivery exposes only Notes. Source navigation, multi-entity scopes and meaning retrieval belong to #60, #59 and #61 respectively. The catalogue below demonstrates presentation states only; real retrieval evidence comes from isolated storage journeys.
+
 
 ### Task-scoped leave decisions (#55)
 
