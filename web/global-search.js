@@ -1,4 +1,4 @@
-import {referenceRecord, referenceSearchText} from './library.js';
+import {referenceBody, referenceRecord, referenceSearchText} from './library.js';
 import {fingerprint, InitiativeRepository} from './initiatives.js';
 import {ActionRepository} from './actions.js';
 import {safePath} from './core.js';
@@ -33,7 +33,7 @@ export class NoteSearch {
         if (generation !== this.generation) return;
         if (!safePath(note.path)) continue;
         seen.add(note.path); const old = previous.get(note.path);
-        if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1) {
+        if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1 || old.summaryVersion !== 1) {
           try { const {text} = await call('read', {path: note.path}); const record = referenceRecord(note, text); await call('referencePut', {record, search: referenceSearchText(record.title, text)}); }
           catch { failed = true; }
         }
@@ -53,7 +53,7 @@ export class NoteSearch {
   async context(note, query) {
     const {text} = await this.call('read', {path: note.path});
     if (fingerprint(text) !== note.fingerprint) throw Error('来源已改变，请刷新搜索结果');
-    const body = text.replace(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/, '');
+    const body = referenceBody(text);
     const position = note.passageStart ? Array.from(body).slice(0, note.passageStart - 1).join('').length : Math.max(0, body.toLowerCase().indexOf(query.toLowerCase()));
     const start = Math.max(0, body.lastIndexOf('\n', Math.max(0, position - 300)) + 1);
     const end = body.indexOf('\n', position + Math.max(query.length, 600));
