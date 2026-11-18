@@ -181,13 +181,14 @@ async function restoreSearchInvocation(origin, valid) {
   if (origin.workspace !== workspace || !valid() || !await flush() || !valid() || workspace !== workspaceGeneration) return false;
   if (!await navigate(origin.view) || !valid() || workspace !== workspaceGeneration) return false;
   const page = pageGeneration;
-  const owns = () => valid() && workspace === workspaceGeneration && page === pageGeneration;
+  let request = noteLoadRequest;
+  const owns = () => valid() && workspace === workspaceGeneration && page === pageGeneration && request === noteLoadRequest;
   if (origin.initiative) {
     await initiatives.edit(origin.initiative); if (!owns()) return false;
-    if (origin.note) { await openContextNote(origin.note, origin.reading); if (!owns()) return false; }
+    if (origin.note) { request = noteLoadRequest + 1; await openContextNote(origin.note, origin.reading); if (!owns()) return false; }
     initiatives.selectContext(origin.selectedContext);
   } else if (origin.note) {
-    if (!await load(origin.note) || !owns()) return false;
+    if (!await load(origin.note, null, request = ++noteLoadRequest) || !owns()) return false;
     if (readMode !== origin.reading) $('#mode').click();
   }
   if (['notes', 'favorites'].includes(origin.view)) { await libraryScreen.restoreContext(origin.browse); if (!owns()) return false; }
