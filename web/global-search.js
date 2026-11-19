@@ -147,6 +147,30 @@ export class WorkspaceSearch extends NoteSearch {
     results.sort((a, b) => Number(!fold(a.title).includes(fold(search))) - Number(!fold(b.title).includes(fold(search))) || binary(a.type, b.type) || binary(a.entityId, b.entityId) || (a.type === 'note' ? a.passageStart - b.passageStart : binary(a.passageId, b.passageId)));
     return {notes: results.slice(offset, offset + 20), hasMore: results.length > offset + 20, partial};
   }
+  async source(result) {
+    const workspaceId = this.workspaceId, generation = this.generation;
+    const owns = () => workspaceId === this.workspaceId && generation === this.generation;
+    if (result.workspaceId !== workspaceId) throw Error('笔记目录已切换');
+    if (result.type === 'note') {
+      if (!safePath(result.path)) throw Error('来源路径不可用');
+      const {text} = await this.adapter('read', {workspaceId, path: result.path});
+      if (!owns()) throw Error('笔记目录已切换');
+      if (fingerprint(text) !== result.fingerprint) throw Error('来源已改变，请刷新搜索结果');
+      const body = referenceBody(text);
+      const position = Array.from(body).slice(0, Math.max(0, result.passageStart - 1)).join('').length;
+      if (!body.slice(position).startsWith(result.passage)) throw Error('匹配位置已改变，请刷新搜索结果');
+      return {type: 'note', path: result.path, text, passage: result.passage, position: text.length - body.length + position};
+    }
+    const repository = this.repositories.find(repository => repository.entityType === result.type);
+    if (!repository) throw Error('来源类型不可用');
+    await this.refresh(repository);
+    if (!owns()) throw Error('笔记目录已切换');
+    const page = await repository.request('actionQuery', {entityId: result.entityId, limit: 1});
+    if (!owns()) throw Error('笔记目录已切换');
+    const record = page.actions[0];
+    if (!record || record.deleted || record.syncState || record.workspaceId !== workspaceId || record.revision !== result.revision) throw Error('来源已改变或不可用，请刷新搜索结果');
+    return {type: result.type, record};
+  }
   async context(result, query) {
     if (result.workspaceId !== this.workspaceId) throw Error('Workspace changed');
     if (result.type === 'note') return super.context(result, query);
