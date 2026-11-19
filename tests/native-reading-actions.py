@@ -51,8 +51,10 @@ probe_hash = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 package_hash = hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest()
 input_script = 'import Carbon\nlet s = TISCopyCurrentKeyboardInputSource().takeRetainedValue()\nprint(Unmanaged<CFString>.fromOpaque(TISGetInputSourceProperty(s,kTISPropertyInputSourceID)).takeUnretainedValue())'
 def input_source(): return subprocess.check_output(['swift','-e',input_script],text=True).strip()
+native_source_hashes = {str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('mac').glob('*.swift')}
+production_hash = hashlib.sha256(Path('dist/LocalNotes.app/Contents/MacOS/LocalNotes').read_bytes()).hexdigest()
 initial_input = input_source()
-(evidence/'preflight.json').write_text(json.dumps(dict(head=head,probe=probe_hash,package=package_hash,assets=assets,inputSource=initial_input),indent=2))
+(evidence/'preflight.json').write_text(json.dumps(dict(head=head,probe=probe_hash,package=package_hash,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,inputSource=initial_input),indent=2))
 process = subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')], env={**os.environ, 'LOCAL_NOTES_TEST_ROOT':str(root), 'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'), 'REVIEW_PROBE':str(m.OUT)}, stdout=open(m.OUT/'app.log','a'), stderr=subprocess.STDOUT)
 try:
     w("!!document.querySelector('#items .home-tools')")
@@ -62,7 +64,7 @@ try:
     w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
     def key(code, modifier=''):
-        subprocess.run(['osascript','-e','tell application "System Events" to key code '+str(code)+modifier],check=True)
+        subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to key code '+str(code)+modifier],check=True)
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
     c('__frame')
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
@@ -131,9 +133,13 @@ CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mous
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and OS Quartz drag selection, Enter, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and OS Quartz drag selection, Enter, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
+    try:
+        print('FINAL_UI',c("return {focus:document.activeElement.id,dialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id),notice:document.querySelector('#notice').textContent,buttonDisabled:document.querySelector('#note-create-action').disabled,path:document.querySelector('#file-path').textContent}"))
+        print('FRONTMOST',subprocess.check_output(['osascript','-e','tell application "System Events" to get name of first application process whose frontmost is true'],text=True))
+    except Exception as error: print('Diagnostic failed',error)
     process.terminate()
     try: process.wait(timeout=10)
     except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=10)
