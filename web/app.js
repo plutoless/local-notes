@@ -410,7 +410,7 @@ async function createReadingAction(passage, opener) {
     const start = Math.min(...lines), end = Math.max(...lines);
     const next = [...document.querySelectorAll('#reading [data-source-line]')].map(node => Number(node.dataset.sourceLine)).filter(line => line > end).sort((a,b) => a-b)[0];
     // Quote complete original blocks, never rendered text with Markdown stripped.
-    quote = original.split(/(?<=\n)/).slice(start, next).join('').replace(/\r?\n$/, '');
+    quote = (original.match(/[^\n]*(?:\n|$)/g) || []).slice(start, next).join('').replace(/\r?\n$/, '');
     if (!quote || !original.includes(quote)) { notice('无法定位选段原文，请重新选择段落。'); return; }
     description = selected.text;
   }
