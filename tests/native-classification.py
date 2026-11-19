@@ -81,13 +81,13 @@ try:
     c("document.querySelector('#topic-name').focus()")
     for code in [6,4,31,45,5,13,14,45]: key(code)
     key(49)
-    w("/[\\u3400-\\u9fff]/.test(document.querySelector('#topic-name').value) && topicIME.some(e=>e.type==='compositionend' && e.isTrusted)")
+    w("/[㐀-鿿]/.test(document.querySelector('#topic-name').value) && topicIME.some(e=>e.type==='compositionend' && e.isTrusted)")
     topicIME=c('return topicIME')
     for route in ['window-close','menu-quit','cmd-q']:
         if route=='window-close':
             subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click (first button of window 1 whose subrole is "AXCloseButton")'],check=True)
         elif route=='menu-quit':
-            subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid})','-e','set frontmost to true','-e','click menu item "退出拾记" of menu 1 of menu bar item 1 of menu bar 1','-e','end tell'],check=True)
+            subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid})','-e','set frontmost to true','-e','click menu bar item "LocalNotes" of menu bar 1','-e','click menu item "退出拾记" of menu 1 of menu bar item "LocalNotes" of menu bar 1','-e','end tell'],check=True)
         else: key(12,command=True)
         w("!!document.querySelector('#task-leave-decision')")
         assert process.poll() is None
