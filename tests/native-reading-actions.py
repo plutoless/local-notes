@@ -20,7 +20,7 @@ p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBod
  if let window=self?.window, let web=self?.web {
  window.makeKeyAndOrderFront(nil); window.makeFirstResponder(web); NSApp.activate(ignoringOtherApps:true)
  let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
- let result:[String:Any] = ["ok":true,"value":[rect.minX,NSScreen.screens[0].frame.maxY-rect.maxY]]
+ let result:[String:Any] = ["ok":true,"value":[rect.minX,NSScreen.screens[0].frame.maxY-rect.maxY,window.windowNumber]]
  try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return
  }
 }
@@ -95,15 +95,22 @@ try:
 import CoreGraphics
 let start=CGPoint(x:{offset[0]+x-2},y:{offset[1]+y+height/2})
 let end=CGPoint(x:{offset[0]+x+width+2},y:{offset[1]+y+height/2})
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseDown,mouseCursorPosition:start,mouseButton:.left)!.postToPid({process.pid})
-usleep(100000)
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseDragged,mouseCursorPosition:end,mouseButton:.left)!.postToPid({process.pid})
-usleep(100000)
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mouseButton:.left)!.postToPid({process.pid})
+func send(_ type:CGEventType,_ point:CGPoint) {{
+ let e=CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)!
+ e.setIntegerValueField(.mouseEventWindowUnderMousePointer,value:{offset[2]})
+ e.setIntegerValueField(.mouseEventWindowUnderMousePointerThatCanHandleThisEvent,value:{offset[2]})
+ e.postToPid({process.pid})
+ usleep(150000)
+}}
+send(.leftMouseDown,start)
+send(.leftMouseDragged,end)
+send(.leftMouseUp,end)
 """
     subprocess.run(['swift','-e',drag_source],check=True)
 
-    w("getSelection().toString()==='确认'")
+    print('DRAG',offset,rect,c('return getSelection().toString()'))
+    w("getSelection().toString().trim()==='确认'")
+    selected_text=c('return getSelection().toString()')
     c("document.querySelector('#passage-create-action').focus()")
     key(36)
     w("document.querySelector('#action-drawer').open")
@@ -114,7 +121,7 @@ CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mous
     c("document.querySelector('#action-save').focus()")
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='passage-create-action'")
-    assert len(records())==2 and c('return getSelection().toString()')=='确认'
+    assert len(records())==2 and c('return getSelection().toString()')==selected_text
     c("document.querySelector('#note-create-action').click()")
     w("document.querySelector('#action-drawer').open")
     c("document.querySelector('#action-description').value='Discard native draft';document.querySelector('#action-description').dispatchEvent(new Event('input'))")
@@ -145,7 +152,7 @@ CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mous
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     try:
-        print('FINAL_UI',c("return {focus:document.activeElement.id,dialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id),notice:document.querySelector('#notice').textContent,buttonDisabled:document.querySelector('#note-create-action').disabled,path:document.querySelector('#file-path').textContent}"))
+        print('FINAL_UI',c("return {focus:document.activeElement.id,selection:getSelection().toString(),dialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id),notice:document.querySelector('#notice').textContent,buttonDisabled:document.querySelector('#note-create-action').disabled,path:document.querySelector('#file-path').textContent}"))
         print('FRONTMOST',subprocess.check_output(['osascript','-e','tell application "System Events" to get name of first application process whose frontmost is true'],text=True))
     except Exception as error: print('Diagnostic failed',error)
     process.terminate()
