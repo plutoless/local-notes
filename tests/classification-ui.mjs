@@ -115,7 +115,8 @@ try {
   await page.getByRole('button',{name:'完成',exact:true}).click();
   await page.locator('#new').click();
   await page.locator('#capture-title').fill('未分类合成捕获');
-  await page.locator('#capture-body').fill('离线正文，不需要 AI 设置');
+  await writeFile(join(fixture.root,'linked.md'),'# 合成链接目标\n\n[[reference.md|原始参考]]');
+  await page.locator('#capture-body').fill('离线正文，不需要 AI 设置\n\n[[linked|合成跳转]]');
   await page.getByRole('button',{name:'创建笔记',exact:true}).click();
   await page.locator('#capture-return').waitFor({state:'visible'});
   const captured = await page.locator('#file-path').textContent();
@@ -132,6 +133,19 @@ try {
   await page.locator('#back').click(); await page.locator('#library-topic').selectOption({label:'捕获后归类'});
   await page.locator('#items .card').filter({hasText:'未分类合成捕获'}).click();
   assert.equal(await page.locator('#file-path').textContent(),captured);
+  await page.locator('#reading [data-wiki-target]').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='linked.md');
+  await page.locator('#reading [data-wiki-target]').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='linked.md');
+  await page.locator('#back').click();
+  await page.waitForFunction(path=>document.querySelector('#file-path').textContent===path,captured);
+  await page.locator('#note-info-open').click();
+  assert.equal(await page.getByRole('checkbox',{name:'捕获后归类',exact:true}).isChecked(),true);
+  assert.equal(await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).isChecked(),true);
+  await page.getByRole('button',{name:'完成',exact:true}).click();
+
   const bRepo=new InitiativeRepository(alternate.adapter); await bRepo.open();
   await bRepo.save({title:'合成目标乙',goal:'独立工作区',progress:'',status:'active'});
   await page.locator('.directory-details').evaluate(n=>n.open=true); await page.locator('#choose').click();

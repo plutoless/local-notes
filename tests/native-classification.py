@@ -4,7 +4,7 @@ import hashlib, importlib.util, inspect, json, os, platform, shutil, subprocess,
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
-evidence = Path(os.environ.get('LIBRARY_EVIDENCE_DIR', 'docs/validation/issue70')); evidence.mkdir(parents=True, exist_ok=True)
+evidence = Path(os.environ.get('LIBRARY_EVIDENCE_DIR', 'docs/validation/issue70/integration/classification')); evidence.mkdir(parents=True, exist_ok=True)
 m.OUT = Path.cwd() / 'build/native-issue70'; m.APP = m.OUT / 'Classification70.app'
 if m.OUT.exists(): shutil.rmtree(m.OUT)
 m.OUT.mkdir(parents=True)
@@ -42,8 +42,8 @@ initial = subprocess.check_output([str(helper)],text=True).splitlines()[0]
 c,w = m.command,m.wait
 process = subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')], env={**os.environ, 'LOCAL_NOTES_TEST_ROOT':str(root), 'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'), 'REVIEW_PROBE':str(m.OUT)}, stdout=open(m.OUT/'app.log','a'), stderr=subprocess.STDOUT)
 
-def key(code, shift=False):
-    subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e',f'tell application "System Events" to key code {code}'+(' using shift down' if shift else '')],check=True)
+def key(code, shift=False, command=False):
+    subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e',f'tell application "System Events" to key code {code}'+(' using command down' if command else ' using shift down' if shift else '')],check=True)
     time.sleep(.15)
 try:
     w("!!document.querySelector('#items .home-tools')")
@@ -75,6 +75,26 @@ try:
     for _ in range(5):
         key(48,True)
         assert c("return document.querySelector('#topic-drawer').contains(document.activeElement)")
+    # The new contextual consumer uses the existing Chinese name field and native leave token.
+    c("window.topicIME=[];for(const type of ['compositionstart','compositionupdate','compositionend','input']) document.querySelector('#topic-name').addEventListener(type,e=>topicIME.push({type:e.type,data:e.data,isTrusted:e.isTrusted}))")
+    subprocess.run([str(helper),'com.tencent.inputmethod.wetype.pinyin'],check=True)
+    c("document.querySelector('#topic-name').focus()")
+    for code in [6,4,31,45,5,13,14,45]: key(code)
+    key(49)
+    w("/[\\u3400-\\u9fff]/.test(document.querySelector('#topic-name').value) && topicIME.some(e=>e.type==='compositionend' && e.isTrusted)")
+    topicIME=c('return topicIME')
+    for route in ['window-close','menu-quit','cmd-q']:
+        if route=='window-close':
+            subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click (first button of window 1 whose subrole is "AXCloseButton")'],check=True)
+        elif route=='menu-quit':
+            subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid})','-e','set frontmost to true','-e','click menu item "退出拾记" of menu 1 of menu bar item 1 of menu bar 1','-e','end tell'],check=True)
+        else: key(12,command=True)
+        w("!!document.querySelector('#task-leave-decision')")
+        assert process.poll() is None
+        assert c("return document.querySelector('#topic-name').value.length>0")
+        c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').click()")
+        w("!document.querySelector('#task-leave-decision') && document.querySelector('#topic-drawer').open")
+        w("!document.querySelector('#topic-drawer').inert")
     c("document.querySelector('#topic-name').value='原生合成主题';document.querySelector('#topic-name').dispatchEvent(new Event('input'));document.querySelector('#topic-form').requestSubmit()")
     w("document.querySelector('#note-info-drawer').open")
     assert c("return [...document.querySelectorAll('#note-topics input')].every(n=>n.checked)")
@@ -104,7 +124,7 @@ try:
     # OS window close on the clean note; this is not a dirty-close claim.
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click button 1 of window 1'],check=True)
     time.sleep(.5)
-    report=dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),assets=assets,sourceHash=original,unchanged=True,associationsReadback=True,trustedKeys=keys,cleanWindowClose=True,input='DOM-driven Cocoa/WKWebView plus OS-injected Tab, Shift+Tab, Escape and native window close; no physical keyboard')
+    report=dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),assets=assets,sourceHash=original,unchanged=True,associationsReadback=True,trustedKeys=keys,cleanWindowClose=True,dirtyTopicWindowCloseContinue=True,dirtyTopicMenuQuitContinue=True,dirtyTopicCommandQContinue=True,topicIME=topicIME,input='DOM-driven Cocoa/WKWebView plus OS-injected Tab, Shift+Tab, Escape and native window close, dirty native close/menu quit/Cmd+Q, installed WeType composition commit; no physical keyboard')
 finally:
     if process.poll() is None: process.terminate();process.wait(timeout=10)
     subprocess.run([str(helper),initial],check=True)
