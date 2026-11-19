@@ -464,3 +464,6 @@ details { overflow-wrap: anywhere; }
 #reading pre { overflow-x: auto; }
 /* A protected action drawer owns its own reachable search return control. */
 body:has(#action-drawer[open]) .search-return-shell { display: none; }
+
+/* Inline local navigation uses the reader's text rhythm and shared focus tokens. */
+.wiki-link { color: var(--accent); background: none; border: 0; text-decoration: underline; font: inherit; padding: 0 4px; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; cursor: pointer; }
