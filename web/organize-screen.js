@@ -71,7 +71,7 @@ export class OrganizeScreen {
     $('#ai-selection').inert = running; $('#ai-directory').disabled = running; $('#ai-search').disabled = running; $('#ai-configure').disabled = running;
     $('#ai-notes-next').disabled = running || !this.selectionHasMore;
     $('#ai-notes-previous').disabled = running || !this.selectionOffset;
-    $('#ai-settings').inert = running;
+    $('#ai-settings').inert = running || Boolean(this.settingsPending);
   }
   invalidate() {
     this.organization.batches = null; this.organization.covered = 0;
@@ -97,6 +97,7 @@ export class OrganizeScreen {
   leaveSettings() { return requestTaskLeave(this.settingsTask()); }
   saveSettings() {
     if (this.settingsPending) return this.settingsPending;
+    if (!$('#ai-settings').reportValidity()) return Promise.reject(Error('Invalid configuration fields'));
     this.settingsSave.disabled = true; $('#ai-settings').inert = true;
     const operation = (async () => {
       await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value});
