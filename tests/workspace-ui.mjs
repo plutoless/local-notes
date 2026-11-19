@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -182,7 +183,7 @@ try {
   await page.locator('#workspace-references [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
-  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
   await page.locator('#initiative-new-action').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();

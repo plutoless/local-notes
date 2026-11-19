@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, utimes, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -119,7 +120,7 @@ try {
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
   await page.locator('#editor').waitFor({state:'visible'});
   await page.locator('#note-info-open').click(); await page.getByLabel('已重命名主题',{exact:true}).check();
-  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('中文正文，保留原文与路径。\n\n- 列表项目\n\n> 引用原文\n\n- [ ] 原文复选框');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('中文正文，保留原文与路径。\n\n- 列表项目\n\n> 引用原文\n\n- [ ] 原文复选框');
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.locator('#mode').click(); assert.equal(await page.locator('#reading ul').count(),1); assert.equal(await page.locator('#reading blockquote').count(),1);
   const checkbox=await page.getByLabel('原文复选框',{exact:true}).boundingBox(); assert.equal(checkbox.width,20);
@@ -132,7 +133,7 @@ try {
   await page.locator('#note-task-drawer').waitFor({state:'hidden'});
   await closeNoteInfo(page); await page.locator('#back').click(); await page.locator('#library-topic').selectOption(topic);
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
-  await page.locator('#mode').click(); await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('我的编辑仍保留');
+  await page.locator('#mode').click(); await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('我的编辑仍保留');
   const movedPath=join(fixture.root,'工作资料/中文长路径笔记.md'); await writeFile(movedPath,'# 外部版本\n\n外部修改');
   await page.locator('#conflict').waitFor({state:'visible'}); await page.screenshot({path:join(evidence, 'after-conflict.png')});
   await page.locator('#copy').click(); await page.waitForFunction(()=>document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
@@ -148,8 +149,8 @@ try {
   await page.waitForFunction(()=>document.querySelector('#title').value==='恢复的中文草稿');
   await page.locator('#note-save').click();
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
-  if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#title').fill('恢复的中文草稿：长期研究资料与工作记录'.repeat(6));
-  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill(('中文长段落用于验证持续阅读、换行和滚动，不改变任何其他笔记。'.repeat(15)+'\n\n').repeat(4));
+  await enterNoteEditing(page); await page.locator('#title').fill('恢复的中文草稿：长期研究资料与工作记录'.repeat(6));
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill(('中文长段落用于验证持续阅读、换行和滚动，不改变任何其他笔记。'.repeat(15)+'\n\n').repeat(4));
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.setViewportSize({width:393,height:852});
   await page.screenshot({path:join(evidence, 'after-393-editor.png')});
