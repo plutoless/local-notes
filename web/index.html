@@ -149,12 +149,13 @@
             <input id="title" aria-label="笔记标题" placeholder="无标题" />
             <details id="note-details" class="ui-disclosure">
               <summary>笔记信息与整理</summary>
-              <p>来源路径：<span id="file-path"></span></p>
+              <p>来源位置：<span id="file-path"></span></p>
               <button id="star" class="ui-action icon-action" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
               <button id="rename" class="ui-action quiet">移动 / 改名</button>
               <button id="repair-links" class="ui-action quiet" hidden>重试更新关联</button>
-              <h2>主题</h2><div id="note-topics"></div>
-              <h2>关联事项</h2><div id="note-initiatives"></div>
+              <p>来源位置是文件目录；主题用于跨目录归类；事项用于跟踪目标与进展。关联不会移动或改写笔记。</p>
+              <h2>主题归类</h2><div id="note-topics"></div>
+              <h2>事项 · 目标与进展</h2><div id="note-initiatives"></div>
               <p>笔记中的复选框只记录原文。需要跟进时，请从「当前重点」打开「全部行动」，单独新建行动。</p>
             </details>
             <textarea
