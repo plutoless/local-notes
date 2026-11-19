@@ -49,3 +49,9 @@ Attempt 14 exposed a real native return defect: focusing the contextual opener a
 `native-report.json`, `preflight.json`, `cleanup.json` and `bindings.json` bind source assets, production Mac executable, instrumented native host, probe and Android package. Android packaged assets were independently matched to those source hashes. The final handoff adds the exact final-head rerun receipt; documentation-only commits do not change the tested product/probe source. All native hosts are terminated/waited and the GUI lease is explicitly released after the last run.
 
 No known functional blocker or accepted-minor exception remains. Coordinator review and merge/closure authority remain required; no additional physical/OS drag or Android/Syncthing acceptance is claimed.
+
+## Integration after main advanced
+
+After the successful original final-head run at `9c5e797d2527187fed65d92177a8a40d5fa4d5bc`, main advanced to `5c780a9ac30818d2ccd0c888820b8cf0ede38a2c` with delivered #71/PR #87. This branch was rebased onto that main. The only conflict was the `test:ui` script; both #71's Organization selection suite and #69's reading Action suite are retained. Application changes merged cleanly, and #71 behavior was not reimplemented or redesigned.
+
+The starting SHA remains `1b5ddac5621e4d6c2d3e575a0d5f81b094e6c7db`; the current integration/review merge-base is `5c780a9ac30818d2ccd0c888820b8cf0ede38a2c`. Earlier native manifests and reports above are historical executed receipts and must not be treated as hash matches for the rebased application. Shared checks, builds, independent reviews and native acceptance are being refreshed against the new base; final PR/handoff receipts supersede the historical-head summary without deleting its failures or evidence.

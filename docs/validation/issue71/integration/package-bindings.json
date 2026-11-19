@@ -1,0 +1,34 @@
+{
+  "productHead": "d49987acbe8ee22c9752993c11e5a5d831f1e455",
+  "webTree": "e1aefcc3d64f53023295ef78112e550ca7bffa16",
+  "assets": {
+    "library-screen.js": "ea7c03da27e435e51eb2c6fe7249a21014271c956427757df70bc743061a291b",
+    "organization.js": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+    "index.html": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6",
+    "core.js": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+    "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "actions.js": "fce684f189da673d8485319fe91c88c2c9f63a095022e284153e9324f67b7b40",
+    "reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+    "initiative-screen.js": "cf66708a023a4be85316c632e3da323c69e12369c5122b033e24a211b3682579",
+    "library.js": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9",
+    "focus-screen.js": "b23aaa779c423c9d1e12043cdfa0572a6e76d2c997ec0782846edb326a7ad5ca",
+    "global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+    "task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+    "revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "search-screen.js": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea",
+    "style.css": "bcf74803182ab194ec7e3be89c68700f26213f8352b2fe7c3015d657a02401f2",
+    "organize-screen.js": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
+    "action-screen.js": "17395a25aef48d24727958a3dcc6887d9d056a9a30e60c59b0e8c88e428eb8d4",
+    "presentation.js": "864725ff2c414a97f97fb17dd9d75ea0e5151753694ad6eed9345508492eddad",
+    "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
+    "app.js": "bc9fdb5dd3ee294ed922bbbf1c5d35c046b77ea6f44ef9e5b9192131d161bdf8",
+    "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+  },
+  "files": {
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": "d3d57315fb8c1de57250511068750fd7b26158898022939450eca403a2dd1bca",
+    "dist/LocalNotes-debug.apk": "41416507b070025ccf405061a1e1a948da5ea1ef4a38dad60f096272d19e1e76",
+    "build/native-issue71/Organization71.app/Contents/MacOS/LocalNotes": "56079a8fa6af1005e64c8fb8023dc6e0b3919da37f46a47573bca4f965834780",
+    "tests/native-organization-selection.py": "3f61d4d0a4c9b1094e9fba0662e0dd60452218176b06557ee33faf32386d02d8",
+    "build/native-issue71/main.swift": "b9abadbe5ee1a8993c086009d87c2d8f849ad4dac672dedde943c5faaccb388f"
+  }
+}
