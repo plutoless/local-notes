@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -61,7 +62,7 @@ try {
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#global-search-open').evaluate(n => n === document.activeElement), true);
   for (const view of ['notes','initiatives']) { await page.locator(`nav [data-view=${view}]`).click(); await page.locator('#global-search-open').click(); await input.waitFor(); assert.equal(await input.inputValue(),'latency'); await page.keyboard.press('Escape'); }
   await page.locator('nav [data-view=notes]').click(); await page.locator('#items button').filter({hasText:'重复标题'}).first().click();
-  await page.locator('#body').fill('Dirty unrelated note'); await page.waitForTimeout(800); const beforeSearchSaves = saves;
+  await enterNoteEditing(page); await page.locator('#body').fill('Dirty unrelated note'); await page.waitForTimeout(800); const beforeSearchSaves = saves;
   await page.locator('#global-search-open').click(); await input.waitFor(); await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent.startsWith('本页')); await page.keyboard.press('Meta+Enter'); await page.getByText('已复制片段',{exact:true}).waitFor(); await page.keyboard.press('Escape');
   assert.equal(await page.locator('#body').inputValue(),'Dirty unrelated note'); assert.equal(saves,beforeSearchSaves);
   // Restore the fixture draft without emitting a new edit; leave guard may now retry successfully only in separate maintained journeys.
