@@ -44,3 +44,15 @@ Summary: 0 hard findings; 0 actionable minor findings.
 No remaining blocking Spec findings. Contextual creation persists its proposed revision identity before writing and verifies durable history after ambiguous failures. Saved-version messaging requires verified commitment; uncertain results retain private recovery identity. Passage mapping includes intersected table/list text, rejects invalid ranges and invalidates cached selection on content change. Added coverage addresses pre-write dismissal, lost-reply reload/retry, changed/moved/unavailable sources, narrow sizing and delayed workspace opening. Implementation remains scoped to #69. Native acceptance depends on executed final-head evidence; code review does not certify execution.
 
 Summary: 0 remaining blocking findings; no accepted functional deviations.
+
+## Re-review after native return correction — ade4069ba0fcd093eb3014a8c1a1b630c23d0d4c
+
+### Standards — independent /root/standards
+
+No actionable Standards findings. The focus override has a concrete contextual-return consumer and keeps focus placement before Range restoration. Existing wiki-return callers retain their default behavior. This follows the documented requirement to restore meaningful focus and selection without introducing another drawer or navigation path. Prior Standards resolutions remain intact. Attempt 14 preserves the executed native failure and does not claim that its persisted records prove selection restoration. Summary: 0 hard Standards findings; 0 actionable minor findings. Browser/native rerun results remain necessary; this review does not certify their execution.
+
+### Spec — independent /root/spec
+
+No new blocking Spec findings. The affected fix focuses the final contextual opener before restoring the reader Range, eliminating the later focus call that cleared native selection. Existing wiki-return callers retain their original focus behavior through the default argument. The full change remains scoped to #69. Previously reviewed source-grounding, explicit confirmation, persistence recovery, workspace fencing and nested-return protections remain intact. Failure 14 is preserved as failed evidence. Final-head native rerun and cleanup results remain pending; this review does not certify their execution or acceptance. Summary: 0 remaining blocking findings; no accepted functional deviations.
+
+Execution update: attempt 16 subsequently passed the full revised native journey, including the exact selection-return assertions that failed in attempt 14. Final-head review reports and rerun receipts are included in the PR/handoff so their exact SHA does not depend on a self-referential documentation commit.

@@ -1,7 +1,7 @@
 {
-  "head": "c579752864589d364bf6ded7feffeac84e0aff13",
-  "probe": "d52bdc3c67b7966b8ca56f44b413dc55491141413dd811684ca8e98008841d74",
-  "package": "8b81331fefec0656537426948e9dabcf73c8ba0df317cfd89aac7ae47bd230f5",
+  "head": "c0b2a93c570fdfb4582631680c1d7357daae5817",
+  "probe": "0eff1f4997a32ebe5bfc296ab54562825d7b5fa8da0a3dc9aa6c6cf1b7319b15",
+  "package": "1aec0971168e551cd848530e9765b6afb472f7f2dafd1c28b217d6c0d128a6b8",
   "assets": {
     "library-screen.js": "ea7c03da27e435e51eb2c6fe7249a21014271c956427757df70bc743061a291b",
     "organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
@@ -22,7 +22,7 @@
     "action-screen.js": "344d7fdc0808248441886449895577a00245ccc60be36617b9a58bee7c4cea33",
     "presentation.js": "864725ff2c414a97f97fb17dd9d75ea0e5151753694ad6eed9345508492eddad",
     "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
-    "app.js": "287cee583da30ea31a90aa43be30fa95d6e6edcc621436070888fee36da65c76",
+    "app.js": "3d179115802bf018c14324e471117585a9960ffaaa9516aa688732f32e0019e4",
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
   },
   "nativeSources": {
@@ -33,6 +33,6 @@
     "mac/ActionStorage.swift": "d76d070f1d60102c6ef68e46bd67896d7e4530108ae65ab48a701405028f1909",
     "mac/main.swift": "cead52b0f5b18f33c4974ad1aff89de21093996c640502d415e37d1db08b5f6b"
   },
-  "productionExecutable": "76ad0d49031178d8c648b983c255b4ca0a01e41be1aab8f85c79f659e44e62de",
+  "productionExecutable": "c8d85bdbe301d03d882a4a4e20b8a7301435df324d56aef579b32f6946e330ee",
   "inputSource": "com.tencent.inputmethod.wetype.pinyin"
 }

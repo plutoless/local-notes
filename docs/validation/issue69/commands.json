@@ -1,0 +1,46 @@
+[
+  {
+    "command": "npm run check",
+    "exitCode": 0
+  },
+  {
+    "command": "npm test",
+    "exitCode": 0,
+    "passed": 67,
+    "failed": 0
+  },
+  {
+    "command": "CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui",
+    "exitCode": 0,
+    "scope": "Full suite before final focus/compatibility corrections; affected suites rerun below"
+  },
+  {
+    "command": "node tests/reading-actions-ui.mjs",
+    "exitCode": 0,
+    "scope": "After final production change; installed Chrome via CHROME_PATH"
+  },
+  {
+    "command": "node tests/wiki-links-ui.mjs",
+    "exitCode": 0,
+    "scope": "After final focus change; installed Chrome via CHROME_PATH"
+  },
+  {
+    "command": "node tests/search-navigation-ui.mjs",
+    "exitCode": 0,
+    "scope": "After final focus change; installed Chrome via CHROME_PATH"
+  },
+  {
+    "command": "npm run build:mac",
+    "exitCode": 0
+  },
+  {
+    "command": "npm run build:android",
+    "exitCode": 0,
+    "scope": "Packaging only; no Android runtime acceptance"
+  },
+  {
+    "command": "python3 tests/native-reading-actions.py",
+    "exitCode": 0,
+    "scope": "Attempt16 at c0b2a93; actual native UI/bridge/records/index; DOM Range setup only"
+  }
+]

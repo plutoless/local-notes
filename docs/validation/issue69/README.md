@@ -32,7 +32,7 @@ Failed attempts are retained, never counted as acceptance:
 9–10. Process-targeted Quartz Return created the note-level Action through actual storage, but drag selection assertions failed.
 11. AppKit mouse-event selection also produced no selection. Input-source verification differed in this attempt; the probe never selected an input source, and no global preferences were changed.
 12. The Shift+Right probe had a Swift modifier-expression syntax error, corrected in the next attempt.
-13. Process-targeted Shift+Right still produced no native selection. All hosts were terminated and waited. The cleanup receipt records initial/final input source and confirms no temporary input-source selection. Native passage selection acceptance remains unresolved; no full native pass is claimed. Native keyboard success is distinct from selection acceptance.
+13. Process-targeted Shift+Right still produced no native selection. All hosts were terminated and waited. The cleanup receipt records initial/final input source and confirms no temporary input-source selection. These failed attempts are not counted as acceptance. Native keyboard success is distinct from successful selection input.
 
 Android-specific runtime/device checks and standalone Syncthing tests are deferred by user decision, not passed. Physical keyboard/mouse input is not claimed. Synthetic native reports contain no original notes or private transmission.
 
@@ -40,6 +40,12 @@ Android-specific runtime/device checks and standalone Syncthing tests are deferr
 
 See [separate independent reports and resolutions](reviews.md). There are no accepted-minor functional deviations. Coordinator retains merge and issue-closure authority.
 
-## Current handoff limitation
+## Successful native boundary
 
-The implementation and headless storage acceptance are complete, but the native input environment has not produced a selected passage. Native note-level confirmation has executed with actual process-targeted Quartz Return through the UI/bridge/repository/storage/index. DOM-created WKWebView selection would exercise the real passage flow but is distinct from successful OS/native selection input. The coordinator explicitly approved DOM Range as selection setup on 2026-11-19: exact selected original passage and source mapping must be verified in the real WebView, alongside actual process-targeted Quartz keyboard input and native poststate/storage assertions. This does not claim OS-generated/physical selection or AX success. The revised probe is prepared but awaits a renewed exclusive GUI lease after issue71 cleanup; native acceptance and merge readiness are not yet claimed.
+At committed head `c0b2a93c570fdfb4582631680c1d7357daae5817` (full SHA in native-report.json), the revised native journey passed with coordinator-approved DOM Range **only as selection setup** and actual process-targeted Quartz Return, Tab and Escape. Exact original selected list text, editable description, full raw Markdown evidence, source fingerprint, persisted Action/revision files and index-backed management rows were verified. A whole-table Range included original header delimiters and body rows; cancel created no Action and preserved table selection. Dirty close/discard, keyboard containment, contextual focus, list selection restoration, nested wiki return and unchanged source SHA-256 all passed. No OS-generated/physical selection or successful AX inspection is claimed.
+
+Attempt 14 exposed a real native return defect: focusing the contextual opener after Range restoration cleared selection in WKWebView. The implementation now focuses the final opener before restoring Range; the affected browser, wiki and search-return journeys passed. Attempt 15 reached the new list/table poststate checks but its synthetic edit event did not bubble to the form, so Escape correctly treated it as clean. The probe was corrected to establish dirty state through a bubbling event; attempt 16 passed the full journey. These failures are preserved separately.
+
+`native-report.json`, `preflight.json`, `cleanup.json` and `bindings.json` bind source assets, production Mac executable, instrumented native host, probe and Android package. Android packaged assets were independently matched to those source hashes. The final handoff adds the exact final-head rerun receipt; documentation-only commits do not change the tested product/probe source. All native hosts are terminated/waited and the GUI lease is explicitly released after the last run.
+
+No known functional blocker or accepted-minor exception remains. Coordinator review and merge/closure authority remain required; no additional physical/OS drag or Android/Syncthing acceptance is claimed.
