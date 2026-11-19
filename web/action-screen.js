@@ -88,10 +88,11 @@ export class ActionScreen {
     if (!this.drawer.panel.open) return true;
     if (this.saving) return false;
     if (discard) { localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false; }
-    if (!this.dirty) localStorage.removeItem(this.key());
+    if (!this.dirty && !this.creationUncertain) localStorage.removeItem(this.key());
     const opener = this.drawerContext?.opener;
     this.editRequest = (this.editRequest || 0) + 1;
     this.drawer.hide();
+    const proposal = this.contextualProposal; this.contextualProposal = null; this.creationAttempt = null;
     if (this.drawerContext) {
       if (!this.drawerContext.committed) this.previous = this.drawerContext.previous;
       for (const row of document.querySelectorAll('#items [data-entity-id]')) { const selected = row.dataset.entityId === this.previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
@@ -107,14 +108,15 @@ export class ActionScreen {
     const selected = [...document.querySelectorAll('[data-entity-id], [data-action-id]')].find(node => (node.dataset.entityId || node.dataset.actionId) === this.previous?.entityId && node.getClientRects().length);
     const fallback = [opener, selected, $('#action-new'), $('#workspace-overview'), $('.home-tools .primary')].find(node => node?.isConnected && !node.disabled && node.getClientRects().length);
     fallback?.focus({preventScroll: true});
+    proposal?.restore();
     return true;
   }
-  async dismissDrawer() { if (await this.leaveDrawer()) await this.returnToFocus?.(); }
+  async dismissDrawer() { const contextual = this.contextualProposal; if (await this.leaveDrawer() && !contextual) await this.returnToFocus?.(); }
   leaveDrawer() { return this.drawer.panel.open ? requestTaskLeave(this.task()) : Promise.resolve(true); }
   task() {
     return {label: '行动', pending: () => this.saving, dirty: () => this.dirty, committed: () => Boolean(this.retry),
       save: () => this.save(), discard: () => {
-        localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
+        if (!this.creationUncertain) localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
         this.editRequest = (this.editRequest || 0) + 1;
         this.showForm(this.previous || {}, this.previous); this.dirty = false;
       }, close: () => this.closeDrawer()};
@@ -134,7 +136,7 @@ export class ActionScreen {
     if (workspace.warnings.length) this.notice(workspace.warnings.join('\n'));
     const recovered = recoverTaskDraft('action', this.repository.workspaceId);
     this.draftKey = recovered?.key; const draft = recovered?.value;
-    if (draft) { this.showForm(draft.previous || {}, draft.previous); const baseline = this.baseline; this.recoveredDraft = true; this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.state('已恢复行动草稿，请核对后保存。'); }
+    if (draft) { this.showForm(draft.previous || {}, draft.previous); const baseline = this.baseline; this.recoveredDraft = true; this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline; this.state('已恢复行动草稿，请核对后保存。'); }
     else $('#action-editor').hidden = true;
     return workspace;
   }
@@ -205,10 +207,10 @@ export class ActionScreen {
     $('#action-save-state').dataset.state = message === '正在保存…' ? 'saving' : this.recoveredDraft ? 'recovered' : this.dirty ? 'dirty' : 'saved';
   }
   changed() {
-    this.recoveredDraft = false; const edited = JSON.stringify(this.fields()) !== this.baseline; this.dirty = Boolean(this.retry) || edited; if (edited) this.retry = null;
+    this.recoveredDraft = false; const edited = JSON.stringify(this.fields()) !== this.baseline; this.dirty = Boolean(this.retry || this.creationAttempt) || edited; if (edited) this.retry = null;
     $('#action-description').setAttribute('aria-invalid', 'false');
     $('#action-focus').disabled = true;
-    if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry})); else localStorage.removeItem(this.key());
+    if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, attempt: this.creationAttempt})); else localStorage.removeItem(this.key());
     this.state(this.dirty ? '行动草稿尚未保存' : '已保存到本地');
   }
   addSource(source) {
@@ -245,9 +247,9 @@ export class ActionScreen {
 
     this.baseline = JSON.stringify(this.fields());
     // Source availability is advisory and must survive every form reconstruction.
-    this.refreshSources(fields).catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
+    if (!this.contextualProposal) this.refreshSources(fields).catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
   }
-  async edit(action, recovered = null) {
+  async edit(action, recovered = null, proposal = null) {
     const request = this.openRequest = (this.openRequest || 0) + 1;
     const repository = this.repository;
 
@@ -264,16 +266,19 @@ export class ActionScreen {
       catch (error) { this.notice(error.message); return; }
     }
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.()) return;
-    this.draftKey = recovered?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
+    this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     const context = this.captureContext(action);
-    this.showForm(action || {}, action);
+    this.contextualProposal = proposal;
+    this.showForm(proposal?.fields || action || {}, action);
     const baseline = this.baseline;
     if (draft) { this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; }
     this.drawerContext = context;
+    this.creationAttempt = proposal ? draft?.attempt || null : null;
+    this.creationUncertain = Boolean(this.creationAttempt);
     this.recoveredDraft = Boolean(draft);
     this.drawer.open($('#action-description'));
-    this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline;
+    this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
     await this.assignments($('#action-initiative').value || '');
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.() || !this.drawer.panel.open) return;
     if (draft) this.state('已恢复行动草稿，请核对后保存。');
@@ -297,12 +302,27 @@ export class ActionScreen {
     if (!this.dirty && this.previous) { this.state('已保存到本地'); return true; }
     this.dirty = true;
     const focused = document.activeElement;
+    const repository = this.repository, owner = this.owner?.(), proposal = this.contextualProposal;
+    const owns = () => repository === this.repository && owner === this.owner?.();
     this.saving = (async () => {
       await Promise.resolve();
       this.state('正在保存…'); $('#action-save').disabled = true; $('#action-form').inert = true;
       let committed = null;
       try {
         const fields = this.fields();
+        if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
+        // A committed revision must be recovered even if its source later changes.
+        let attemptedCommit = false;
+        if (proposal && this.creationAttempt && !this.retry) {
+          const history = await repository.history(this.creationAttempt.entityId);
+          attemptedCommit = history.some(record => record.revision === this.creationAttempt.revision);
+          if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
+        }
+        if (proposal && !this.retry && !attemptedCommit) {
+          await proposal.validate(fields);
+
+        }
+        if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
         if (!fields.description.trim()) { $('#action-description').setAttribute('aria-invalid', 'true'); throw Error('请填写行动描述。'); }
         if (fields.initiativeId && fields.initiativeId !== this.previous?.initiativeId) {
           const target = (await allRecords(this.initiatives.repository)).find(i => i.entityId === fields.initiativeId && i.status !== 'ended');
@@ -312,27 +332,50 @@ export class ActionScreen {
           const result = await native('read', {path: source.path, workspaceId: this.repository.workspaceId}); source.fingerprint = fingerprint(result.text);
           if (source.quote && !result.text.includes(source.quote)) throw Error(`未在来源中找到引用原文，请核对：${source.path}`);
         }
-        const result = await this.repository.save(fields, this.previous, this.retry);
+        if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
+        if (proposal && !this.retry && !attemptedCommit) {
+          // Persist the identity before crossing the bridge, including lost replies/restarts.
+          this.creationAttempt = repository.prepare(fields);
+          localStorage.setItem(this.key(), JSON.stringify({fields, previous: this.previous, retry: this.retry, attempt: this.creationAttempt}));
+        }
+        let result = await repository.save(fields, this.previous, this.retry || (proposal ? this.creationAttempt : null));
+        if (proposal && attemptedCommit && JSON.stringify(fields) !== JSON.stringify({description: result.record.description, status: result.record.status, initiativeId: result.record.initiativeId || '', dueDate: result.record.dueDate || '', waitingOn: result.record.waitingOn || '', sources: result.record.sources})) {
+          this.previous = result.record; this.retry = result.record;
+          localStorage.setItem(this.key(), JSON.stringify({fields, previous: this.previous, retry: this.retry}));
+          result = await repository.save(fields, result.record);
+        }
         committed = result.record;
+        if (!owns()) return true;
         if (this.drawerContext) this.drawerContext.committed = true;
-        this.previous = result.record; this.retry = null; this.recoveredDraft = false; this.dirty = false; localStorage.removeItem(this.key());
+        this.previous = result.record; this.retry = null; this.creationAttempt = null; this.recoveredDraft = false; this.dirty = false; localStorage.removeItem(this.key());
         this.draftKey = `action-draft:${this.repository.workspaceId}:${result.record.entityId}`;
         this.showForm(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地');
         $('#action-save-state').dataset.state = 'saved';
         await this.list();
         if ($('.app').classList.contains('workspace')) await this.initiatives.details();
+        if (proposal) { this.saving = null; this.closeDrawer(); }
         return true;
       } catch (error) {
+        if (!owns()) return false;
         this.retry = error.revisionSaved ? error.record : committed;
+        if (proposal && this.creationAttempt && !this.retry) {
+          this.creationUncertain = true;
+          try {
+            const history = await repository.history(this.creationAttempt.entityId);
+            if (!owns()) return false;
+            this.creationUncertain = false;
+            if (history.some(record => record.revision === this.creationAttempt.revision)) this.retry = this.creationAttempt;
+          } catch { /* Retain the private identity when persistence cannot be verified. */ }
+        }
         if (this.retry) {
           const record = this.retry;
           this.baseline = JSON.stringify({description:record.description || '',status:record.status || 'todo',initiativeId:record.initiativeId || '',dueDate:record.dueDate || '',waitingOn:record.waitingOn || '',sources:record.sources || []});
           this.previous = record; if (this.drawerContext) this.drawerContext.committed = true; }
-        this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline;
-        if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry})); else localStorage.removeItem(this.key());
-        errorFeedback($('#action-save-state'), error.message); if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'; return false;
-      } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; if ($('#action-description').getAttribute('aria-invalid') === 'true') $('#action-description').focus(); else if (focused?.isConnected) focused.focus({preventScroll: true}); }
+        this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
+        if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, attempt: this.creationAttempt})); else localStorage.removeItem(this.key());
+        errorFeedback($('#action-save-state'), error.message); if (this.creationUncertain) $('#action-save-state p').textContent = '保存结果尚未确认。重试会核对同一版本；关闭不会撤销可能已保存的版本。'; if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'; return false;
+      } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; if ($('#action-description').getAttribute('aria-invalid') === 'true') $('#action-description').focus(); else if (this.drawer.panel.open && focused?.isConnected) focused.focus({preventScroll: true}); }
     })();
     return this.saving;
   }

@@ -1,0 +1,6 @@
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+PASS native reading Action confirmation, DOM Range consumption/source mapping, Quartz keyboard/focus, Escape/discard, nested return and persisted revisions/index
+FINAL_UI {'dialogs': [], 'selection': '', 'buttonDisabled': False, 'notice': '', 'focus': 'view-title', 'path': 'reader.md'}
+FRONTMOST Feishu
+
