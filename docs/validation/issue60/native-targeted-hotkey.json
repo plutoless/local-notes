@@ -1,0 +1,59 @@
+{
+  "id": "90ab55b1-1492-4437-a7db-f49258648852",
+  "ok": true,
+  "result": {
+    "action": {
+      "verification": {
+        "expected": null,
+        "actualPreview": null,
+        "state": "unverified",
+        "reason": "synthetic_input"
+      },
+      "delivery": "background",
+      "actionName": "hotkey",
+      "fallbackReason": null,
+      "path": "synthetic",
+      "targetWindowId": 21213
+    },
+    "snapshot": {
+      "treeText": "App=dev.localnotes.validation.issue7 (pid 45701)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t31 container 搜索内容\n\t\t\t\t32 heading 搜索内容\n\t\t\t\t33 container\n\t\t\t\t\t34 text 关键词\n\t\t\t\t\t35 search text field (settable) 关键词\n\t\t\t\t36 button 关闭搜索\n\t\t\t\t37 container 搜索范围\n\t\t\t\t\t38 toggle button 全部内容, Value: 1\n\t\t\t\t\t39 toggle button 笔记, Value: 0\n\t\t\t\t\t40 toggle button 事项, Value: 0\n\t\t\t\t\t41 toggle button 行动, Value: 0\n\t\t\t\t42 text 索引正在更新，请输入关键词\n\t\t\t\t43 container 搜索结果\n\t\t\t\t44 button (disabled) 上一页\n\t\t\t\t45 button (disabled) 下一页\n\t\t\t\t46 container\n\t\t\t\t\t47 checkbox 附带来源, Value: 0\n\t\t\t\t\t48 text 附带来源\n\t\t\t\t49 button 刷新索引\n\t\t\t\t50 text 本地关键词 · ↑↓ 选择 · Enter 展开 · ⌘Enter 复制\n\t27 close button\n\t28 full screen button, Secondary Actions: zoom the window\n\t29 minimize button\n\t30 text 拾记 · Local Notes\n\nThe focused UI element is 35 search text field (settable) 关键词.",
+      "focusedElementId": 35,
+      "id": "2A21E385-EA4E-474F-BD4C-5EA663B08A87",
+      "app": {
+        "bundleId": "dev.localnotes.validation.issue7",
+        "pid": 45701,
+        "name": "LocalNotes"
+      },
+      "window": {
+        "x": 166,
+        "screenIndex": 0,
+        "title": "拾记 · Local Notes",
+        "width": 1180,
+        "id": 21213,
+        "height": 832,
+        "isOffscreen": false,
+        "y": 47,
+        "isMinimized": false,
+        "platform": {
+          "layer": 0
+        }
+      },
+      "coordinateSpace": "window",
+      "elementCount": 27,
+      "truncation": {
+        "maxDepth": 64,
+        "truncated": false,
+        "maxDepthReached": false,
+        "maxNodes": 1200
+      }
+    },
+    "screenshot": null,
+    "screenshotStatus": {
+      "reason": "no_screenshot_flag",
+      "state": "skipped"
+    }
+  },
+  "_meta": {
+    "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+  }
+}
