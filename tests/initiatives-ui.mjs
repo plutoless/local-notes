@@ -138,11 +138,11 @@ try {
   await page.locator('#initiative-new-note').click();
   await page.waitForFunction(()=>!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent.startsWith('Notes/') && document.querySelector('#title')===document.activeElement);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
-  await page.locator('#title').fill('Working log');
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update');
+  assert.equal(await page.locator('#title').evaluate(n=>n.readOnly),false); await page.locator('#title').fill('Working log');
+  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   failNoteSave = true;
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update draft');
+  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('Manual research update draft');
   await page.locator('#workspace-overview').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
@@ -150,7 +150,7 @@ try {
   assert.equal(await page.locator('#editor').isVisible(), true);
   assert.equal(await page.locator('#body').inputValue(), 'Manual research update draft');
   failNoteSave = false;
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update');
+  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('Manual research update');
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();

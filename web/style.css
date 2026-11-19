@@ -455,3 +455,10 @@ details { overflow-wrap: anywhere; }
 
 .search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); }
 .search-scopes [aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
+
+/* Keep wide authored tables inside the document's own scroll region. */
+.markdown-table { max-width: 100%; overflow-x: auto; margin: 1em 0; }
+.markdown-table table { border-collapse: collapse; min-width: 100%; }
+.markdown-table th, .markdown-table td { border: 1px solid var(--divider); padding: 8px 12px; min-width: 8em; text-align: left; vertical-align: top; }
+.markdown-table th { background: var(--canvas); }
+#reading pre { overflow-x: auto; }
