@@ -56,6 +56,9 @@ helper=m.OUT/'input-source'
 subprocess.run(['swiftc','-module-cache-path','build/swift-cache','tests/InputSourceHarness.swift','-o',str(helper)],check=True)
 def input_source(): return subprocess.check_output([str(helper)],text=True).splitlines()[0]
 initial_input=input_source()
+# Freeze identities before launching any owned native process.
+preflight_paths=[Path('mac/main.swift'),Path(__file__),p,m.APP/'Contents/MacOS/LocalNotes',Path('dist/LocalNotes.app/Contents/MacOS/LocalNotes'),Path('dist/LocalNotes-debug.apk')]
+(evidence/'preflight.json').write_text(json.dumps(dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),assets=assets,sha256={str(path.relative_to(Path.cwd())) if path.is_absolute() and path.is_relative_to(Path.cwd()) else str(path):hashlib.sha256(path.read_bytes()).hexdigest() for path in preflight_paths},inputSource=initial_input),indent=2))
 process=None; processes=[]; measurements=[]; journeys=[]
 report=dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),assets=assets,hardware=platform.platform(),corpusNotes=2003,initialInputSource=initial_input)
 def launch(active_root=root):
