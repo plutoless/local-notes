@@ -29,7 +29,14 @@ log=[]
 def c(script):
  value=m.command(script);log.append({'script':script,'value':value});return value
 def w(expression):
- m.wait(expression);log.append({'assertion':expression,'passed':True})
+ # A fresh 373-file index is background work, not a fixed ten-second deadline.
+ deadline=time.monotonic()+(45 if '更新' in expression else 15)
+ while time.monotonic()<deadline:
+  if m.command('return '+expression):
+   log.append({'assertion':expression,'passed':True});return
+  time.sleep(.1)
+ state=c("return {open:document.querySelector('#global-search').open,input:document.querySelector('#global-search-input').value,status:document.querySelector('#global-search [role=status]').textContent,rows:document.querySelectorAll('.search-result').length,focused:document.hasFocus(),active:document.activeElement.id}")
+ raise AssertionError('Native UI timed out: '+expression+'; state='+json.dumps(state,ensure_ascii=False))
 def key(code,modifiers=''):
  names={40:'K',36:'Return',53:'Escape',48:'Tab',8:'C'}
  chord=('CmdOrCtrl+' if 'command' in modifiers else 'Shift+' if 'shift' in modifiers else '')+names[code]
