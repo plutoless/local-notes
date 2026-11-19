@@ -18,6 +18,7 @@ exec(source, m.__dict__); m.build()
 p = m.OUT / 'main.swift'
 p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
  if let window=self?.window, let web=self?.web {
+ window.makeKeyAndOrderFront(nil); window.makeFirstResponder(web); NSApp.activate(ignoringOtherApps:true)
  let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
  let result:[String:Any] = ["ok":true,"value":[rect.minX,NSScreen.screens[0].frame.maxY-rect.maxY]]
  try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return
@@ -58,11 +59,12 @@ try:
     c("document.querySelector('nav [data-view=notes]').click()")
     w("document.querySelectorAll('#items .card').length===2")
     c("document.querySelector('#items [data-path=\"reader.md\"]').click()")
-    w("!document.querySelector('#reading').hidden")
+    w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
     def key(code, modifier=''):
         subprocess.run(['osascript','-e','tell application "System Events" to key code '+str(code)+modifier],check=True)
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
+    c('__frame')
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
     c("document.querySelector('#note-create-action').focus()")
     key(36)
