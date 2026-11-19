@@ -87,17 +87,15 @@ try:
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='note-create-action'")
     assert len(records())==1 and records()[0]['sources'][0]['path']=='reader.md'
-    # DOM establishes only a caret; process-targeted native Shift+Right selects.
-    c('__frame')
-    c("const reader=document.querySelector('#reading');reader.tabIndex=-1;reader.focus();const n=reader.querySelector('li strong').firstChild,r=document.createRange();r.setStart(n,0);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r)")
-    key(124,'shift'); key(124,'shift')
-    print('NATIVE_SELECTION',c('return getSelection().toString()'))
-    w("getSelection().toString().trim()==='确认'")
+    # Coordinator-approved setup only: a real WKWebView Range, not OS selection input.
+    c("const reader=document.querySelector('#reading');const r=document.createRange();r.selectNodeContents(reader.querySelector('li strong'));getSelection().removeAllRanges();getSelection().addRange(r)")
     selected_text=c('return getSelection().toString()')
+    assert selected_text=='确认'
     c("document.querySelector('#passage-create-action').focus()")
     key(36)
     w("document.querySelector('#action-drawer').open")
-    assert '**确认**' in c("return document.querySelector('.source-quote').value")
+    assert c("return document.querySelector('#action-description').value")==selected_text
+    assert c("return document.querySelector('.source-quote').value").strip()=='- **确认** next'
     c("document.querySelector('#action-save').focus()")
     key(48)
     assert c("return !!document.activeElement.closest('#action-drawer')")
@@ -105,6 +103,23 @@ try:
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='passage-create-action'")
     assert len(records())==2 and c('return getSelection().toString()')==selected_text
+    passage_record=next(r for r in records() if r['description']==selected_text)
+    assert passage_record['sources'][0]['quote'].strip()=='- **确认** next'
+    assert passage_record['sources'][0]['quote'] in (root/'reader.md').read_text()
+    expected_fingerprint=c("const {fingerprint}=await import('./initiatives.js');const {native}=await import('./bridge.js');const workspace=await native('workspace');const loaded=await native('read',{path:'reader.md',workspaceId:workspace.workspaceId});return fingerprint(loaded.text)")
+    assert passage_record['sources'][0]['fingerprint']==expected_fingerprint
+    # Whole-table Range setup must preserve original Markdown delimiters/body rows.
+    c("const r=document.createRange();r.selectNodeContents(document.querySelector('#reading table'));getSelection().removeAllRanges();getSelection().addRange(r)")
+    table_selection=c('return getSelection().toString()')
+    assert '合成' in table_selection
+    c("document.querySelector('#passage-create-action').focus()")
+    key(36)
+    w("document.querySelector('#action-drawer').open")
+    assert '| 合成 | `a` |' in c("return document.querySelector('.source-quote').value")
+    c("document.querySelector('#action-back').focus()")
+    key(36)
+    w("!document.querySelector('#action-drawer').open && document.activeElement.id==='passage-create-action'")
+    assert len(records())==2 and c('return getSelection().toString()')==table_selection
     c("document.querySelector('#note-create-action').click()")
     w("document.querySelector('#action-drawer').open")
     c("document.querySelector('#action-description').value='Discard native draft';document.querySelector('#action-description').dispatchEvent(new Event('input'))")
@@ -131,8 +146,8 @@ try:
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and process-targeted Quartz Shift+Right selection, Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
-    print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,selectionSetup='DOM Range in real WKWebView; exact list/table selected text and source mapping verified; no OS-generated selection claim',input='DOM focus setup plus process-targeted Quartz Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    print('PASS native reading Action confirmation, DOM Range consumption/source mapping, Quartz keyboard/focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     try:
         print('FINAL_UI',c("return {focus:document.activeElement.id,selection:getSelection().toString(),dialogs:[...document.querySelectorAll('dialog[open]')].map(n=>n.id),notice:document.querySelector('#notice').textContent,buttonDisabled:document.querySelector('#note-create-action').disabled,path:document.querySelector('#file-path').textContent}"))
@@ -141,5 +156,8 @@ finally:
     process.terminate()
     try: process.wait(timeout=10)
     except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=10)
+    try: os.kill(process.pid,0)
+    except ProcessLookupError: pass
+    else: raise AssertionError('Owned host still running after launcher wait')
     final_input=input_source()
     (evidence/'cleanup.json').write_text(json.dumps(dict(hostPID=process.pid,hostExited=launcher.poll() is not None,inputSourceInitial=initial_input,inputSourceFinal=final_input,temporarilySelectedInputSource=False,inputSourceUnchanged=final_input==initial_input),indent=2))

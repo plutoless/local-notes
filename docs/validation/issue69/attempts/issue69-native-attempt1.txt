@@ -1,0 +1,7 @@
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+Traceback (most recent call last):
+  File "<checkout>/tests/native-reading-actions.py", line 39, in <module>
+    assert hashlib.sha256((m.APP/'Contents/Resources/web'/name).read_bytes()).hexdigest() == digest
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError
