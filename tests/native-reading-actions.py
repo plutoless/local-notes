@@ -61,6 +61,10 @@ try:
     key(36)
     w("document.querySelector('#action-drawer').open && document.activeElement.id==='action-description'")
     assert len(records())==0
+    for width,height in [(393,550),(1180,800)]:
+        c(f'__size:{width}:{height}')
+        assert c('return document.documentElement.scrollWidth<=innerWidth')
+        c('__snapshot'); shutil.copy(m.OUT/'snapshot.png',evidence/f'drawer-{width}-{height}.png')
     c("document.querySelector('#action-save').focus()")
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='note-create-action'")

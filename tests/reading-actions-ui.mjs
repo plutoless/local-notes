@@ -9,7 +9,7 @@ const secondFixture = await storageFixture();
 let activeFixture = fixture;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
-let delayPath, releaseRead, readBegan, failSave = false, failTopics = false;
+let delayPath, releaseRead, readBegan, loseRevisionReply = false;
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const errors = []; page.on('pageerror', error => errors.push(error.message));
@@ -17,11 +17,10 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       if (request.cmd === 'choose') { activeFixture = secondFixture; return {}; }
-      if (request.cmd === 'save' && failSave) throw Error('Controlled failed save');
-      if (request.cmd === 'referenceQuery' && request.exactPath === 'folder/Second.md' && failTopics) throw Error('Controlled secondary query failure');
       if (request.cmd === 'read' && request.path === delayPath) { delayPath = null; const text = await readFile(join(activeFixture.root,request.path),'utf8'); readBegan(); await new Promise(resolve => releaseRead = resolve); return {text}; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
+        if (loseRevisionReply && request.cmd==='actionWrite' && request.path.startsWith('revisions/')) { loseRevisionReply=false; throw Error('Controlled lost reply after durable revision'); }
         return result;
       }
       const workspace = await activeFixture.adapter('workspace');
@@ -52,6 +51,9 @@ try {
   const count = async () => (await activeFixture.adapter('actionQuery',{limit:100, workspaceId:(await activeFixture.adapter('workspace')).workspaceId})).actions;
   const open = async () => { await page.locator('#note-create-action').click(); await page.locator('#action-drawer[open]').waitFor(); };
   await open(); assert.equal((await count()).length,0);
+  await page.setViewportSize({width:393,height:550});
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+  await page.setViewportSize({width:1180,height:800});
   await page.locator('#action-back').click();
   assert.equal((await count()).length,0);
   await open();
@@ -71,7 +73,7 @@ try {
   await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   assert.equal((await count()).length,2);
   assert.equal(await page.evaluate(()=>getSelection().toString()),'确认 next');
-  await page.evaluate(()=>{const r=document.createRange();r.selectNodeContents(document.querySelector('#reading td'));getSelection().removeAllRanges();getSelection().addRange(r);});
+  await page.evaluate(()=>{const r=document.createRange();r.selectNodeContents(document.querySelector('#reading table'));getSelection().removeAllRanges();getSelection().addRange(r);});
   await page.locator('#passage-create-action').click(); await page.locator('#action-drawer[open]').waitFor();
   assert.match(await page.locator('.source-quote').inputValue(),/\| 合成 \| `a` \|/);
   await page.locator('#action-description').fill('Table source action');
@@ -81,9 +83,15 @@ try {
   await page.waitForFunction(()=>document.querySelector('#action-save-state').textContent.includes('来源已更改'));
   assert.equal(await page.locator('#action-description').inputValue(),'Table source action');
   assert.equal((await count()).length,2);
+  await rename(sourcePath,sourcePath+'.moved');
+  await page.locator('#action-save').click();
+  await page.waitForFunction(()=>document.querySelector('#action-save-state').textContent.includes('ENOENT'));
+  assert.equal((await count()).length,2);
+  await rename(sourcePath+'.moved',sourcePath);
   await writeFile(sourcePath,original);
   await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   assert.equal((await count()).length,3);
+  console.log('PASS confirmation, source fidelity and changed/moved guards');
   // Revision and repair failures retain the same input/commit for explicit retry.
   await open(); await page.locator('#action-description').fill('Retry revision');
   fixture.fail((cmd,args)=>cmd==='actionWrite' && args.path.startsWith('revisions/'));
@@ -99,6 +107,19 @@ try {
   await page.waitForFunction(()=>document.querySelector('#action-save-state').textContent.includes('恢复尚未完成'));
   await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   assert.equal((await count()).length,5);
+  await open(); await page.locator('#action-description').fill('Ambiguous durable write');
+  loseRevisionReply=true;
+  await page.locator('#action-save').click();
+  await page.waitForFunction(()=>document.querySelector('#action-save-state').dataset.state==='failed');
+  // Reload simulates termination after a durable write but before its receipt.
+  await page.reload();
+  await page.locator('[data-view=notes]').click();
+  await page.locator('#items [data-path="reference.md"]').click();
+  await open();
+  assert.equal(await page.locator('#action-description').inputValue(),'Ambiguous durable write');
+  await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
+  assert.equal((await count()).length,6);
+  console.log('PASS failed writes and lost-reply restart identity');
   // Nested route survives contextual commit.
   await page.locator('#reading .wiki-link').click();
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='folder/Second.md');
@@ -107,7 +128,23 @@ try {
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   assert.equal(await readFile(sourcePath,'utf8'),original);
   await page.locator('[data-view=focus]').click(); await page.getByRole('button',{name:'全部行动',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelectorAll('#items [data-entity-id]').length===6);
+  await page.waitForFunction(()=>document.querySelectorAll('#items [data-entity-id]').length===7);
+  console.log('PASS nested return and action management');
+  // Late source reads may not reopen a drawer after workspace switching.
+  await page.locator('[data-view=notes]').click();
+  await page.locator('#items [data-path="reference.md"]').click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  let readStarted;
+  const started = new Promise(resolve=>readStarted=resolve);
+  delayPath='reference.md'; readBegan=readStarted;
+  await page.evaluate(()=>document.querySelector('#note-create-action').click());
+  await Promise.race([started,new Promise((_,reject)=>setTimeout(()=>reject(Error('Delayed source read did not begin')),5000))]);
+  await page.evaluate(()=>document.querySelector('#choose').click());
+  await page.waitForFunction(()=>document.querySelector('#editor').hidden);
+  releaseRead();
+  await page.waitForFunction(()=>!document.querySelector('#note-create-action').disabled);
+  assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),false);
+  activeFixture=fixture;
   assert.deepEqual(errors,[]);
   console.log('PASS issue69 note/list/table confirmation, cancel, double submission, validation/source-change retry and nested return through isolated storage');
 } finally { await browser.close(); await fixture.close(); await secondFixture.close(); }
