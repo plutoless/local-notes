@@ -367,12 +367,12 @@ function captureWikiPosition(opener) {
     focus: opener?.dataset.wikiTarget, browse: libraryScreen.captureContext(),
     scroll: Object.fromEntries(['#reading', '#body', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))};
 }
+function locateReaderNode(parts) { return parts.reduce((node, index) => node?.childNodes[index], $('#reading')); }
 function restoreWikiPosition(position, unchanged) {
   const opener = [...$('#reading').querySelectorAll('[data-wiki-target]')].find(node => node.dataset.wikiTarget === position.focus);
   (opener || $('#mode')).focus({preventScroll: true});
   if (unchanged && position.range) {
-    const locate = parts => parts.reduce((node, index) => node?.childNodes[index], $('#reading'));
-    const start = locate(position.range.start), end = locate(position.range.end);
+    const start = locateReaderNode(position.range.start), end = locateReaderNode(position.range.end);
     if (start && end && position.range.startOffset <= (start.nodeType === Node.TEXT_NODE ? start.length : start.childNodes.length) && position.range.endOffset <= (end.nodeType === Node.TEXT_NODE ? end.length : end.childNodes.length)) {
       const range = document.createRange();
       range.setStart(start, position.range.startOffset); range.setEnd(end, position.range.endOffset);
@@ -392,11 +392,19 @@ async function createReadingAction(passage, opener) {
   if (passage) {
     const selected = position.range;
     if (!readMode || !selected?.text) { notice('请先在原文中选择要引用的段落。'); return; }
-    const locate = parts => parts.reduce((node, index) => node?.childNodes[index], $('#reading'));
-    const block = node => (node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement)?.closest('[data-source-line]');
-    const first = block(locate(selected.start)), last = block(locate(selected.end));
-    if (!first || !last) { notice('无法定位选段原文，请重新选择段落。'); return; }
-    const start = Number(first.dataset.sourceLine), end = Number(last.dataset.sourceLine);
+    const range = document.createRange();
+    range.setStart(locateReaderNode(selected.start), selected.startOffset);
+    range.setEnd(locateReaderNode(selected.end), selected.endOffset);
+    const walker = document.createTreeWalker($('#reading'), NodeFilter.SHOW_TEXT);
+    const lines = [];
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      if (!node.textContent.trim() || !range.intersectsNode(node)) continue;
+      const block = node.parentElement.closest('[data-source-line]');
+      if (block) lines.push(Number(block.dataset.sourceLine));
+    }
+    if (!lines.length) { notice('无法定位选段原文，请重新选择段落。'); return; }
+    const start = Math.min(...lines), end = Math.max(...lines);
     const next = [...document.querySelectorAll('#reading [data-source-line]')].map(node => Number(node.dataset.sourceLine)).filter(line => line > end).sort((a,b) => a-b)[0];
     // Quote complete original blocks, never rendered text with Markdown stripped.
     quote = original.split(/(?<=\n)/).slice(start, next).join('').replace(/\r?\n$/, '');
