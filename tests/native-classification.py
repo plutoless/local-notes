@@ -51,7 +51,16 @@ try:
     w("document.querySelectorAll('#items .card').length===1")
     c("document.querySelector('#items .card').click()")
     w("!document.querySelector('#reading').hidden")
-    original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
+    c("document.querySelector('#new').click()")
+    w("!!document.querySelector('#capture-title')")
+    c("document.querySelector('#capture-title').value='合成捕获';document.querySelector('#capture-body').value='离线捕获正文\\n\\n'+('长段落。'.repeat(100)+'\\n\\n').repeat(30);document.querySelector('#capture-title').dispatchEvent(new Event('input'));document.querySelector('#capture-body').dispatchEvent(new Event('input'));document.querySelector('#note-task-drawer .primary').click()")
+    w("!document.querySelector('#capture-return').hidden")
+    target=c("return document.querySelector('#file-path').textContent")
+    assert (root/target).exists()
+    assert not list((root/'LocalNotesData/topics').glob('*.json'))
+    c("document.querySelector('#mode').click()")
+    w("!document.querySelector('#reading').hidden")
+    original = hashlib.sha256((root/target).read_bytes()).hexdigest()
     c("const {native}=await import('./bridge.js');const {InitiativeRepository}=await import('./initiatives.js');const r=new InitiativeRepository(native);await r.open();for(const title of ['合成目标甲','合成目标乙']) await r.save({title,goal:'离线目标',progress:'',status:'active'})")
     c("document.querySelector('#workspace-detail').scrollTop=220;window.beforeScroll=document.querySelector('#workspace-detail').scrollTop;document.querySelector('#note-info-open').click()")
     w("document.querySelector('#note-info-drawer').open")
@@ -72,6 +81,7 @@ try:
     for index in [0,1]:
         c(f"document.querySelectorAll('#note-initiatives input')[{index}].click()")
         w("!document.querySelector('#note-initiatives').inert")
+        assert c("return document.activeElement.parentElement.textContent") == ['合成目标甲','合成目标乙'][index]
     assert c("return [...document.querySelectorAll('#note-initiatives input')].every(n=>n.checked)")
     for width,height in [(1180,800),(393,852),(800,400)]:
         c(f'__size:{width}:{height}');time.sleep(.2)
@@ -82,12 +92,12 @@ try:
     w("!document.querySelector('#note-info-drawer').open")
     assert c("return document.activeElement.id") == 'note-info-open'
     assert c("return document.querySelector('#workspace-detail').scrollTop===window.beforeScroll")
-    assert hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()==original
+    assert hashlib.sha256((root/target).read_bytes()).hexdigest()==original
     records = list((root/'LocalNotesData/topics').glob('*.json'))
     assert len(records)==1
-    topic=json.loads(records[0].read_text());assert topic['sources'][0]['path']=='reader.md'
+    topic=json.loads(records[0].read_text());assert topic['sources'][0]['path']==target
     owners=[json.loads(p.read_text()) for p in (root/'LocalNotesData/initiatives').glob('*.json')]
-    assert len(owners)==2 and all(o['sources'][0]['path']=='reader.md' for o in owners)
+    assert len(owners)==2 and all(o['sources'][0]['path']==target for o in owners)
     keys=c('return window.trustedKeys');assert len(keys)>=11
     # OS window close on the clean note; this is not a dirty-close claim.
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click button 1 of window 1'],check=True)

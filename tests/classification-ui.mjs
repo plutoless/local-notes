@@ -41,7 +41,7 @@ try {
   await writeFile(sourcePath,text);
   await page.goto('https://notes.test/');
   await page.locator('[data-view=notes]').click();
-  await page.locator('#items .card').click();
+  await page.locator('#items .card').filter({has:page.locator('small').filter({hasText:/^reference\.md$/})}).click();
   await page.locator('#reading').waitFor({state:'visible'});
   const repository = new InitiativeRepository(fixture.adapter); await repository.open();
   for (const title of ['合成目标甲', '合成目标乙']) await repository.save({title, goal:'离线目标', progress:'', status:'active'});
@@ -53,6 +53,7 @@ try {
   await page.locator('#note-info-drawer[open]').waitFor();
   assert.equal(await page.getByRole('checkbox', {name:'合成主题甲',exact:true}).isChecked(),true);
   await page.getByRole('checkbox',{name:'合成目标甲',exact:true}).check();
+  await page.waitForFunction(()=>document.activeElement.closest('label')?.textContent==='合成目标甲');
   await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check();
   await page.locator('#note-create-topic').click();
   await page.locator('#topic-name').fill('合成主题甲');
@@ -61,6 +62,14 @@ try {
   await page.locator('#topic-name').fill('合成主题乙');
   await page.locator('#topic-form').evaluate(n=>n.requestSubmit());
   await page.locator('#note-info-drawer[open]').waitFor();
+  await page.locator('#note-create-topic').click();
+  await page.locator('#topic-name').fill('提交后读取失败');
+  fixture.fail((cmd,args)=>cmd==='referenceQuery' && args.exactPath==='reference.md');
+  await page.locator('#topic-form').evaluate(n=>n.requestSubmit());
+  await page.getByText('主题已保存到本地，关联列表暂未更新。请重新打开笔记信息重试。',{exact:true}).waitFor();
+  await page.getByRole('button',{name:'关闭提示'}).click();
+  await page.locator('#note-info-open').click();
+  assert.equal(await page.getByRole('checkbox',{name:'提交后读取失败',exact:true}).isChecked(),true);
   await page.getByRole('checkbox',{name:'合成主题甲',exact:true}).uncheck();
   for(const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport);
@@ -76,7 +85,23 @@ try {
   for (const name of ['合成主题乙','合成目标甲','合成目标乙']) assert.equal(await page.getByRole('checkbox',{name,exact:true}).isChecked(),true);
   assert.equal(await page.getByRole('checkbox',{name:'合成主题甲',exact:true}).isChecked(),false);
   assert.equal(await readFile(sourcePath,'utf8'),text);
-  for (const record of (await repository.query()).actions) assert.equal(record.sources[0].path,'reference.md');
+  await page.getByRole('button',{name:'打开事项：合成目标甲',exact:true}).click();
+  await page.locator('#workspace-references button').waitFor();
+  await page.locator('#workspace-references button').click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  await page.locator('#note-info-open').click();
+  await page.getByRole('checkbox',{name:'合成目标甲',exact:true}).uncheck();
+  await page.waitForFunction(()=>!document.querySelector('#note-initiatives').inert);
+  await page.getByRole('button',{name:'完成',exact:true}).click();
+  await page.locator('#back').click();
+  await page.getByText('尚未关联参考资料。',{exact:true}).waitFor();
+  await page.locator('[data-view=notes]').click();
+  await page.locator('#items .card').filter({has:page.locator('small').filter({hasText:/^reference\.md$/})}).click();
+  await page.locator('#note-info-open').click();
+
+  const owners=(await repository.query()).actions;
+  assert.equal(owners.find(r=>r.title==='合成目标甲').sources.length,0);
+  assert.equal(owners.find(r=>r.title==='合成目标乙').sources[0].path,'reference.md');
   await page.getByRole('button',{name:'完成',exact:true}).click();
   await page.locator('#new').click();
   await page.locator('#capture-title').fill('未分类合成捕获');
