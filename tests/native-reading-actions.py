@@ -16,7 +16,19 @@ for note in cases:
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue69')
 exec(source, m.__dict__); m.build()
 p = m.OUT / 'main.swift'
-p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0\ntry! String(ProcessInfo.processInfo.processIdentifier).write(toFile: ProcessInfo.processInfo.environment["REVIEW_PROBE"]! + "/host.pid", atomically:true, encoding:.utf8)', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
+p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0\ntry! String(ProcessInfo.processInfo.processIdentifier).write(toFile: ProcessInfo.processInfo.environment["REVIEW_PROBE"]! + "/host.pid", atomically:true, encoding:.utf8)', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script.hasPrefix("__drag:") {
+ let parts=script.components(separatedBy:":")
+ if let window=self?.window, let web=self?.web {
+ let start=NSPoint(x:Double(parts[1])!,y:web.bounds.height-Double(parts[2])!)
+ let end=NSPoint(x:Double(parts[3])!,y:web.bounds.height-Double(parts[4])!)
+ for (index,item) in [(NSEvent.EventType.leftMouseDown,start),(NSEvent.EventType.leftMouseDragged,end),(NSEvent.EventType.leftMouseUp,end)].enumerated() {
+ let event=NSEvent.mouseEvent(with:item.0,location:item.1,modifierFlags:[],timestamp:ProcessInfo.processInfo.systemUptime+Double(index)*0.1,windowNumber:window.windowNumber,context:nil,eventNumber:index,clickCount:1,pressure:1)!
+ window.sendEvent(event)
+ }
+ try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return
+ }
+}
+if script == "__frame" {
  if let window=self?.window, let web=self?.web {
  window.makeKeyAndOrderFront(nil); window.makeFirstResponder(web); NSApp.activate(ignoringOtherApps:true)
  let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
@@ -91,24 +103,8 @@ try:
     offset=c('__frame')
     rect=c("const n=document.querySelector('#reading li strong');n.scrollIntoView();const r=n.getBoundingClientRect();return [r.x,r.y,r.width,r.height]")
     x,y,width,height=rect
-    drag_source = f"""import Cocoa
-import CoreGraphics
-let start=CGPoint(x:{offset[0]+x-2},y:{offset[1]+y+height/2})
-let end=CGPoint(x:{offset[0]+x+width+2},y:{offset[1]+y+height/2})
-func send(_ type:CGEventType,_ point:CGPoint) {{
- let e=CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)!
- e.setIntegerValueField(.mouseEventWindowUnderMousePointer,value:{offset[2]})
- e.setIntegerValueField(.mouseEventWindowUnderMousePointerThatCanHandleThisEvent,value:{offset[2]})
- e.postToPid({process.pid})
- usleep(150000)
-}}
-send(.leftMouseDown,start)
-send(.leftMouseDragged,end)
-send(.leftMouseUp,end)
-"""
-    subprocess.run(['swift','-e',drag_source],check=True)
-
-    print('DRAG',offset,rect,c('return getSelection().toString()'))
+    c(f'__drag:{x-2}:{y+height/2}:{x+width+2}:{y+height/2}')
+    print('APPKIT_DRAG',rect,c('return getSelection().toString()'))
     w("getSelection().toString().trim()==='确认'")
     selected_text=c('return getSelection().toString()')
     c("document.querySelector('#passage-create-action').focus()")
@@ -148,7 +144,7 @@ send(.leftMouseUp,end)
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and process-targeted Quartz native drag selection, Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and AppKit NSEvent drag selection and process-targeted Quartz Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     try:
