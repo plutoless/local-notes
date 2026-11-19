@@ -1,0 +1,1 @@
+{"command":"orca computer permissions --json","observed":{"platform":"darwin","helperAppPath":"/Applications/Orca.app/Contents/Resources/Orca Computer Use.app","accessibility":"granted","screenshots":"granted"},"limitation":"Despite reported grants, targeted native input failed permission_denied; maintainer desktop restoration required."}

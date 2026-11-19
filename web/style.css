@@ -455,3 +455,6 @@ details { overflow-wrap: anywhere; }
 
 .search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); }
 .search-scopes [aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
+
+/* A protected action drawer owns its own reachable search return control. */
+body:has(#action-drawer[open]) .search-return-shell { display: none; }
