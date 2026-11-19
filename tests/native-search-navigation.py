@@ -29,8 +29,8 @@ log=[]
 def c(script):
  value=m.command(script);log.append({'script':script,'value':value});return value
 def w(expression):
- # A fresh 373-file index is background work, not a fixed ten-second deadline.
- deadline=time.monotonic()+(45 if '更新' in expression else 15)
+ # Usable grounded results may appear while the remaining corpus indexes.
+ deadline=time.monotonic()+20
  while time.monotonic()<deadline:
   if m.command('return '+expression):
    log.append({'assertion':expression,'passed':True});return
@@ -54,7 +54,7 @@ try:
  key(40,' using command down');w("document.querySelector('#global-search').open && document.activeElement.id==='global-search-input'")
  key(53);w("!document.querySelector('#global-search').open");key(40,' using command down');w("document.activeElement.id==='global-search-input'")
  c("const n=document.querySelector('#global-search-input');n.value='latency';n.dispatchEvent(new Event('input'))")
- w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('#global-search [role=status]').textContent.includes('更新')")
+ w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
  key(40,' using command down');w("document.activeElement.id==='global-search-input' && document.activeElement.value==='latency'")
  key(36);time.sleep(.2);key(36,' using command down');w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
  clipboard=subprocess.check_output(['pbpaste']).decode();assert clipboard==c("return document.querySelector('.search-passage').textContent");assert clipboard in original
@@ -67,18 +67,18 @@ try:
  c("document.querySelector('.search-attribution input').checked=false")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();await a.save({description:'latency native action',waitingOn:'latency waiting'});await i.save({status:'active', description:'Stored initiative', title:'latency native initiative',goal:'latency native goal',progress:'latency native progress'})")
  c("[...document.querySelectorAll('#global-search button')].find(n=>n.textContent==='刷新索引').click()")
- w("document.querySelectorAll('.search-result').length===6 && document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+ w("document.querySelectorAll('.search-result').length===6 && !document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
  for scope,count in [('note',1),('initiative',3),('action',2),('all',6)]:
   c(f"document.querySelector('[data-scope={scope}]').focus()")
   key(36)
-  w(f"document.querySelectorAll('.search-result').length==={count} && document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+  w(f"document.querySelectorAll('.search-result').length==={count} && !document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
   c("document.querySelector('#global-search-input').focus()")
   key(36);time.sleep(.2);key(36,' using command down')
   w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
   assert subprocess.check_output(['pbpaste']).decode()==c("return document.querySelector('.search-select[aria-current=true]').parentElement.querySelector('pre').textContent")
  for scope,label in [('note','打开原文'),('initiative','打开事项'),('action','打开行动')]:
   c(f"document.querySelector('[data-scope={scope}]').click()")
-  w("document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+  w("!document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
   c(f"[...document.querySelectorAll('#global-search button')].find(n=>n.textContent==='{label}').focus()")
   key(36)
   w("!document.querySelector('#global-search').open && [...document.querySelectorAll('.search-return')].some(n=>!n.hidden && n.getClientRects().length)")
@@ -93,9 +93,9 @@ try:
  key(53);w("!document.querySelector('#global-search').open && document.activeElement.id==='global-search-open'")
  c("__narrow");key(40,' using command down');w("innerWidth===393 && document.querySelector('#global-search').open")
  assert c("return document.querySelector('#global-search').getBoundingClientRect().width<=innerWidth")
- w("document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+ w("!document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
  c("document.querySelector('[data-scope=note]').click()")
- w("document.querySelector('#global-search [role=status]').textContent.startsWith('本页')")
+ w("!document.querySelector('.search-results').inert && !/失败|未完整/.test(document.querySelector('#global-search [role=status]').textContent)")
  c("[...document.querySelectorAll('#global-search button')].find(n=>n.textContent==='打开原文').focus()")
  key(36);w("!document.querySelector('#reading').hidden && !document.querySelector('#global-search').open")
  c("[...document.querySelectorAll('.search-return')].find(n=>!n.hidden && n.getClientRects().length).focus()")

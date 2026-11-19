@@ -10,3 +10,14 @@ Traceback (most recent call last):
   File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/tests/native-candidate-review.py", line 43, in wait
     raise AssertionError('Native UI timed out: '+expression)
 AssertionError: Native UI timed out: document.querySelectorAll('.search-result').length===1 && !document.querySelector('#global-search [role=status]').textContent.includes('更新')
+
+Subsequent 9543978 timeout after 45 seconds:
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/build/issue60-native/Search60.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/build/issue60-native/Search60.app: replacing existing signature
+Traceback (most recent call last):
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/tests/native-search-navigation.py", line 57, in <module>
+    w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('#global-search [role=status]').textContent.includes('更新')")
+    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/tests/native-search-navigation.py", line 39, in w
+    raise AssertionError('Native UI timed out: '+expression+'; state='+json.dumps(state,ensure_ascii=False))
+AssertionError: Native UI timed out: document.querySelectorAll('.search-result').length===1 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'); state={"status": "索引正在更新；以下为已有结果", "active": "global-search-input", "input": "latency", "focused": false, "open": true, "rows": 1}
