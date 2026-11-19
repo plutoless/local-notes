@@ -85,7 +85,8 @@ try {
  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
  await page.locator('#ai-preview').focus(); await page.keyboard.press('Tab');
  const focus = await page.evaluate(() => ({tag:document.activeElement.tagName, outline:getComputedStyle(document.activeElement).outlineWidth, name:document.activeElement.textContent}));
- assert.equal(focus.tag, 'SUMMARY'); assert.equal(focus.outline, '3px'); assert.match(focus.name, /请求详情/);
+ assert.equal(focus.tag, 'BUTTON'); assert.equal(focus.outline, '3px'); assert.match(focus.name, /设置 AI 服务/);
+ await page.keyboard.press('Tab'); assert.equal(await page.evaluate(()=>document.activeElement.tagName),'SUMMARY');
  await page.screenshot({path:'docs/validation/issue35/after-web-393px.png'});
  const primaryTargets = await page.locator('#organize-tools button.primary').evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().height));
  assert.ok(primaryTargets.every(height => height >= 44));
