@@ -45,7 +45,7 @@ try {
  await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('https://notes.test/');await page.locator('[data-view=organize]').click();
  await page.locator('#ai-selection input').waitFor();assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
- await page.locator('#ai-configuration summary').click();await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
+ await page.locator('#ai-configure').click();await page.locator('#ai-token').fill('entered-test-token');await page.locator('#ai-settings button').click();await page.waitForFunction(()=>document.querySelector('#ai-token').value==='');
  assert.equal(await page.locator('#index-state').textContent(), '');
  await page.locator('#ai-selection input').check();await page.locator('#ai-preview').click();await page.waitForFunction(()=>!document.querySelector('#ai-send').disabled);
  await page.evaluate(() => window.dispatchEvent(new Event('focus')));
