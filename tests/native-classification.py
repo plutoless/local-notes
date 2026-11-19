@@ -84,6 +84,7 @@ try:
     w("/[㐀-鿿]/.test(document.querySelector('#topic-name').value) && topicIME.some(e=>e.type==='compositionend' && e.isTrusted)")
     topicIME=c('return topicIME')
     for route in ['window-close','menu-quit','cmd-q']:
+        print('BEFORE',route,c("return {dirty:window.hasUnsavedChanges(),value:document.querySelector('#topic-name').value,topic:document.querySelector('#topic-drawer').open}"),flush=True)
         if route=='window-close':
             subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click (first button of window 1 whose subrole is "AXCloseButton")'],check=True)
         elif route=='menu-quit':
@@ -94,6 +95,8 @@ try:
         assert c("return document.querySelector('#topic-name').value.length>0")
         c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').click()")
         w("!document.querySelector('#task-leave-decision') && document.querySelector('#topic-drawer').open")
+        time.sleep(.3)
+        print('AFTER',route,c("return {dirty:window.hasUnsavedChanges(),value:document.querySelector('#topic-name').value,topic:document.querySelector('#topic-drawer').open}"),flush=True)
         w("!document.querySelector('#topic-drawer').inert")
     c("document.querySelector('#topic-name').value='原生合成主题';document.querySelector('#topic-name').dispatchEvent(new Event('input'));document.querySelector('#topic-form').requestSubmit()")
     w("document.querySelector('#note-info-drawer').open")
