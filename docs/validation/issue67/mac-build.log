@@ -1,0 +1,6 @@
+
+> local-notes@0.1.0 build:mac
+> bash scripts/build-mac.sh
+
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-67/dist/LocalNotes.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-67/dist/LocalNotes.app
