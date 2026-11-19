@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Issue 69: real packaged assets and storage in an isolated Cocoa/WKWebView host."""
-import hashlib, importlib.util, inspect, json, os, platform, shutil, subprocess, time
+import hashlib, importlib.util, inspect, json, os, platform, shutil, signal, subprocess, time
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -16,7 +16,7 @@ for note in cases:
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue69')
 exec(source, m.__dict__); m.build()
 p = m.OUT / 'main.swift'
-p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
+p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0\ntry! String(ProcessInfo.processInfo.processIdentifier).write(toFile: ProcessInfo.processInfo.environment["REVIEW_PROBE"]! + "/host.pid", atomically:true, encoding:.utf8)', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
  if let window=self?.window, let web=self?.web {
  window.makeKeyAndOrderFront(nil); window.makeFirstResponder(web); NSApp.activate(ignoringOtherApps:true)
  let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
@@ -55,7 +55,15 @@ native_source_hashes = {str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p 
 production_hash = hashlib.sha256(Path('dist/LocalNotes.app/Contents/MacOS/LocalNotes').read_bytes()).hexdigest()
 initial_input = input_source()
 (evidence/'preflight.json').write_text(json.dumps(dict(head=head,probe=probe_hash,package=package_hash,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,inputSource=initial_input),indent=2))
-process = subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')], env={**os.environ, 'LOCAL_NOTES_TEST_ROOT':str(root), 'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'), 'REVIEW_PROBE':str(m.OUT)}, stdout=open(m.OUT/'app.log','a'), stderr=subprocess.STDOUT)
+launcher = subprocess.Popen(['open','-n','-W','--env','LOCAL_NOTES_TEST_ROOT='+str(root),'--env','LOCAL_NOTES_TEST_PRIVATE='+str(m.OUT/'Private'),'--env','REVIEW_PROBE='+str(m.OUT),str(m.APP)], stdout=open(m.OUT/'app.log','a'), stderr=subprocess.STDOUT)
+class OwnedHost:
+    @property
+    def pid(self): return int((m.OUT/'host.pid').read_text())
+    def terminate(self): os.kill(self.pid, signal.SIGTERM)
+    def kill(self): os.kill(self.pid, signal.SIGKILL)
+    def wait(self,timeout): return launcher.wait(timeout=timeout)
+process = OwnedHost()
+
 try:
     w("!!document.querySelector('#items .home-tools')")
     c("document.querySelector('nav [data-view=notes]').click()")
@@ -64,7 +72,9 @@ try:
     w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
     def computer(*args):
-        result=json.loads(subprocess.check_output(['orca','computer',*args,'--app',f'pid:{process.pid}','--no-screenshot','--json'],text=True))
+        receipt=subprocess.run(['orca','computer',*args,'--app',f'pid:{process.pid}','--no-screenshot','--json'],text=True,capture_output=True)
+        print('NATIVE_INPUT',receipt.stdout,receipt.stderr)
+        result=json.loads(receipt.stdout)
         with (evidence/'native-input.jsonl').open('a') as receipts: receipts.write(json.dumps(result)+'\n')
         assert result.get('ok'), result
         return result
