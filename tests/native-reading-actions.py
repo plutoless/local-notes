@@ -122,7 +122,7 @@ try:
     assert len(records())==2 and c('return getSelection().toString()')==table_selection
     c("document.querySelector('#note-create-action').click()")
     w("document.querySelector('#action-drawer').open")
-    c("document.querySelector('#action-description').value='Discard native draft';document.querySelector('#action-description').dispatchEvent(new Event('input'))")
+    c("document.querySelector('#action-description').value='Discard native draft';document.querySelector('#action-description').dispatchEvent(new Event('input',{bubbles:true}))")
     key(53)
     w("!!document.querySelector('.leave-dialog[open], dialog[open]:not(#action-drawer)')")
     c("[...document.querySelectorAll('dialog[open] button')].find(n=>n.textContent==='放弃更改并离开').focus()")
