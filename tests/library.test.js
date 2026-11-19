@@ -138,5 +138,14 @@ test('Library ordering and archive scope compose at the SQLite boundary with sta
     assert.equal((await library.query({topic:topic.entityId,archives:'only',search:'keyword'})).total,1);
     assert.equal((await library.request('referenceSearch',{search:'keyword',archives:'exclude'})).notes[0].path,'Archive/000.md');
     await library.sync(); assert.equal(reads,129);
+    const before = library.revision;
+    await library.topics.save({...library.records[0], sources: notes.slice(0,61).map(n=>({path:n.path,quote:'',fingerprint:'synthetic'}))}, library.records[0]);
+    await library.sync(); assert.ok(library.revision>before);
+    assert.equal((await library.query({topic:topic.entityId,offset:50})).notes.length,11);
+    const linkedRevision=library.revision;
+    await library.sync(); assert.equal(library.revision,linkedRevision,'unchanged memberships do not invalidate pages');
+    await library.link(library.records[0],(await library.query({exactPath:'Archive/000.md'})).notes[0],false);
+    assert.ok(library.revision>linkedRevision);
+    assert.equal((await library.query({topic:topic.entityId,offset:50})).notes.length,10);
   } finally { await fixture.close(); }
 });

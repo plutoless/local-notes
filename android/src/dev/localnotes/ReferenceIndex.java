@@ -20,7 +20,7 @@ final class ReferenceIndex {
                 JSONObject record = r.getJSONObject("record");
                 db.execSQL("INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)", new Object[]{record.getString("path"), r.optString("search"), record.getString("path"), record.optString("directory"), record.toString()});
             } else if (command.equals("referenceRemove")) db.execSQL("DELETE FROM notes WHERE path=?", new Object[]{r.getString("path")});
-            else if (command.equals("referenceTags")) db.execSQL("UPDATE notes SET topics=? WHERE path=?", new Object[]{r.optString("topics"), r.getString("path")});
+            else if (command.equals("referenceTags")) db.execSQL("UPDATE notes SET topics=? WHERE path=? AND topics<>?", new Object[]{r.optString("topics"), r.getString("path"), r.optString("topics")});
             else {
                 int limit = Math.max(1, Math.min(100, r.optInt("limit", 50)));
                 boolean global = command.equals("referenceSearch");
@@ -67,7 +67,7 @@ final class ReferenceIndex {
                 }
                 return new JSONObject().put("notes", notes).put("hasMore", more).put("total", total);
             }
-            return new JSONObject();
+            return command.equals("referenceTags") ? new JSONObject().put("changed", android.database.DatabaseUtils.longForQuery(db, "SELECT changes()", null) > 0) : new JSONObject();
         }
     }
 }

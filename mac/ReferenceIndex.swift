@@ -20,7 +20,7 @@ final class ReferenceIndex {
             sql = "INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)"
             values = [record["path"] as? String ?? "", request["search"] as? String ?? "", record["path"] as? String ?? "", record["directory"] as? String ?? "", String(data: try JSONSerialization.data(withJSONObject: record), encoding: .utf8)!]
         } else if command == "referenceRemove" { sql = "DELETE FROM notes WHERE path=?"; values = [request["path"] as? String ?? ""]
-        } else if command == "referenceTags" { sql = "UPDATE notes SET topics=? WHERE path=?"; values = [request["topics"] as? String ?? "", request["path"] as? String ?? ""]
+        } else if command == "referenceTags" { sql = "UPDATE notes SET topics=? WHERE path=? AND topics<>?"; values = [request["topics"] as? String ?? "", request["path"] as? String ?? "", request["topics"] as? String ?? ""]
         } else {
             let inventory = command == "referenceInventory"
             let global = command == "referenceSearch"
@@ -76,6 +76,7 @@ final class ReferenceIndex {
         let limit = min(100, max(1, request["limit"] as? Int ?? 50))
         var result: [String: Any] = ["notes": Array(rows.prefix(limit)), "hasMore": rows.count > limit]
         if let total = total { result["total"] = total }
+        if command == "referenceTags" { result["changed"] = sqlite3_changes(db) > 0 }
         return result
     }
 }
