@@ -368,9 +368,9 @@ function captureWikiPosition(opener) {
     scroll: Object.fromEntries(['#reading', '#body', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))};
 }
 function locateReaderNode(parts) { return parts.reduce((node, index) => node?.childNodes[index], $('#reading')); }
-function restoreWikiPosition(position, unchanged) {
+function restoreWikiPosition(position, unchanged, focusOverride = null) {
   const opener = [...$('#reading').querySelectorAll('[data-wiki-target]')].find(node => node.dataset.wikiTarget === position.focus);
-  (opener || $('#mode')).focus({preventScroll: true});
+  (focusOverride || opener || $('#mode')).focus({preventScroll: true});
   if (unchanged && position.range) {
     const start = locateReaderNode(position.range.start), end = locateReaderNode(position.range.end);
     if (start && end && position.range.startOffset <= (start.nodeType === Node.TEXT_NODE ? start.length : start.childNodes.length) && position.range.endOffset <= (end.nodeType === Node.TEXT_NODE ? end.length : end.childNodes.length)) {
@@ -429,7 +429,7 @@ async function createReadingAction(passage, opener) {
     await validate({sources: [source]}); if (!owns()) return;
     await actions.edit(null, null, {fields: {description, sources: [source]},
       key: `reading-action-draft:${workspace}:${path}:${fingerprint(quote)}`,
-      validate, restore: () => { if (owns()) { restoreWikiPosition(position, savedText === original); opener.focus({preventScroll: true}); } }});
+      validate, restore: () => { if (owns()) { restoreWikiPosition(position, savedText === original, opener); } }});
   } catch (error) { if (owns()) notice(error.message); }
 }
 const noteAction = button('从笔记创建行动', () => createReadingAction(false, noteAction));
