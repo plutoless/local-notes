@@ -63,10 +63,10 @@ export class Organization {
   constructor(adapter, repository) { this.adapter = adapter; this.repository = repository; this.generation = 0; this.running = false; this.covered = 0; }
   async preview(paths) {
     if (!paths.length || paths.length > 20 || new Set(paths).size !== paths.length) throw Error('Select 1–20 distinct notes per small batch');
-    const workspaceId = this.repository.workspaceId;
+    const workspaceId = this.repository.workspaceId, generation = this.generation;
     const notes = [];
     for (const path of paths) { if (!safePath(path)) throw Error('Invalid selected path'); const {text} = await this.adapter('read', {workspaceId, path}); notes.push({path, text}); }
-    if (workspaceId !== this.repository.workspaceId) throw Error('Workspace changed; preview again');
+    if (workspaceId !== this.repository.workspaceId || generation !== this.generation) throw Error('Workspace changed; preview again');
     this.batches = batchesFor(notes); this.covered = 0;
     return this.batches;
   }
