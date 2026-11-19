@@ -138,7 +138,7 @@ try {
     await page.locator('[data-view=notes]').click();await open(); assert.equal(await page.locator('#topic-name').inputValue(),'恢复的主题草稿');
     await page.locator('#topic-cancel').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
     const countBeforeRecovery=await page.locator('#library-topic option').count();
-    await open(); await page.locator('#topic-name').fill('已提交待恢复'); fixture.fail(cmd=>cmd==='actionQuery'); await submit.click();
+    await open(); await page.locator('#topic-name').fill('已提交待恢复'); let recoveryQueries=0; fixture.fail(cmd=>cmd==='actionQuery' && ++recoveryQueries===2); await submit.click();
     await page.getByText('主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。',{exact:true}).waitFor();
     assert.equal(await page.locator('#topic-name').isDisabled(),true);
     assert.equal(await submit.textContent(),'重试恢复');

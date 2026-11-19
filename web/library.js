@@ -88,10 +88,17 @@ export class Library {
     this.lastReads = reads; this.changed();
   }
   query(options = {}) { return this.request('referenceQuery', options); }
-  async saveTopic(name, previous = null, retry = null) {
+  async saveTopic(name, previous = null, retry = null, note = null) {
     if (!name?.trim()) throw Error('请填写主题名称');
-    const saved = await this.topics.save({...previous, description: name.trim()}, previous, retry);
-    try { this.records = await allRecords(this.topics); this.changed(); }
+    if (!retry && (await allRecords(this.topics)).some(topic => topic.entityId !== previous?.entityId && topic.description.trim() === name.trim())) throw Error('已存在同名主题，请选择已有主题。');
+    const fields = {...previous, description: name.trim()};
+    if (!previous && note) fields.sources = [{path: note.path, quote: '', fingerprint: note.fingerprint}];
+    const saved = await this.topics.save(fields, previous, retry);
+    try {
+      this.records = await allRecords(this.topics);
+      if (note) await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      this.changed(); return saved.record;
+    }
     catch (error) { error.record = saved.record; error.revisionSaved = true; throw error; }
   }
   async link(topic, note, linked) {

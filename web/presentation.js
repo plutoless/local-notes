@@ -152,8 +152,11 @@ export function drawer({id, title, onDismiss}) {
     const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
       .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length);
     const index = controls.indexOf(document.activeElement);
-    if (controls.length && (event.shiftKey ? index <= 0 : index === controls.length - 1 || index < 0)) {
-      event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0].focus();
+    if (controls.length) {
+      // WKWebView can skip buttons under the system text-fields-only Tab setting.
+      // Advance explicitly so every short-task control stays reachable and contained.
+      const next = index < 0 ? (event.shiftKey ? controls.length - 1 : 0) : (index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+      event.preventDefault(); controls[next].focus();
     }
   });
   panel.addEventListener('click', event => {
