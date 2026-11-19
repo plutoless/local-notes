@@ -44,8 +44,8 @@ export class LibraryScreen {
       this.topicSaving = true; submit.disabled = true; input.disabled = true;
       status.textContent = '正在保存…'; error.replaceChildren();
       try {
-        await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry);
-        this.closeTopic(); this.notice('主题已保存到本地。', true); return true;
+        await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry, this.topicNote);
+        await this.closeTopic(); this.notice('主题已保存到本地。', true); return true;
       } catch (failure) {
         if (failure.revisionSaved) {
           this.topicRetry = failure.record;
@@ -65,11 +65,11 @@ export class LibraryScreen {
     this.topicInput = input; this.topicSubmit = submit; this.topicStatus = status; this.topicError = error;
   }
   get topicDirty() { return this.topicDrawer.panel.open && (Boolean(this.topicRetry) || this.topicInput.value !== (this.editingTopic?.description || '')); }
-  editTopic(topic) {
+  editTopic(topic, note = null) {
     if (this.topicDrawer.panel.open) { this.leaveTopic(); return; }
     this.topicBrowseScroll = $('.collection').scrollTop;
-    this.editingTopic = topic; this.topicRetry = null; this.topicInput.disabled = false;
-    this.topicDraftKey = `topic-draft:${this.library.workspaceId}:${topic?.entityId || 'new'}`;
+    this.topicNote = note; this.editingTopic = topic; this.topicRetry = null; this.topicInput.disabled = false;
+    this.topicDraftKey = `topic-draft:${this.library.workspaceId}:${topic?.entityId || (note ? 'note:' + note.path : 'new')}`;
     let draft;
     try { draft = JSON.parse(localStorage.getItem(this.topicDraftKey)); } catch { /* Invalid private drafts do not replace saved records. */ }
     this.topicInput.value = draft?.name ?? topic?.description ?? '';
@@ -82,13 +82,15 @@ export class LibraryScreen {
     this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false');
     this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput);
   }
-  closeTopic() {
+  async closeTopic() {
     try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicDrawer.hide();
     $('.collection').scrollTop = this.topicBrowseScroll;
+    const note = this.topicNote; this.topicNote = null;
+    if (note) await this.returnToNoteInfo?.(note);
   }
   topicTask() {
     return {label: '主题', dirty: () => this.topicDirty, committed: () => Boolean(this.topicRetry), pending: () => this.topicPending,
-      save: () => this.saveTopicTask(), discard: () => this.closeTopic(), close: () => { if (this.topicDrawer.panel.open) this.closeTopic(); }};
+      save: () => this.saveTopicTask(), discard: () => this.closeTopic(), close: () => { if (this.topicDrawer.panel.open) return this.closeTopic(); }};
   }
   leaveTopic() { return this.topicDrawer.panel.open ? requestTaskLeave(this.topicTask()) : Promise.resolve(true); }
   async show() {
@@ -169,7 +171,8 @@ export class LibraryScreen {
     if (!ownsNote()) return;
     const container = $('#note-topics'); container.replaceChildren();
     if (!note) return;
-    if (!this.library.records.length) { const message = document.createElement('p'); message.textContent = '尚未创建主题。可返回笔记库新建主题。'; container.append(message); }
+    if (!this.library.records.length) { const message = document.createElement('p'); message.textContent = '尚未关联主题，可新建或选择已有主题。'; container.append(message); }
+    const create = button('新建并关联主题', () => this.createNoteTopic?.(note), {density: 'compact'}); create.id = 'note-create-topic'; container.append(create);
     for (const topic of this.library.records) {
       const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'ui-selection'; checkbox.type = 'checkbox'; checkbox.checked = topic.sources.some(source => source.path === path);
       checkbox.onchange = () => {
