@@ -58,8 +58,9 @@ try {
   assert.equal(await page.getByRole('checkbox', {name:'合成主题甲',exact:true}).isChecked(),true);
   await page.getByRole('checkbox',{name:'合成目标甲',exact:true}).check();
   await page.waitForFunction(()=>document.activeElement.closest('label')?.textContent==='合成目标甲');
+  await page.waitForFunction(()=>!window.hasUnsavedChanges());
   const started=new Promise(resolve=>{writeStarted=resolve;}); delayWrite=true;
-  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check(); await started;
+  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).evaluate(n=>n.click()); await started;
   await page.locator('#note-create-topic').click();
   assert.equal(await page.locator('#topic-drawer').evaluate(n=>n.open),false);
   releaseWrite(); await page.locator('#topic-drawer[open]').waitFor();

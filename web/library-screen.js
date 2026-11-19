@@ -99,6 +99,7 @@ export class LibraryScreen {
     $('#search').value = this.search;
     $('#library-progress').textContent = '正在打开笔记库…';
     await this.library.open();
+    if (this.topic && this.topic !== 'uncategorized' && !this.library.records.some(topic => topic.entityId === this.topic)) { this.topic = ''; this.offset = 0; }
     $('#library-tools').hidden = false; $('#filters').hidden = true;
     await this.render(); this.library.sync().then(() => { this.failed = false; return this.render(); }).catch(error => { this.failed = true; this.render(); this.notice(error.message); });
   }
