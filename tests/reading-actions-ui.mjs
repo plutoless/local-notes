@@ -99,6 +99,10 @@ try {
   await page.waitForFunction(()=>document.querySelector('#action-save-state').dataset.state==='failed');
   assert.equal((await count()).length,3);
   assert.equal(await page.locator('#action-description').inputValue(),'Retry revision');
+  await page.locator('#action-back').click();
+  await page.getByRole('dialog',{name:'离开行动',exact:true}).waitFor();
+  assert.equal(await page.locator('dialog[open]').last().textContent().then(t=>t.includes('版本已保存')),false);
+  await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   assert.equal((await count()).length,4);
   await open(); await page.locator('#action-description').fill('Repair committed revision');
@@ -127,6 +131,9 @@ try {
   await page.locator('#back').click();
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   assert.equal(await readFile(sourcePath,'utf8'),original);
+  await page.locator('#mode').click(); await page.locator('#mode').click();
+  await page.locator('#passage-create-action').click();
+  assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),false);
   await page.locator('[data-view=focus]').click(); await page.getByRole('button',{name:'全部行动',exact:true}).click();
   await page.waitForFunction(()=>document.querySelectorAll('#items [data-entity-id]').length===7);
   console.log('PASS nested return and action management');

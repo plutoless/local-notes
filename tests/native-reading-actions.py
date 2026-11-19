@@ -16,7 +16,14 @@ for note in cases:
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue69')
 exec(source, m.__dict__); m.build()
 p = m.OUT / 'main.swift'
-p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__reads" {
+p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
+ if let window=self?.window, let web=self?.web {
+ let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
+ let result:[String:Any] = ["ok":true,"value":[rect.minX,NSScreen.screens[0].frame.maxY-rect.maxY]]
+ try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return
+ }
+}
+if script == "__reads" {
  try? JSONSerialization.data(withJSONObject: ["ok": true, "value": libraryBodyReads]).write(to: reviewProbe.directory.appendingPathComponent("response.json")); return
 }
 if script.hasPrefix("__size:") {
@@ -69,9 +76,21 @@ try:
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='note-create-action'")
     assert len(records())==1 and records()[0]['sources'][0]['path']=='reader.md'
-    # DOM establishes a collapsed caret; actual OS Shift+Right selects the text.
-    c("const reader=document.querySelector('#reading');reader.tabIndex=-1;reader.focus();const n=reader.querySelector('li strong').firstChild,r=document.createRange();r.setStart(n,0);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r)")
-    key(124,' using shift down'); key(124,' using shift down')
+    # DOM only scrolls and measures; real Quartz mouse drag selects native WKWebView text.
+    offset=c('__frame')
+    rect=c("const n=document.querySelector('#reading li strong');n.scrollIntoView();const r=n.getBoundingClientRect();return [r.x,r.y,r.width,r.height]")
+    x,y,width,height=rect
+    drag_source = f"""import Cocoa
+import CoreGraphics
+let start=CGPoint(x:{offset[0]+x-2},y:{offset[1]+y+height/2})
+let end=CGPoint(x:{offset[0]+x+width+2},y:{offset[1]+y+height/2})
+CGEvent(mouseEventSource:nil,mouseType:.leftMouseDown,mouseCursorPosition:start,mouseButton:.left)!.post(tap:.cghidEventTap)
+usleep(100000)
+CGEvent(mouseEventSource:nil,mouseType:.leftMouseDragged,mouseCursorPosition:end,mouseButton:.left)!.post(tap:.cghidEventTap)
+usleep(100000)
+CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mouseButton:.left)!.post(tap:.cghidEventTap)
+"""
+    subprocess.run(['swift','-e',drag_source],check=True)
     w("getSelection().toString()==='确认'")
     c("document.querySelector('#passage-create-action').focus()")
     key(36)
@@ -110,7 +129,7 @@ try:
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM setup and OS-injected Enter, Shift+Right selection, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and OS Quartz drag selection, Enter, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     process.terminate()
