@@ -381,6 +381,52 @@ function restoreWikiPosition(position, unchanged) {
   }
   for (const [selector, scroll] of Object.entries(position.scroll)) $(selector).scrollTop = scroll;
 }
+// Keep contextual commitment on the existing drawer/revision boundary.
+async function createReadingAction(passage, opener) {
+  if (!visibleNote() || document.querySelector('dialog[open]')) return;
+  const position = captureWikiPosition(), path = current, workspace = currentWorkspace;
+  const generation = workspaceGeneration, page = pageGeneration;
+  const owns = () => generation === workspaceGeneration && page === pageGeneration && path === current && workspace === currentWorkspace && visibleNote();
+  const original = savedText;
+  let quote = '', description = titleOf(original, path);
+  if (passage) {
+    const selected = position.range;
+    if (!readMode || !selected?.text) { notice('请先在原文中选择要引用的段落。'); return; }
+    const locate = parts => parts.reduce((node, index) => node?.childNodes[index], $('#reading'));
+    const block = node => (node?.nodeType === Node.ELEMENT_NODE ? node : node?.parentElement)?.closest('[data-source-line]');
+    const first = block(locate(selected.start)), last = block(locate(selected.end));
+    if (!first || !last) { notice('无法定位选段原文，请重新选择段落。'); return; }
+    const start = Number(first.dataset.sourceLine), end = Number(last.dataset.sourceLine);
+    const next = [...document.querySelectorAll('#reading [data-source-line]')].map(node => Number(node.dataset.sourceLine)).filter(line => line > end).sort((a,b) => a-b)[0];
+    // Quote complete original blocks, never rendered text with Markdown stripped.
+    quote = original.split(/(?<=\n)/).slice(start, next).join('').replace(/\r?\n$/, '');
+    if (!quote || !original.includes(quote)) { notice('无法定位选段原文，请重新选择段落。'); return; }
+    description = selected.text;
+  }
+  try {
+    if (!await flush() || !owns()) return;
+    const expected = fingerprint(savedText);
+    if (passage && savedText !== original) throw Error('原文已更改，请重新选择段落。');
+    const source = {path, quote, fingerprint: expected};
+    const validate = async fields => {
+      if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
+      const loaded = await note('read', {path, workspaceId: workspace});
+      if (!owns()) throw Error('笔记目录或页面已切换，请重新打开行动。');
+      if (fingerprint(loaded.text) !== expected) throw Error('来源已更改，请取消后重新阅读并创建行动。');
+      if (!fields.sources.some(item => item.path === path && item.quote === quote && item.fingerprint === expected)) throw Error('请保留此笔记的原始来源引用。');
+    };
+    await validate({sources: [source]}); if (!owns()) return;
+    await actions.edit(null, null, {fields: {description, sources: [source]},
+      key: `reading-action-draft:${workspace}:${path}:${fingerprint(quote)}`,
+      validate, restore: () => { if (owns()) { restoreWikiPosition(position, savedText === original); opener.focus({preventScroll: true}); } }});
+  } catch (error) { if (owns()) notice(error.message); }
+}
+const noteAction = button('从笔记创建行动', () => createReadingAction(false, noteAction));
+noteAction.id = 'note-create-action';
+const passageAction = button('从选段创建行动', () => createReadingAction(true, passageAction));
+passageAction.id = 'passage-create-action';
+$('#mode').after(noteAction, passageAction);
+
 async function followWiki(target, opener) {
   if (!visibleNote()) return;
   const position = captureWikiPosition(opener), intent = ++wikiIntent;
@@ -466,7 +512,7 @@ async function resumeReading(entry) {
   }
 }
 
-function updateReading(){$('#reading').innerHTML=renderMarkdown(readMode && !dirty ? savedText : content(), {readOnly: true});}
+function updateReading(){$('#reading').innerHTML=renderMarkdown(readMode && !dirty ? savedText : content(), {readOnly: true, sourceLines: true});}
 function updateNoteToolbar() {
   $('#note-save').hidden = readMode && !dirty; $('#save-state').hidden = readMode && !dirty && !blocked;
 }
