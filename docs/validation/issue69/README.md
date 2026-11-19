@@ -1,0 +1,45 @@
+# Issue 69 validation
+
+Starting SHA/base: `1b5ddac5621e4d6c2d3e575a0d5f81b094e6c7db`. Live issue #69, parent #63/comments, native dependency API and textual blocker #67 were checked before writing; #67 is closed. Delivered #60, #67, #68 and #70 remain in the base. #65/PR #75 remains open and is not implemented here.
+
+## Behavior and evidence boundary
+
+The existing Action drawer proposes an editable description from the note title or selection. No inferred due date, Initiative or priority is added. Form confirmation uses the existing repository, immutable revisions and local index. Passage evidence is a complete original Markdown block envelope, including syntax/table delimiters, rather than a fabricated rendering-to-source substring. Its path and full-source fingerprint are revalidated before an uncommitted save. Contextual references cannot be silently removed or retargeted. An already committed revision remains recoverable if its source subsequently changes.
+
+The reader stays mounted, preserving outer Library/search/Initiative origin and nested wiki history. Save or cancel restores reading selection/position and the contextual opener. Private `reading-action-draft` keys isolate proposals from generic Action drafts. A proposed revision identity is persisted privately before writing; ambiguous replies/restarts check actual immutable history and reuse that identity. Unknown write outcomes retain the private identity without claiming success.
+
+The browser suite uses real UI and the production Swift storage/SQLite adapter with synthetic temporary files. It covers note/list/full-table proposals, explicit confirmation, clean cancel, double submission, validation, revision failure/retry, committed repair, lost durable-write reply plus reload/retry, changed/moved/unavailable source guards, nested return, management reachability, stale-selection invalidation, narrow sizing and workspace opening races. Browser input is automation, not physical input or native WKWebView.
+
+## Checks
+
+- `npm run check`: exit 0.
+- `npm test`: 67 passed, 0 failed, exit 0.
+- Both `npm run build:mac` and `npm run build:android`: exit 0; Android packaging is not runtime acceptance.
+- Full UI suite initially passed, then a repeated run had a transient Initiative selection assertion (`false` versus `true`, initiatives-ui.mjs:90). The isolated Initiative rerun passed; the failed receipt is retained under `attempts/`. The final full suite passed (exit 0), and the affected issue69 browser journey was rerun successfully after replacing a lookbehind expression with an older-WebView-compatible source-line split.
+- New issue69 browser journey passed through isolated production storage. Initial setup failures (missing worktree Playwright dependency and missing default browser) were resolved using an existing dependency installation and installed Google Chrome via `CHROME_PATH`.
+
+## Native execution
+
+The coordinator grants this worker an exclusive GUI lease. The probe copies packaged production web assets unchanged into an isolated instrumented Cocoa/WKWebView host, checks every asset hash, records committed head/probe/executable hashes before launch, and uses production native storage/index code with synthetic roots. DOM setup, real OS input and physical input are reported separately. No input source is selected temporarily; the initial installed source is recorded and verified in `finally`. Every owned host is terminated and waited after success or failure.
+
+Failed attempts are retained, never counted as acceptance:
+
+1. Stale packaged app.js hash stopped execution before launch.
+2. Note creation executed, but OS Shift+Right selection failed.
+3–5. OS Enter did not activate the first drawer. Diagnostics on attempt 5 identified Google Chrome as frontmost despite DOM focus in the native host. Concurrency was initially suspected, but an isolated rerun reproduced the focus limitation. Process-targeted native events were used subsequently.
+6. Isolated AppleScript Enter still did not activate the first drawer.
+7–8. Orca native accessibility inspection rejected the test host with permission_denied, suggesting a permission reset. No permission reset or global setting change was performed.
+9–10. Process-targeted Quartz Return created the note-level Action through actual storage, but drag selection assertions failed.
+11. AppKit mouse-event selection also produced no selection. Input-source verification differed in this attempt; the probe never selected an input source, and no global preferences were changed.
+12. The Shift+Right probe had a Swift modifier-expression syntax error, corrected in the next attempt.
+13. Process-targeted Shift+Right still produced no native selection. All hosts were terminated and waited. The cleanup receipt records initial/final input source and confirms no temporary input-source selection. Native passage selection acceptance remains unresolved; no full native pass is claimed. Native keyboard success is distinct from selection acceptance.
+
+Android-specific runtime/device checks and standalone Syncthing tests are deferred by user decision, not passed. Physical keyboard/mouse input is not claimed. Synthetic native reports contain no original notes or private transmission.
+
+## Review
+
+See [separate independent reports and resolutions](reviews.md). There are no accepted-minor functional deviations. Coordinator retains merge and issue-closure authority.
+
+## Current handoff limitation
+
+The implementation and headless storage acceptance are complete, but the native input environment has not produced a selected passage. Native note-level confirmation has executed with actual process-targeted Quartz Return through the UI/bridge/repository/storage/index. DOM-created WKWebView selection would exercise the real passage flow but is distinct from successful OS/native selection input. Coordinator clarification is required before using that as the remaining setup boundary; native acceptance and merge readiness are not claimed.
