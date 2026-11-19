@@ -462,3 +462,5 @@ details { overflow-wrap: anywhere; }
 .markdown-table th, .markdown-table td { border: 1px solid var(--divider); padding: 8px 12px; min-width: 8em; text-align: left; vertical-align: top; }
 .markdown-table th { background: var(--canvas); }
 #reading pre { overflow-x: auto; }
+/* A protected action drawer owns its own reachable search return control. */
+body:has(#action-drawer[open]) .search-return-shell { display: none; }

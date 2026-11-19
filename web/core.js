@@ -39,21 +39,23 @@ function tableCells(line) {
   return cells;
 }
 
-export function renderMarkdown(text, {readOnly = false} = {}) {
+export function renderMarkdown(text, {readOnly = false, sourceLines = false} = {}) {
   let fence = null, list = '';
   const closeList = () => { const end = list ? `</${list}>` : ''; list = ''; return end; };
   const lines = text.split(/\r?\n/), html = [];
+  const push = (value, line) => html.push(sourceLines ? value.replace(/<(h[1-6]|p|li|label|blockquote|pre|div)(?=[ >])/, `<$1 data-source-line="${line}"`) : value);
   const tasks = new Map(tasksOf(text).map(task => [task.line, task]));
   for (let index = 0; index < lines.length; index++) {
     const line = lines[index], marker = line.match(/^\s*(`{3,}|~{3,})(.*)$/);
     if (fence) {
-      if (marker && marker[1][0] === fence[0] && marker[1].length >= fence.length && !marker[2].trim()) { fence = null; html.push('</code></pre>'); }
-      else html.push(escapeHTML(line) + '\n');
+      if (marker && marker[1][0] === fence[0] && marker[1].length >= fence.length && !marker[2].trim()) { fence = null; push('</code></pre>', index); }
+      else push(escapeHTML(line) + '\n', index);
       continue;
     }
-    if (marker) { fence = marker[1]; html.push(closeList() + '<pre><code>'); continue; }
+    if (marker) { fence = marker[1]; push(closeList() + '<pre><code>', index); continue; }
     const header = tableCells(line), delimiter = tableCells(lines[index + 1] || '');
     if (header?.length && delimiter?.length === header.length && delimiter.every(cell => /^:?-{3,}:?$/.test(cell))) {
+      const tableStart = index;
       let table = closeList() + '<div class="markdown-table" tabindex="0" role="region" aria-label="表格"><table><thead><tr>';
       table += header.map(cell => `<th scope="col">${inlineMarkdown(cell)}</th>`).join('') + '</tr></thead><tbody>';
       index++;
@@ -61,19 +63,19 @@ export function renderMarkdown(text, {readOnly = false} = {}) {
         const row = tableCells(lines[index + 1]);
         if (!row || /^\s*(?:`{3,}|~{3,}|#{1,6}\s|[-*+]\s|\d+\.\s|>\s)/.test(lines[index + 1])) break;
         index++;
-        table += '<tr>' + header.map((_, i) => `<td>${inlineMarkdown(row[i] || '')}</td>`).join('') + '</tr>';
+        table += `<tr${sourceLines ? ` data-source-line="${index}"` : ''}>` + header.map((_, i) => `<td>${inlineMarkdown(row[i] || '')}</td>`).join('') + '</tr>';
       }
-      html.push(table + '</tbody></table></div>'); continue;
+      push(table + '</tbody></table></div>', tableStart); continue;
     }
     const task = tasks.get(index);
-    if (task) { html.push(closeList() + `<label class="checkline"><input type="checkbox" aria-label="${escapeHTML(task.text)}" data-line="${index}" ${task.done ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${escapeHTML(task.text)}</span></label>`); continue; }
+    if (task) { push(closeList() + `<label class="checkline"><input type="checkbox" aria-label="${escapeHTML(task.text)}" data-line="${index}" ${task.done ? 'checked' : ''} ${readOnly ? 'disabled' : ''}><span>${escapeHTML(task.text)}</span></label>`, index); continue; }
     const value = inlineMarkdown(line);
     const item = value.match(/^\s*(?:[-*+] |(\d+)\. )(.*)$/);
-    if (item) { const type = item[1] ? 'ol' : 'ul'; const start = list === type ? '' : closeList() + (type === 'ol' ? `<ol start="${Number(item[1])}">` : '<ul>'); list = type; html.push(start + `<li>${item[2]}</li>`); continue; }
+    if (item) { const type = item[1] ? 'ol' : 'ul'; const start = list === type ? '' : closeList() + (type === 'ol' ? `<ol start="${Number(item[1])}">` : '<ul>'); list = type; push(start + `<li>${item[2]}</li>`, index); continue; }
     const end = closeList(), heading = value.match(/^(#{1,6}) (.*)$/);
-    if (heading) html.push(end + `<h${heading[1].length}>${heading[2]}</h${heading[1].length}>`);
-    else if (value.startsWith('&gt; ')) html.push(end + `<blockquote>${value.slice(5)}</blockquote>`);
-    else html.push(end + (value ? `<p>${value}</p>` : ''));
+    if (heading) push(end + `<h${heading[1].length}>${heading[2]}</h${heading[1].length}>`, index);
+    else if (value.startsWith('&gt; ')) push(end + `<blockquote>${value.slice(5)}</blockquote>`, index);
+    else push(end + (value ? `<p>${value}</p>` : ''), index);
   }
   return html.join('\n') + closeList() + (fence ? '</code></pre>' : '');
 }
