@@ -1,0 +1,98 @@
+{
+  "notesSHA256": {
+    "reader.md": "34a6a2ddb24ed943ca0becfde4403158c55cee501d4ee3752abf41c0cea9da10",
+    "Notes/note-1795079038546.md": "3b2b6d6a9d32491d6248abcfe6f68f24fb4a0386768986ce5773f36a0befcf3b"
+  },
+  "owners": [
+    {
+      "collection": "topics",
+      "record": {
+        "description": "原生合成主题",
+        "sources": [
+          {
+            "path": "Notes/note-1795079038546.md",
+            "quote": "",
+            "fingerprint": "fnv1a32:ada876f6"
+          }
+        ],
+        "formatVersion": 1,
+        "entityType": "topic",
+        "workspaceId": "541c1ee2-d4b4-4bfa-bd79-491ad8a2292a",
+        "entityId": "b019d6c2-c332-4382-bd0d-28070f4523b9",
+        "revision": "6c636d5d-eb56-4602-92d8-8d3f34b773be",
+        "parents": [],
+        "status": "todo",
+        "initiativeId": null,
+        "focusPosition": null,
+        "dueDate": null,
+        "waitingOn": null,
+        "modifiedAt": "2026-11-19T09:04:03.200Z"
+      },
+      "immutableRevisionSHA256": "f6040aa654e01bd16ee849bc0b900ba722cb381a2856e3ea7e6c47e34dc2158a"
+    },
+    {
+      "collection": "initiatives",
+      "record": {
+        "waitingOn": null,
+        "title": "合成目标甲",
+        "entityType": "initiative",
+        "modifiedAt": "2026-11-19T09:04:03.700Z",
+        "revision": "483d6b96-5b5e-4814-b180-16d8aadb28c8",
+        "workspaceId": "541c1ee2-d4b4-4bfa-bd79-491ad8a2292a",
+        "description": "合成目标甲",
+        "initiativeId": null,
+        "entityId": "d8faffcc-abf2-4adb-b919-1c0da53d89cc",
+        "dueDate": null,
+        "goal": "离线目标",
+        "parents": [
+          "d64ffad6-11f5-46b4-86bd-5236166749b5"
+        ],
+        "progress": "",
+        "sources": [
+          {
+            "path": "Notes/note-1795079038546.md",
+            "quote": "",
+            "fingerprint": "fnv1a32:ada876f6",
+            "role": "reference"
+          }
+        ],
+        "formatVersion": 1,
+        "status": "active",
+        "focusPosition": null
+      },
+      "immutableRevisionSHA256": "9f7417a3ef608c75b6f324fefdb7bf99f723d51e8adfd5fdaa7f796c25d10835"
+    },
+    {
+      "collection": "initiatives",
+      "record": {
+        "revision": "08e53220-e565-4f0d-aa53-f8c0f1f0ce4a",
+        "description": "合成目标乙",
+        "parents": [
+          "adf50694-6378-4b05-871d-c39356f41446"
+        ],
+        "status": "active",
+        "waitingOn": null,
+        "sources": [
+          {
+            "path": "Notes/note-1795079038546.md",
+            "quote": "",
+            "fingerprint": "fnv1a32:ada876f6",
+            "role": "reference"
+          }
+        ],
+        "entityId": "30cf596c-fe39-47c2-af49-b16fcb21a911",
+        "progress": "",
+        "focusPosition": null,
+        "initiativeId": null,
+        "dueDate": null,
+        "modifiedAt": "2026-11-19T09:04:03.399Z",
+        "formatVersion": 1,
+        "workspaceId": "541c1ee2-d4b4-4bfa-bd79-491ad8a2292a",
+        "entityType": "initiative",
+        "title": "合成目标乙",
+        "goal": "离线目标"
+      },
+      "immutableRevisionSHA256": "c6268956563e65a9e7b6e616604ad43e87091646e1392b53657d5ca4f64a5893"
+    }
+  ]
+}
