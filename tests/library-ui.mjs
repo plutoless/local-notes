@@ -57,6 +57,18 @@ try {
   await mkdir(evidence, {recursive:true});
   await page.locator('[data-view=notes]').click();
   await page.waitForFunction(()=>document.querySelectorAll('#items .card').length===7 && !document.querySelector('#library-progress').textContent);
+  await page.getByLabel('排序', {exact:true}).selectOption('title');
+  await page.getByLabel('归档范围', {exact:true}).selectOption('only');
+  await page.waitForFunction(()=>document.querySelectorAll('#items .card').length===1);
+  await page.locator('#items .card').focus(); await page.keyboard.press('Enter');
+  await page.locator('#editor').waitFor({state:'visible'});
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.activeElement.dataset.path==='Archive/repeated.md');
+  assert.equal(await page.getByLabel('排序',{exact:true}).inputValue(),'title');
+  assert.equal(await page.getByLabel('归档范围',{exact:true}).inputValue(),'only');
+  await page.getByLabel('归档范围',{exact:true}).selectOption('include');
+  await page.getByLabel('排序',{exact:true}).selectOption('current');
+  await page.waitForFunction(()=>document.querySelectorAll('#items .card').length===7);
   for (const viewport of [{width:1180,height:800},{width:760,height:600},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport);
     const geometry = await page.locator('#items .card').evaluateAll(rows=>rows.every(row=>{
