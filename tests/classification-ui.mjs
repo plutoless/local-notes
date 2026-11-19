@@ -6,6 +6,8 @@ import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const evidence = 'build/issue70-browser';
 const fixture = await storageFixture();
+const alternate = await storageFixture(); let activeFixture = fixture;
+let releaseWrite, writeStarted, delayWrite = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -14,13 +16,15 @@ try {
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
+      if (request.cmd==='choose') { activeFixture=alternate; return {}; }
+      if (delayWrite && request.cmd==='actionWrite') { delayWrite=false; writeStarted?.(); await new Promise(resolve=>{releaseWrite=resolve;}); }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
-        const result = await fixture.adapter(request.cmd, request);
+        const result = await activeFixture.adapter(request.cmd, request);
         return result;
       }
-      const workspace = await fixture.adapter('workspace');
+      const workspace = await activeFixture.adapter('workspace');
       if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
-      const path = join(fixture.root, request.path || '');
+      const path = join(activeFixture.root, request.path || '');
       switch (request.cmd) {
         case 'create': await mkdir(dirname(path),{recursive:true}); await writeFile(path,request.text,{flag:'wx'}); return {};
         case 'read': return {text: await readFile(path, 'utf8')};
@@ -54,7 +58,12 @@ try {
   assert.equal(await page.getByRole('checkbox', {name:'合成主题甲',exact:true}).isChecked(),true);
   await page.getByRole('checkbox',{name:'合成目标甲',exact:true}).check();
   await page.waitForFunction(()=>document.activeElement.closest('label')?.textContent==='合成目标甲');
-  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check();
+  const started=new Promise(resolve=>{writeStarted=resolve;}); delayWrite=true;
+  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check(); await started;
+  await page.locator('#note-create-topic').click();
+  assert.equal(await page.locator('#topic-drawer').evaluate(n=>n.open),false);
+  releaseWrite(); await page.locator('#topic-drawer[open]').waitFor();
+  await page.locator('#topic-cancel').click(); await page.locator('#note-info-drawer[open]').waitFor();
   await page.locator('#note-create-topic').click();
   await page.locator('#topic-name').fill('合成主题甲');
   await page.locator('#topic-form').evaluate(n=>n.requestSubmit());
@@ -113,6 +122,28 @@ try {
   for (const owner of (await repository.query()).actions) assert.ok(owner.sources.every(s=>s.path!==captured));
   const topics = await fixture.adapter('actionQuery',{workspaceId:(await fixture.adapter('workspace')).workspaceId,entityType:'topic'});
   for (const owner of topics.actions) assert.ok(owner.sources.every(s=>s.path!==captured));
+  await page.locator('#mode').click();
+  await page.locator('#note-info-open').click(); await page.locator('#note-create-topic').click();
+  await page.locator('#topic-name').fill('捕获后归类'); await page.locator('#topic-form').evaluate(n=>n.requestSubmit());
+  await page.locator('#note-info-drawer[open]').waitFor();
+  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check();
+  await page.getByRole('button',{name:'完成',exact:true}).click();
+  await page.locator('#back').click(); await page.locator('#library-topic').selectOption({label:'捕获后归类'});
+  await page.locator('#items .card').filter({hasText:'未分类合成捕获'}).click();
+  assert.equal(await page.locator('#file-path').textContent(),captured);
+  const bRepo=new InitiativeRepository(alternate.adapter); await bRepo.open();
+  await bRepo.save({title:'合成目标乙',goal:'独立工作区',progress:'',status:'active'});
+  await page.locator('.directory-details').evaluate(n=>n.open=true); await page.locator('#choose').click();
+  await page.locator('[data-view=notes]').click();
+  await page.locator('#items .card').filter({has:page.locator('small').filter({hasText:/^reference\.md$/})}).click();
+  await page.locator('#note-info-open').click();
+  assert.equal(await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).isChecked(),false);
+  assert.equal(await page.locator('#note-topics input').count(),0);
+  await page.getByRole('checkbox',{name:'合成目标乙',exact:true}).check();
+  await page.locator('#note-create-topic').click(); await page.locator('#topic-name').fill('捕获后归类');
+  await page.locator('#topic-form').evaluate(n=>n.requestSubmit()); await page.locator('#note-info-drawer[open]').waitFor();
+  assert.equal((await bRepo.query()).actions[0].sources[0].path,'reference.md');
+  assert.ok((await repository.query()).actions.find(r=>r.title==='合成目标乙').sources.some(s=>s.path===captured));
   assert.deepEqual(errors,[]);
   console.log('PASS issue70 contextual topic creation, duplicate validation, multiple associations, unlink, filter/reopen and unchanged source');
-} finally { await browser.close(); await fixture.close(); }
+} finally { await browser.close(); await fixture.close(); await alternate.close(); }
