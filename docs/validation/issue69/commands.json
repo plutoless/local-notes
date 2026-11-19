@@ -1,46 +1,64 @@
 [
   {
     "command": "npm run check",
-    "exitCode": 0
+    "exitCode": 0,
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "npm test",
     "exitCode": 0,
     "passed": 67,
-    "failed": 0
+    "failed": 0,
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui",
     "exitCode": 0,
-    "scope": "Full suite before final focus/compatibility corrections; affected suites rerun below"
+    "scope": "Full refreshed integrated UI suite, including delivered issue71 and issue69",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "node tests/reading-actions-ui.mjs",
     "exitCode": 0,
-    "scope": "After final production change; installed Chrome via CHROME_PATH"
+    "scope": "After final production change; installed Chrome via CHROME_PATH",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "node tests/wiki-links-ui.mjs",
     "exitCode": 0,
-    "scope": "After final focus change; installed Chrome via CHROME_PATH"
+    "scope": "After final focus change; installed Chrome via CHROME_PATH",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "node tests/search-navigation-ui.mjs",
     "exitCode": 0,
-    "scope": "After final focus change; installed Chrome via CHROME_PATH"
+    "scope": "After final focus change; installed Chrome via CHROME_PATH",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "npm run build:mac",
-    "exitCode": 0
+    "exitCode": 0,
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "npm run build:android",
     "exitCode": 0,
-    "scope": "Packaging only; no Android runtime acceptance"
+    "scope": "Packaging only; no Android runtime acceptance",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   },
   {
     "command": "python3 tests/native-reading-actions.py",
     "exitCode": 0,
-    "scope": "Attempt16 at c0b2a93; actual native UI/bridge/records/index; DOM Range setup only"
+    "scope": "Integrated d5b9c3b real native UI/bridge/records/index; DOM Range setup only",
+    "integrationBase": "5c780a9ac30818d2ccd0c888820b8cf0ede38a2c",
+    "sourceEquivalence": "Reviewed tree433d71f equals merge22e1586; only README/evidence differ from executed d5b9c3b"
   }
 ]
