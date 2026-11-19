@@ -91,6 +91,8 @@ try {
   await page.waitForFunction(()=>document.querySelector('.home-tools') && !document.querySelector('.recent-reading'));
   assert.equal(await page.locator('.recent-reading').count(),0);
   assert.equal(await readFile(sourcePath,'utf8'),text+'\nChanged externally');
+  await fixture.removeIndex();
+
   // Home remains usable while the existing Library indexer awaits one source body.
   const indexingStarted = new Promise(resolve => readBegan = resolve); delayPath='reference.md';
   await page.locator('[data-view=notes]').click(); await indexingStarted;
@@ -103,6 +105,9 @@ try {
   releaseRead();
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='reference.md');
+  await page.locator('#note-info-open').click();
+  await page.getByRole('button',{name:'新建并关联主题',exact:true}).waitFor();
+  await page.locator('#note-info-drawer').getByRole('button',{name:'完成',exact:true}).click();
   assert.deepEqual(errors,[]);
   console.log('PASS private continuation reload, scroll/focus, changed/missing recovery, remove, late-read fence and workspace isolation');
 } finally { await browser.close(); await fixture.close(); await secondFixture.close(); }

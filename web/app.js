@@ -448,6 +448,7 @@ async function resumeReading(entry) {
     const loaded = await note('read', {path:entry.path}); if (!owns()) return;
     // Initialize only source context repositories; do not start Library body indexing.
     await libraryScreen.library.open(); if (!owns()) return;
+    await libraryScreen.library.indexSource(metadata.notes.find(item => item.path === entry.path), loaded.text); if (!owns()) return;
     const homeScroll = $('.collection').scrollTop;
     focus.active=false; actions.active=false; initiatives.active=false;
     view='notes'; selectNavigation('notes'); $('.app').classList.remove('home'); $('.app').classList.add('library-view','reading-continuation');

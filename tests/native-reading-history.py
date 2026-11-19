@@ -85,12 +85,13 @@ def resume(label='resume'):
     w("!document.querySelector('#editor').hidden && document.activeElement.id==='mode'")
     delta=c('__reads')-before;assert delta==1,(label,delta)
     measurements.append(dict(journey=label,ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=delta))
-def home():
+def home(existing_indexing=False):
     before=c('__reads'); start=time.perf_counter()
     c("document.querySelector('nav [data-view=focus]').click()")
     w("!!document.querySelector('.home-tools') && document.querySelector('#editor').hidden")
-    delta=c('__reads')-before;assert delta==0,delta
-    measurements.append(dict(journey='warm Home',ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=delta))
+    delta=c('__reads')-before
+    if not existing_indexing: assert delta==0,delta
+    measurements.append(dict(journey='warm Home',ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=delta,existingIndexingMayOverlap=existing_indexing))
 try:
     launch()
     assert c("return !document.querySelector('.recent-reading')")
@@ -173,7 +174,7 @@ try:
     w("!!document.querySelector('#note-location')")
     c("const input=document.querySelector('#note-location');input.value='folder/Renamed.md';input.dispatchEvent(new Event('input',{bubbles:true}));input.closest('form').requestSubmit()")
     w("document.querySelector('#file-path').textContent==='folder/Renamed.md'")
-    home()
+    home(existing_indexing=True)
     assert c("return document.querySelector('[data-reading-path]').dataset.readingPath")=='folder/Renamed.md'
     journeys.append('known application move migrated private exact path through actual contextual form/storage')
     quit_app()
@@ -182,6 +183,11 @@ try:
     assert removed
     launch(root);resume('resume after disposable index removal')
     assert c("return document.querySelector('#file-path').textContent")=='folder/Renamed.md'
+    c("document.querySelector('#note-info-open').click()")
+    w("document.querySelector('#note-info-drawer').open && !!document.querySelector('#note-create-topic')")
+    c("[...document.querySelectorAll('#note-info-drawer button')].find(n=>n.textContent==='完成').click()")
+    w("!document.querySelector('#note-info-drawer').open")
+    journeys.append('delivered topic classification controls remain available on direct resume after index removal, without opening Library')
     journeys.append('private continuation survived deleting all isolated disposable SQLite indexes and native restart')
     # Source modifications in this test are explicit controlled fixture changes only.
     (root/'folder/Renamed.md').rename(root/'reader.md')

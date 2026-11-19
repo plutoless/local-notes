@@ -87,6 +87,13 @@ export class Library {
     if (!this.warnings.length) for (const path of previous.keys()) if (!seen.has(path)) await call('referenceRemove', {path});
     this.lastReads = reads; this.changed();
   }
+  async indexSource(note, text) {
+    // A direct reader route rebuilds only its already-read source descriptor.
+    const workspace = this.workspaceId, record = referenceRecord(note, text);
+    const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
+    await this.adapter('referencePut', {workspaceId: workspace, record, search: referenceSearchText(record.title, text)});
+    await this.adapter('referenceTags', {workspaceId: workspace, path: note.path, topics});
+  }
   query(options = {}) { return this.request('referenceQuery', options); }
   async saveTopic(name, previous = null, retry = null, note = null) {
     if (!name?.trim()) throw Error('请填写主题名称');
