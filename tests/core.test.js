@@ -24,3 +24,8 @@ test('table bodies stop before following Markdown blocks containing pipes',()=>{
   const html=renderMarkdown('A | B\n--- | ---\nx | y\n# Heading | title\n- List | item\n> Quote | text\n- [ ] Task | text',{readOnly:true});
   assert.match(html,/<\/table>/);assert.match(html,/<h1>Heading \| title<\/h1>/);assert.match(html,/<ul><li>List \| item/);assert.match(html,/<blockquote>Quote \| text/);assert.match(html,/aria-label="Task \| text"/);
 });
+
+test('search source anchors retain authored offsets across tables',()=>{
+  const html=renderMarkdown('# Header\n\nA | B\n--- | ---\nx | y\nz | q\n\nAfter',{sourceLines:true,readOnly:true});
+  assert.match(html,/<h1 data-source-line="0">/);assert.match(html,/<div data-source-line="2"/);assert.match(html,/<tr data-source-line="4">/);assert.match(html,/<tr data-source-line="5">/);assert.match(html,/<p data-source-line="7">After/);
+});

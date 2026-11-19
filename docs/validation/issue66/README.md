@@ -26,3 +26,9 @@ The production lifecycle probe uses an isolated copy of the app without a JavaSc
 Initial UI attempts lacked Playwright and its bundled browser. Playwright was installed without package metadata changes, then tests used installed Chrome. The first production termination attempt overlapped another native probe and failed a saved-title assertion; the isolated rerun is authoritative. A native copy attempt without reader focus failed; focusing the WKWebView reader before OS copying passed.
 
 Android runtime/device/SAF tests and standalone Syncthing tests are deferred by user policy, not passed. No physical-input or two-device synchronization coverage is claimed. No private note data was read or transmitted. Wiki links, recent-reading state and search source navigation remain outside this slice.
+
+## Delivered main integration
+
+During validation, main advanced to `fbb7b79bbffdfadb4aabb01b8efdaedea89d625a` with merged PR #74. The branch integrates that delivered contract: optional draft recovery, source offsets, search highlighting/return and contextual navigation remain intact. Reader source anchors retain original line offsets across table rows. The merged main change is not an additional issue implementation by this worker.
+
+Checked-in screenshots/report are preliminary synthetic visual evidence. The authoritative final-head native report is generated under `build/issue66-final-native-reader/native-report.json`, with production termination results under `build/issue66-native-termination-combined/result.json`. Final command outputs and reviewed SHAs are recorded in the PR and worker handoff. An earlier full UI run encountered transient focus timing in the unchanged short-form suite; its isolated rerun passed. A pre-merge run was invalidated when main integration began; only a completed combined-head run is acceptance evidence.
