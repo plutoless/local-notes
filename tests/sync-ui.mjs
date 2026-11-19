@@ -262,7 +262,7 @@ try {
   await page.locator('#items [data-path="reference.md"]').click();
   await page.locator('#editor').waitFor({state:'visible'});
   if (await page.locator('#body').evaluate(node=>node.hidden)) await page.locator('#mode').click();
-  await closeNoteInfo(page); await page.locator('#body').fill('冲突检查返回笔记编辑');
+  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('冲突检查返回笔记编辑');
   await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();

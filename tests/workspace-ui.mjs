@@ -182,7 +182,7 @@ try {
   await page.locator('#workspace-references [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
-  await closeNoteInfo(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
+  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
   await page.locator('#initiative-new-action').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();

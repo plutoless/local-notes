@@ -99,7 +99,7 @@ try {
   await choose('保存并离开');assert.match(await readFile(sourcePath,'utf8'),/保存并离开笔记/);await retained();
   // A submitted autosave must settle before the first leave intent proceeds.
   await page.locator('[data-view=notes]').click();await openReference();
-  holdNote=true;await page.locator('#body').fill('延迟提交的笔记');
+  holdNote=true;if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('延迟提交的笔记');
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='正在保存…');
   await page.locator('[data-view=focus]').click();
   await page.locator('[data-view=notes]').evaluate(n=>n.click());
@@ -190,7 +190,7 @@ try {
   await page.locator('[data-view=notes]').click();await page.locator('#library-refresh').click();
   holdRead=true;await page.locator('#items [data-path="slow.md"]').evaluate(n=>n.click());await readStarted;
   await openReference();await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#body').fill('后打开笔记的当前草稿');releaseRead();
+  if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('后打开笔记的当前草稿');releaseRead();
   await page.waitForFunction(()=>window.slowReadReturned);
   assert.equal(await page.locator('#file-path').textContent(),'reference.md');assert.equal(await page.locator('#body').inputValue(),'后打开笔记的当前草稿');
   assert.equal(await page.evaluate(()=>window.hasUnsavedChanges()),true);
@@ -199,7 +199,7 @@ try {
   await page.locator('#editor').waitFor({state:'visible'});
   await page.evaluate(()=>window.slowReadReturned=false);readStarted=new Promise(resolve=>{startRead=resolve;});
   holdRead=true;await page.locator('#items [data-path="slow.md"]').evaluate(n=>n.click());await readStarted;
-  await page.locator('#body').fill('读取期间继续编辑的当前草稿');releaseRead();
+  if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('读取期间继续编辑的当前草稿');releaseRead();
   await page.waitForFunction(()=>window.slowReadReturned);
   assert.equal(await page.locator('#file-path').textContent(),'reference.md');
   assert.equal(await page.locator('#body').inputValue(),'读取期间继续编辑的当前草稿');
