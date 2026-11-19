@@ -73,7 +73,7 @@ try:
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
     def key(code, modifier=''):
         flags='.maskShift' if modifier else '[]'
-        subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.flags={flags}; down.postToPid({process.pid}); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!;up.flags={flags};up.postToPid({process.pid})'],check=True)
+        subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.flags = {flags}; down.postToPid({process.pid}); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!;up.flags = {flags};up.postToPid({process.pid})'],check=True)
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
     c("document.querySelector('#note-create-action').focus()")
     key(36)
