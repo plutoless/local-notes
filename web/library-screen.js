@@ -45,7 +45,7 @@ export class LibraryScreen {
       status.textContent = '正在保存…'; error.replaceChildren();
       try {
         await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry, this.topicNote);
-        await this.closeTopic(); this.notice('主题已保存到本地。', true); return true;
+        const restored = await this.closeTopic(true); if (restored) this.notice('主题已保存到本地。', true); return true;
       } catch (failure) {
         if (failure.revisionSaved) {
           this.topicRetry = failure.record;
@@ -82,11 +82,11 @@ export class LibraryScreen {
     this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false');
     this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput);
   }
-  async closeTopic() {
+  async closeTopic(committed = false) {
     try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicDrawer.hide();
     $('.collection').scrollTop = this.topicBrowseScroll;
     const note = this.topicNote; this.topicNote = null;
-    if (note) await this.returnToNoteInfo?.(note);
+    return !note || await this.returnToNoteInfo?.(note, committed) !== false;
   }
   topicTask() {
     return {label: '主题', dirty: () => this.topicDirty, committed: () => Boolean(this.topicRetry), pending: () => this.topicPending,
@@ -162,7 +162,7 @@ export class LibraryScreen {
     $('#items .selected')?.focus({preventScroll: true});
     $('.collection').scrollTop = this.browseScroll || 0;
   }
-  async noteTopics(path) {
+  async noteTopics(path, focusId = null) {
     this.noteTopicPath = path;
     await this.library.open();
     const workspaceId = this.library.workspaceId;
@@ -174,11 +174,11 @@ export class LibraryScreen {
     if (!this.library.records.length) { const message = document.createElement('p'); message.textContent = '尚未关联主题，可新建或选择已有主题。'; container.append(message); }
     const create = button('新建并关联主题', () => this.createNoteTopic?.(note), {density: 'compact'}); create.id = 'note-create-topic'; container.append(create);
     for (const topic of this.library.records) {
-      const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'ui-selection'; checkbox.type = 'checkbox'; checkbox.checked = topic.sources.some(source => source.path === path);
+      const label = document.createElement('label'), checkbox = document.createElement('input'); label.className = 'ui-selection'; checkbox.type = 'checkbox'; checkbox.dataset.topicId = topic.entityId; checkbox.checked = topic.sources.some(source => source.path === path);
       checkbox.onchange = () => {
         this.noteTopicPending = (async () => {
         this.noteTopicSaving = true; container.inert = true; checkbox.disabled = true;
-        try { await this.library.link(topic, note, checkbox.checked); if (ownsNote()) await this.noteTopics(path); }
+        try { await this.library.link(topic, note, checkbox.checked); if (ownsNote()) await this.noteTopics(path, topic.entityId); }
         catch (error) {
           if (!ownsNote()) return;
           const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); container.append(failure);
@@ -188,7 +188,7 @@ export class LibraryScreen {
             const retry = button('重试更新关联', async () => {
               this.noteTopicPending = (async () => {
               this.noteTopicSaving = true; container.inert = true;
-              try { await this.library.sync(); if (ownsNote()) await this.noteTopics(path); }
+              try { await this.library.sync(); if (ownsNote()) await this.noteTopics(path, topic.entityId); }
               catch (recoveryError) { if (!ownsNote()) return; feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry); }
               finally { this.noteTopicSaving = false; container.inert = false; }
               })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
@@ -200,5 +200,7 @@ export class LibraryScreen {
       };
       label.append(checkbox, document.createTextNode(topic.description)); container.append(label);
     }
+    container.inert = false;
+    if (focusId) [...container.querySelectorAll('input')].find(input => input.dataset.topicId === focusId)?.focus({preventScroll: true});
   }
 }

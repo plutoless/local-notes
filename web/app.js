@@ -453,9 +453,10 @@ for (const child of [...details.children].filter(node => node.tagName !== 'SUMMA
 details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
 libraryScreen.createNoteTopic = note => { noteInfo.hide(); libraryScreen.editTopic(null, note); };
-libraryScreen.returnToNoteInfo = async note => {
+libraryScreen.returnToNoteInfo = async (note, committed) => {
   if (current !== note.path || currentWorkspace !== libraryScreen.library.workspaceId || $('#editor').hidden) return;
-  await libraryScreen.noteTopics(note.path);
+  try { await libraryScreen.noteTopics(note.path); }
+  catch (error) { notice(committed ? '主题已保存到本地，关联列表暂未更新。请重新打开笔记信息重试。' : '关联列表暂未更新，请重新打开笔记信息重试。', true); infoOpen.focus({preventScroll: true}); return false; }
   noteInfo.open($('#note-create-topic'), infoOpen);
 };
 
@@ -502,7 +503,7 @@ if(window.webkit?.messageHandlers?.notes)setInterval(validateReferences,30000);
 refresh().catch(e=>notice(e.message));
 
 let noteInitiativePending = null;
-async function noteInitiatives(path) {
+async function noteInitiatives(path, focusId = null) {
   $('#repair-links').hidden = !localStorage.getItem('pending-note-move:'+rootKey);
   const workspaceId = rootKey;
   await prepareInitiatives();
@@ -510,12 +511,13 @@ async function noteInitiatives(path) {
   const records = await allRecords(initiatives.repository);
   const owns = () => current === path && rootKey === workspaceId;
   if (!owns()) return;
+  if (initiatives.previous) initiatives.previous = records.find(record => record.entityId === initiatives.previous.entityId) || initiatives.previous;
   const container = $('#note-initiatives'); container.replaceChildren();
   if (!records.length) { const empty = document.createElement('p'); empty.textContent = '尚无事项。可先保存笔记，稍后关联已有事项。'; container.append(empty); }
   for (const record of records) {
     const label = document.createElement('label'), checkbox = document.createElement('input');
     label.className = 'ui-selection'; checkbox.type = 'checkbox';
-    checkbox.checked = record.sources.some(source => source.path === path);
+    checkbox.checked = record.sources.some(source => source.path === path); checkbox.dataset.initiativeId = record.entityId;
     label.append(checkbox, document.createTextNode(record.title)); container.append(label);
     checkbox.onchange = () => {
       if (noteInitiativePending) return;
@@ -526,7 +528,7 @@ async function noteInitiatives(path) {
           const sources = record.sources.filter(source => source.path !== path);
           if (linked) sources.push({path, quote: '', fingerprint: fingerprint(savedText), role: 'reference'});
           await initiatives.repository.save({...record, sources}, record);
-          if (owns()) await noteInitiatives(path);
+          if (owns()) await noteInitiatives(path, record.entityId);
         } catch (error) {
           if (!owns()) return;
           const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); container.append(failure);
@@ -535,7 +537,11 @@ async function noteInitiatives(path) {
           for (const input of container.querySelectorAll('input')) input.disabled = true;
           feedback(failure, error.revisionSaved ? '关联版本已保存，恢复尚未完成。请重试更新。' : '关联尚未保存，请重新载入后重试。', error.message);
           failure.append(button('重试更新事项关联', async () => {
-            try { await noteInitiatives(path); } catch (retryError) { feedback(failure, '更新尚未完成，请重试。', retryError.message); }
+            if (noteInitiativePending) return noteInitiativePending;
+            noteInitiativePending = (async () => {
+              try { await noteInitiatives(path, record.entityId); } catch (retryError) { feedback(failure, '更新尚未完成，请重试。', retryError.message); }
+            })().finally(() => { noteInitiativePending = null; });
+            return noteInitiativePending;
           }));
         } finally { container.inert = false; }
       })().finally(() => { noteInitiativePending = null; });
@@ -545,6 +551,8 @@ async function noteInitiatives(path) {
       if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; selectNavigation('initiatives'); await initiatives.show(); await initiatives.edit(record); }
     }, {variant: 'quiet'}));
   }
+  container.inert = false;
+  if (focusId) [...container.querySelectorAll('input')].find(input => input.dataset.initiativeId === focusId)?.focus({preventScroll: true});
 }
 
 async function repairMovedLinks() {
