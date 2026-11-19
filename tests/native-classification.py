@@ -79,9 +79,11 @@ try:
     w("document.querySelector('#note-info-drawer').open")
     assert c("return [...document.querySelectorAll('#note-topics input')].every(n=>n.checked)")
     for index in [0,1]:
+        label=c(f"return document.querySelectorAll('#note-initiatives input')[{index}].parentElement.textContent")
         c(f"document.querySelectorAll('#note-initiatives input')[{index}].click()")
         w("!document.querySelector('#note-initiatives').inert")
-        assert c("return document.activeElement.parentElement.textContent") == ['合成目标甲','合成目标乙'][index]
+        w("document.activeElement.parentElement.textContent==="+json.dumps(label))
+        w("!window.hasUnsavedChanges()")
     assert c("return [...document.querySelectorAll('#note-initiatives input')].every(n=>n.checked)")
     for width,height in [(1180,800),(393,852),(800,400)]:
         c(f'__size:{width}:{height}');time.sleep(.2)
