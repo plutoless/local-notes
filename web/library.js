@@ -31,6 +31,7 @@ function referenceExcerpt(body) {
   });
   return lines.join(' ').replace(/\s+/g, ' ').trim().slice(0, 180);
 }
+export function archivedPath(path) { return path.split('/').slice(0, -1).some(part => ['archive', 'archives', 'archived', '归档'].includes(part.toLowerCase())); }
 export function referenceRecord(note, text) {
   const directory = note.path.includes('/') ? note.path.slice(0, note.path.lastIndexOf('/')) : '';
   const body = referenceBody(text);
@@ -39,7 +40,7 @@ export function referenceRecord(note, text) {
 export function referenceSearchText(title, text) { return `${title}\n${referenceBody(text)}`; }
 // One body at a time keeps editor requests responsive while the initial index fills.
 export class Library {
-  constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; this.topics = new TopicRepository(adapter); this.running = null; }
+  constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; this.topics = new TopicRepository(adapter); this.running = null; this.revision = 0; }
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   async open() {
     const workspace = await this.adapter('workspace');
@@ -75,7 +76,7 @@ export class Library {
         try {
           const {text} = await call('read', {path: note.path}); reads++;
           const record = referenceRecord(note, text);
-          await call('referencePut', {record, search: referenceSearchText(record.title, text)});
+          await call('referencePut', {record, search: referenceSearchText(record.title, text)}); this.revision++;
         } catch (error) { this.warnings.push(`${note.path}: ${error.message}`); }
       }
       const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
@@ -84,7 +85,7 @@ export class Library {
       if (position % 25 === 0) { this.changed(); await new Promise(resolve => setTimeout(resolve, 0)); }
     }
     // An incomplete enumeration is never evidence that files disappeared.
-    if (!this.warnings.length) for (const path of previous.keys()) if (!seen.has(path)) await call('referenceRemove', {path});
+    if (!this.warnings.length) for (const path of previous.keys()) if (!seen.has(path)) { await call('referenceRemove', {path}); this.revision++; }
     this.lastReads = reads; this.changed();
   }
   query(options = {}) { return this.request('referenceQuery', options); }

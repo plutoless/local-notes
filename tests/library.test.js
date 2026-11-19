@@ -110,3 +110,33 @@ test('summary cleanup preserves literal operators and code syntax', async () => 
   const source = '# Calculation\n\n2*3*4 = 24; prefix__identifier__suffix\nUse `a*b*c` and `__init__`.\n```js\nconst value = a*b*c; // **literal**\n```\n**Useful** prose';
   assert.equal(referenceRecord({path:'code.md'}, source).excerpt, '2*3*4 = 24; prefix__identifier__suffix Use a*b*c and __init__. const value = a*b*c; // **literal** Useful prose');
 });
+
+test('Library ordering and archive scope compose at the SQLite boundary with stable bounded pages', async () => {
+  const fixture = await storageFixture();
+  let reads = 0;
+  const notes = Array.from({length: 127}, (_, i) => ({path: `${i < 60 ? 'Archive' : 'Current'}/${String(i).padStart(3,'0')}.md`, modified: 1000, size: 40}));
+  notes.push({path:'archive-plans/current.md', modified:1000, size:40}, {path:'归档/old.md', modified:1000, size:40});
+  const library = new Library((cmd,args) => cmd === 'metadata' ? {notes, root:fixture.root} : cmd === 'read' ? (reads++, {text:'# Repeated\n\nkeyword'}) : fixture.adapter(cmd,args));
+  try {
+    await library.open(); await library.sync(); assert.equal(reads,129);
+    async function pages(options) {
+      const paths=[];
+      for(let offset=0;;offset+=50) {
+        const page=await library.query({...options,offset});
+        assert.ok(page.notes.length<=50); assert.equal(page.total, options.archives==='only'?61:options.archives==='exclude'?68:129);
+        paths.push(...page.notes.map(n=>n.path)); if(!page.hasMore) break;
+      }
+      assert.equal(new Set(paths).size,paths.length); return paths;
+    }
+    const current=await pages({}); assert.equal(current[0],'Current/060.md'); assert.equal(current[68],'Archive/000.md');
+    assert.deepEqual(await pages({order:'title'}),notes.map(n=>n.path).sort());
+    const archived=await pages({archives:'only'}); assert.equal(archived.length,61);
+    assert.equal((await pages({archives:'exclude'})).length,68);
+    assert.equal((await library.query({directory:'Archive', archives:'exclude',search:'keyword'})).total,0);
+    await library.saveTopic('Synthetic topic'); const topic=library.records[0];
+    await library.link(topic,(await library.query({exactPath:'Archive/000.md'})).notes[0],true);
+    assert.equal((await library.query({topic:topic.entityId,archives:'only',search:'keyword'})).total,1);
+    assert.equal((await library.request('referenceSearch',{search:'keyword',archives:'exclude'})).notes[0].path,'Archive/000.md');
+    await library.sync(); assert.equal(reads,129);
+  } finally { await fixture.close(); }
+});

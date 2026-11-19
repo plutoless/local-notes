@@ -455,3 +455,8 @@ details { overflow-wrap: anywhere; }
 
 .search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); }
 .search-scopes [aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
+
+/* Library browse controls retain labelled, normal-flow keyboard targets. */
+.library-browse-control { display: flex; align-items: center; gap: 8px; min-height: 44px; }
+.library-browse-control select { min-height: 44px; max-width: 100%; }
+#library-page { flex-basis: 100%; margin: 0; color: var(--muted); font-size: 13px; }
