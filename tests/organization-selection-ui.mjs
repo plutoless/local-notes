@@ -10,7 +10,8 @@ for (const dir of ['current', 'archive']) {
 const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
- let failQuery = false, delay = null;
+ let failQuery = false, delay = null, reached;
+ const heldQuery = new Promise(resolve => reached = resolve);
  await page.exposeFunction('bridge', async request => {
   calls.push(request);
   try {
@@ -19,7 +20,7 @@ try {
    if(request.cmd==='read') return {text:await readFile(`${fixture.root}/${request.path}`,'utf8')};
    if(request.cmd==='referenceQuery' && failQuery) {failQuery=false; throw Error('query failed');}
    const result = await fixture.adapter(request.cmd,request);
-   if(request.cmd==='referenceQuery' && request.search==='needle1') await new Promise(resolve=>{delay=resolve;});
+   if(request.cmd==='referenceQuery' && request.search==='needle1') await new Promise(resolve=>{delay=resolve; reached();});
    return result;
   } catch(error) {return {error:error.message};}
  });
@@ -35,10 +36,10 @@ try {
  await page.waitForFunction(()=>document.querySelector('#ai-notes-previous').disabled===false);
  await page.locator('#ai-directory').selectOption('current');
  await page.locator('#ai-search').fill('needle1');
- await page.waitForFunction(()=>document.querySelector('#ai-inventory-state').textContent.includes('正在'));
+ await heldQuery;
  await page.locator('#ai-search').fill('needle54');
  await page.waitForFunction(()=>document.querySelectorAll('#ai-selection input').length===1);
- delay?.();
+ assert.equal(typeof delay,'function'); delay();
  await page.waitForTimeout(100);
  assert.equal(await page.locator('#ai-selection input').inputValue(),'current/54.md');
  await page.locator('#ai-selection input').check();
@@ -49,13 +50,15 @@ try {
  assert.equal(await page.locator('#ai-send').isDisabled(),true);
  await page.locator('#ai-configure').click(); await page.locator('#ai-token').fill('synthetic');
  await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'继续编辑',exact:true}).click(); assert.equal(await page.locator('#ai-token').inputValue(),'synthetic');
+ await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
  assert.equal(await page.locator('#ai-configure').evaluate(el=>el===document.activeElement),true);
  assert.ok((await page.locator('#ai-selection-state').textContent()).includes('2 / 20'));
  assert.ok((await page.locator('#ai-input').textContent()).includes('current/54.md'));
  await page.locator('#ai-configure').click(); assert.equal(await page.locator('#ai-token').inputValue(),'');
  await page.locator('#ai-address').fill('https://controlled.example'); await page.locator('#ai-model').fill('synthetic');
- await page.locator('#ai-settings button').click(); await page.locator('#ai-settings-error').getByText('服务尚不可用', {exact:false}).waitFor();
- await page.getByRole('button',{name:'取消设置',exact:true}).click();
+ await page.getByRole('button',{name:'保存设备设置',exact:true}).click(); await page.locator('#ai-settings-error').getByText('服务尚不可用', {exact:false}).waitFor();
+ await page.getByRole('button',{name:'取消设置',exact:true}).click(); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
  failQuery=true; await page.locator('#ai-search').fill('retry'); await page.locator('#ai-notes-retry').waitFor();
  await page.locator('#ai-notes-retry').click(); await page.getByText('没有匹配的笔记。请更改搜索或目录。',{exact:true}).waitFor();
  await page.locator('#ai-search').fill(''); await page.waitForFunction(()=>document.querySelectorAll('#ai-selection input').length===50);

@@ -1,4 +1,4 @@
-import {button as makeButton, errorFeedback, feedback, field, disclosure, drawer} from './presentation.js';
+import {button as makeButton, errorFeedback, feedback, field, disclosure, drawer, requestTaskLeave} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -7,16 +7,19 @@ export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
     this.selectionOffset = 0; this.inventoryRequest = 0;
-    this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.closeSettings()});
+    this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
     this.settingsDrawer.body.append($('#ai-settings'));
-    this.settingsDrawer.footer.append(makeButton('取消设置', () => this.closeSettings()));
+    for (const label of $('#ai-settings').querySelectorAll('label')) label.classList.add('ui-field');
+    $('#ai-settings').querySelector('button').remove();
+    this.settingsSave = makeButton('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
+    this.settingsDrawer.footer.append(makeButton('取消设置', () => this.leaveSettings()), this.settingsSave);
     $('#ai-configure').onclick = () => this.attempt(async () => { await this.settings(); this.settingsDrawer.open($('#ai-address'), $('#ai-configure')); });
     $('#ai-search').oninput = () => { this.selectionOffset = 0; this.attempt(() => this.inventory()); };
     $('#ai-notes-retry').onclick = () => this.attempt(() => this.inventory());
     for (const node of document.querySelectorAll('#organize-tools button')) node.classList.add('ui-action', node.classList.contains('primary') ? 'primary' : 'secondary');
     for (const node of document.querySelectorAll('#organize-tools details')) node.classList.add('ui-disclosure');
     for (const node of document.querySelectorAll('#organize-tools label')) node.classList.add('ui-field');
-    $('#ai-settings').onsubmit = event => { event.preventDefault(); this.attempt(async () => { await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value}); $('#ai-token').value = ''; await this.settings(true); this.closeSettings(); this.invalidate(); this.status('设置已保存在此设备。请重新预览请求后主动发送。'); }); };
+    $('#ai-settings').onsubmit = event => { event.preventDefault(); this.attempt(() => this.saveSettings()); };
     $('#ai-preview').onclick = () => this.attempt(async () => {
       if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
       this.previewing = true; this.controls(); this.status('正在读取所选内容…');
@@ -83,6 +86,24 @@ export class OrganizeScreen {
     $('#ai-token').placeholder = settings.configured ? '已保存在此设备，留空则保留' : '输入服务凭证';
     $('#ai-service-state').textContent = this.configured ? '服务已配置。核对预览后可主动发送。' : '尚未配置服务。可先选择并预览；发送前请设置 AI 服务。';
     this.savedSettings = {address: settings.address, model: settings.model};
+  }
+  settingsTask() {
+    return {label: 'AI 服务设置', dirty: () => Boolean($('#ai-token').value || $('#ai-address').value !== (this.savedSettings?.address || '') || $('#ai-model').value !== (this.savedSettings?.model || '')),
+      pending: () => this.settingsPending?.catch(() => {}),
+      save: async () => { await this.saveSettings(); return true; },
+      discard: () => { $('#ai-token').value = ''; $('#ai-address').value = this.savedSettings?.address || ''; $('#ai-model').value = this.savedSettings?.model || ''; },
+      close: () => this.closeSettings()};
+  }
+  leaveSettings() { return requestTaskLeave(this.settingsTask()); }
+  saveSettings() {
+    if (this.settingsPending) return this.settingsPending;
+    this.settingsSave.disabled = true; $('#ai-settings').inert = true;
+    const operation = (async () => {
+      await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value});
+      $('#ai-token').value = ''; await this.settings(true); this.closeSettings(); this.invalidate();
+      this.status('设置已保存在此设备。请重新预览请求后主动发送。');
+    })().finally(() => { this.settingsPending = null; this.settingsSave.disabled = false; $('#ai-settings').inert = false; });
+    this.settingsPending = operation; return operation;
   }
   closeSettings() {
     $('#ai-token').value = '';

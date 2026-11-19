@@ -326,6 +326,7 @@ function noteTask() {
 function activeTask() {
   // The frontmost editing surface owns the leave intent. Hidden/recovered
   // editors remain private and never participate in this decision.
+  if (organize.settingsDrawer.panel.open) return organize.settingsTask();
   if (shortDrawer.panel.open) return shortTaskAdapter();
   if (libraryScreen.topicDrawer.panel.open) return libraryScreen.topicTask();
   if (actions.drawer.panel.open) return actions.task();

@@ -69,6 +69,8 @@ try:
     assert c("return document.activeElement.id") == 'ai-address'
     c("document.querySelector('#ai-token').value='synthetic-unsaved';window.nativeKeys=[];document.addEventListener('keydown',e=>window.nativeKeys.push({key:e.key,trusted:e.isTrusted}))")
     key(53)
+    w("!!document.querySelector('#task-leave-decision')")
+    c("[...document.querySelectorAll('#task-leave-decision button')].find(b=>b.textContent==='放弃更改并离开').click()")
     w("!document.querySelector('#ai-settings-drawer').open")
     assert c("return document.activeElement.id") == 'ai-configure'
     assert c("return document.querySelector('#ai-token').value") == ''
