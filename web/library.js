@@ -80,7 +80,7 @@ export class Library {
         } catch (error) { this.warnings.push(`${note.path}: ${error.message}`); }
       }
       const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
-      await call('referenceTags', {path: note.path, topics});
+      if ((await call('referenceTags', {path: note.path, topics})).changed) this.revision++;
       this.progress = `${position + 1}/${result.notes.length}; ${reads} bodies read`;
       if (position % 25 === 0) { this.changed(); await new Promise(resolve => setTimeout(resolve, 0)); }
     }
@@ -102,7 +102,7 @@ export class Library {
     try {
       await this.topics.save({...topic, sources}, topic); committed = true;
       this.records = await allRecords(this.topics);
-      await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      if ((await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')})).changed) this.revision++;
       this.changed();
     } catch (error) {
       // A persisted association needs index recovery, not another stale-parent save.
