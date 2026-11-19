@@ -11,6 +11,7 @@ export class FocusScreen {
     return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, {density: 'compact', ...options});
   }
   async show() {
+    const readingFocus = document.activeElement?.dataset.readingPath;
     $('.app').classList.remove('workspace'); $('#workspace-context').hidden = true; $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
     const request = this.request = (this.request || 0) + 1;
     const repository = this.actions.repository;
@@ -90,6 +91,7 @@ export class FocusScreen {
         menu.append(source, this.button('移除此阅读入口', () => this.removeReading(entry.path)));
         row.append(open, menu); reading.append(row);
       }
+      if (readingFocus && document.activeElement === document.body) [...reading.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === readingFocus)?.focus({preventScroll:true});
     }
   }
   async pageFocus(offset) {

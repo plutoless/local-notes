@@ -47,6 +47,7 @@ for name, digest in assets.items():
     assert hashlib.sha256((m.APP/'Contents/Resources/web'/name).read_bytes()).hexdigest() == digest
 c = m.command
 def w(expression):
+    print('WAIT '+expression,flush=True)
     for _ in range(800):
         if c('return '+expression): return
         time.sleep(.1)
@@ -103,8 +104,10 @@ try:
     saved=c("return document.querySelector('main').scrollTop")
     assert saved>0
     state=c("return Object.fromEntries(Object.keys(localStorage).filter(k=>k.startsWith('reading-history:')).map(k=>[k,JSON.parse(localStorage.getItem(k))]))")
-    assert len(state)==1 and list(state.values())[0][0]['scroll']['main']==saved,state
-    report['persistedPrivateStateBeforeQuit']=state
+    workspace=json.loads((root/'LocalNotesData/workspace.json').read_text())['workspaceId']
+    assert state['reading-history:v1:'+workspace][0]['scroll']['main']==saved,state
+    report['persistedPrivateStateBeforeQuit']={k:v for k,v in state.items() if k.endswith(workspace)}
+    records_before={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'LocalNotesData').rglob('*.json')}
     quit_app(); launch()
     assert c("return document.querySelector('[data-reading-path]').dataset.readingPath")=='reader.md'
     resume('cold restart resume')
@@ -181,7 +184,9 @@ try:
     (root/'folder/Renamed.md').rename(root/'reader.md')
     after={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*.md')}
     assert originals==after
-    report.update(sourceHashesBefore=originals,sourceHashesAfter=after,sourceIntegrity=True,indexFilesRemoved=removed,measurements=measurements,journeys=journeys,
+    records_after={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'LocalNotesData').rglob('*.json')}
+    assert records_before==records_after
+    report.update(formalRecordHashesBefore=records_before,formalRecordHashesAfter=records_after,sourceHashesBefore=originals,sourceHashesAfter=after,sourceIntegrity=True,indexFilesRemoved=removed,measurements=measurements,journeys=journeys,
       privateStateFiles=[str(p) for p in (Path.home()/'Library/WebKit/dev.localnotes.validation.issue68').rglob('*') if p.is_file()] if (Path.home()/'Library/WebKit/dev.localnotes.validation.issue68').exists() else [],
       inputCoverage='DOM setup/focus plus OS-injected Enter and Cmd+Q; no physical keyboard',limitations=['Android runtime and standalone Syncthing deferred','Synthetic 2003-note corpus; no real nas2/private material','Read counts count native source read commands, not filesystem reads internal to SQLite or assets'])
     print('PASS native restart/resume, exact position/focus, recovery, two roots, known move and disposable index removal')
