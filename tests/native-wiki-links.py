@@ -49,11 +49,17 @@ try:
     journeys=[]
     for width,height in [(1180,800),(393,852)]:
         c(f'__size:{width}:{height}'); time.sleep(.3)
-        c("document.querySelector('#reading .wiki-link').focus()")
+        c("document.querySelector('#reading .wiki-link').focus({preventScroll:true})")
+        c("const p=document.querySelectorAll('#reading p')[1];const r=document.createRange();r.selectNodeContents(p);getSelection().removeAllRanges();getSelection().addRange(r);for(const sel of ['main','#workspace-detail','#reading'])document.querySelector(sel).scrollTop=140")
+        saved_scroll=c("return ['main','#workspace-detail','#reading'].map(sel=>document.querySelector(sel).scrollTop)")
+        assert max(saved_scroll)>0, saved_scroll
+        saved_selection=c('return getSelection().toString()')
+        c("document.querySelector('#reading .wiki-link').focus({preventScroll:true})")
+        subprocess.run(['osascript','-e',f'tell application \"System Events\" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
         # Real OS keyboard delivery to the native WKWebView, not a DOM click.
         subprocess.run(['osascript','-e','tell application "System Events" to key code 36'],check=True)
         w("document.querySelector('#file-path').textContent==='folder/Second.md' && document.activeElement.id==='mode'")
-        c("document.querySelector('#reading .wiki-link').focus()")
+        c("document.querySelector('#reading .wiki-link').focus({preventScroll:true})")
         subprocess.run(['osascript','-e','tell application "System Events" to key code 36'],check=True)
         w("document.querySelector('#file-path').textContent==='folder/Third.md' && document.activeElement.id==='mode'")
         c("document.querySelector('#back').focus()")
@@ -62,9 +68,11 @@ try:
         c("document.querySelector('#back').focus()")
         subprocess.run(['osascript','-e','tell application "System Events" to key code 36'],check=True)
         w("document.querySelector('#file-path').textContent==='reader.md' && document.activeElement.dataset.wikiTarget==='folder/Second'")
+        assert c("return ['main','#workspace-detail','#reading'].map(sel=>document.querySelector(sel).scrollTop)")==saved_scroll
+        assert c('return getSelection().toString()')==saved_selection, (saved_selection,c('return getSelection().toString()'))
         assert c('return document.documentElement.scrollWidth<=innerWidth')
         c('__snapshot'); shutil.copy(m.OUT/'snapshot.png', evidence/f'wiki-{width}.png')
-        journeys.append(dict(width=width,nestedReturn=True,osEnter=True,focus=True))
+        journeys.append(dict(width=width,nestedReturn=True,osEnter=True,focus=True,scroll=saved_scroll,selection=saved_selection))
     c("document.querySelector('#back').click()")
     w("document.querySelector('#editor').hidden && document.activeElement.dataset.path==='reader.md'")
     for name,digest in originals.items(): assert hashlib.sha256((root/name).read_bytes()).hexdigest()==digest
