@@ -39,6 +39,9 @@ for name, digest in assets.items():
 helper = m.OUT / 'input-source'
 subprocess.run(['swiftc','-module-cache-path','build/swift-cache','tests/InputSourceHarness.swift','-o',str(helper)],check=True)
 initial = subprocess.check_output([str(helper)],text=True).splitlines()[0]
+headBefore = subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+sourceHashes = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('mac').glob('*.swift')}
+(evidence/'preflight.json').write_text(json.dumps(dict(head=headBefore,initialInputSource=initial,assets=assets,nativeSourceHashes=sourceHashes,probeHash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()),indent=2))
 c,w = m.command,m.wait
 process = subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')], env={**os.environ, 'LOCAL_NOTES_TEST_ROOT':str(root), 'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'), 'REVIEW_PROBE':str(m.OUT)}, stdout=open(m.OUT/'app.log','a'), stderr=subprocess.STDOUT)
 
@@ -135,8 +138,8 @@ try:
     keys=c('return window.trustedKeys');assert len(keys)>=11
     # OS window close on the clean note; this is not a dirty-close claim.
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click button 1 of window 1'],check=True)
-    time.sleep(.5)
-    report=dict(head=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),assets=assets,sourceHash=original,unchanged=True,associationsReadback=True,trustedKeys=keys,cleanWindowClose=True,dirtyTopicWindowCloseContinue=True,dirtyTopicMenuQuitContinue=True,dirtyTopicCommandQContinue=True,topicIME=topicIME,input='DOM-driven Cocoa/WKWebView plus OS-injected Tab, Shift+Tab, Escape and native window close, dirty native close/menu quit/Cmd+Q, installed WeType composition commit; no physical keyboard')
+    assert process.wait(timeout=10)==0
+    report=dict(head=headBefore,cleanNativeExitCode=process.returncode,nativeSourceHashes=sourceHashes,probeHash=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),assets=assets,sourceHash=original,unchanged=True,associationsReadback=True,trustedKeys=keys,cleanWindowClose=True,dirtyTopicWindowCloseContinue=True,dirtyTopicMenuQuitContinue=True,dirtyTopicCommandQContinue=True,topicIME=topicIME,input='DOM-driven Cocoa/WKWebView plus OS-injected Tab, Shift+Tab, Escape and native window close, dirty native close/menu quit/Cmd+Q, installed WeType composition commit; no physical keyboard')
 finally:
     if process.poll() is None: process.terminate();process.wait(timeout=10)
     subprocess.run([str(helper),initial],check=True)
