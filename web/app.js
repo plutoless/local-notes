@@ -3,7 +3,7 @@ import {requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog,
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
-import {titleOf,withTitle,safePath,escapeHTML as esc,renderMarkdown} from './core.js';
+import {titleOf,withTitle,safePath,resolveWikiTarget,escapeHTML as esc,renderMarkdown} from './core.js';
 import {native} from './bridge.js';
 import {InitiativeScreen} from './initiative-screen.js';
 import {allRecords, moveReferences, fingerprint} from './initiatives.js';
@@ -67,9 +67,11 @@ function selectNavigation(next) {
   for (const node of document.querySelectorAll('nav [data-view]')) node.setAttribute('aria-current', node.dataset.view === next ? 'page' : 'false');
 }
 let actionOrigin = null;
+let wikiHistory = [], wikiIntent = 0, wikiCommitting = false;
 async function navigate(next) {
   if (!await flush(true)) return false;
   const request = ++noteLoadRequest;
+  wikiHistory = []; wikiIntent++; wikiCommitting = false;
   actions.returnToFocus = null;
   actionOrigin = null; $('#workspace-return-action').hidden = true;
   captureOrigin = null; sourceOrigin = null; $('#capture-return').hidden = true;
@@ -131,7 +133,7 @@ function captureSearchInvocation() {
     initiative: view === 'initiatives' ? initiatives.previous : null,
     detailKind: initiatives.detailKind, selectedContext: initiatives.selectedContext,
     action: actions.previous, actionList: {search: actions.search, offset: actions.offset, status: actions.status}, initiativeList: {search: initiatives.search, offset: initiatives.offset}, actionReturn: actions.returnToFocus,
-    sourceOrigin, captureOrigin, actionOrigin,
+    sourceOrigin, captureOrigin, actionOrigin, wikiHistory: [...wikiHistory],
     selection: Object.fromEntries(['#title', '#body'].map(selector => { const node = $(selector); return [selector, [node.selectionStart, node.selectionEnd, node.selectionDirection]]; })),
     scroll: Object.fromEntries(['.collection', '#items', '#workspace-context', '#workspace-detail', '#reading', '#body', 'main'].map(selector => [selector, $(selector).scrollTop]))};
 }
@@ -196,6 +198,7 @@ async function restoreSearchInvocation(origin, valid) {
   if (origin.view === 'initiatives') { Object.assign(initiatives, origin.initiativeList); await initiatives.list(); if (!owns()) return false; }
   $('.app').className = origin.classes; initiatives.contextReturn = origin.contextReturn; initiatives.detailKind = origin.detailKind;
   $('#search').value = origin.search;
+  wikiHistory = origin.wikiHistory || [];
   sourceOrigin = origin.sourceOrigin; captureOrigin = origin.captureOrigin; actionOrigin = origin.actionOrigin;
   $('#capture-return').hidden = !captureOrigin; $('#workspace-return-action').hidden = !actionOrigin;
   for (const [selector, selection] of Object.entries(origin.selection)) $(selector).setSelectionRange(...selection);
@@ -265,7 +268,7 @@ async function openContextNote(path, reading = true) {
     return true;
   } catch (error) { notice(error.message); return false; }
 }
-async function openNote(path){try{if(await flush()){if(await load(path)) $('#mode').focus();}}catch(e){notice(e.message);}}
+async function openNote(path){try{if(await flush()){if(await load(path)) { wikiHistory = []; wikiIntent++; wikiCommitting = false; $('#mode').focus(); }}}catch(e){notice(e.message);}}
 async function save() {
   if (saving) { if (!await saving) return false; return save(); }
   if (!dirty) return true;
@@ -324,6 +327,86 @@ async function flush(navigation = false, retainAction = false) {
 function draftKey(){return 'draft:'+(currentWorkspace||rootKey)+':'+current;}
 function readDraft(){const key=draftKey(),legacyKey='draft:'+legacyRoot+':'+current;let value=localStorage.getItem(key);if(value===null&&legacyRoot){value=localStorage.getItem(legacyKey);if(value!==null){localStorage.setItem(key,value);localStorage.removeItem(legacyKey);}}return JSON.parse(value||'null');}
 function changed(){noteLoadRequest++;dirty=content()!==noteBaseline;if(dirty)localStorage.setItem(draftKey(),JSON.stringify({text:content(),base}));else localStorage.removeItem(draftKey());state(dirty?'编辑中…':'已保存到本地');clearTimeout(timer);if(dirty&&!taskLeavePending()){const generation=noteGeneration;timer=setTimeout(()=>{if(generation===noteGeneration&&visibleNote()&&!document.querySelector('dialog[open]'))save();},650);}}
+
+// Reading continuations are private to this task and retain caller-owned outer routes.
+function captureWikiPosition(opener) {
+  const reader = $('#reading'), selection = getSelection();
+  let range = null;
+  if (selection.rangeCount && reader.contains(selection.anchorNode) && reader.contains(selection.focusNode)) {
+    const selected = selection.getRangeAt(0), prefix = document.createRange();
+    prefix.selectNodeContents(reader); prefix.setEnd(selected.startContainer, selected.startOffset);
+    range = [prefix.toString().length, selected.toString().length];
+  }
+  return {path: current, fingerprint: fingerprint(savedText), reading: readMode, range,
+    focus: opener?.dataset.wikiTarget, browse: libraryScreen.captureContext(),
+    scroll: Object.fromEntries(['#reading', '#body', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))};
+}
+function restoreWikiPosition(position, unchanged) {
+  if (unchanged && position.range) {
+    const walker = document.createTreeWalker($('#reading'), NodeFilter.SHOW_TEXT), range = document.createRange();
+    let offset = 0, started = false;
+    while (walker.nextNode()) {
+      const node = walker.currentNode, end = offset + node.length;
+      if (!started && position.range[0] <= end) { range.setStart(node, position.range[0] - offset); started = true; }
+      if (started && position.range[0] + position.range[1] <= end) {
+        range.setEnd(node, position.range[0] + position.range[1] - offset); getSelection().removeAllRanges(); getSelection().addRange(range); break;
+      }
+      offset = end;
+    }
+  }
+  const opener = [...$('#reading').querySelectorAll('[data-wiki-target]')].find(node => node.dataset.wikiTarget === position.focus);
+  (opener || $('#mode')).focus({preventScroll: true});
+  for (const [selector, scroll] of Object.entries(position.scroll)) $(selector).scrollTop = scroll;
+}
+async function followWiki(target, opener) {
+  if (!visibleNote() || wikiCommitting) return;
+  const position = captureWikiPosition(opener), intent = ++wikiIntent;
+  const workspace = workspaceGeneration, page = pageGeneration, path = current, initialRequest = noteLoadRequest;
+  const owns = () => intent === wikiIntent && workspace === workspaceGeneration && page === pageGeneration && path === current && initialRequest === noteLoadRequest && visibleNote();
+  try {
+    if (!await flush() || !owns()) return;
+    // Enumeration uses existing native exclusions, with no body scan or index rewrite.
+    const metadata = await note('metadata'); if (!owns()) return;
+    const destination = resolveWikiTarget(target, path, metadata.notes.map(note => note.path));
+    const loaded = await note('read', {path: destination}); if (!owns()) return;
+    if (destination === current) return;
+    wikiCommitting = true;
+    const request = ++noteLoadRequest;
+    if (!await load(destination, loaded, request) || intent !== wikiIntent || workspace !== workspaceGeneration || page !== pageGeneration) return;
+    wikiHistory.push(position);
+    $('#mode').focus(); $('#reading').scrollTop = 0; $('#workspace-detail').scrollTop = 0;
+  } catch (error) { if (intent === wikiIntent && workspace === workspaceGeneration && page === pageGeneration) notice(error.message); }
+  finally { if (intent === wikiIntent) wikiCommitting = false; }
+}
+async function returnWiki() {
+  if (wikiCommitting) return;
+  const position = wikiHistory.at(-1), intent = ++wikiIntent;
+  const workspace = workspaceGeneration, page = pageGeneration, path = current, initialRequest = noteLoadRequest;
+  const owns = () => intent === wikiIntent && workspace === workspaceGeneration && page === pageGeneration && path === current && initialRequest === noteLoadRequest;
+  try {
+    if (!await flush() || !owns()) return;
+    const loaded = await note('read', {path: position.path}); if (!owns()) return;
+    wikiCommitting = true;
+    const request = ++noteLoadRequest;
+    if (!await load(position.path, loaded, request) || intent !== wikiIntent || workspace !== workspaceGeneration || page !== pageGeneration) return;
+    wikiHistory.pop();
+    // Preserve future ordering keys carried by the Library context contract.
+    Object.assign(libraryScreen, position.browse);
+    const unchanged = fingerprint(loaded.text) === position.fingerprint;
+    restoreWikiPosition(position, unchanged);
+    if (!unchanged) notice('原文已更改，已打开当前版本。');
+  } catch (error) {
+    if (!owns()) return;
+    notice('上一份笔记暂不可用。可重试返回，或跳过此笔记。');
+    const skip = button('跳过不可用笔记', async () => { if (!owns()) return; wikiHistory.pop(); $('#notice').hidden = true; $('#back').click(); });
+    $('#notice').append(skip);
+  } finally { if (intent === wikiIntent) wikiCommitting = false; }
+}
+$('#reading').addEventListener('click', event => {
+  const control = event.target.closest('[data-wiki-target]');
+  if (control) { event.preventDefault(); followWiki(control.dataset.wikiTarget, control); }
+});
+
 function updateReading(){$('#reading').innerHTML=renderMarkdown(readMode && !dirty ? savedText : content(), {readOnly: true});}
 function updateNoteToolbar() {
   $('#note-save').hidden = readMode && !dirty; $('#save-state').hidden = readMode && !dirty && !blocked;
@@ -454,9 +537,9 @@ details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
 
 $('#new').onclick = () => openCapture();
-$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+$('#choose').onclick=async()=>{try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;$('#capture-return').hidden=true;workspaceGeneration++;wikiHistory=[];wikiIntent++;wikiCommitting=false;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];$('#items').replaceChildren();$('#root-label').textContent='正在打开目录…';$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
-$('#back').onclick=async()=>{if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}};
+$('#back').onclick=async()=>{if(wikiHistory.length){await returnWiki();return;}wikiIntent++;if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}};
 $('#mode').onclick=()=>{setNoteMode(!readMode); if (!readMode) $('#body').focus();};
 $('#rename').onclick = async () => {
   if (!await flush()) return;
