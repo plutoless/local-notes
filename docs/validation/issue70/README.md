@@ -1,5 +1,7 @@
 # Issue 70 validation
 
+These top-level artifacts describe the original pre-integration delivery and remain historical evidence. See [latest-main integration validation](integration/README.md) for the refreshed PR head, base, reviews, native dirty-exit/IME coverage and current test results after PR #77 merged.
+
 ## Scope and references
 
 Starting SHA and latest-main merge-base: `1a38a5167b8583729a6831a33ade8107d25476a1`.

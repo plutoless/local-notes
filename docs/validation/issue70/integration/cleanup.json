@@ -1,0 +1,9 @@
+{
+  "classificationProcessExited": 0,
+  "wikiProcessTerminatedAndWaited": true,
+  "initialInputSource": "com.tencent.inputmethod.wetype.pinyin",
+  "restoredInputSource": "com.tencent.inputmethod.wetype.pinyin",
+  "verified": true,
+  "coordinatorReleaseMessage": "msg_c24ccf7957a3",
+  "executableProcessInventory": "No Classification70 or Wiki67 executable remains"
+}
