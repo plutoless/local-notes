@@ -393,8 +393,11 @@ async function createReadingAction(passage, opener) {
     const selected = position.range;
     if (!readMode || !selected?.text) { notice('请先在原文中选择要引用的段落。'); return; }
     const range = document.createRange();
-    range.setStart(locateReaderNode(selected.start), selected.startOffset);
-    range.setEnd(locateReaderNode(selected.end), selected.endOffset);
+    try {
+      range.setStart(locateReaderNode(selected.start), selected.startOffset);
+      range.setEnd(locateReaderNode(selected.end), selected.endOffset);
+      if (range.toString() !== selected.text) throw Error('Selection changed');
+    } catch { notice('选段已更改，请重新选择原文。'); return; }
     const walker = document.createTreeWalker($('#reading'), NodeFilter.SHOW_TEXT);
     const lines = [];
     while (walker.nextNode()) {
@@ -520,7 +523,7 @@ async function resumeReading(entry) {
   }
 }
 
-function updateReading(){$('#reading').innerHTML=renderMarkdown(readMode && !dirty ? savedText : content(), {readOnly: true, sourceLines: true});}
+function updateReading(){readerSelection=null;$('#reading').innerHTML=renderMarkdown(readMode && !dirty ? savedText : content(), {readOnly: true, sourceLines: true});}
 function updateNoteToolbar() {
   $('#note-save').hidden = readMode && !dirty; $('#save-state').hidden = readMode && !dirty && !blocked;
 }

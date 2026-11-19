@@ -88,7 +88,7 @@ export class ActionScreen {
     if (!this.drawer.panel.open) return true;
     if (this.saving) return false;
     if (discard) { localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false; }
-    if (!this.dirty) localStorage.removeItem(this.key());
+    if (!this.dirty && !this.creationUncertain) localStorage.removeItem(this.key());
     const opener = this.drawerContext?.opener;
     this.editRequest = (this.editRequest || 0) + 1;
     this.drawer.hide();
@@ -114,9 +114,9 @@ export class ActionScreen {
   async dismissDrawer() { const contextual = this.contextualProposal; if (await this.leaveDrawer() && !contextual) await this.returnToFocus?.(); }
   leaveDrawer() { return this.drawer.panel.open ? requestTaskLeave(this.task()) : Promise.resolve(true); }
   task() {
-    return {label: '行动', pending: () => this.saving, dirty: () => this.dirty, committed: () => Boolean(this.retry || this.creationAttempt),
+    return {label: '行动', pending: () => this.saving, dirty: () => this.dirty, committed: () => Boolean(this.retry),
       save: () => this.save(), discard: () => {
-        localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
+        if (!this.creationUncertain) localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
         this.editRequest = (this.editRequest || 0) + 1;
         this.showForm(this.previous || {}, this.previous); this.dirty = false;
       }, close: () => this.closeDrawer()};
@@ -275,6 +275,7 @@ export class ActionScreen {
     if (draft) { this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; }
     this.drawerContext = context;
     this.creationAttempt = proposal ? draft?.attempt || null : null;
+    this.creationUncertain = Boolean(this.creationAttempt);
     this.recoveredDraft = Boolean(draft);
     this.drawer.open($('#action-description'));
     this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
@@ -358,13 +359,22 @@ export class ActionScreen {
       } catch (error) {
         if (!owns()) return false;
         this.retry = error.revisionSaved ? error.record : committed;
+        if (proposal && this.creationAttempt && !this.retry) {
+          this.creationUncertain = true;
+          try {
+            const history = await repository.history(this.creationAttempt.entityId);
+            if (!owns()) return false;
+            this.creationUncertain = false;
+            if (history.some(record => record.revision === this.creationAttempt.revision)) this.retry = this.creationAttempt;
+          } catch { /* Retain the private identity when persistence cannot be verified. */ }
+        }
         if (this.retry) {
           const record = this.retry;
           this.baseline = JSON.stringify({description:record.description || '',status:record.status || 'todo',initiativeId:record.initiativeId || '',dueDate:record.dueDate || '',waitingOn:record.waitingOn || '',sources:record.sources || []});
           this.previous = record; if (this.drawerContext) this.drawerContext.committed = true; }
         this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
         if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, attempt: this.creationAttempt})); else localStorage.removeItem(this.key());
-        errorFeedback($('#action-save-state'), error.message); if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'; return false;
+        errorFeedback($('#action-save-state'), error.message); if (this.creationUncertain) $('#action-save-state p').textContent = '保存结果尚未确认。重试会核对同一版本；关闭不会撤销可能已保存的版本。'; if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'; return false;
       } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; if ($('#action-description').getAttribute('aria-invalid') === 'true') $('#action-description').focus(); else if (this.drawer.panel.open && focused?.isConnected) focused.focus({preventScroll: true}); }
     })();
     return this.saving;
