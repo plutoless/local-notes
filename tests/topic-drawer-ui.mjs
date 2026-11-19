@@ -111,6 +111,7 @@ try {
     await page.locator('#topic-form').evaluate(n=>{n.dispatchEvent(new Event('submit',{cancelable:true}));n.dispatchEvent(new Event('submit',{cancelable:true}));});
     await page.keyboard.press('Escape'); assert.ok(await page.locator('#topic-drawer').evaluate(n=>n.open));
     releaseTopic(); await page.waitForFunction(()=>!document.querySelector('#topic-drawer').open);
+    await page.waitForFunction(()=>document.querySelectorAll('#library-topic option').length===4);
     assert.equal(await page.locator('#library-topic option').count(),4);
     await page.locator('#search').fill('Synthetic');
     await page.getByText('没有找到匹配的笔记。请换个关键词或清除搜索。',{exact:true}).waitFor();
