@@ -1,0 +1,10 @@
+✔ wiki rendering escapes aliases and targets and preserves code (1.8395ms)
+✔ resolution uses relative then workspace exact paths, never basename guessing (1.020875ms)
+ℹ tests 63
+ℹ suites 0
+ℹ pass 63
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47283.024459

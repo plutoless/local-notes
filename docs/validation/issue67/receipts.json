@@ -1,0 +1,48 @@
+{
+  "productionHead": "ea4511dcc256637b7c9e889324726e88c25b4f21",
+  "base": "1a38a5167b8583729a6831a33ade8107d25476a1",
+  "commands": [
+    {
+      "command": "npm run check",
+      "exit": 0,
+      "scope": "Shared JavaScript syntax"
+    },
+    {
+      "command": "npm test",
+      "exit": 0,
+      "scope": "63 tests passed, zero failures/skips"
+    },
+    {
+      "command": "CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui",
+      "exit": 0,
+      "scope": "Full 18-suite browser/application bridge suite including wiki links"
+    },
+    {
+      "command": "npm run build:mac",
+      "exit": 0,
+      "scope": "Signed Mac package; asset hashes equal native-executed tree"
+    },
+    {
+      "command": "npm run build:android",
+      "exit": 0,
+      "scope": "APK packaging only; not Android runtime"
+    },
+    {
+      "command": "python3 tests/native-wiki-links.py",
+      "exit": 0,
+      "scope": "Cocoa/WKWebView isolated actual storage/index; OS-injected Enter; desktop/393px focus, exact selection, nonzero scroll, nested Back and source integrity"
+    }
+  ],
+  "allNativeAssetsEqualCommittedSourceAndMacPackage": true,
+  "deferred": [
+    "Android-specific runtime/device/SAF tests",
+    "Standalone Syncthing"
+  ],
+  "unrun": [
+    "Physical keyboard/pointer",
+    "VoiceOver",
+    "Two-device end-to-end"
+  ],
+  "guiLeaseReleased": true,
+  "inputSourceChanged": false
+}

@@ -1,5 +1,5 @@
 {
-  "head": "97a65729c3e69a54b840554241d5a33414a7efda",
+  "head": "ea4511dcc256637b7c9e889324726e88c25b4f21",
   "assets": {
     "library-screen.js": "bb3ce5ef7412643b21bd30ff4643f9ff25151a9c52ff447d78c9c7ef7ae3e8f5",
     "organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
@@ -19,7 +19,7 @@
     "action-screen.js": "17395a25aef48d24727958a3dcc6887d9d056a9a30e60c59b0e8c88e428eb8d4",
     "presentation.js": "ae20d7d110c6cd25b975658d799088d01752879023c827f7e497ef91a4ad1722",
     "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
-    "app.js": "d3040cfa582a86317208f35aae9a3508fe4b3b345a91919c84b35d8a961ddca2",
+    "app.js": "a09557af333939d26b234b9097c507bb28283e11a49f58e4fc85077db7c62640",
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
   },
   "sourceHashes": {
