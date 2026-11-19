@@ -59,7 +59,7 @@ export function renderMarkdown(text, {readOnly = false} = {}) {
       index++;
       while (index + 1 < lines.length) {
         const row = tableCells(lines[index + 1]);
-        if (!row || /^\s*(`{3,}|~{3,})/.test(lines[index + 1])) break;
+        if (!row || /^\s*(?:`{3,}|~{3,}|#{1,6}\s|[-*+]\s|\d+\.\s|>\s)/.test(lines[index + 1])) break;
         index++;
         table += '<tr>' + header.map((_, i) => `<td>${inlineMarkdown(row[i] || '')}</td>`).join('') + '</tr>';
       }

@@ -19,3 +19,8 @@ test('reader links and table cells never execute markup or unsafe protocols',()=
   assert.ok(!html.includes('<img')); assert.ok(!html.includes('href="javascript:')); assert.match(html,/href="https:\/\/example.com/); assert.match(html,/<code>\*\*literal\*\*<\/code>/);
   assert.match(renderMarkdown('- [ ] original',{readOnly:true}),/disabled/);
 });
+
+test('table bodies stop before following Markdown blocks containing pipes',()=>{
+  const html=renderMarkdown('A | B\n--- | ---\nx | y\n# Heading | title\n- List | item\n> Quote | text\n- [ ] Task | text',{readOnly:true});
+  assert.match(html,/<\/table>/);assert.match(html,/<h1>Heading \| title<\/h1>/);assert.match(html,/<ul><li>List \| item/);assert.match(html,/<blockquote>Quote \| text/);assert.match(html,/aria-label="Task \| text"/);
+});
