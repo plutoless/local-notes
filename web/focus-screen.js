@@ -84,9 +84,10 @@ export class FocusScreen {
         const row = document.createElement('div'); row.className = 'card';
         const open = selectionRow('', () => this.resumeReading(entry));
         open.setAttribute('aria-label', `继续阅读：${entry.title}`); open.dataset.readingPath = entry.path;
-        open.innerHTML = `<span><h3>${esc(entry.title)}</h3><span class="row-meta">${esc(entry.path)}</span></span>`;
+        open.innerHTML = `<span><h3>${esc(entry.title)}</h3><span class="row-meta">笔记 · ${esc(entry.path.includes('/') ? entry.path.split('/').at(-2) : '根目录')}</span></span>`;
         const menu = disclosure(`管理阅读入口：${entry.title}`, [], 'row-menu');
-        menu.append(this.button('移除此阅读入口', () => this.removeReading(entry.path)));
+        const source = document.createElement('p'); source.textContent = entry.path;
+        menu.append(source, this.button('移除此阅读入口', () => this.removeReading(entry.path)));
         row.append(open, menu); reading.append(row);
       }
     }

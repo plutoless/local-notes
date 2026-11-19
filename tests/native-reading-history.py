@@ -13,7 +13,7 @@ cases = [dict(path='reader.md',text='# Original\n\n[[folder/Second|第二份]]\n
 
 for i in range(2000):
     (root / f'corpus-{i:04d}.md').write_text(f'# Synthetic corpus {i}\n\n' + 'Bounded synthetic reference.\n' * 40)
-second = m.OUT / 'Second'; second.mkdir(); (second/'reader.md').write_text('# Different workspace\n\nNo history here.')
+second = m.OUT / 'Second'; second.mkdir(); (second/'reader.md').write_text('# Different workspace\n\n' + 'Independent position in second workspace.\n\n'*200)
 for note in cases:
     path = root / note['path']; path.parent.mkdir(parents=True, exist_ok=True); path.write_text(note['text']); os.utime(path, (1000, 1000))
 os.utime(root/'reader.md', None)
@@ -45,7 +45,12 @@ subprocess.run(['codesign','--force','--deep','--sign','-',str(m.APP)],check=Tru
 assets = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('web').iterdir() if p.is_file()}
 for name, digest in assets.items():
     assert hashlib.sha256((m.APP/'Contents/Resources/web'/name).read_bytes()).hexdigest() == digest
-c,w = m.command,m.wait
+c = m.command
+def w(expression):
+    for _ in range(800):
+        if c('return '+expression): return
+        time.sleep(.1)
+    raise AssertionError('Native UI timed out: '+expression+'; '+str(c("return {notice:document.querySelector('#notice').textContent, progress:document.querySelector('#library-progress').textContent, items:document.querySelector('#items').innerText.slice(0,400)}")))
 helper=m.OUT/'input-source'
 subprocess.run(['swiftc','-module-cache-path','build/swift-cache','tests/InputSourceHarness.swift','-o',str(helper)],check=True)
 def input_source(): return subprocess.check_output([str(helper)],text=True).splitlines()[0]
@@ -59,7 +64,8 @@ def launch(active_root=root):
     process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(active_root),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','a'),stderr=subprocess.STDOUT)
     processes.append(process)
     w("!!document.querySelector('.home-tools')")
-    measurements.append(dict(journey='cold Home',ms=round((time.perf_counter()-start)*1000,1),bodyReads=c('__reads')))
+    reads=c('__reads');assert reads==0,reads
+    measurements.append(dict(journey='cold Home',ms=round((time.perf_counter()-start)*1000,1),bodyReads=reads))
 def os_key(code, modifiers=''):
     subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
     subprocess.run(['osascript','-e',f'tell application "System Events" to key code {code}'+modifiers],check=True)
@@ -73,17 +79,22 @@ def resume(label='resume'):
     c("document.querySelector('[data-reading-path]').focus({preventScroll:true})")
     os_key(36)
     w("!document.querySelector('#editor').hidden && document.activeElement.id==='mode'")
-    measurements.append(dict(journey=label,ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=c('__reads')-before))
+    delta=c('__reads')-before;assert delta==1,(label,delta)
+    measurements.append(dict(journey=label,ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=delta))
 def home():
     before=c('__reads'); start=time.perf_counter()
     c("document.querySelector('nav [data-view=focus]').click()")
     w("!!document.querySelector('.home-tools') && document.querySelector('#editor').hidden")
-    measurements.append(dict(journey='warm Home',ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=c('__reads')-before))
+    delta=c('__reads')-before;assert delta==0,delta
+    measurements.append(dict(journey='warm Home',ms=round((time.perf_counter()-start)*1000,1),bodyReadDelta=delta))
 try:
     launch()
     assert c("return !document.querySelector('.recent-reading')")
     c("document.querySelector('nav [data-view=notes]').click()")
+    w("!document.querySelector('#library-tools').hidden")
+    c("const search=document.querySelector('#search');search.value='Original';search.dispatchEvent(new Event('input',{bubbles:true}))")
     w("!!document.querySelector('#items [data-path=\"reader.md\"]')")
+    w("document.querySelector('#library-progress').textContent===''")
     c("document.querySelector('#items [data-path=\"reader.md\"]').click()")
     w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     originals={str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in root.rglob('*.md')}
@@ -134,8 +145,21 @@ try:
     c("document.querySelector('#choose').click()")
     # A controlled chooser seam selects the already-set synthetic root; no real directory panel.
     w("!!document.querySelector('.home-tools') && !document.querySelector('.recent-reading')")
+    c("document.querySelector('nav [data-view=notes]').click()")
+    w("!document.querySelector('#library-tools').hidden")
+    c("const search=document.querySelector('#search');search.value='';search.dispatchEvent(new Event('input',{bubbles:true}))")
+    w("!!document.querySelector('#items [data-path=\"reader.md\"]')")
+    c("document.querySelector('#items [data-path=\"reader.md\"]').click()")
+    w("!document.querySelector('#reading').hidden")
+    c("document.querySelector('main').scrollTop=333");time.sleep(.2)
+    second_scroll=c("return document.querySelector('main').scrollTop");assert second_scroll>0
+    home();quit_app();launch(second);resume('second workspace restart resume')
+    assert c("return document.querySelector('main').scrollTop")==second_scroll
+    assert c("return document.querySelector('#title').value")=='Different workspace'
     quit_app();launch(root)
     resume('resume after workspace round trip')
+    assert c("return document.querySelector('#title').value")=='Original'
+    journeys.append('two synthetic roots each retained independent private entries and nonzero positions across process restart')
     # Known application move uses its real contextual form and native move repository.
     c("document.querySelector('#note-info-open').click()")
     w("!!document.querySelector('#rename') && !document.querySelector('#rename').disabled")

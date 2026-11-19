@@ -12,3 +12,11 @@ Reuse issue 67's exact source paths, native metadata exclusions, guarded reads, 
 Implementation sequence: add the private bounded store and unit tests; integrate reader capture, guarded Home resumption and known moves; add real-storage browser journeys; run shared tests and both packaging builds; obtain exclusive GUI lease and run isolated native quit/restart, focus/scroll, recovery, workspace and index-removal journeys; independently review Standards and Spec against the recorded base; resolve findings, repeat affected validation, and open one PR for coordinator review.
 
 Native GUI access is reserved by issue 70 until the coordinator grants a lease. Android runtime/device and standalone Syncthing tests are deferred by parent 63 and repository validation policy. No acceptance claim is made before execution.
+
+## Original review resolutions
+
+Independent Standards reviewer `/root/standards_review` found two P2 issues at `eae3a19199a766ece0aba997db71023c2d79bb8a`: full paths on Home and focus loss after removal. Full paths now live in the existing management disclosure; the row retains a shortened folder context. Removal now restores focus to a surviving continuation or Home's primary action, fenced by workspace/view.
+
+Independent Spec reviewer `/root/spec_review` found two validation gaps at that head: counters lacked assertions and the second workspace was empty only. The native probe now asserts Home zero-body and resume one-body counts, and reads/scrolls/restarts both populated isolated roots. Original reports are preserved separately without rewriting their findings.
+
+Initial native attempts did not establish acceptance: one hit the short test wait and the next waited for a source outside the first alphabetical Library page. The fixture now uses the actual Library search UI rather than assuming issue 65 ordering exists. Owned processes exited and the original WeType input source remained selected after the failed attempts.
