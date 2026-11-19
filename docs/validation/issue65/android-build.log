@@ -1,0 +1,9 @@
+
+> local-notes@0.1.0 build:android
+> bash scripts/build-android.sh
+
+Note: android/src/dev/localnotes/MainActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+Generating 3,072 bit RSA key pair and self-signed certificate (SHA384withRSA) with a validity of 3,650 days
+	for: CN=Local Notes Development
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-65/dist/LocalNotes-debug.apk
