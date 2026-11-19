@@ -62,6 +62,8 @@ try {
   assert.equal(await page.locator('#reading').isVisible(),true);
   await page.locator('#back').click();
   await page.waitForFunction(()=>document.activeElement.dataset.readingPath==='reference.md');
+  await page.waitForTimeout(1200);
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.readingPath),'reference.md');
   await writeFile(sourcePath,text+'\nChanged externally');
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('原文已更改'));

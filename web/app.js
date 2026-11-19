@@ -446,6 +446,8 @@ async function resumeReading(entry) {
     // Exact paths only, matching wiki return identity. Never search by basename.
     if (metadata.notes.filter(item => item.path === entry.path).length !== 1) throw Error('Unavailable source');
     const loaded = await note('read', {path:entry.path}); if (!owns()) return;
+    // Initialize only source context repositories; do not start Library body indexing.
+    await libraryScreen.library.open(); if (!owns()) return;
     const homeScroll = $('.collection').scrollTop;
     focus.active=false; actions.active=false; initiatives.active=false;
     view='notes'; selectNavigation('notes'); $('.app').classList.remove('home'); $('.app').classList.add('library-view','reading-continuation');
