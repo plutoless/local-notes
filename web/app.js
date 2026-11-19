@@ -62,7 +62,11 @@ const readingScrollSelectors = ['#reading', '#workspace-detail', 'main'];
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
 focus.recentReading = () => readingHistory.list(rootKey);
 focus.resumeReading = resumeReading;
-focus.removeReading = path => { readingHistory.remove(rootKey, path); return focus.show(); };
+focus.removeReading = async path => {
+  const workspace = rootKey;
+  readingHistory.remove(workspace, path); await focus.show();
+  if (view === 'focus' && workspace === rootKey) ($('#items [data-reading-path]') || $('.home-tools .primary')).focus({preventScroll:true});
+};
 const syncScreen = new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
   if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
   else await refresh();
