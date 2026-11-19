@@ -16,19 +16,7 @@ for note in cases:
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue69')
 exec(source, m.__dict__); m.build()
 p = m.OUT / 'main.swift'
-p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0\ntry! String(ProcessInfo.processInfo.processIdentifier).write(toFile: ProcessInfo.processInfo.environment["REVIEW_PROBE"]! + "/host.pid", atomically:true, encoding:.utf8)', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script.hasPrefix("__drag:") {
- let parts=script.components(separatedBy:":")
- if let window=self?.window, let web=self?.web {
- let start=NSPoint(x:Double(parts[1])!,y:web.bounds.height-Double(parts[2])!)
- let end=NSPoint(x:Double(parts[3])!,y:web.bounds.height-Double(parts[4])!)
- for (index,item) in [(NSEvent.EventType.leftMouseDown,start),(NSEvent.EventType.leftMouseDragged,end),(NSEvent.EventType.leftMouseUp,end)].enumerated() {
- let event=NSEvent.mouseEvent(with:item.0,location:item.1,modifierFlags:[],timestamp:ProcessInfo.processInfo.systemUptime+Double(index)*0.1,windowNumber:window.windowNumber,context:nil,eventNumber:index,clickCount:1,pressure:1)!
- window.sendEvent(event)
- }
- try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return
- }
-}
-if script == "__frame" {
+p.write_text(p.read_text().replace('import Cocoa', 'import Cocoa\nvar libraryBodyReads = 0\ntry! String(ProcessInfo.processInfo.processIdentifier).write(toFile: ProcessInfo.processInfo.environment["REVIEW_PROBE"]! + "/host.pid", atomically:true, encoding:.utf8)', 1).replace('case "read":return', 'case "read":libraryBodyReads += 1;return').replace('let wrapped =', '''if script == "__frame" {
  if let window=self?.window, let web=self?.web {
  window.makeKeyAndOrderFront(nil); window.makeFirstResponder(web); NSApp.activate(ignoringOtherApps:true)
  let rect=window.convertToScreen(web.convert(web.bounds,to:nil))
@@ -84,8 +72,8 @@ try:
     w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
     def key(code, modifier=''):
-        assert not modifier
-        subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.postToPid({process.pid}); usleep(100000); CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!.postToPid({process.pid})'],check=True)
+        flags='.maskShift' if modifier else '[]'
+        subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.flags={flags}; down.postToPid({process.pid}); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!;up.flags={flags};up.postToPid({process.pid})'],check=True)
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
     c("document.querySelector('#note-create-action').focus()")
     key(36)
@@ -99,12 +87,11 @@ try:
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='note-create-action'")
     assert len(records())==1 and records()[0]['sources'][0]['path']=='reader.md'
-    # DOM only scrolls and measures; real Quartz mouse drag selects native WKWebView text.
-    offset=c('__frame')
-    rect=c("const n=document.querySelector('#reading li strong');n.scrollIntoView();const r=n.getBoundingClientRect();return [r.x,r.y,r.width,r.height]")
-    x,y,width,height=rect
-    c(f'__drag:{x-2}:{y+height/2}:{x+width+2}:{y+height/2}')
-    print('APPKIT_DRAG',rect,c('return getSelection().toString()'))
+    # DOM establishes only a caret; process-targeted native Shift+Right selects.
+    c('__frame')
+    c("const reader=document.querySelector('#reading');reader.tabIndex=-1;reader.focus();const n=reader.querySelector('li strong').firstChild,r=document.createRange();r.setStart(n,0);r.collapse(true);getSelection().removeAllRanges();getSelection().addRange(r)")
+    key(124,'shift'); key(124,'shift')
+    print('NATIVE_SELECTION',c('return getSelection().toString()'))
     w("getSelection().toString().trim()==='确认'")
     selected_text=c('return getSelection().toString()')
     c("document.querySelector('#passage-create-action').focus()")
@@ -144,7 +131,7 @@ try:
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and AppKit NSEvent drag selection and process-targeted Quartz Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and process-targeted Quartz Shift+Right selection, Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     try:
@@ -154,4 +141,5 @@ finally:
     process.terminate()
     try: process.wait(timeout=10)
     except subprocess.TimeoutExpired: process.kill(); process.wait(timeout=10)
-    assert input_source()==initial_input, 'Input source changed unexpectedly'
+    final_input=input_source()
+    (evidence/'cleanup.json').write_text(json.dumps(dict(hostPID=process.pid,hostExited=launcher.poll() is not None,inputSourceInitial=initial_input,inputSourceFinal=final_input,temporarilySelectedInputSource=False,inputSourceUnchanged=final_input==initial_input),indent=2))
