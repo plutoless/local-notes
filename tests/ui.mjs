@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {saveAndLeave} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
@@ -186,7 +187,7 @@ try {
   assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
   assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
-  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('Unsaved local edit');
+  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Unsaved local edit');
   await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
@@ -229,7 +230,7 @@ try {
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
   if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
-  await closeNoteInfo(page); if (await page.locator('#title').evaluate(n=>n.readOnly)) await page.locator('#mode').click(); await page.locator('#body').fill('An intentional edit in the new workspace');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('An intentional edit in the new workspace');
   await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);

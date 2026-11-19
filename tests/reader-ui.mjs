@@ -1,13 +1,10 @@
-import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
-import {readFile, writeFile, readdir, stat, utimes, mkdir, rename, rm} from 'node:fs/promises';
+import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const evidence = 'build/issue66-browser';
 const fixture = await storageFixture();
-let activeFixture = fixture, alternateFixture;
-let releaseMetadata, metadataStartedResolve, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
@@ -16,23 +13,14 @@ try {
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
-      if (request.cmd === 'metadata' && delayMetadata) await new Promise(resolve=>{releaseMetadata=resolve; metadataStartedResolve?.();});
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
-        const result = await activeFixture.adapter(request.cmd, request);
+        const result = await fixture.adapter(request.cmd, request);
         return result;
       }
-      if (request.cmd === 'choose') { activeFixture = alternateFixture || fixture; return {}; }
-      const workspace = await activeFixture.adapter('workspace');
+      const workspace = await fixture.adapter('workspace');
       if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
-      const path = join(activeFixture.root, request.path || '');
+      const path = join(fixture.root, request.path || '');
       switch (request.cmd) {
-        case 'metadata':
-        case 'list': {
-          const notes = [];
-          for (const name of await readdir(activeFixture.root)) if (name.endsWith('.md')) notes.push({path: name, size: (await stat(join(activeFixture.root, name))).size, modified: (await stat(join(activeFixture.root, name))).mtimeMs / 1000});
-          return {notes, root: activeFixture.root};
-        }
-        case 'move': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await mkdir(join(activeFixture.root, request.target, '..'), {recursive:true}); await rename(path, join(activeFixture.root, request.target)); return {};
         case 'read': return {text: await readFile(path, 'utf8')};
         case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
         case 'create': await mkdir(join(path, '..'), {recursive:true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
@@ -71,9 +59,11 @@ try {
   await page.setViewportSize({width:1180,height:800});
   await page.locator('#mode').click();
   assert.equal(await page.locator('#body').evaluate(n=>n===document.activeElement),true);
-  await page.locator('#body').fill('Deliberate saved edit'); await page.locator('#note-save').click();
+  await page.locator('#body').fill('Deliberate saved edit'); await page.locator('#mode').click();
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   assert.match(await readFile(sourcePath,'utf8'),/Deliberate saved edit/);
+  assert.equal(await page.locator('#note-save').isVisible(),false);
+  assert.equal(await page.locator('#save-state').isVisible(),false);
   await page.locator('#back').click();
   await page.locator('#items .card').click(); await page.locator('#reading').waitFor({state:'visible'});
   const disk=await readFile(sourcePath,'utf8'), workspace=(await fixture.adapter('workspace')).workspaceId;
