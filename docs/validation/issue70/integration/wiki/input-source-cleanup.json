@@ -1,0 +1,6 @@
+{
+  "initial": "com.tencent.inputmethod.wetype.pinyin",
+  "restored": "com.tencent.inputmethod.wetype.pinyin",
+  "verified": true,
+  "probe": "tests/native-wiki-links.py terminates and waits its owned host in finally"
+}
