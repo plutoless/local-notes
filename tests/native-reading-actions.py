@@ -63,10 +63,15 @@ try:
     c("document.querySelector('#items [data-path=\"reader.md\"]').click()")
     w("!document.querySelector('#reading').hidden && document.activeElement.id==='mode'")
     def records(): return [json.loads(p.read_text()) for p in (root/'LocalNotesData/actions').glob('*.json')]
+    def computer(*args):
+        result=json.loads(subprocess.check_output(['orca','computer',*args,'--app',f'pid:{process.pid}','--no-screenshot','--json'],text=True))
+        with (evidence/'native-input.jsonl').open('a') as receipts: receipts.write(json.dumps(result)+'\n')
+        assert result.get('ok'), result
+        return result
     def key(code, modifier=''):
-        subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to key code '+str(code)+modifier],check=True)
-    subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
-    c('__frame')
+        assert not modifier
+        computer('press-key','--key',{36:'Return',48:'Tab',53:'Escape'}[code])
+    computer('get-app-state')
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
     c("document.querySelector('#note-create-action').focus()")
     key(36)
@@ -84,17 +89,7 @@ try:
     offset=c('__frame')
     rect=c("const n=document.querySelector('#reading li strong');n.scrollIntoView();const r=n.getBoundingClientRect();return [r.x,r.y,r.width,r.height]")
     x,y,width,height=rect
-    drag_source = f"""import Cocoa
-import CoreGraphics
-let start=CGPoint(x:{offset[0]+x-2},y:{offset[1]+y+height/2})
-let end=CGPoint(x:{offset[0]+x+width+2},y:{offset[1]+y+height/2})
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseDown,mouseCursorPosition:start,mouseButton:.left)!.post(tap:.cghidEventTap)
-usleep(100000)
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseDragged,mouseCursorPosition:end,mouseButton:.left)!.post(tap:.cghidEventTap)
-usleep(100000)
-CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mouseButton:.left)!.post(tap:.cghidEventTap)
-"""
-    subprocess.run(['swift','-e',drag_source],check=True)
+    computer('drag','--from-x',str(x-2),'--from-y',str(y+height/2+28),'--to-x',str(x+width+2),'--to-y',str(y+height/2+28))
     w("getSelection().toString()==='确认'")
     c("document.querySelector('#passage-create-action').focus()")
     key(36)
@@ -133,7 +128,7 @@ CGEvent(mouseEventSource:nil,mouseType:.leftMouseUp,mouseCursorPosition:end,mous
     w("!!document.querySelector('.home-tools')")
     c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
     w("document.querySelectorAll('#items [data-entity-id]').length===3")
-    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and OS Quartz drag selection, Enter, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
+    (evidence/'native-report.json').write_text(json.dumps(dict(head=head,assets=assets,nativeSources=native_source_hashes,productionExecutable=production_hash,probeHash=probe_hash,packageHash=package_hash,sourceHash=original,records=records(),noteCreation=True,passageCreation=True,cancelDiscard=True,nestedReturn=True,keyboardFocus=True,inputSource=initial_input,input='DOM focus/geometry setup and Orca targeted native drag selection, Return, Tab, Escape; no physical input',deferred=['Android runtime','standalone Syncthing']),indent=2))
     print('PASS native reading Action confirmation, OS selection, focus, Escape/discard, nested return and persisted revisions/index')
 finally:
     try:
