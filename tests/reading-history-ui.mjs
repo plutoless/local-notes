@@ -16,7 +16,7 @@ try {
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
-      if (request.cmd === 'choose') { activeFixture = secondFixture; return {}; }
+      if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? secondFixture : fixture; return {}; }
       if (request.cmd === 'save' && failSave) throw Error('Controlled failed save');
       if (request.cmd === 'referenceQuery' && request.exactPath === 'folder/Second.md' && failTopics) throw Error('Controlled secondary query failure');
       if (request.cmd === 'read' && request.path === delayPath) { delayPath = null; const text = await readFile(join(activeFixture.root,request.path),'utf8'); readBegan(); await new Promise(resolve => releaseRead = resolve); return {text}; }
@@ -91,6 +91,18 @@ try {
   await page.waitForFunction(()=>document.querySelector('.home-tools') && !document.querySelector('.recent-reading'));
   assert.equal(await page.locator('.recent-reading').count(),0);
   assert.equal(await readFile(sourcePath,'utf8'),text+'\nChanged externally');
+  // Home remains usable while the existing Library indexer awaits one source body.
+  const indexingStarted = new Promise(resolve => readBegan = resolve); delayPath='reference.md';
+  await page.locator('[data-view=notes]').click(); await indexingStarted;
+  await page.locator('[data-view=focus]').click();
+  await page.locator('.home-tools').waitFor();
+  assert.equal(await page.locator('#editor').isVisible(),false);
+  assert.equal(await page.locator('.recent-reading').count(),0);
+  await page.locator('#choose').click();
+  await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).waitFor();
+  releaseRead();
+  await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
+  await page.waitForFunction(()=>!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='reference.md');
   assert.deepEqual(errors,[]);
   console.log('PASS private continuation reload, scroll/focus, changed/missing recovery, remove, late-read fence and workspace isolation');
 } finally { await browser.close(); await fixture.close(); await secondFixture.close(); }
