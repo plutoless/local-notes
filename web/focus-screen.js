@@ -77,6 +77,19 @@ export class FocusScreen {
       row.append(this.button('打开事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(initiative); })); work.append(row);
     }
     if (initiatives.hasMore) work.append(this.button('全部事项', () => this.navigate('initiatives')));
+    const recent = this.recentReading?.() || [];
+    if (recent.length) {
+      const reading = section('继续阅读'); reading.className = 'recent-reading';
+      for (const entry of recent) {
+        const row = document.createElement('div'); row.className = 'card';
+        const open = selectionRow('', () => this.resumeReading(entry));
+        open.setAttribute('aria-label', `继续阅读：${entry.title}`); open.dataset.readingPath = entry.path;
+        open.innerHTML = `<span><h3>${esc(entry.title)}</h3><span class="row-meta">${esc(entry.path)}</span></span>`;
+        const menu = disclosure(`管理阅读入口：${entry.title}`, [], 'row-menu');
+        menu.append(this.button('移除此阅读入口', () => this.removeReading(entry.path)));
+        row.append(open, menu); reading.append(row);
+      }
+    }
   }
   async pageFocus(offset) {
     const previous = this.focusOffset;
