@@ -452,7 +452,7 @@ const infoOpen = button('笔记信息与整理', async () => { if (!await flush(
 for (const child of [...details.children].filter(node => node.tagName !== 'SUMMARY')) noteInfo.body.append(child);
 details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
-libraryScreen.createNoteTopic = note => { noteInfo.hide(); libraryScreen.editTopic(null, note); };
+libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
 libraryScreen.returnToNoteInfo = async (note, committed) => {
   if (current !== note.path || currentWorkspace !== libraryScreen.library.workspaceId || $('#editor').hidden) return;
   try { await libraryScreen.noteTopics(note.path); }
