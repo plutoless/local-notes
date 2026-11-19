@@ -1,0 +1,37 @@
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-68/build/native-issue68/Reading68.app: replacing existing signature
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-68/build/native-issue68/Reading68.app: replacing existing signature
+WAIT !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#library-tools').hidden
+WAIT !!document.querySelector('#items [data-path="reader.md"]')
+WAIT document.querySelector('#library-progress').textContent===''
+WAIT !document.querySelector('#reading').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT document.activeElement.dataset.readingPath==='reader.md' && !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT document.querySelector('#notice').textContent.includes('暂不可用')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT !!document.querySelector('.home-tools') && !document.querySelector('.recent-reading')
+WAIT !document.querySelector('#library-tools').hidden
+WAIT !!document.querySelector('#items [data-path="reader.md"]')
+WAIT !document.querySelector('#reading').hidden
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT !!document.querySelector('#rename') && !document.querySelector('#rename').disabled
+WAIT !!document.querySelector('#note-location')
+WAIT document.querySelector('#file-path').textContent==='folder/Renamed.md'
+WAIT !!document.querySelector('.home-tools') && document.querySelector('#editor').hidden
+WAIT !!document.querySelector('.home-tools')
+WAIT !document.querySelector('#editor').hidden && document.activeElement.id==='mode'
+WAIT document.querySelector('#note-info-drawer').open && !!document.querySelector('#note-create-topic')
+WAIT !document.querySelector('#note-info-drawer').open
+PASS native restart/resume, exact position/focus, recovery, two roots, known move and disposable index removal
