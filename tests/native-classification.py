@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Issue 70: real packaged assets and storage in an isolated Cocoa/WKWebView host."""
-import hashlib, importlib.util, inspect, json, os, platform, shutil, subprocess, time
+import hashlib, importlib.util, inspect, json, os, platform, re, shutil, subprocess, time
 from pathlib import Path
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -90,10 +90,19 @@ try:
         elif route=='menu-quit':
             subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid})','-e','set frontmost to true','-e','click menu bar item "LocalNotes" of menu bar 1','-e','click menu item "退出拾记" of menu 1 of menu bar item "LocalNotes" of menu bar 1','-e','end tell'],check=True)
         else: key(12,command=True)
-        w("!!document.querySelector('#task-leave-decision')")
+        # AppKit termination temporarily stops the test host's default-mode timer.
+        # Inspect and answer the actual visible dialog through AX, then resume DOM readback.
+        for _ in range(60):
+            state=json.loads(subprocess.check_output(['orca','computer','get-app-state','--app',f'pid:{process.pid}','--json'],text=True))
+            tree=state.get('result',{}).get('snapshot',{}).get('treeText','')
+            match=re.search(r'^\s*(\d+) button 继续编辑$',tree,re.M)
+            if match: break
+            time.sleep(.1)
+        assert match, state
+        assert '保存并离开' in tree and '放弃更改并离开' in tree
+        (evidence/(route+'-decision.json')).write_text(json.dumps(state,ensure_ascii=False,indent=2))
         assert process.poll() is None
-        assert c("return document.querySelector('#topic-name').value.length>0")
-        c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').click()")
+        subprocess.run(['orca','computer','click','--app',f'pid:{process.pid}','--element-index',match[1],'--json'],capture_output=True,check=True)
         w("!document.querySelector('#task-leave-decision') && document.querySelector('#topic-drawer').open")
         time.sleep(.3)
         print('AFTER',route,c("return {dirty:window.hasUnsavedChanges(),value:document.querySelector('#topic-name').value,topic:document.querySelector('#topic-drawer').open}"),flush=True)
