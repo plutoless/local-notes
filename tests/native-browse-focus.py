@@ -59,26 +59,31 @@ def state(name):
  value=c("const n=document.activeElement;return {active:n.id||n.dataset.path||n.dataset.entityId||n.textContent.slice(0,60),tag:n.tagName,focusVisible:n.matches(':focus-visible'),outline:getComputedStyle(n).outline,selected:n.getAttribute('aria-current'),scroll:document.querySelector('#items').scrollTop,collection:document.querySelector('.collection').scrollTop,events:window.inputEvents}")
  log.append({'state':name,**value});c('__snapshot');shutil.copy(m.OUT/'native.png',out/(name+'.png'));return value
 
-def native(action,*args):
+def native(action,*args,target=None):
  host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'beforeInput':action,'args':args,'utc':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'pid':process.pid,'host':host,'document':document})
  assert host['windowNumber']==owned_window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned host lost visible keyboard/input ownership; no operation attempted'
  if os.environ.get('EXTERNAL_INPUT'):
   route_before=c('__route');previous=c('return window.inputEvents.length')
+  c('window.nativeInputTargetSelector='+json.dumps(target)+';window.nativeKeyTarget=document.activeElement')
   if action=='click':
    point=c('__point:'+args[1]+','+args[3]);log.append({'coordinateMapping':point})
    assert point['hitClass']!='none', 'Native target outside the web view; nothing posted'
    command=[str(sender),str(process.pid),str(owned_window),'click',str(point['quartzX']),str(point['quartzY'])]
   else:command=[str(sender),str(process.pid),str(owned_window),'key',args[1]]
   result=subprocess.run(command,capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
+  def delivered(events):
+   if action=='click':return all(any(e['trusted'] and e['type']==kind and e['matchesExpectedTarget'] for e in events) for kind in ['pointerdown','click'])
+   expected={'Tab':('Tab',False,False),'Shift+Tab':('Tab',True,False),'Escape':('Escape',False,False),'Return':('Enter',False,False),'CmdOrCtrl+A':('a',False,True)}[args[1]]
+   return any(e['trusted'] and e['type']=='keydown' and e['matchesExpectedKeyTarget'] and (e.get('key','').lower() if expected[2] else e.get('key'))==expected[0] and e['shift']==expected[1] and e['meta']==expected[2] and not e['ctrl'] and not e['alt'] for e in events)
   events=[]
   for _ in range(20):
    time.sleep(.05);events=c('return window.inputEvents.slice('+str(previous)+')')
-   if any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events):break
+   if delivered(events):break
   host_after=c('__host');document_after=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
   log.append({'externalInput':action,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'routeAfter':c('__route'),'hostAfter':host_after,'documentAfter':document_after})
   assert result.returncode==0 and host_after['windowNumber']==owned_window and host_after['active'] and host_after['key'] and host_after['visible'] and not host_after['occluded'] and document_after['focused'], 'Recipient or sender uncertain; no replay'
-  assert any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events), 'External native delivery unverified; no replay'
+  assert delivered(events), 'Intended external native target/key delivery unverified; no replay'
   return
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
@@ -105,7 +110,8 @@ def click(selector):
  c('const node=document.querySelector('+json.dumps(selector)+');if(!node || !node.getClientRects().length || node.disabled)throw Error("Native target unavailable");node.scrollIntoView({block:"nearest"})')
  rect=c('const node=document.querySelector('+json.dumps(selector)+');const r=node.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;if(!node.contains(document.elementFromPoint(x,y)))throw Error("Native target occluded or outside viewport");return {x,y}')
  if not os.environ.get('EXTERNAL_INPUT'):rect['y']+=28
- native('click','--x',str(round(rect['x'])),'--y',str(round(rect['y'])))
+ log.append({'clickTarget':selector,'rect':rect})
+ native('click','--x',str(round(rect['x'])),'--y',str(round(rect['y'])),target=selector)
  time.sleep(.25)
 
 def key(value):
@@ -119,11 +125,15 @@ try:
  assert host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned fixture unavailable in observed preflight; no OS input attempted'
  if os.environ.get('EXTERNAL_INPUT'):log.append({'routePreflight':c('__route'),'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
- c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,utc:new Date().toISOString()}),true)")
+ c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,utc:new Date().toISOString()}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  for width,height in [(1180,800),(393,852),(800,400)]:
-  c(f'__size:{width},{height}');c('__focus');time.sleep(.5);log.append({'hostBeforeInput':c('__host'),'documentFocus':c('return {focused:document.hasFocus(),visibility:document.visibilityState}')});click('[data-view=focus]');w("!!document.querySelector('.focus-row-open')")
+  c(f'__size:{width},{height}');c('__focus');time.sleep(.5);log.append({'hostBeforeInput':c('__host'),'documentFocus':c('return {focused:document.hasFocus(),visibility:document.visibilityState}')})
+  c("window.nativeFocusRowBefore=document.querySelector('.focus-row')")
+  click('[data-view=focus]')
+  w("!!document.querySelector('.focus-row-open') && document.querySelector('.focus-row')!==window.nativeFocusRowBefore && document.querySelector('[data-view=focus]').getAttribute('aria-current')==='page' && document.querySelector('#index-state').textContent===''")
+  log.append({'focusNavigationOutcome':'Current Focus selected and rows replaced after native click'})
   click('.row-menu summary');state(f'home-pointer-{width}');key('Tab');state(f'home-keyboard-{width}');key('Shift+Tab');state(f'home-reverse-{width}')
  c('__size:1180,800');click('.focus-row-open');w("document.querySelector('#action-drawer').open")
  state('action-open')
