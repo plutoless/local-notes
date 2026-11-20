@@ -2,6 +2,8 @@
 """Issue 81 synthetic Cocoa/WKWebView, OS input and trusted-event evidence."""
 import hashlib, importlib.util, inspect, json, os, shutil, subprocess, time, uuid
 from pathlib import Path
+if os.environ.get('CONSTRUCTOR_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
+ raise SystemExit('Constructor-only mode requires EXTERNAL_INPUT; no host or sender launched')
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 phase=os.environ.get('PHASE','after')
@@ -45,7 +47,7 @@ if script.hasPrefix("__events:"),let data=String(script.dropFirst(9)).data(using
   native=[true,false].compactMap { down in NSEvent.keyEvent(with:down ? .keyDown : .keyUp,location:.zero,modifierFlags:flags,timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:window.windowNumber,context:nil,characters:text,charactersIgnoringModifiers:text,isARepeat:false,keyCode:code) }
  }
  var events:[String]=[];var roundtrip:[[String:Any]]=[]
- for event in native { if event.window === window,let cg=event.cgEvent,let flattened=cg.data {let decoded=CGEvent(withDataAllocator:nil,data:flattened)!;let back=NSEvent(cgEvent:decoded)!;events.append((flattened as Data).base64EncodedString());roundtrip.append(["window":back.windowNumber,"x":back.locationInWindow.x,"y":back.locationInWindow.y,"globalX":decoded.location.x,"globalY":decoded.location.y,"resolvedWindow":event.window === window])} }
+ for event in native { if event.window === window,let cg=event.cgEvent,let flattened=cg.data {let decoded=CGEvent(withDataAllocator:nil,data:flattened)!;let back=NSEvent(cgEvent:decoded)!;events.append((flattened as Data).base64EncodedString());roundtrip.append(["window":back.windowNumber,"x":back.locationInWindow.x,"y":back.locationInWindow.y,"globalX":decoded.location.x,"globalY":decoded.location.y,"resolvedWindow":event.window === window,"constructorPID":getpid(),"sourcePID":decoded.getIntegerValueField(.eventSourceUnixProcessID)])} }
  try? JSONSerialization.data(withJSONObject:["ok":events.count==2,"value":["events":events,"roundtrip":roundtrip]]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return
 }
 if script.hasPrefix("__point:") { let p=script.dropFirst(8).split(separator:",").compactMap { Double($0) };if p.count==2,let web=self?.web,let window=self?.window {let local=NSPoint(x:p[0],y:web.isFlipped ? p[1] : web.bounds.height-p[1]);let inWindow=web.convert(local,to:nil);let screen=window.convertPoint(toScreen:inWindow);let height=CGDisplayBounds(CGMainDisplayID()).height;let hit=web.hitTest(local);let result:[String:Any] = ["quartzX":screen.x,"quartzY":height-screen.y,"windowX":inWindow.x,"windowY":inWindow.y,"webFlipped":web.isFlipped,"webWidth":web.bounds.width,"webHeight":web.bounds.height,"frame":NSStringFromRect(window.frame),"hitClass":hit.map {String(describing:type(of:$0))} ?? "none","legacyQuartzX":window.frame.minX+p[0],"legacyQuartzY":height-window.frame.maxY+p[1]+28];try? JSONSerialization.data(withJSONObject:["ok":true,"value":result]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return } }
@@ -88,7 +90,7 @@ def native(action,*args,target=None):
    payload=c('__events:'+json.dumps({'key':args[1]}));log.append({'constructorRoundtrip':payload['roundtrip']})
    assert all(e['window']==owned_window and e['resolvedWindow'] for e in payload['roundtrip']), 'Read-only native key window roundtrip failed; nothing posted'
   if os.environ.get('CONSTRUCTOR_ONLY'):
-   log.append({'constructorOnly':'PASS actual owned-window and local/global coordinate roundtrip; no OS input posted'});raise SystemExit(0)
+   log.append({'constructorPayload':payload,'constructorOnly':'PASS actual owned-window and local/global coordinate roundtrip; no sender launched or OS input posted'});raise SystemExit(0)
   command=[str(sender),str(process.pid),str(owned_window),'post']
   result=subprocess.run(command,input=json.dumps(payload),capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
   def delivered(events):
@@ -110,6 +112,7 @@ def native(action,*args,target=None):
   assert cocoa and all(e['window']==owned_window for e in cocoa), 'Native Cocoa window association unverified; no replay'
   if action=='click':assert all(abs(e['x']-point['windowX'])<=1 and abs(e['y']-point['windowY'])<=1 for e in cocoa), 'Native Cocoa pointer coordinates unverified; no replay'
   return
+ assert not os.environ.get('CONSTRUCTOR_ONLY'), 'Constructor-only mode refuses every posting route'
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
   assert host['active'] and host['key'] and host['visible'] and not host['occluded'], 'Native acceptance requires a visibly focused owned host'
@@ -148,7 +151,9 @@ try:
  log.append({'preflight':host,'document':document,'pid':process.pid,'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()})
  c('__snapshot');shutil.copy(m.OUT/'native.png',out/'host-start.png')
  assert host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned fixture unavailable in observed preflight; no OS input attempted'
- if os.environ.get('EXTERNAL_INPUT'):log.append({'routePreflight':c('__route'),'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
+ if os.environ.get('EXTERNAL_INPUT'):
+  log.append({'routePreflight':c('__route')})
+  if not os.environ.get('CONSTRUCTOR_ONLY'):log.append({'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,utc:new Date().toISOString()}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
