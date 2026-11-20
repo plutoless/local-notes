@@ -41,7 +41,7 @@
     "style.css": "faeaad62f9dc4a89794741113717cb072b247252ca6083a1baf8e4430e05ac99",
     "organize-screen.js": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
     "action-screen.js": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
-    "presentation.js": "3c46aa9cf181422dfc508b55040f36437c5b4935325a6111161642cf8b60dc2d",
+    "presentation.js": "1d249201b47c9220a73b9ce5e93674325895d28a47a9df663c2dc62997db4c9f",
     "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
     "app.js": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b",
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
@@ -146,5 +146,5 @@
     "after/location-invalid-1180-800.png": "81555378c22fdc40a209d862d8e744daf0f8cefbe5688e19836dbfe13213cd54",
     "after/capture-pointer-1180-800.png": "b883c056a48968c6b827e8ea6b73c6ce911ce70908681e6c857d822cceaca914"
   },
-  "artifactNote": "Before/after screenshot captures bind the presentation assets; additional opener/inert fixes retain identical presentation. Final native/package receipts are external and identify the exact delivered head."
+  "artifactNote": "Matched screenshots bind the unchanged presentation CSS; final opener/inert/autofocus behavior is additionally verified in exact-head native/package receipts delivered under build/issue83-delivery."
 }
