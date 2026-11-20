@@ -164,7 +164,9 @@ export function drawer({id, title, onDismiss}) {
   panel.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
-      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length);
+      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length && !node.closest('[inert]')
+        // Closed disclosure descendants can have layout rectangles but cannot receive focus.
+        && ![...panel.querySelectorAll('details:not([open])')].some(detail => detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
     const index = controls.indexOf(document.activeElement);
     if (controls.length) {
       // WKWebView can skip buttons under the system text-fields-only Tab setting.
@@ -177,10 +179,17 @@ export function drawer({id, title, onDismiss}) {
     const rect = panel.getBoundingClientRect();
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();
   });
-  let opener;
+  let opener, autofocusTarget;
   return {panel, body, footer, close, setTitle(text) { heading.textContent = text; close.setAttribute('aria-label', '关闭' + text); },
-    open(first, origin = document.activeElement) { if (panel.open) return; opener = origin; panel.showModal(); first?.focus(); },
-    hide() { panel.close(); (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
+    open(first, origin = document.activeElement) {
+      if (panel.open) return;
+      opener = origin;
+      // WKWebView's native dialog autofocus can run after keyboard activation.
+      // Declare the intended receiver as well as focusing it synchronously.
+      if (first && !first.hasAttribute('autofocus')) { autofocusTarget = first; first.setAttribute('autofocus', ''); }
+      panel.showModal(); first?.focus();
+    },
+    hide() { panel.close(); autofocusTarget?.removeAttribute('autofocus'); autofocusTarget = null; (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
   };
 }
 

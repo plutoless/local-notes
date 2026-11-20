@@ -475,3 +475,11 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 /* A Home continuation opens one document without loading the Library corpus. */
 .app.reading-continuation { grid-template-columns: 196px minmax(0, 1fr); }
 .reading-continuation .collection { display: none; }
+
+/* Contextual editable fields own one active boundary, never a parent frame.
+   Invalid borders remain independent of the shared blue editing cue. */
+.ui-drawer :is(input:not([type="checkbox"]), textarea, select):focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: inset 0 0 0 1px var(--focus);
+}
