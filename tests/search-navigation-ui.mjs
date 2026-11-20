@@ -71,6 +71,7 @@ try {
         if (scope === 'initiative') assert.equal(await page.locator('#workspace-title').textContent(),'latency 事项');
         if (scope === 'action') assert.equal(await page.locator('#action-description').inputValue(),'latency 行动');
         await back();
+        assert.equal(await page.evaluate(()=>document.activeElement.textContent),label,'Source return restores the activated source control');
         assert.equal(await page.locator('.search-result pre').first().textContent(),expanded);
         assert.equal(await page.locator('.search-results').evaluate(n=>n.scrollTop),scroll);
         if (origin === 'actions') assert.equal(await page.locator('#view-title').textContent(),'行动');
