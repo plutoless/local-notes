@@ -93,7 +93,8 @@ export class SearchScreen {
     const passage = document.createElement('pre'); passage.className = 'search-passage'; passage.setAttribute('aria-label', '复制范围');
     const row = {note, node, select, passage, query, text: note.passage};
     this.highlight(passage, row.text, query);
-    node.append(select, locator, passage, button('复制片段', () => this.copy(row)), button({note: '打开原文', initiative: '打开事项', action: '打开行动'}[note.type], () => this.openSource(row))); this.results.append(node); return row;
+    row.source = button({note: '打开原文', initiative: '打开事项', action: '打开行动'}[note.type], () => this.openSource(row));
+    node.append(select, locator, passage, button('复制片段', () => this.copy(row)), row.source); this.results.append(node); return row;
   }
   highlight(node, text, query) {
     node.replaceChildren(); let start = 0, position; const lower = text.toLowerCase(), term = query.toLowerCase();
@@ -119,7 +120,9 @@ export class SearchScreen {
     const session = this.session, sequence = this.sequence, invocation = this.invocation;
     const valid = () => session === this.session && sequence === this.sequence && this.navigation.owns(invocation);
     this.savedScroll = this.results.scrollTop;
-    const focus = document.activeElement;
+    // The shared action disables itself before running; retain its real opener
+    // rather than the body focus that native WebKit may expose at that point.
+    const focus = row.source;
     try {
       // Capture before the first read; closing/dismissal invalidates this intent.
       await this.service.source(row.note);

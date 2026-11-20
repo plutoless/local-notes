@@ -29,9 +29,14 @@ extra=extra.replace('key == "CmdOrCtrl+A" ? .command', 'key.hasPrefix("CmdOrCtrl
 m.EXTRA=extra
 source=inspect.getsource(m.build).replace('dev.localnotes.validation.issue7','dev.localnotes.validation.issue84'+uuid.uuid4().hex[:8])
 source=source.replace("generated=OUT/'main.swift';generated.write_text(source)","generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()'))")
+# Inspection must remain available while AppKit's correction panel tracks input.
+# This changes only the test channel, never production input behavior/preferences.
+source=source.replace("generated=OUT/", "source=source.replace('Timer.scheduledTimer(withTimeInterval: 0.05, repeats: true)', 'let inspectionTimer = Timer(timeInterval: 0.05, repeats: true)').replace('self?.web.evaluateJavaScript(wrapped, completionHandler: nil)\\n            }\\n        }', 'self?.web.evaluateJavaScript(wrapped, completionHandler: nil)\\n            }\\n        }\\n        RunLoop.main.add(inspectionTimer, forMode: .common)');generated=OUT/")
 exec(source,m.__dict__);m.build()
 sender=m.OUT/'native-browse-input'
-subprocess.run(['swiftc','tests/native-browse-input.swift','-o',str(sender)],check=True)
+sender_source=m.OUT/'native-browse-input.swift'
+sender_source.write_text(Path('tests/native-browse-input.swift').read_text().replace('["ok": false, "error": "Owned active recipient or sender capability unavailable"]', '["ok": false, "error": "Owned active recipient or sender capability unavailable","recipientPID":pid,"recipientActive":NSRunningApplication(processIdentifier:pid)?.isActive ?? false,"frontmostPID":NSWorkspace.shared.frontmostApplication?.processIdentifier ?? -1,"window":window,"windows":CGWindowListCopyWindowInfo(.optionIncludingWindow,CGWindowID(window)) ?? [] as CFArray]'))
+subprocess.run(['swiftc',str(sender_source),'-o',str(sender)],check=True)
 if os.environ.get('NATIVE_BUILD_ONLY'):
  print('PASS build only; no app activation or input');raise SystemExit(0)
 # Preserve binary pasteboard representations, including non-text items.
@@ -48,7 +53,12 @@ input_source=m.OUT/'input-source'
 subprocess.run(['swiftc','tests/InputSourceHarness.swift','-o',str(input_source)],check=True)
 initial_source=subprocess.check_output([str(input_source)],text=True).splitlines()[0]
 log=[];process=None;passed=False
-c,w=m.command,m.wait
+w=m.wait
+def c(script):
+ try:return m.command(script)
+ except BaseException:
+  if process:subprocess.run(['sample',str(process.pid),'1','1','-file',str(m.OUT/'timeout-sample.txt')],capture_output=True)
+  raise
 
 def key(name): post({'key':name})
 def click(selector):
@@ -56,6 +66,9 @@ def click(selector):
  native=c('__point:'+str(point['x'])+','+str(point['y']))
  post({'action':'click','x':native['windowX'],'y':native['windowY']},selector)
 def post(request,selector=None):
+ c('__focus')
+ subprocess.run(['osascript','-e',f'tell application \"System Events\" to tell (first application process whose unix id is {process.pid}) to set frontmost to true'],check=True)
+ time.sleep(.2)
  host=c('__host');assert host['active'] and host['key'] and (host['firstResponderIsWeb'] or host['firstResponderInWeb']) and host['visible'] and not host['occluded'],host
  before=c('__route');index=c('return inputEvents.length');c('window.expectedPointer='+json.dumps(selector))
  payload=c('__events:'+json.dumps(request));assert len(payload['events'])==2
@@ -81,11 +94,11 @@ try:
  key('CmdOrCtrl+K');w("document.activeElement.id==='global-search-input'")
  typing_start=c('return inputEvents.length');assert c("return document.hasFocus() && document.activeElement.id==='global-search-input'")
  # OS typing uses the native input system (not a JS value assignment).
- subprocess.run(['osascript','-e',f'tell application "System Events" to keystroke "latency"'],check=True)
+ subprocess.run(['osascript','-e',f'tell application \"System Events\" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e','tell application \"System Events\" to keystroke \"latency\"','-e','tell application \"System Events\" to key code 48'],check=True)
  log.append({'OSTyping':'latency','targetPID':process.pid,'events':c('return inputEvents.slice('+str(typing_start)+')')})
  assert any(e['type']=='input' and e['trusted'] for e in log[-1]['events'])
  w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('.search-results').inert")
- key('ArrowDown');key('Return');state('keyboard-expanded')
+ key('CmdOrCtrl+K');key('ArrowDown');key('Return');state('keyboard-expanded')
  key('CmdOrCtrl+Return');w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
  copied=subprocess.check_output(['pbpaste']).decode();assert copied==c("return document.querySelector('.search-passage').textContent") and copied in original
  log.append({'clipboardExactPassage':copied})
