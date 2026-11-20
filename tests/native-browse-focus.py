@@ -27,24 +27,27 @@ if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
 m.__dict__['EXTRA']=EXTRA;exec(source,m.__dict__);m.build()
 c,w=m.command,m.wait
 log=[];process=None
-out=Path('docs/validation/issue81')/phase;out.mkdir(parents=True,exist_ok=True)
+out=Path(os.environ.get('NATIVE_EVIDENCE_DIR',str(Path('docs/validation/issue81')/phase)));out.mkdir(parents=True,exist_ok=True)
 def state(name):
  value=c("const n=document.activeElement;return {active:n.id||n.dataset.path||n.dataset.entityId||n.textContent.slice(0,60),tag:n.tagName,focusVisible:n.matches(':focus-visible'),outline:getComputedStyle(n).outline,selected:n.getAttribute('aria-current'),scroll:document.querySelector('#items').scrollTop,collection:document.querySelector('.collection').scrollTop,events:window.inputEvents}")
  log.append({'state':name,**value});c('__snapshot');shutil.copy(m.OUT/'native.png',out/(name+'.png'));return value
 
 def native(action,*args):
+ host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
+ log.append({'beforeInput':action,'pid':process.pid,'host':host,'document':document})
+ assert host['windowNumber']==owned_window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned host lost visible keyboard/input ownership; no operation attempted'
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
   assert host['active'] and host['key'] and host['visible'] and not host['occluded'], 'Native acceptance requires a visibly focused owned host'
   if action=='click':c('__pointer:'+args[1]+','+args[3])
   else:c('__key:'+args[1])
   return
- r=subprocess.run(['orca','computer',action,'--app',f'pid:{process.pid}','--window-index','0','--restore-window',*args,'--no-screenshot','--json'],capture_output=True,text=True)
+ r=subprocess.run(['orca','computer',action,'--app',f'pid:{process.pid}','--window-id',str(owned_window),'--restore-window',*args,'--no-screenshot','--json'],capture_output=True,text=True)
  receipt=json.loads(r.stdout);log.append({'input':action,'args':args,'receipt':receipt});
  if r.returncode!=0 or not receipt.get('ok'):
   for command in ['list-windows','get-app-state']:
    diagnostic=subprocess.run(['orca','computer',command,'--app',f'pid:{process.pid}','--json'],capture_output=True,text=True);log.append({'diagnostic':command,'result':diagnostic.stdout})
-  log.append({'nativeFocus':c("return {hasFocus:document.hasFocus(),active:document.activeElement.tagName,visibility:document.visibilityState}")})
+  log.append({'nativeFocus':c("return {hasFocus:document.hasFocus(),active:document.activeElement.tagName,visibility:document.visibilityState,editorHidden:document.querySelector('#editor').hidden,file:document.querySelector('#file-path').textContent}"),'hostAfterError':c('__host')})
   raise AssertionError(r.stdout)
 
 def click(selector):
@@ -58,27 +61,42 @@ def key(value):
 try:
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
  w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(1)
- host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
+ host=c('__host');owned_window=host['windowNumber'];document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'preflight':host,'document':document,'pid':process.pid,'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()})
  c('__snapshot');shutil.copy(m.OUT/'native.png',out/'host-start.png')
  assert host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Preflight unavailable: unlock the Mac desktop and activate the isolated Browse81 window; no OS input attempted'
 
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName}),true)")
- c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
+ c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  for width,height in [(1180,800),(393,852),(800,400)]:
   c(f'__size:{width},{height}');c('__focus');time.sleep(.5);log.append({'hostBeforeInput':c('__host'),'documentFocus':c('return {focused:document.hasFocus(),visibility:document.visibilityState}')});click('[data-view=focus]');w("!!document.querySelector('.focus-row-open')")
   click('.row-menu summary');state(f'home-pointer-{width}');key('Tab');state(f'home-keyboard-{width}');key('Shift+Tab');state(f'home-reverse-{width}')
  c('__size:1180,800');click('.focus-row-open');w("document.querySelector('#action-drawer').open")
- state('action-open');click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-pointer-return')
+ state('action-open')
+ c("const field=document.querySelector('#action-description');window.savedActionText=field.value;field.value='保留原草稿与选择';field.dispatchEvent(new Event('input',{bubbles:true}))")
+ click('#action-description');key('CmdOrCtrl+A')
+ selected=c("return [document.querySelector('#action-description').selectionStart,document.querySelector('#action-description').selectionEnd]")
+ click('#action-back');w("document.querySelector('#task-leave-decision').open")
+ c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').id='probe-continue'");click('#probe-continue')
+ assert c("return document.querySelector('#action-description').value")=='保留原草稿与选择'
+ assert c("return [document.querySelector('#action-description').selectionStart,document.querySelector('#action-description').selectionEnd]")==selected
+ state('action-retained-draft-selection')
+ c("const field=document.querySelector('#action-description');field.value=window.savedActionText;field.dispatchEvent(new Event('input',{bubbles:true}))")
+ click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-pointer-return')
  c("document.querySelector('.focus-row-open').focus()");key('Tab');key('Shift+Tab');state('action-keyboard-opener');
  if phase!='before': assert c("return document.activeElement.matches('.focus-row-open')"), 'Tab and Shift+Tab must restore the row'
  c("document.querySelector('.focus-row-open').focus()");key('Return');w("document.querySelector('#action-drawer').open");key('Escape');w("!document.querySelector('#action-drawer').open");state('action-keyboard-return')
  click('[data-view=notes]');w("document.querySelectorAll('#items [data-path]').length===50")
- click('#items [data-path]');w("!document.querySelector('#editor').hidden");state('note-open')
- c('__size:393,852');click('#back');w("document.querySelector('#editor').hidden");state('library-pointer-return')
+ c('__size:393,852')
+ c("const row=document.querySelectorAll('#items [data-path]')[12];row.id='probe-note-row';row.scrollIntoView({block:'center'});window.browseBefore={path:row.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
+ click('#probe-note-row');w("!document.querySelector('#editor').hidden");state('note-open');click('#note-details summary');click('#star')
+ click('#back');w("document.querySelector('#editor').hidden");state('library-pointer-return');assert c("return document.activeElement.dataset.path===window.browseBefore.path && document.querySelector('.collection').scrollTop===window.browseBefore.scroll && document.querySelector('#items').scrollTop===window.browseBefore.list")
  key('Tab');key('Shift+Tab');c("document.querySelector('#items [data-path]').focus()");key('Return');w("!document.querySelector('#editor').hidden");click('#back');state('library-return')
- c('__size:1180,800');click('[data-view=initiatives]');w("!!document.querySelector('#items [data-initiative-id]')");click('#items [data-initiative-id]');state('initiative-selected');key('Tab');state('initiative-keyboard')
+ click('[data-view=favorites]');w("document.querySelectorAll('#items [data-path]').length===1");click('#items [data-path]');w("!document.querySelector('#editor').hidden");click('#back');state('favorites-return')
+ c('__size:1180,800');click('[data-view=initiatives]');w("!!document.querySelector('#items [data-initiative-id]')");click('#items [data-initiative-id]');state('initiative-selected');key('Tab');state('initiative-keyboard');click('#workspace-back');click('#initiative-next');w("document.querySelector('#initiative-next').disabled");state('initiative-page-boundary')
+ click('[data-view=focus]');c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').id='probe-all-actions'");click('#probe-all-actions');w("document.querySelector('#action-tools').getClientRects().length>0 && document.querySelector('#index-state').textContent===''")
+ c("document.querySelector('#action-next').focus()");key('Return');w("document.querySelector('#action-next').disabled && document.activeElement.id==='action-previous'");state('action-page-boundary')
  assert c('return inputEvents.some(e=>e.type==="keydown"&&e.trusted)&&inputEvents.some(e=>e.type==="pointerdown"&&e.trusted)')
  hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('web').glob('*') if p.is_file()}
  for p in Path('web').glob('*'):
