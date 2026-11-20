@@ -85,6 +85,9 @@ def native(action,*args,target=None):
   log.append({'externalInput':action,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'routeAfter':route_after,'hostAfter':host_after,'documentAfter':document_after})
   assert result.returncode==0 and host_after['windowNumber']==owned_window and host_after['active'] and host_after['key'] and host_after['visible'] and not host_after['occluded'] and document_after['focused'], 'Recipient or sender uncertain; no replay'
   assert delivered(events), 'Intended external native target/key delivery unverified; no replay'
+  sender_receipt=json.loads(result.stdout);quartz=route_after['quartz'][len(route_before['quartz']):]
+  expected_types=[1,2] if action=='click' else [10,11]
+  assert route_after['tapEnabled'] and all(any(e['type']==kind and e['marker']==810053 and e['sourcePID']==sender_receipt['senderPID'] for e in quartz) for kind in expected_types), 'Marked process-tap delivery unverified; no replay'
   assert cocoa and all(e['window']==owned_window for e in cocoa), 'Native Cocoa window association unverified; no replay'
   if action=='click':assert all(abs(e['x']-point['windowX'])<=1 and abs(e['y']-point['windowY'])<=1 for e in cocoa), 'Native Cocoa pointer coordinates unverified; no replay'
   return
