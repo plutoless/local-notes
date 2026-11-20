@@ -21,6 +21,7 @@ shared = ast.parse((REPO/'tests/native-browse-focus.py').read_text())
 for node in shared.body:
     if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id in ['EXTRA', 'ROUTE_RECORDER'] for t in node.targets):
         m.__dict__[node.targets[0].id] = ast.literal_eval(node.value)
+m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"active":NSApp.isActive,', '"active":NSApp.isActive,"frontmostPID":NSWorkspace.shared.frontmostApplication?.processIdentifier ?? -1,')
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue65keyboard')
 source = source.replace('generated=OUT/\'main.swift\';generated.write_text(source)', "generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()'))")
 exec(source, m.__dict__); m.build()
@@ -59,7 +60,7 @@ def state(name):
 
 def key(name):
     host=c('__host'); before=c('__route')
-    assert host['windowNumber']==window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and c('return document.hasFocus()'), 'Lost exclusive owned recipient; nothing posted'
+    assert host['frontmostPID']==process.pid and host['windowNumber']==window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and c('return document.hasFocus()'), 'Lost exclusive owned recipient; nothing posted'
     c('window.expectedKeyTarget=document.activeElement'); previous=c('return nativeKeys.length')
     payload=c('__events:'+json.dumps({'key':name}))
     assert len(payload['roundtrip'])==2 and all(e['window']==window and e['resolvedWindow'] for e in payload['roundtrip'])
