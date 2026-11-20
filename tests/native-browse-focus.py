@@ -51,7 +51,7 @@ def native(action,*args):
   raise AssertionError(r.stdout)
 
 def click(selector):
- c('document.querySelector('+json.dumps(selector)+').scrollIntoView({block:"nearest"})')
+ c('const node=document.querySelector('+json.dumps(selector)+');if(!node || !node.getClientRects().length || node.disabled)throw Error("Native target unavailable");node.scrollIntoView({block:"nearest"})')
  rect=c('const r=document.querySelector('+json.dumps(selector)+').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2+28}')
  native('click','--x',str(round(rect['x'])),'--y',str(round(rect['y'])))
  time.sleep(.25)
@@ -90,7 +90,7 @@ try:
  click('[data-view=notes]');w("document.querySelectorAll('#items [data-path]').length===50")
  c('__size:393,852')
  c("const row=document.querySelectorAll('#items [data-path]')[12];row.id='probe-note-row';row.scrollIntoView({block:'center'});window.browseBefore={path:row.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
- click('#probe-note-row');w("!document.querySelector('#editor').hidden");state('note-open');click('#note-details summary');click('#star')
+ click('#probe-note-row');w("!document.querySelector('#editor').hidden");state('note-open');click('#note-info-open');w("document.querySelector('#note-info-drawer').open");click('#star');click('#note-info-drawer .ui-drawer-footer button');w("!document.querySelector('#note-info-drawer').open")
  click('#back');w("document.querySelector('#editor').hidden");state('library-pointer-return');assert c("return document.activeElement.dataset.path===window.browseBefore.path && document.querySelector('.collection').scrollTop===window.browseBefore.scroll && document.querySelector('#items').scrollTop===window.browseBefore.list")
  key('Tab');key('Shift+Tab');c("document.querySelector('#items [data-path]').focus()");key('Return');w("!document.querySelector('#editor').hidden");click('#back');state('library-return')
  click('[data-view=favorites]');w("document.querySelectorAll('#items [data-path]').length===1");click('#items [data-path]');w("!document.querySelector('#editor').hidden");click('#back');state('favorites-return')
