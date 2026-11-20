@@ -94,6 +94,7 @@ try {
     await page.screenshot({path:join(evidence,'after-failed-393.png')});
     await submit.click();
     await page.waitForFunction(()=>!document.querySelector('#topic-drawer').open);
+    await page.waitForFunction(()=>document.querySelector('#library-topic').options.length===3);
     assert.equal(await page.locator('#library-topic option').count(),3);
     assert.ok(await page.locator('#library-create-topic').evaluate(n=>n===document.activeElement));
     const topic=await page.locator('#library-topic option').last().getAttribute('value');
