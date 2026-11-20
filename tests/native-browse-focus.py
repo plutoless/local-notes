@@ -2,6 +2,8 @@
 """Issue 81 synthetic Cocoa/WKWebView, OS input and trusted-event evidence."""
 import hashlib, importlib.util, inspect, json, os, shutil, subprocess, time, uuid
 from pathlib import Path
+if os.environ.get('PAGING_ONLY') and not (os.environ.get('REMAINING_ONLY') and os.environ.get('TAIL_ONLY')):
+ raise SystemExit('Paging-only mode requires REMAINING_ONLY and TAIL_ONLY; no host or sender launched')
 if os.environ.get('TAIL_ONLY') and not os.environ.get('REMAINING_ONLY'):
  raise SystemExit('Tail-only mode requires REMAINING_ONLY; no host or sender launched')
 if os.environ.get('CONSTRUCTOR_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
@@ -155,6 +157,14 @@ def click(selector,capture_browse=None):
 
 def key(value):
  native('hotkey' if '+' in value else 'press-key','--key',value);time.sleep(.15)
+
+def page_key_entry(selector,name):
+ log.append({'setup':'DOM positions the paging target before genuine native Shift+Tab/Tab entry; positioning is not keyboard-modality evidence','selector':selector})
+ c('const node=document.querySelector('+json.dumps(selector)+');if(!node || !node.getClientRects().length || node.disabled)throw Error("Paging target unavailable");node.focus({preventScroll:true});if(document.activeElement!==node)throw Error("Paging target focus setup failed")')
+ key('Shift+Tab');state(name+'-preceding-control')
+ assert c('const node=document.activeElement;return node!==document.querySelector('+json.dumps(selector)+') && node.tabIndex>=0 && !!node.getClientRects().length && !node.disabled && node.matches(":focus-visible")'), 'Native preceding keyboard control must be visible and eligible'
+ key('Tab');state(name+'-next-control')
+ assert c('const node=document.querySelector('+json.dumps(selector)+');return document.activeElement===node && !node.disabled && node.matches(":focus-visible")'), 'Native Tab must reach the requested enabled paging control with visible keyboard focus'
 try:
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
  w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(1)
@@ -222,58 +232,60 @@ try:
     state('action-continue-'+intended)
    c("const field=document.querySelector('#action-description');field.value=window.beforeCorrectionText;field.dispatchEvent(new Event('input',{bubbles:true}))")
    click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-corrected-return')
-  c('__size:393,852');c("document.querySelector('[data-view=notes]').click()")
-  w("document.querySelectorAll('#items [data-path]').length===50")
-  c("document.querySelector('#items [data-path=\"note-12.md\"]').click()")
-  w("!document.querySelector('#editor').hidden");c("document.querySelector('#note-info-open').click()")
-  w("document.querySelector('#note-info-drawer').open")
-  c("if(document.querySelector('#star').getAttribute('aria-pressed')!=='true')document.querySelector('#star').click()")
-  w("document.querySelector('#star').getAttribute('aria-pressed')==='true'")
-  c("document.querySelector('#note-info-drawer .ui-drawer-footer button').click()")
-  w("!document.querySelector('#note-info-drawer').open");c("document.querySelector('#back').click()")
-  w("document.querySelector('#editor').hidden")
- if not os.environ.get('TAIL_ONLY'):
-  click('[data-view=favorites]');w("document.querySelectorAll('#items [data-path]').length===1")
-  browse_metrics('Favorites before target preparation')
-  click('#items [data-path]',capture_browse='favoriteBefore');w("!document.querySelector('#editor').hidden");click('#back')
+  if not os.environ.get('PAGING_ONLY'):
+   c('__size:393,852');c("document.querySelector('[data-view=notes]').click()")
+   w("document.querySelectorAll('#items [data-path]').length===50")
+   c("document.querySelector('#items [data-path=\"note-12.md\"]').click()")
+   w("!document.querySelector('#editor').hidden");c("document.querySelector('#note-info-open').click()")
+   w("document.querySelector('#note-info-drawer').open")
+   c("if(document.querySelector('#star').getAttribute('aria-pressed')!=='true')document.querySelector('#star').click()")
+   w("document.querySelector('#star').getAttribute('aria-pressed')==='true'")
+   c("document.querySelector('#note-info-drawer .ui-drawer-footer button').click()")
+   w("!document.querySelector('#note-info-drawer').open");c("document.querySelector('#back').click()")
+   w("document.querySelector('#editor').hidden")
+ if not os.environ.get('PAGING_ONLY'):
+  if not os.environ.get('TAIL_ONLY'):
+   click('[data-view=favorites]');w("document.querySelectorAll('#items [data-path]').length===1")
+   browse_metrics('Favorites before target preparation')
+   click('#items [data-path]',capture_browse='favoriteBefore');w("!document.querySelector('#editor').hidden");click('#back')
+   w("document.querySelector('#editor').hidden && document.activeElement.dataset.path===window.favoriteBefore.path")
+   browse_metrics('Favorites immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites settled return')
+   assert c("return document.querySelector('.collection').scrollTop===window.favoriteBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteBefore.list")
+   state('favorites-pointer-return')
+  else:
+   log.append({'setup':'Tail-only: DOM prepares the existing Favorite selected row; native pointer return is retained from the source-identical corrected run, not repeated'})
+   c("document.querySelector('[data-view=favorites]').click()")
+   w("document.querySelectorAll('#items [data-path]').length===1")
+   c("document.querySelector('#items [data-path]').scrollIntoView({block:'nearest'});document.querySelector('#items [data-path]').click()")
+   w("!document.querySelector('#editor').hidden");c("document.querySelector('#back').click()")
+   w("document.querySelector('#editor').hidden && !!document.activeElement.dataset.path")
+   c("window.favoriteBefore={path:document.activeElement.dataset.path}")
+  # A nonmodal final control may hand forward Tab to the native key-view loop.
+  # Verify both directions within the document without introducing a page trap.
+  key('Shift+Tab');state('favorites-previous-keyboard')
+  assert c("return !document.activeElement.dataset.path && document.activeElement.tabIndex>=0 && document.activeElement.matches(':focus-visible') && !!document.activeElement.getClientRects().length")
+  key('Tab');state('favorites-selected-keyboard')
+  assert c("return document.activeElement.dataset.path===window.favoriteBefore.path && document.activeElement.getAttribute('aria-current')==='true' && document.activeElement.matches(':focus-visible')")
+  c("window.favoriteKeyboardBefore={path:document.activeElement.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
+  log.append({'browseBaseline':'favoriteKeyboardBefore','value':c('return window.favoriteKeyboardBefore')})
+  key('Return');w("!document.querySelector('#editor').hidden")
+  assert c("return document.querySelector('#file-path').textContent===window.favoriteKeyboardBefore.path")
+  c("document.querySelector('#back').focus()");key('Return')
   w("document.querySelector('#editor').hidden && document.activeElement.dataset.path===window.favoriteBefore.path")
-  browse_metrics('Favorites immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites settled return')
-  assert c("return document.querySelector('.collection').scrollTop===window.favoriteBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteBefore.list")
-  state('favorites-pointer-return')
- else:
-  log.append({'setup':'Tail-only: DOM prepares the existing Favorite selected row; native pointer return is retained from the source-identical corrected run, not repeated'})
-  c("document.querySelector('[data-view=favorites]').click()")
-  w("document.querySelectorAll('#items [data-path]').length===1")
-  c("document.querySelector('#items [data-path]').scrollIntoView({block:'nearest'});document.querySelector('#items [data-path]').click()")
-  w("!document.querySelector('#editor').hidden");c("document.querySelector('#back').click()")
-  w("document.querySelector('#editor').hidden && !!document.activeElement.dataset.path")
-  c("window.favoriteBefore={path:document.activeElement.dataset.path}")
- # A nonmodal final control may hand forward Tab to the native key-view loop.
- # Verify both directions within the document without introducing a page trap.
- key('Shift+Tab');state('favorites-previous-keyboard')
- assert c("return !document.activeElement.dataset.path && document.activeElement.tabIndex>=0 && document.activeElement.matches(':focus-visible') && !!document.activeElement.getClientRects().length")
- key('Tab');state('favorites-selected-keyboard')
- assert c("return document.activeElement.dataset.path===window.favoriteBefore.path && document.activeElement.getAttribute('aria-current')==='true' && document.activeElement.matches(':focus-visible')")
- c("window.favoriteKeyboardBefore={path:document.activeElement.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
- log.append({'browseBaseline':'favoriteKeyboardBefore','value':c('return window.favoriteKeyboardBefore')})
- key('Return');w("!document.querySelector('#editor').hidden")
- assert c("return document.querySelector('#file-path').textContent===window.favoriteKeyboardBefore.path")
- c("document.querySelector('#back').focus()");key('Return')
- w("document.querySelector('#editor').hidden && document.activeElement.dataset.path===window.favoriteBefore.path")
- state('favorites-keyboard-return')
- assert c("return document.activeElement.matches(':focus-visible') && document.activeElement.getAttribute('aria-current')==='true'")
- browse_metrics('Favorites keyboard immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites keyboard settled return')
- assert c("return document.querySelector('.collection').scrollTop===window.favoriteKeyboardBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteKeyboardBefore.list")
+  state('favorites-keyboard-return')
+  assert c("return document.activeElement.matches(':focus-visible') && document.activeElement.getAttribute('aria-current')==='true'")
+  browse_metrics('Favorites keyboard immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites keyboard settled return')
+  assert c("return document.querySelector('.collection').scrollTop===window.favoriteKeyboardBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteKeyboardBefore.list")
  c('__size:1180,800');click('[data-view=initiatives]');w("!!document.querySelector('#items [data-initiative-id]')")
  c("window.initiativeBeforeId=document.querySelector('#items [data-initiative-id]').dataset.initiativeId")
  click('#items [data-initiative-id]');w("document.querySelector('#items [aria-current=true]')?.dataset.initiativeId===window.initiativeBeforeId")
  state('initiative-selected');key('Tab');state('initiative-keyboard');c('__size:393,852');click('#workspace-back')
- c("document.querySelector('#initiative-next').focus()");key('Return')
+ page_key_entry('#initiative-next','initiative-paging');key('Return')
  w("document.querySelector('#initiative-next').disabled && document.activeElement.id==='initiative-previous'");state('initiative-page-boundary')
  assert c("return document.activeElement.matches(':focus-visible')")
  click('[data-view=focus]');c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').id='probe-all-actions'");click('#probe-all-actions')
  w("document.querySelector('#action-tools').getClientRects().length>0 && document.querySelector('#index-state').textContent==='' && !document.querySelector('#action-next').disabled")
- c("document.querySelector('#action-next').focus()");key('Return')
+ page_key_entry('#action-next','action-paging');key('Return')
  w("document.querySelector('#action-next').disabled && document.activeElement.id==='action-previous'");state('action-page-boundary')
  assert c("return document.activeElement.matches(':focus-visible')")
  # Invalid-plus-focused is existing Action validation; no invalid value is saved.
