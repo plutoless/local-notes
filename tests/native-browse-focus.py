@@ -69,7 +69,7 @@ def native(action,*args,target=None):
   if action=='click':
    point=c('__point:'+args[1]+','+args[3]);log.append({'coordinateMapping':point})
    assert point['hitClass']!='none', 'Native target outside the web view; nothing posted'
-   command=[str(sender),str(process.pid),str(owned_window),'click',str(point['quartzX']),str(point['quartzY'])]
+   command=[str(sender),str(process.pid),str(owned_window),'click',str(point['quartzX']),str(point['quartzY']),str(point['windowX']),str(point['windowY'])]
   else:command=[str(sender),str(process.pid),str(owned_window),'key',args[1]]
   result=subprocess.run(command,capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
   def delivered(events):
@@ -81,9 +81,12 @@ def native(action,*args,target=None):
    time.sleep(.05);events=c('return window.inputEvents.slice('+str(previous)+')')
    if delivered(events):break
   host_after=c('__host');document_after=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
-  log.append({'externalInput':action,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'routeAfter':c('__route'),'hostAfter':host_after,'documentAfter':document_after})
+  route_after=c('__route');cocoa=route_after['cocoa'][len(route_before['cocoa']):]
+  log.append({'externalInput':action,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'routeAfter':route_after,'hostAfter':host_after,'documentAfter':document_after})
   assert result.returncode==0 and host_after['windowNumber']==owned_window and host_after['active'] and host_after['key'] and host_after['visible'] and not host_after['occluded'] and document_after['focused'], 'Recipient or sender uncertain; no replay'
   assert delivered(events), 'Intended external native target/key delivery unverified; no replay'
+  assert cocoa and all(e['window']==owned_window for e in cocoa), 'Native Cocoa window association unverified; no replay'
+  if action=='click':assert all(abs(e['x']-point['windowX'])<=1 and abs(e['y']-point['windowY'])<=1 for e in cocoa), 'Native Cocoa pointer coordinates unverified; no replay'
   return
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
