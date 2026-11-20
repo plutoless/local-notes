@@ -93,5 +93,5 @@
   ],
   "releaseTimeProbeSHA256": "39f88c78b573f6a7744b16657c1bd1bb25172df17dc918374bbeb43a8db81df9",
   "deliveredProbeSHA256": "b29f55ba2f6741328b4f14f66998425aa86c4c5b10f4963be1a3223f3cf32409",
-  "deliveredProbeNativeExecution": "not executed; release-time evidence does not establish final-head acceptance"
+  "deliveredProbeNativeExecution": "failed attempt9 at eefa715 with matching probe hash; no later-head or complete native acceptance"
 }
