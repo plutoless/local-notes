@@ -118,16 +118,22 @@ export class FocusScreen {
   }
   async openAction(action) {
     const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
-    const repository = this.actions.repository;
-    await this.actions.edit(action);
-    if (!this.active || repository !== this.actions.repository || !this.actions.drawer.panel.open) return;
-    this.actions.returnToFocus = async () => {
+    const repository = this.actions.repository, request = (this.actions.openRequest || 0) + 1;
+    const owns = () => repository === this.actions.repository && request === this.actions.openRequest;
+    const returnToFocus = async () => {
+      if (!owns()) return;
       if (!this.active) { if (!await this.navigate('focus')) return; }
       else if (!await this.show()) return;
+      if (!owns() || !this.active) return;
       const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
       (opener || $('.home-tools .primary')).focus({preventScroll: true});
       $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
+      if (this.actions.returnToFocus === returnToFocus) this.actions.returnToFocus = null;
     };
+    // Install the opener-owned return before option loading so early Cancel has the correct origin.
+    this.actions.returnToFocus = returnToFocus;
+    await this.actions.edit(action);
+    if ((!owns() || !this.active || !this.actions.drawer.panel.open) && this.actions.returnToFocus === returnToFocus) this.actions.returnToFocus = null;
   }
 
   actionRow(action) {

@@ -174,6 +174,18 @@ try {
   await page.locator('#action-back').click();await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
   await page.locator('#action-back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
+  // Distinct Focus openings own their returns even if their option requests overlap.
+  await page.locator('[data-view=focus]').click();await page.locator('.focus-row-open').nth(1).waitFor();
+  const focusA=page.locator('.focus-row-open').nth(0), focusB=page.locator('.focus-row-open').nth(1);
+  const focusAId=await focusA.getAttribute('data-entity-id'), focusBId=await focusB.getAttribute('data-entity-id');
+  const openAStarted=new Promise(resolve=>{assignmentBegan=resolve;});let releaseA;assignmentGate=new Promise(resolve=>{releaseA=resolve;});
+  await focusA.click();await openAStarted;await page.locator('#action-back').click();
+  await page.waitForFunction(id=>document.activeElement.dataset.entityId===id,focusAId);
+  const openBStarted=new Promise(resolve=>{assignmentBegan=resolve;});let releaseB;assignmentGate=new Promise(resolve=>{releaseB=resolve;});
+  await focusB.click();await openBStarted;releaseA();await page.waitForTimeout(300);
+  await page.locator('#action-back').click();await page.waitForFunction(id=>document.activeElement.dataset.entityId===id,focusBId);
+  releaseB();await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.entityId),focusBId,'obsolete A cannot install its return onto B');
   assert.equal(await readFile(sourcePath,'utf8'),original);assert.deepEqual(errors,[]);
   console.log('PASS browse focus modality, Focus/disclosure, Library selected-return, Initiative and Action consumers');
 } catch(error) { console.error(await page.evaluate(()=>({active:document.activeElement.outerHTML,style:getComputedStyle(document.activeElement).cssText,offset:getComputedStyle(document.activeElement).outlineOffset}))); throw error; } finally {await browser.close();await fixture.close();}
