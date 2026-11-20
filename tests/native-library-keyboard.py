@@ -26,6 +26,8 @@ source = source.replace('generated=OUT/\'main.swift\';generated.write_text(sourc
 exec(source, m.__dict__); m.build()
 sender = OUT/'native-browse-input'
 subprocess.run(['swiftc', str(REPO/'tests/native-browse-input.swift'), '-o', str(sender)], check=True)
+window_observer = OUT/'native-owned-windows'
+subprocess.run(['swiftc', str(REPO/'tests/native-owned-windows.swift'), '-o', str(window_observer)], check=True)
 environment = OUT/'native-library-environment'
 subprocess.run(['swiftc', str(REPO/'tests/native-library-environment.swift'), '-o', str(environment)], check=True)
 if build_only:
@@ -118,15 +120,19 @@ try:
     assert not list((OUT/'Sync').glob('LocalNotesData/revisions/*/*.json'))
     report.update(passed=True,uniquePagedResults=61,sourcePreserved=True,input='external process-targeted OS keyboard; DOM fixture/focus setup; no physical input')
 finally:
-    if process:
-        process.terminate(); process.wait(timeout=10)
-        try: os.kill(process.pid,0); absent=False
-        except ProcessLookupError: absent=True
-        report['cleanup']={'pid':process.pid,'exit':process.returncode,'waitCompleted':True,'pidAbsent':absent}
-    report['environmentRestoration']=json.loads(subprocess.check_output([str(environment), 'restore', str(private_snapshot)], text=True))
-    report['inputSourceAfter']=input_source()
-    report['clipboardHashAfter']=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
-    report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and report['clipboardHashAfter']==clipboard_hash
-    (EVIDENCE/'report.json').write_text(json.dumps(report,indent=2))
-    assert report['inputAndClipboardRetained'], 'Input source or clipboard unexpectedly changed; coordinator action required'
+    try:
+        if process:
+            process.terminate(); process.wait(timeout=10)
+            try: os.kill(process.pid,0); absent=False
+            except ProcessLookupError: absent=True
+            owned_windows = json.loads(subprocess.check_output([str(window_observer), str(process.pid)], text=True))
+            report['cleanup']={'pid':process.pid,'exit':process.returncode,'waitCompleted':True,'pidAbsent':absent,'remainingOwnedWindows':owned_windows}
+    finally:
+        report['environmentRestoration']=json.loads(subprocess.check_output([str(environment), 'restore', str(private_snapshot)], text=True))
+        report['inputSourceAfter']=input_source()
+        report['clipboardHashAfter']=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
+        report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and report['clipboardHashAfter']==clipboard_hash
+        (EVIDENCE/'report.json').write_text(json.dumps(report,indent=2))
+        assert report['inputAndClipboardRetained'], 'Input source or clipboard unexpectedly changed; coordinator action required'
+        assert report.get('cleanup', {}).get('pidAbsent') and not report['cleanup']['remainingOwnedWindows'], 'Owned PID/window cleanup not established'
 print('PASS owned-window native Library keyboard, paging, source-return and focus')
