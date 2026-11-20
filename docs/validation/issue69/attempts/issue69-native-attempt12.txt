@@ -1,0 +1,27 @@
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+-e:1:118: error: '=' must have consistent whitespace on both sides
+1 | #sourceLocation(file: "-e", line: 1)
+2 | import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:true)!; down.flags=.maskShift; down.postToPid(96157); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:false)!;up.flags=.maskShift;up.postToPid(96157)
+  |                                                                                                                      `- error: '=' must have consistent whitespace on both sides
+3 | 
+
+-e:1:248: error: '=' must have consistent whitespace on both sides
+1 | #sourceLocation(file: "-e", line: 1)
+2 | import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:true)!; down.flags=.maskShift; down.postToPid(96157); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:false)!;up.flags=.maskShift;up.postToPid(96157)
+  |                                                                                                                                                                                                                                                        `- error: '=' must have consistent whitespace on both sides
+3 | 
+FINAL_UI {'path': 'reader.md', 'notice': '', 'dialogs': [], 'selection': '', 'buttonDisabled': False, 'focus': 'reading'}
+FRONTMOST LocalNotes
+
+Traceback (most recent call last):
+  File "<checkout>/tests/native-reading-actions.py", line 93, in <module>
+    key(124,'shift'); key(124,'shift')
+    ~~~^^^^^^^^^^^^^
+  File "<checkout>/tests/native-reading-actions.py", line 76, in key
+    subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.flags={flags}; down.postToPid({process.pid}); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!;up.flags={flags};up.postToPid({process.pid})'],check=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.14/3.14.4_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['swift', '-e', 'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:true)!; down.flags=.maskShift; down.postToPid(96157); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:124,keyDown:false)!;up.flags=.maskShift;up.postToPid(96157)']' returned non-zero exit status 1.

@@ -1,0 +1,46 @@
+[
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "255"
+    ],
+    "receipt": {
+      "id": "1c128a13-8352-4404-bb85-e84f0f0b320f",
+      "ok": false,
+      "error": {
+        "code": "permission_denied",
+        "message": "app 'LocalNotes' has visible windows but no accessibility window (AX reads stayed blocked for 1500ms after retries). macOS Accessibility may need Orca Computer Use toggled off and on again in System Settings.",
+        "data": {
+          "nextSteps": [
+            "Run `orca computer permissions --json`, or `orca computer permissions --id accessibility --json` / `--id screenshots --json` when the message names one missing permission.",
+            "For remote or SSH targets, verify the command is running inside an active graphical desktop session."
+          ]
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "diagnostic": "list-windows",
+    "result": "{\n  \"id\": \"5af15b6c-732a-44b5-81cb-50032c4e66a1\",\n  \"ok\": true,\n  \"result\": {\n    \"windows\": [\n      {\n        \"index\": 0,\n        \"screenIndex\": 0,\n        \"id\": 26467,\n        \"isMinimized\": false,\n        \"height\": 816,\n        \"isMain\": null,\n        \"app\": {\n          \"pid\": 28397,\n          \"name\": \"LocalNotes\",\n          \"bundleId\": \"dev.localnotes.validation.issue81diagnosedf615543\"\n        },\n        \"platform\": {\n          \"alpha\": 1,\n          \"layer\": 0\n        },\n        \"title\": \"拾记 · Local Notes\",\n        \"width\": 1156,\n        \"y\": 159,\n        \"x\": 702,\n        \"isOffscreen\": false\n      }\n    ],\n    \"app\": {\n      \"isRunning\": true,\n      \"useCount\": null,\n      \"bundleId\": \"dev.localnotes.validation.issue81diagnosedf615543\",\n      \"lastUsedAt\": null,\n      \"name\": \"LocalNotes\",\n      \"pid\": 28397\n    }\n  },\n  \"_meta\": {\n    \"runtimeId\": \"8fa795e6-4f9d-4fe1-8626-61201a312033\"\n  }\n}\n"
+  },
+  {
+    "diagnostic": "get-app-state",
+    "result": "{\n  \"id\": \"796461e2-e97c-48f0-906b-918697327e77\",\n  \"ok\": false,\n  \"error\": {\n    \"code\": \"permission_denied\",\n    \"message\": \"app 'LocalNotes' has visible windows but no accessibility window (AX reads stayed blocked for 1500ms after retries). macOS Accessibility may need Orca Computer Use toggled off and on again in System Settings.\",\n    \"data\": {\n      \"nextSteps\": [\n        \"Run `orca computer permissions --json`, or `orca computer permissions --id accessibility --json` / `--id screenshots --json` when the message names one missing permission.\",\n        \"For remote or SSH targets, verify the command is running inside an active graphical desktop session.\"\n      ]\n    }\n  },\n  \"_meta\": {\n    \"runtimeId\": \"8fa795e6-4f9d-4fe1-8626-61201a312033\"\n  }\n}\n"
+  },
+  {
+    "nativeFocus": {
+      "hasFocus": false,
+      "visibility": "hidden",
+      "active": "BODY"
+    }
+  },
+  {
+    "ownedHostExited": -15
+  }
+]

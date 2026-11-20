@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {saveAndLeave} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
@@ -46,7 +47,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -114,7 +115,7 @@ try {
   assert.equal(await page.locator('#items .card[aria-current="true"]').count(), 1);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
-  await page.locator('#mode').click(); await page.locator('#reading input').first().check();
+  assert.equal(await page.locator('#reading input').first().isDisabled(),true); await page.locator('#mode').click(); await page.locator('#body').fill((await page.locator('#body').inputValue()).replace('[ ]','[x]'));
   await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('todo');
@@ -186,7 +187,7 @@ try {
   assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
   assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
-  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await closeNoteInfo(page); await page.locator('#body').fill('Unsaved local edit');
+  if (!await page.locator('#body').isVisible()) await page.locator('#mode').click(); await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Unsaved local edit');
   await writeFile(sourcePath, '# Synthetic reference material\n\nExternal edit');
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
@@ -200,7 +201,7 @@ try {
   await page.locator('#action-description').focus();
   await page.keyboard.press('Tab');
   assert.equal(await page.locator('#action-status').evaluate(node => node === document.activeElement), true);
-  assert.equal(await page.locator('#action-status').evaluate(node => getComputedStyle(node).outlineStyle), 'solid');
+  assert.deepEqual(await page.locator('#action-status').evaluate(node => { const style = getComputedStyle(node); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(7, 95, 204)', 'rgb(7, 95, 204) 0px 0px 0px 1px inset']);
   await page.locator('#action-description').fill('需要与同事确认下一步安排并核对非常长的中文行动描述不会遮挡保存与返回控件'.repeat(4));
   assert.ok(await page.locator('#action-save').evaluate(node => node.getBoundingClientRect().height >= 44));
   await page.screenshot({path: 'docs/validation/issue32/after-393.png'});
@@ -229,7 +230,7 @@ try {
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
   if (!await page.locator('#body').isVisible()) await page.locator('#mode').click();
-  await closeNoteInfo(page); await page.locator('#body').fill('An intentional edit in the new workspace');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('An intentional edit in the new workspace');
   await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   assert.match(await readFile(otherSource, 'utf8'), /An intentional edit/);

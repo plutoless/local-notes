@@ -15,7 +15,7 @@ The `:root` declarations in `web/style.css` are the implemented source of truth.
 | Action / selection | `--accent`, `--selected`, `--selected-text`, `--hover` | Restrained blue; selection also uses weight and `aria-current` |
 | Status | `--success`, `--warning`, `--danger` | Always pair color with a Chinese receipt, warning or failure message |
 | Interactive / decorative boundaries | `--line`, `--divider` | `--line` ≥3:1 on light surfaces; `--divider` only separates noninteractive regions |
-| Keyboard indicator | `--focus` | 3px outline, 2px offset, ≥3:1; never remove it |
+| Keyboard indicator | `--focus` | Keyboard actions: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows. Contextual editable fields use the 2px active boundary described below; pointer buttons remain restrained |
 | Rhythm | `--space-small`, `--space`, `--space-section` | 4/8/24px; 16px field margin, 24–32px document padding |
 | Shape / elevation | `--radius`, `--radius-panel`, `--shadow-panel` | 8px controls, 14px panels; elevation only for overlays |
 
@@ -90,7 +90,7 @@ Issue #36 uses `comparisonRow(label, value, {changed})` inside a definition list
 
 Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
 
-The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, a 3px focus-within outline, and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
+The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, one 3px keyboard-only label outline (the child checkbox does not draw a second outline), and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
 
 ## Integrated journeys (#37)
 
@@ -176,3 +176,23 @@ visible page ignores hidden recovered editors.
 The same compact A dialog now starts with All content and exposes 全部内容 / 笔记 / 事项 / 行动 inside the modal. Scope buttons use shared actions with `aria-pressed`, wrap at narrow widths and retain the query. Same-workspace reopen retains the session; workspace reset clears scope/query and fences delayed replies. `WorkspaceSearch` extends the existing query/context boundary with typed workspace/entity/passage identities and bounded merging of private reference and confirmed-record index results. The library remains note-only and independent.
 
 Formal results expose original title/goal/progress or action description/waiting text as separately identifiable passages. Expansion and verified copying use the same selection, keyboard, attribution and receipt flow. Read-only reconciliation may update private indexes but never repairs or writes synchronized records. Conflicted/incomplete records are omitted with an incomplete-index receipt. Source opening remains #60 and meaning retrieval remains #61. No new frontend assets or presentation primitives are introduced.
+
+## Inline reader navigation (#67)
+
+`.wiki-link` is the reader's inline local-navigation button. The normal quiet action's toolbar padding and UI font would interrupt sentence rhythm, so this real reader consumer uses inherited reading typography, underlining and 4px horizontal padding while retaining the shared accent, focus outline and minimum 44px target. The catalogue renders its example through the production Markdown renderer. Native button Tab/Enter semantics and Chinese accessible names distinguish aliases from plain text without interpreting source markup as HTML. Desktop/393px browser and native keyboard/selection/scroll return checks are recorded under issue67 validation; the shared accent/surface contrast is covered by the design-system suite.
+
+## Browse focus roles and modality (issue #81)
+
+This supersedes the blanket outline/focus-within interpretation for shared browse controls. Use native `:focus-visible` for buttons, sidebar navigation, disclosures and pagination. Pointer activation and pointer-driven programmatic return retain actual focus without forcing a keyboard frame; Tab/Shift+Tab and keyboard returns expose position. Mac WKWebView explicitly enables Tab navigation through buttons and links independently of Safari preferences. Text fields keep their native caret and existing visible focus treatment, including invalid fields; invalid borders/messages never become selection or focus state.
+
+Scrollable `.ui-row` controls draw the shared 3px outline inward so the scrollport cannot clip the cue. Selected fill, weight and `aria-current` remain present with or without transient keyboard focus. Composite checkbox labels use `:has(input:focus-visible)` rather than `:focus-within`, with a single label outline and independent checked fill. Never outline a broad field/form/container merely because a child is active. Programmatically focused return headings retain a visible keyboard cue.
+
+Real consumers are Current Focus row openers and management disclosures, shell sidebar, Library/Favorites rows, Initiative/Action rows and their existing pagination. Rerender restoration uses stable record identity and never takes focus from another active surface. Preserve both collection and row-list scrolling on return. Drawer lifecycle, drafts, source selection and storage remain owned by existing consumers. Catalogue examples demonstrate role states; native OS input evidence is separate from browser/DOM setup. Other feature journeys (#82–#86) are outside this slice.
+
+## Contextual form focus (issue #83)
+
+Contextual drawers reuse the shared focus token for a single 2px active editable-field boundary (border plus 1px inset). This replaces the text field's outer outline for pointer and keyboard editing while retaining the caret. Invalid fields retain their danger border and message alongside the blue inset; invalid is never a focus or selection state. Buttons, disclosure summaries and the three-way leave decision keep the #81 keyboard-only 3px outline. No form, label or drawer receives a competing parent frame. Checkbox rows retain the existing single keyboard label outline and independent checked fill.
+
+Tab containment excludes controls inside closed disclosures, even when the browser reports layout rectangles for those descendants. Opening a disclosure makes its controls reachable in document order. First meaningful focus, task ownership, recovery, submitted-write waiting and native close/quit decisions remain with existing consumers. The catalogue topic drawer demonstrates normal and invalid fields using the same production styles.
+
+The drawer declares its requested first receiver with native `autofocus` while open, in addition to synchronous focus. This prevents WKWebView keyboard reopening from choosing the header Close button after a previous Tab cycle. Closing removes only an autofocus attribute introduced by the drawer; pre-existing attributes remain intact.

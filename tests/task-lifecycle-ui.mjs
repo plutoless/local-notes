@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -52,7 +53,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request));if(request.cmd==='read'){window.readCompletions ||= {};window.readCompletions[request.path]=(window.readCompletions[request.path]||0)+1;}if(request.path==='slow.md')window.slowReadReturned=true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.INITIATIVE_ASSETS_DIR ? join(process.env.INITIATIVE_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   const workspace = await fixture.adapter('workspace');
@@ -99,7 +100,7 @@ try {
   await choose('保存并离开');assert.match(await readFile(sourcePath,'utf8'),/保存并离开笔记/);await retained();
   // A submitted autosave must settle before the first leave intent proceeds.
   await page.locator('[data-view=notes]').click();await openReference();
-  holdNote=true;await page.locator('#body').fill('延迟提交的笔记');
+  holdNote=true;await enterNoteEditing(page); await page.locator('#body').fill('延迟提交的笔记');
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='正在保存…');
   await page.locator('[data-view=focus]').click();
   await page.locator('[data-view=notes]').evaluate(n=>n.click());
@@ -190,7 +191,7 @@ try {
   await page.locator('[data-view=notes]').click();await page.locator('#library-refresh').click();
   holdRead=true;await page.locator('#items [data-path="slow.md"]').evaluate(n=>n.click());await readStarted;
   await openReference();await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#body').fill('后打开笔记的当前草稿');releaseRead();
+  await enterNoteEditing(page); await page.locator('#body').fill('后打开笔记的当前草稿');releaseRead();
   await page.waitForFunction(()=>window.slowReadReturned);
   assert.equal(await page.locator('#file-path').textContent(),'reference.md');assert.equal(await page.locator('#body').inputValue(),'后打开笔记的当前草稿');
   assert.equal(await page.evaluate(()=>window.hasUnsavedChanges()),true);
@@ -199,7 +200,7 @@ try {
   await page.locator('#editor').waitFor({state:'visible'});
   await page.evaluate(()=>window.slowReadReturned=false);readStarted=new Promise(resolve=>{startRead=resolve;});
   holdRead=true;await page.locator('#items [data-path="slow.md"]').evaluate(n=>n.click());await readStarted;
-  await page.locator('#body').fill('读取期间继续编辑的当前草稿');releaseRead();
+  await enterNoteEditing(page); await page.locator('#body').fill('读取期间继续编辑的当前草稿');releaseRead();
   await page.waitForFunction(()=>window.slowReadReturned);
   assert.equal(await page.locator('#file-path').textContent(),'reference.md');
   assert.equal(await page.locator('#body').inputValue(),'读取期间继续编辑的当前草稿');

@@ -1,0 +1,15 @@
+{
+  "pid": 45701,
+  "windowNumber": 21213,
+  "key": true,
+  "frontmostPid": 45701,
+  "miniaturized": false,
+  "bundleId": "dev.localnotes.validation.issue7",
+  "firstResponder": "Optional(<WKWebView: 0xa30db4000>)",
+  "activationPolicy": 0,
+  "visible": true,
+  "active": true,
+  "canBecomeKey": true,
+  "main": true,
+  "bundle": "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-60/build/issue60-diagnosis/Search60Diagnosis.app"
+}

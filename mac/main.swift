@@ -6,7 +6,7 @@ final class Assets: NSObject, WKURLSchemeHandler {
     init(_ root: URL) { self.root = root }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
         let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "global-search.js", "search-screen.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
+        let allowed = ["index.html", "style.css", "app.js", "global-search.js", "search-screen.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "reading-history.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
         guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
         let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
         task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
@@ -42,7 +42,8 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
                 try fm.createDirectory(at: support, withIntermediateDirectories: true)
             }
         } catch { fatalError(error.localizedDescription) }
-        let config = WKWebViewConfiguration(); config.userContentController.add(self,name:"notes")
+        // Browse controls participate in Tab navigation independently of Safari preferences.
+        let config = WKWebViewConfiguration(); config.preferences.tabFocusesLinks = true; config.userContentController.add(self,name:"notes")
         config.setURLSchemeHandler(Assets(Bundle.main.resourceURL!.appendingPathComponent("web")),forURLScheme:"notes")
         web = WKWebView(frame:.zero,configuration:config); web.navigationDelegate=self; web.uiDelegate=self
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1180,height:800),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)

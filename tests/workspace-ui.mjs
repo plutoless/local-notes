@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -56,7 +57,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'read') window.__readDelivered = true; if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await mkdir('docs/validation/workspace-design', {recursive: true});
@@ -81,7 +82,7 @@ try {
   await page.locator('#action-initiative').focus();
   await page.locator('#action-initiative').selectOption(second.entityId);
   releaseAssignments();
-  await page.waitForFunction(()=>document.activeElement.id==='action-description');
+  await page.waitForFunction(()=>document.activeElement.id==='action-initiative');
   assert.equal(await page.locator('#action-initiative').inputValue(),second.entityId,'Late assignment options must preserve the current user choice');
   await page.locator('#action-back').click();
   await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
@@ -182,7 +183,7 @@ try {
   await page.locator('#workspace-references [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state: 'visible'});
   await page.locator('#mode').click();
-  await closeNoteInfo(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('保留原文，只整理入口。\n\n已补充本周资料说明。');
   failNoteSave = true;
   await page.locator('#initiative-new-action').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();

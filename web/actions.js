@@ -164,6 +164,17 @@ export class ActionRepository {
     return this.save(fields, {entityId, workspaceId: this.workspaceId, revision: fields.revision}, null, reviewedHeads || []);
   }
   remove(previous) { return this.save({...previous, deleted: true}, previous); }
+  prepare(fields, previous = null, parents = null) {
+    return this.validate({
+        ...fields,
+        formatVersion: 1, entityType: this.entityType, workspaceId: this.workspaceId,
+        entityId: previous?.entityId || this.newId(), revision: this.newId(), parents: parents || (previous ? [previous.revision] : []),
+        description: (this.entityType === 'initiative' ? fields.title : fields.description || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
+        focusPosition: this.entityType === 'action' && ['todo', 'in-progress'].includes(fields.status || 'todo') ? (Object.hasOwn(fields, 'focusPosition') ? fields.focusPosition : previous?.focusPosition ?? null) : null,
+        dueDate: fields.dueDate || null, waitingOn: fields.waitingOn?.trim() || null,
+        sources: structuredClone(fields.sources || []), modifiedAt: this.now()
+      });
+  }
   save(fields, previous = null, retry = null, resolution = false) {
     return this.serialize(async () => {
       if (!this.ready) throw Error('Workspace is not ready; reopen it');
@@ -179,15 +190,7 @@ export class ActionRepository {
       if (previous && this.conflicts?.has(previous.entityId) && !this.resolving) throw Error('Resolve synchronization conflict before editing');
       if (previous && !this.heads.has(previous.entityId)) await this.query({entityId: previous.entityId, limit: 1});
       if (!resolution && !retry && previous && this.heads.get(previous.entityId) !== previous.revision) throw Error('Action changed; reopen it before editing');
-      const record = retry || this.validate({
-        ...fields,
-        formatVersion: 1, entityType: this.entityType, workspaceId: this.workspaceId,
-        entityId: previous?.entityId || this.newId(), revision: this.newId(), parents: this.resolving || (previous ? [previous.revision] : []),
-        description: (this.entityType === 'initiative' ? fields.title : fields.description || '').trim(), status: fields.status || 'todo', initiativeId: fields.initiativeId?.trim() || null,
-        focusPosition: this.entityType === 'action' && ['todo', 'in-progress'].includes(fields.status || 'todo') ? (Object.hasOwn(fields, 'focusPosition') ? fields.focusPosition : previous?.focusPosition ?? null) : null,
-        dueDate: fields.dueDate || null, waitingOn: fields.waitingOn?.trim() || null,
-        sources: structuredClone(fields.sources || []), modifiedAt: this.now()
-      });
+      const record = retry || this.prepare(fields, previous, this.resolving);
       delete record.syncState; this.resolving = null;
       this.validate(record);
       let revisionSaved = false;

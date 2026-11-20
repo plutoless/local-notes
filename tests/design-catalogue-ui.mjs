@@ -25,6 +25,16 @@ try {
   return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected'].map(bg=>ratio(t,bg)))]));
  });
  for(const [token,ratio] of Object.entries(ratios))assert.ok(ratio>=(['line','focus'].includes(token)?3:4.5),`${token}: ${ratio}`);
+ const selected=page.locator('#rows .ui-row.selected');await selected.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
+ assert.equal(await selected.evaluate(n=>getComputedStyle(n).outlineOffset),'-3px');
+ const checkbox=page.locator('.ui-selection input').first();await checkbox.click();
+ assert.equal(await checkbox.evaluate(n=>getComputedStyle(n.parentElement).outlineStyle),'none');
+ await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
+ assert.equal(await checkbox.evaluate(n=>getComputedStyle(n.parentElement).outlineStyle),'solid');
+ assert.equal(await checkbox.evaluate(n=>getComputedStyle(n).outlineStyle),'none');
+ await page.locator('#fields input').nth(1).click();
+ assert.equal(await page.locator('#fields input').nth(1).getAttribute('aria-invalid'),'true');
+ if(process.env.CATALOGUE_EVIDENCE) await page.screenshot({path:`${process.env.CATALOGUE_EVIDENCE}/invalid-focused.png`,fullPage:true});
  await page.getByRole('button',{name:'打开核对面板',exact:true}).click();
  await page.getByRole('button',{name:'关闭',exact:true}).click();
  assert.equal(await page.evaluate(()=>document.activeElement.textContent),'打开核对面板');

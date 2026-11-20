@@ -1,0 +1,21 @@
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
+APPKIT_DRAG [556.796875, 348.59375, 31.7509765625, 18] 
+FINAL_UI {'buttonDisabled': False, 'dialogs': [], 'path': 'reader.md', 'selection': '', 'focus': 'note-create-action', 'notice': ''}
+FRONTMOST Google Chrome
+
+Traceback (most recent call last):
+  File "<checkout>/tests/native-reading-actions.py", line 108, in <module>
+    w("getSelection().toString().trim()==='确认'")
+    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<checkout>/tests/native-candidate-review.py", line 43, in wait
+    raise AssertionError('Native UI timed out: '+expression)
+AssertionError: Native UI timed out: getSelection().toString().trim()==='确认'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<checkout>/tests/native-reading-actions.py", line 157, in <module>
+    assert input_source()==initial_input, 'Input source changed unexpectedly'
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Input source changed unexpectedly

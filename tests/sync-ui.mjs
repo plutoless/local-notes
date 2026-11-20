@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {execFileSync} from 'node:child_process';
 import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
@@ -49,7 +50,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', 'e8a869b:web/' + name]) : await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -262,7 +263,7 @@ try {
   await page.locator('#items [data-path="reference.md"]').click();
   await page.locator('#editor').waitFor({state:'visible'});
   if (await page.locator('#body').evaluate(node=>node.hidden)) await page.locator('#mode').click();
-  await closeNoteInfo(page); await page.locator('#body').fill('冲突检查返回笔记编辑');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('冲突检查返回笔记编辑');
   await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();

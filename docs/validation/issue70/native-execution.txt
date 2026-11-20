@@ -1,0 +1,5 @@
+<issue70-worktree>/build/native-issue70/Classification70.app: replacing existing signature
+<issue70-worktree>/build/native-issue70/Classification70.app: replacing existing signature
+missing value
+status=0 selected=com.tencent.inputmethod.wetype.pinyin
+PASS native classification, immutable readback, trusted focus containment/restoration, narrow layouts and clean close
