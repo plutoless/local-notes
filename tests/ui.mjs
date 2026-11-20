@@ -201,7 +201,7 @@ try {
   await page.locator('#action-description').focus();
   await page.keyboard.press('Tab');
   assert.equal(await page.locator('#action-status').evaluate(node => node === document.activeElement), true);
-  assert.equal(await page.locator('#action-status').evaluate(node => getComputedStyle(node).outlineStyle), 'solid');
+  assert.deepEqual(await page.locator('#action-status').evaluate(node => { const style = getComputedStyle(node); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(7, 95, 204)', 'rgb(7, 95, 204) 0px 0px 0px 1px inset']);
   await page.locator('#action-description').fill('需要与同事确认下一步安排并核对非常长的中文行动描述不会遮挡保存与返回控件'.repeat(4));
   assert.ok(await page.locator('#action-save').evaluate(node => node.getBoundingClientRect().height >= 44));
   await page.screenshot({path: 'docs/validation/issue32/after-393.png'});
