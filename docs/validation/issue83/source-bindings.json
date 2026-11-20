@@ -24,14 +24,14 @@
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
   },
   "after": {
-    "library-screen.js": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c",
+    "library-screen.js": "a049c0617107748aeee0dc47e96a90515de015db35040548fd10b3ff59e3763e",
     "organization.js": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
     "index.html": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6",
     "core.js": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
     "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
     "actions.js": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
     "reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
-    "initiative-screen.js": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5",
+    "initiative-screen.js": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
     "library.js": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9",
     "focus-screen.js": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
     "global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
@@ -40,8 +40,8 @@
     "search-screen.js": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea",
     "style.css": "faeaad62f9dc4a89794741113717cb072b247252ca6083a1baf8e4430e05ac99",
     "organize-screen.js": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
-    "action-screen.js": "618346343d78d631bd9069ab300db437668c065d371834a0c467957a9a97a3fa",
-    "presentation.js": "ba34a809c2d45549df5da5860a6fb1df0247a00c0026f9230b796038db0f0f1c",
+    "action-screen.js": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+    "presentation.js": "3c46aa9cf181422dfc508b55040f36437c5b4935325a6111161642cf8b60dc2d",
     "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
     "app.js": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b",
     "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
@@ -145,5 +145,6 @@
     "after/initiative-pointer-393-340.png": "af76248ff4217ee8d0bc479cb649fc6c2a73c13dda262458cde80538c337adc5",
     "after/location-invalid-1180-800.png": "81555378c22fdc40a209d862d8e744daf0f8cefbe5688e19836dbfe13213cd54",
     "after/capture-pointer-1180-800.png": "b883c056a48968c6b827e8ea6b73c6ce911ce70908681e6c857d822cceaca914"
-  }
+  },
+  "artifactNote": "Before/after screenshot captures bind the presentation assets; additional opener/inert fixes retain identical presentation. Final native/package receipts are external and identify the exact delivered head."
 }

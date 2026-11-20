@@ -164,7 +164,7 @@ export function drawer({id, title, onDismiss}) {
   panel.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
-      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length
+      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length && !node.closest('[inert]')
         // Closed disclosure descendants can have layout rectangles but cannot receive focus.
         && ![...panel.querySelectorAll('details:not([open])')].some(detail => detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
     const index = controls.indexOf(document.activeElement);

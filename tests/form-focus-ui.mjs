@@ -6,6 +6,7 @@ import {storageFixture} from './action-adapter.js';
 const evidence = process.env.FORM_EVIDENCE || 'build/issue83-after';
 await mkdir(evidence, {recursive:true});
 const fixture = await storageFixture();
+let holdCreate = false, releaseCreate;
 const {TopicRepository} = await import('../web/library.js');
 const topics = new TopicRepository(fixture.adapter); await topics.open();
 await topics.save({description:'专项验证主题',sources:[]});
@@ -18,6 +19,7 @@ try {
 
   await page.exposeFunction('bridge', async request => {
     try {
+      if (request.cmd === 'create' && holdCreate) { holdCreate = false; await new Promise(resolve => { releaseCreate = resolve; }); }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await fixture.adapter(request.cmd, request);
         return result;
@@ -72,7 +74,8 @@ try {
       await screenshot(join(evidence,`${name}-${width}-${height}.png`));
       const state = await page.evaluate(() => { const n=document.activeElement,s=getComputedStyle(n); return {active:n.id,outline:s.outline,shadow:s.boxShadow,border:s.borderColor,invalid:n.getAttribute('aria-invalid'),focusVisible:n.matches(':focus-visible')}; });
       report.push({name,width,height,...state});
-      if (!process.env.FORM_BASELINE && field && await page.locator(field).evaluate(n=>n===document.activeElement)) {
+      if (field) assert.equal(await page.locator(field).evaluate(n=>n===document.activeElement),true,'expected editable receiver owns focus');
+      if (!process.env.FORM_BASELINE && field) {
         assert.equal(state.outline.includes('none'),true,'editable field has one boundary, no outer outline');
         assert.match(state.shadow,/7, 95, 204/,'active boundary uses shared focus token');
         if (state.invalid==='true') assert.equal(state.border,'rgb(161, 38, 34)');
@@ -104,6 +107,15 @@ try {
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   await keyboardOpen('#new'); assert.equal(await active(),'capture-title');
   await page.keyboard.press('Escape'); assert.equal(await active(),'new');
+  if (!process.env.FORM_BASELINE) {
+    await page.locator('#new').click(); await page.locator('#capture-title').fill('提交中的合成笔记');
+    holdCreate = true; await page.getByRole('button',{name:'创建笔记',exact:true}).click();
+    await page.waitForFunction(()=>document.querySelector('#note-task-form').inert);
+    // DOM positions the start; real browser key events test every enabled stop.
+    await page.locator('#note-task-drawer .ui-drawer-header button').focus();
+    await cycle('#note-task-drawer');
+    releaseCreate(); await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+  }
   await page.locator('[data-view=notes]').click(); await page.locator('#library-create-topic').click();
   assert.equal(await active(),'topic-name'); await capture('topic-pointer','#topic-name'); await cycle('#topic-drawer');
   await page.locator('#topic-drawer button[type=submit]').click(); assert.equal(await active(),'topic-name');

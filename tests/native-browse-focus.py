@@ -12,7 +12,7 @@ if os.environ.get('CONSTRUCTOR_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
  raise SystemExit('Constructor-only mode requires EXTERNAL_INPUT; no host or sender launched')
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-if os.environ.get('FORM_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
+if os.environ.get('FORMS_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
  raise SystemExit('Form-only mode requires the external OS input sender')
 phase=os.environ.get('PHASE','after')
 m.OUT=Path('build/issue81-native-'+phase).resolve();m.APP=m.OUT/'Browse81.app'
@@ -181,11 +181,6 @@ try:
   if not os.environ.get('CONSTRUCTOR_ONLY'):log.append({'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,targetText:e.target.closest('button,summary,input')?.textContent?.slice(0,120),composedPath:e.composedPath().filter(n=>n instanceof Element).slice(0,8).map(n=>({tag:n.tagName,id:n.id,classes:n.className,text:n.matches('button,summary')?n.textContent.slice(0,120):undefined})),view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
- if os.environ.get('FORM_ONLY'):
-  from native_forms_journey import run
-  run(c,w,click,key,state,log)
-  print('PASS native contextual form pointer/keyboard/return journey')
-  raise SystemExit(0)
  if os.environ.get('FORMS_ONLY'):
   from native_forms_journey import run
   source_before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
