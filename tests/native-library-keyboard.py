@@ -47,7 +47,7 @@ def input_source(): return subprocess.check_output(['swift','-e',input_code],tex
 initial_input = input_source(); clipboard_hash = hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
 private_snapshot = OUT/'environment-private.json'
 environment_saved = json.loads(subprocess.check_output([str(environment), 'save', str(private_snapshot)], text=True))
-report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'], 'inputSourceBefore':initial_input, 'clipboardHashBefore':clipboard_hash, 'environmentSaved':environment_saved, 'events':[], 'states':[]}
+report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'], 'inputSourceBefore':initial_input, 'environmentSaved':environment_saved, 'events':[], 'states':[]}
 report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-browse-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
 assert all(len(set(v.values()))==1 for v in report['bindings']['web'].values())
 c,w = m.command,m.wait
@@ -130,8 +130,8 @@ finally:
     finally:
         report['environmentRestoration']=json.loads(subprocess.check_output([str(environment), 'restore', str(private_snapshot)], text=True))
         report['inputSourceAfter']=input_source()
-        report['clipboardHashAfter']=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
-        report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and report['clipboardHashAfter']==clipboard_hash
+        final_clipboard_hash=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
+        report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and final_clipboard_hash==clipboard_hash
         (EVIDENCE/'report.json').write_text(json.dumps(report,indent=2))
         assert report['inputAndClipboardRetained'], 'Input source or clipboard unexpectedly changed; coordinator action required'
         assert report.get('cleanup', {}).get('pidAbsent') and not report['cleanup']['remainingOwnedWindows'], 'Owned PID/window cleanup not established'
