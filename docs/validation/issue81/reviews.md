@@ -17,3 +17,5 @@ Initial reviewed head: `cb0ee30fc4a7ce3caf970ffbe6186e4e5e04087d`.
 - Acceptance gap: Favorites, pagination, delayed rerender, invalid focus and nonzero/native context checks were incomplete. Browser coverage was extended, but native delivered-head acceptance remains blocked and is explicitly not passed. The draft PR must remain incomplete.
 
 Final-head Standards and Spec re-reviews are separate and reported in the PR. Neither reviewer executed native checks or granted an acceptance waiver.
+
+A subsequent review of `20e7d9d95da603ff2985e39b68c020af54716fbc` independently found one additional Library ordering edge: its both-disabled pagination fallback selected an old row before replacement. The availability update was moved after row construction/restoration, and a held Reference query regression exercises the surviving-row fallback when both directions become disabled. Final re-review is requested after that correction; native acceptance remains unresolved.

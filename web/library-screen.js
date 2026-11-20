@@ -126,7 +126,6 @@ export class LibraryScreen {
     $('#library-rename-topic').disabled = !this.library.records?.some(t => t.entityId === this.topic);
     $('#library-location').textContent = this.directory === '*' ? '全部目录' : this.directory || '/';
     $('#library-back').disabled = this.directory === '*';
-    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0, result.hasMore);
     const focusedPath = document.activeElement.closest('#items [data-path]')?.dataset.path;
     const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
     const list = $('#items'); list.replaceChildren();
@@ -150,6 +149,7 @@ export class LibraryScreen {
     }
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
     $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
+    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0, result.hasMore);
   }
   captureContext() {
     return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
