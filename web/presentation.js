@@ -179,10 +179,17 @@ export function drawer({id, title, onDismiss}) {
     const rect = panel.getBoundingClientRect();
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();
   });
-  let opener;
+  let opener, autofocusTarget;
   return {panel, body, footer, close, setTitle(text) { heading.textContent = text; close.setAttribute('aria-label', '关闭' + text); },
-    open(first, origin = document.activeElement) { if (panel.open) return; opener = origin; panel.showModal(); first?.focus(); },
-    hide() { panel.close(); (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
+    open(first, origin = document.activeElement) {
+      if (panel.open) return;
+      opener = origin;
+      // WKWebView's native dialog autofocus can run after keyboard activation.
+      // Declare the intended receiver as well as focusing it synchronously.
+      if (first && !first.hasAttribute('autofocus')) { autofocusTarget = first; first.setAttribute('autofocus', ''); }
+      panel.showModal(); first?.focus();
+    },
+    hide() { panel.close(); autofocusTarget?.removeAttribute('autofocus'); autofocusTarget = null; (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
   };
 }
 
