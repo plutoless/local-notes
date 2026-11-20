@@ -92,8 +92,10 @@ export class Library {
     // A direct reader route rebuilds only its already-read source descriptor.
     const workspace = this.workspaceId, record = referenceRecord(note, text);
     const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
+    const previous = (await this.query({exactPath: note.path})).notes[0];
     await this.adapter('referencePut', {workspaceId: workspace, record, search: referenceSearchText(record.title, text)});
-    await this.adapter('referenceTags', {workspaceId: workspace, path: note.path, topics});
+    if (['fingerprint', 'modified', 'size', 'title', 'summaryVersion', 'searchVersion'].some(key => previous?.[key] !== record[key])) this.revision++;
+    if ((await this.adapter('referenceTags', {workspaceId: workspace, path: note.path, topics})).changed) this.revision++;
   }
   query(options = {}) { return this.request('referenceQuery', options); }
   async saveTopic(name, previous = null, retry = null, note = null) {
@@ -104,7 +106,7 @@ export class Library {
     const saved = await this.topics.save(fields, previous, retry);
     try {
       this.records = await allRecords(this.topics);
-      if (note) await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      if (note && (await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')})).changed) this.revision++;
       this.changed(); return saved.record;
     }
     catch (error) { error.record = saved.record; error.revisionSaved = true; throw error; }

@@ -147,6 +147,7 @@ try {
   const returnBegun = new Promise(resolve=>returnStarted=resolve); armReturn = true;
   await page.locator('.search-return:visible').click();
   await Promise.race([returnBegun,new Promise((_,reject)=>setTimeout(()=>reject(Error('Return refresh not reached')),10000))]);
+  if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('#items [data-path="Archive/a.md"]').click();
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='Archive/a.md');
   if (await page.locator('#body').isHidden()) await page.locator('#mode').click();

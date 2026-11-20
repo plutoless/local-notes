@@ -147,5 +147,13 @@ test('Library ordering and archive scope compose at the SQLite boundary with sta
     await library.link(library.records[0],(await library.query({exactPath:'Archive/000.md'})).notes[0],false);
     assert.ok(library.revision>linkedRevision);
     assert.equal((await library.query({topic:topic.entityId,offset:50})).notes.length,10);
+    const beforeDirect = library.revision;
+    await library.indexSource(notes[0], '# Repeated\n\nkeyword');
+    assert.equal(library.revision, beforeDirect, 'unchanged direct-reader descriptors retain paging');
+    await library.indexSource(notes[0], '# Changed\n\nkeyword');
+    assert.ok(library.revision > beforeDirect, 'changed direct-reader descriptors invalidate paging');
+    const beforeContextTopic = library.revision;
+    await library.saveTopic('Context topic', null, null, (await library.query({exactPath: notes[0].path})).notes[0]);
+    assert.ok(library.revision > beforeContextTopic, 'context-created membership invalidates paging');
   } finally { await fixture.close(); }
 });
