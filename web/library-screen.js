@@ -11,8 +11,8 @@ export class LibraryScreen {
     $('#library-refresh').onclick = async () => { $('#library-refresh').disabled = true; $('#library-progress').textContent = '正在更新笔记列表…'; try { await this.library.sync(); this.failed = false; await this.render(); } catch (error) { this.failed = true; await this.render(); notice(error.message); } finally { $('#library-refresh').disabled = false; } };
     $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
     this.setupTopicDrawer();
-    $('#library-create-topic').onclick = () => this.editTopic(null);
-    $('#library-rename-topic').onclick = () => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic); };
+    $('#library-create-topic').onclick = event => this.editTopic(null, null, event.currentTarget);
+    $('#library-rename-topic').onclick = event => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic, null, event.currentTarget); };
     $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
     $('#library-next').onclick = () => { this.offset += 50; this.render(); };
     $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
@@ -65,7 +65,7 @@ export class LibraryScreen {
     this.topicInput = input; this.topicSubmit = submit; this.topicStatus = status; this.topicError = error;
   }
   get topicDirty() { return this.topicDrawer.panel.open && (Boolean(this.topicRetry) || this.topicInput.value !== (this.editingTopic?.description || '')); }
-  editTopic(topic, note = null) {
+  editTopic(topic, note = null, origin = document.activeElement) {
     if (this.topicDrawer.panel.open) { this.leaveTopic(); return; }
     this.topicBrowseScroll = $('.collection').scrollTop;
     this.topicNote = note; this.editingTopic = topic; this.topicRetry = null; this.topicInput.disabled = false;
@@ -80,7 +80,7 @@ export class LibraryScreen {
     this.topicSubmit.textContent = this.topicRetry ? '重试恢复' : topic ? '保存' : '创建';
     this.topicStatus.textContent = this.topicRetry ? '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。' : draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
     this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false');
-    this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput);
+    this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput, origin);
   }
   async closeTopic(committed = false) {
     try { localStorage.removeItem(this.topicDraftKey); } catch { /* Persistence succeeded even when private draft cleanup is unavailable. */ } this.topicDrawer.hide();
