@@ -55,7 +55,7 @@ def run(command, wait, click, key, state, log):
     state('location-pointer'); cycle('#note-task-drawer'); key('Escape')
     log.append({'setup':'DOM positions surviving metadata opener; OS Tab/reverse Tab and Return establish keyboard opening'})
     command("document.querySelector('#note-info-open').focus()")
-    key('Tab'); key('Shift+Tab'); key('Return'); wait("document.activeElement.id==='star'")
+    key('Shift+Tab'); key('Tab'); key('Return'); wait("document.activeElement.id==='star'")
     state('metadata-keyboard'); key('Tab'); wait("document.activeElement.id==='rename'")
     key('Return'); wait("document.activeElement.id==='note-location'")
     state('location-keyboard'); key('Escape')
