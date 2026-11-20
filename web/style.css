@@ -40,7 +40,7 @@ button { cursor: pointer; border: 1px solid transparent; background: transparent
 button:hover { background: var(--hover); }
 button:active { background: #dfe8f8; }
 button:disabled { color: #6b7483; background: #f1f3f6; cursor: default; }
-button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible, [tabindex="-1"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .primary { background: var(--accent); color: white; font-weight: 600; }
 .primary:hover { background: #194ba7; color: white; }
 .icon { width: 19px; height: 19px; flex: 0 0 19px; vertical-align: middle; }
@@ -363,8 +363,12 @@ details { overflow-wrap: anywhere; }
 /* Multi-selection is a native checkbox row, sharing selection and focus tokens. */
 .ui-selection { display: flex !important; align-items: center; gap: var(--space); min-height: 44px; padding: var(--space); border-bottom: 1px solid var(--divider); cursor: pointer; }
 .ui-selection:has(:checked) { background: var(--selected); color: var(--selected-text); }
-.ui-selection:focus-within, .suggestion-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.ui-selection:has(input:focus-visible), .suggestion-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .ui-selection input { flex: 0 0 auto; }
+/* The checkbox label owns one keyboard cue; checked fill remains independent. */
+.ui-selection input:focus-visible { outline: none; }
+/* Inset list indicators cannot be clipped by the scrolling collection. */
+.ui-row:focus-visible { outline-offset: -3px; }
 #ai-progress { width: 100%; accent-color: var(--accent); }
 
 /* Compact surfaces reserve their entire target in normal layout. No hit slop. */

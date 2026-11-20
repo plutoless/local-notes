@@ -42,7 +42,8 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
                 try fm.createDirectory(at: support, withIntermediateDirectories: true)
             }
         } catch { fatalError(error.localizedDescription) }
-        let config = WKWebViewConfiguration(); config.userContentController.add(self,name:"notes")
+        // Browse controls participate in Tab navigation independently of Safari preferences.
+        let config = WKWebViewConfiguration(); config.preferences.tabFocusesLinks = true; config.userContentController.add(self,name:"notes")
         config.setURLSchemeHandler(Assets(Bundle.main.resourceURL!.appendingPathComponent("web")),forURLScheme:"notes")
         web = WKWebView(frame:.zero,configuration:config); web.navigationDelegate=self; web.uiDelegate=self
         window = NSWindow(contentRect:NSRect(x:0,y:0,width:1180,height:800),styleMask:[.titled,.closable,.miniaturizable,.resizable],backing:.buffered,defer:false)

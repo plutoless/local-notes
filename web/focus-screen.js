@@ -24,7 +24,13 @@ export class FocusScreen {
       this.initiatives.repository.query({status: 'active', limit: this.initiativeLimit})
     ]);
     if (!this.active || repository !== this.actions.repository || request !== this.request) return;
-    $('#index-state').textContent = ''; const list = $('#items'); list.replaceChildren();
+    $('#index-state').textContent = ''; const list = $('#items');
+    const active = document.activeElement;
+    const focusedAction = list.contains(active) ? active.dataset.entityId : null;
+    const focusedSummary = list.contains(active) && active.tagName === 'SUMMARY' ? active.getAttribute('aria-label') || active.textContent : null;
+    const expanded = [...list.querySelectorAll('details[open] > summary')].map(node => node.getAttribute('aria-label') || node.textContent);
+    const listScroll = list.scrollTop, collectionScroll = $('.collection').scrollTop;
+    list.replaceChildren();
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
     const title = sectionHeading('当前重点'); tools.append(title);
     const utilities = disclosure('更多操作', [], 'home-utilities'); tools.append(utilities);
@@ -93,22 +99,29 @@ export class FocusScreen {
       }
       if (readingFocus && document.activeElement === document.body) [...reading.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === readingFocus)?.focus({preventScroll:true});
     }
+    for (const summary of list.querySelectorAll('summary')) {
+      const key = summary.getAttribute('aria-label') || summary.textContent;
+      if (expanded.includes(key)) summary.parentElement.open = true;
+      if (focusedSummary === key) summary.focus({preventScroll: true});
+    }
+    if (focusedAction) [...list.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === focusedAction)?.focus({preventScroll: true});
+    list.scrollTop = listScroll; $('.collection').scrollTop = collectionScroll;
   }
   async pageFocus(offset) {
     const previous = this.focusOffset;
     this.focusOffset = offset;
-    try { await this.show(); }
+    try { await this.show(); $('#items .focus-row-open')?.focus({preventScroll: true}); }
     catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
   }
   async openAction(action) {
-    const scroll = $('.collection').scrollTop;
+    const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
     await this.actions.edit(action);
     this.actions.returnToFocus = async () => {
       if (!this.active) { if (!await this.navigate('focus')) return; }
       else await this.show();
       const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
       (opener || $('.home-tools .primary')).focus({preventScroll: true});
-      $('.collection').scrollTop = scroll;
+      $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
     };
   }
 

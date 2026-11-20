@@ -106,7 +106,7 @@ try {
   await page.locator('#items section').first().locator('.card').nth(1).locator('summary').click();
   await page.locator('#items section').first().locator('.card').nth(1).getByRole('button', {name: '上移'}).click();
   await page.waitForFunction(() => document.querySelector('#items section h3').textContent === 'Focus item 1');
-  await page.locator('#items section').first().locator('.card').first().locator('summary').click();
+  assert.equal(await page.locator('#items section').first().locator('.card').first().locator('details').evaluate(n=>n.open),true,'management disclosure stays open across row rerender');
   await page.locator('#items section').first().locator('.card').first().getByRole('button', {name: '移出重点', exact: true}).click();
   await page.getByRole('heading', {name: 'Focus item 1', exact: true}).waitFor({state: 'detached'});
   await page.reload();
