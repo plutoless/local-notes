@@ -1,0 +1,7 @@
+
+> local-notes@0.1.0 build:android
+> bash scripts/build-android.sh
+
+Note: android/src/dev/localnotes/MainActivity.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-65/dist/LocalNotes-debug.apk

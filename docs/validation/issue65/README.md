@@ -45,3 +45,7 @@ Independent final-code review: zero remaining findings or scope creep. The initi
 Android device/SAF/offline/restart/keyboard tests and standalone Syncthing checks remain deferred by user decision. Native input was DOM-driven through Cocoa/WKWebView; browser keyboard automation ran, but physical and OS-injected Mac keyboard input were not exercised. No original notes were written or transmitted. No production app installation or external private collection acceptance is claimed.
 
 Residual risk is low and concentrated in conservative archive-name coverage and offset navigation during active changes; indexing disables paging, and effective mutations reset later pages with a visible receipt. No special human product decision is outstanding. Coordinator review and conditional merge remain required; this worker did not merge, close issues or change labels.
+
+## Current-main/native-keyboard resume
+
+The earlier evidence above is historical. Its DOM-driven native run did not satisfy the mandatory native keyboard/focus acceptance boundary. The maintainer authorized current-main integration and a new exclusive native-input evaluation; this is not a waiver. See [the resumed integration record](integration/README.md) for Task/Dispatch/Run provenance, retained failures, current validation and GUI-grant status. The bounded granted attempt stopped at the first sender guard before posting input; cleanup and explicit release are recorded, and mandatory native acceptance remains unmet.

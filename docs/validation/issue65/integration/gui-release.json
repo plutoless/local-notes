@@ -1,0 +1,29 @@
+{
+  "grantMessage": "msg_91af329554dd",
+  "releaseMessage": "msg_9753745bfa7a",
+  "leaseIdentityReadUnderLock": {
+    "state": "granted",
+    "issue": 65,
+    "task": "task_c207bee5ae88",
+    "dispatch": "ctx_05a8ba686103",
+    "run": "run_4c9f8d25f80d"
+  },
+  "coordinatorOwnsTransfer": true,
+  "nativeAcceptance": "failed before first OS input post; no replay",
+  "cleanup": {
+    "pid": 64909,
+    "exit": -15,
+    "waitCompleted": true,
+    "pidAbsent": true,
+    "remainingOwnedWindows": []
+  },
+  "environmentRestoration": {
+    "clipboardChangedDuringRun": false,
+    "clipboardRestored": true,
+    "inputChangedDuringRun": false,
+    "inputRestored": true,
+    "inputSource": "com.tencent.inputmethod.wetype.pinyin"
+  },
+  "ownedExecutableProcessScan": [],
+  "privateSnapshotDeleted": true
+}
