@@ -15,7 +15,7 @@ let page;
 try {
   page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let queryGate = null, queryBegan;
+  let queryGate = null, queryBegan, referenceGate, referenceBegan;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = '# 资料整理约定\n\n保留原文，只整理入口。\n\n先确认本周需要推进的内容，再补充关联资料。\n';
@@ -31,6 +31,7 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if (request.cmd === 'referenceQuery' && referenceGate) { const gate=referenceGate;referenceGate=null;referenceBegan();await gate; }
       if (request.cmd === 'actionQuery' && queryGate) { const gate = queryGate; queryGate = null; queryBegan?.(); await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
@@ -67,19 +68,19 @@ try {
   await row.click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-back').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   await page.waitForFunction(()=>document.activeElement.matches('.focus-row-open'));
-  assert.equal(await outline(page.locator(':focus')), 'none', 'pointer return must not inherit field keyboard frames');
-  await page.keyboard.press('Tab'); assert.equal(await outline(page.locator(':focus')), 'solid');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'none', 'pointer return must not inherit field keyboard frames');
+  await page.keyboard.press('Tab'); assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'solid');
   await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Enter');
   await page.locator('#action-drawer').waitFor({state:'visible'}); await page.keyboard.press('Escape');
   await page.locator('#action-drawer').waitFor({state:'hidden'});
   await page.waitForFunction(()=>document.activeElement.matches('.focus-row-open'));
-  assert.equal(await outline(page.locator(':focus')), 'solid', 'keyboard return stays visible');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'solid', 'keyboard return stays visible');
   for (const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport); await page.locator('[data-view=focus]').click();
     const menu=page.locator('.row-menu summary').first();await menu.click();
     await page.screenshot({path:`${evidence}/pointer-${viewport.width}.png`});
     assert.equal(await outline(menu),'none'); await page.keyboard.press('Tab');
-    assert.equal(await outline(page.locator(':focus')),'solid');
+    assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
     await page.screenshot({path:`${evidence}/keyboard-${viewport.width}.png`});
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   }
@@ -87,18 +88,22 @@ try {
   await page.locator('[data-view=notes]').click();await page.waitForFunction(()=>!document.querySelector('#library-progress').textContent && !document.querySelector('#library-next').disabled);
   await page.locator('#library-next').focus();await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.querySelector('#library-next').disabled && document.activeElement.id==='library-previous');
-  assert.equal(await outline(page.locator(':focus')),'solid');
-  await page.locator('#library-previous').click();await page.locator('#search').fill('资料整理约定');await page.waitForFunction(()=>document.querySelectorAll('#items [data-path]').length===1);
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
+  await page.locator('#library-previous').click();await page.waitForFunction(()=>!document.querySelector('#library-next').disabled);
+  let releaseReference;const referenceStarted=new Promise(resolve=>{referenceBegan=resolve;});referenceGate=new Promise(resolve=>{releaseReference=resolve;});
+  await page.locator('#search').fill('资料整理约定');await referenceStarted;await page.locator('#library-next').focus();releaseReference();
+  await page.waitForFunction(()=>document.querySelectorAll('#items [data-path]').length===1 && document.activeElement.dataset.path==='reference.md');
+  assert.equal(await page.locator('#library-next').isDisabled(),true);assert.equal(await page.locator('#library-previous').isDisabled(),true);
   await page.setViewportSize({width:393,height:852});await page.locator('#items [data-path="reference.md"]').click(); await page.locator('#editor').waitFor({state:'visible'});
   await page.setViewportSize({width:393,height:852}); await page.locator('#back').click();
   await page.waitForFunction(()=>document.activeElement.dataset.path==='reference.md');
-  assert.equal(await outline(page.locator(':focus')),'none');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'none');
   await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
-  assert.equal(await outline(page.locator(':focus')),'solid');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
   assert.equal(await page.locator(':focus').getAttribute('aria-current'),'true');
   await page.screenshot({path:`${evidence}/selected-focused-393.png`});
   await page.waitForFunction(()=>document.activeElement.matches('#items .ui-row') && getComputedStyle(document.activeElement).outlineOffset==='-3px');
-  assert.equal(await page.locator(':focus').evaluate(n=>getComputedStyle(n).outlineOffset),'-3px','row focus stays inside its scroll boundary');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineOffset),'-3px','row focus stays inside its scroll boundary');
   await page.locator('[data-view=favorites]').click();await page.locator('#items [data-path="reference.md"]').waitFor();assert.equal(await page.locator('#items [data-path]').count(),1);await page.locator('#items [data-path]').click();await page.locator('#back').click();await page.waitForFunction(()=>document.activeElement.dataset.path==='reference.md');
   await page.setViewportSize({width:1180,height:800});
   await page.locator('[data-view=initiatives]').click();await page.locator('#items [data-initiative-id]').first().click();
@@ -118,7 +123,7 @@ try {
   assert.equal(await page.locator('#items').evaluate(n=>n.scrollTop),160,'delayed query preserves the latest list scroll');
   await page.locator('#action-next').focus();await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.querySelector('#action-next').disabled && document.activeElement.id==='action-previous');
-  assert.equal(await outline(page.locator(':focus')),'solid');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
 
   const duplicateA=(await actions.save({description:'重复但独立的行动',status:'todo',focusPosition:-2})).record;
   const duplicateB=(await actions.save({description:'重复但独立的行动',status:'todo',focusPosition:-1})).record;
