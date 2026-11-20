@@ -164,7 +164,9 @@ export function drawer({id, title, onDismiss}) {
   panel.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
-      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length);
+      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length
+        // Closed disclosure descendants can have layout rectangles but cannot receive focus.
+        && ![...panel.querySelectorAll('details:not([open])')].some(detail => detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
     const index = controls.indexOf(document.activeElement);
     if (controls.length) {
       // WKWebView can skip buttons under the system text-fields-only Tab setting.
