@@ -26,6 +26,8 @@ source = source.replace('generated=OUT/\'main.swift\';generated.write_text(sourc
 exec(source, m.__dict__); m.build()
 sender = OUT/'native-browse-input'
 subprocess.run(['swiftc', str(REPO/'tests/native-browse-input.swift'), '-o', str(sender)], check=True)
+environment = OUT/'native-library-environment'
+subprocess.run(['swiftc', str(REPO/'tests/native-library-environment.swift'), '-o', str(environment)], check=True)
 if build_only:
     print('PASS build-only; no app launched, activated, or input posted'); raise SystemExit(0)
 EVIDENCE.mkdir(parents=True, exist_ok=True)
@@ -41,8 +43,10 @@ input_code = 'import Carbon\nlet s=TISCopyCurrentKeyboardInputSource().takeRetai
 def input_source(): return subprocess.check_output(['swift','-e',input_code],text=True).strip()
 # No input-source switch or copy/paste operation occurs in this journey.
 initial_input = input_source(); clipboard_hash = hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
-report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'], 'inputSourceBefore':initial_input, 'clipboardHashBefore':clipboard_hash, 'events':[], 'states':[]}
-report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-browse-input.swift'), 'senderExecutable':digest(sender), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
+private_snapshot = OUT/'environment-private.json'
+environment_saved = json.loads(subprocess.check_output([str(environment), 'save', str(private_snapshot)], text=True))
+report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'], 'inputSourceBefore':initial_input, 'clipboardHashBefore':clipboard_hash, 'environmentSaved':environment_saved, 'events':[], 'states':[]}
+report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-browse-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
 assert all(len(set(v.values()))==1 for v in report['bindings']['web'].values())
 c,w = m.command,m.wait
 process = None
@@ -119,6 +123,7 @@ finally:
         try: os.kill(process.pid,0); absent=False
         except ProcessLookupError: absent=True
         report['cleanup']={'pid':process.pid,'exit':process.returncode,'waitCompleted':True,'pidAbsent':absent}
+    report['environmentRestoration']=json.loads(subprocess.check_output([str(environment), 'restore', str(private_snapshot)], text=True))
     report['inputSourceAfter']=input_source()
     report['clipboardHashAfter']=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
     report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and report['clipboardHashAfter']==clipboard_hash
