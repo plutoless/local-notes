@@ -41,6 +41,7 @@ export class SyncScreen {
     if (show) { this.dialog.open(); document.querySelector('.app').inert = true; }
     if (this.running || this.saving) return;
     if (this.dirty) { if (show) this.canLeave(); return; }
+    const refreshHadFocus = this.panel.contains(document.activeElement);
     this.running = true;
     this.render(); for (const article of this.panel.querySelectorAll('article')) article.inert = true; feedback(this.status, '正在检查本地版本…'); this.panel.setAttribute('aria-busy', 'true');
     try {
@@ -52,11 +53,12 @@ export class SyncScreen {
       this.warnings = warnings;
       this.checked = true;
       this.render();
-      if (!this.panel.hidden && !this.panel.contains(document.activeElement)) this.panel.querySelector('button')?.focus();
       await this.changed();
     } catch (error) {
       feedback(this.status, '检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。', error.message);
-    } finally { this.running = false; this.panel.setAttribute('aria-busy', 'false'); this.refreshButton.disabled = false; for (const article of this.panel.querySelectorAll('article')) article.inert = false; }
+    } finally { this.running = false; this.panel.setAttribute('aria-busy', 'false'); this.refreshButton.disabled = false;
+      if (!this.panel.hidden && refreshHadFocus && document.activeElement === document.body) this.refreshButton.focus();
+      for (const article of this.panel.querySelectorAll('article')) article.inert = false; }
   }
   render() {
     this.panel.replaceChildren(sectionHeading('同步检查'));
@@ -77,6 +79,7 @@ export class SyncScreen {
       const blocked = conflict.incomplete || conflict.cyclic;
       const recordName = `${types[repo.entityType]}：${name?.title || name?.description || '未命名记录'}`;
       article.setAttribute('aria-label', recordName);
+      article.dataset.recordId = id; article.dataset.entityType = repo.entityType;
       const jump = selectionRow(recordName, () => { article.scrollIntoView({block: 'start'}); article.querySelector('h3').focus(); }); navigation.append(jump);
       article.innerHTML = `<h3 tabindex="-1">${esc(types[repo.entityType])}：${esc(name?.title || name?.description || '未命名记录')}</h3><p>${conflict.cyclic ? '版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。' : conflict.incomplete ? '缺少前序版本，暂不能保存。请等待文件到达后重新检查。' : '发现冲突版本，请比较后选择或合并。'}</p><h4>1. 比较版本</h4>`;
       const draft = {value: structuredClone(conflict.tips[0] || conflict.versions[0])};
@@ -85,7 +88,9 @@ export class SyncScreen {
       let selected = false, retryRecord = null;
       const markDirty = () => { this.saveResolution = saveResolution; selected = true; this.dirty = true; discard.disabled = false; save.disabled = false; for (const other of this.panel.querySelectorAll('article')) if (other !== article) other.inert = true; editStatus.textContent = '解决内容尚未保存。原版本均会保留。'; };
       const advanced = disclosure('高级：完整 JSON 与版本诊断');
-      const json = document.createElement('textarea'); json.rows = 12; json.setAttribute('aria-label', '合并版本 JSON');
+      editStatus.id = `sync-resolution-${repo.entityType}-${id}`;
+      const versionButtons = [];
+      const json = document.createElement('textarea'); json.rows = 12; json.setAttribute('aria-label', '合并版本 JSON'); json.setAttribute('aria-describedby', editStatus.id);
       const renderEditor = () => {
         editor.replaceChildren();
         const keys = repo.entityType === 'initiative' ? ['title', 'goal', 'progress', 'status'] : repo.entityType === 'action' ? ['description', 'status', 'dueDate', 'waitingOn', 'initiativeId', 'focusPosition'] : repo.entityType === 'topic' ? ['description'] : ['description', 'placement', 'reasoning', 'relevance'];
@@ -111,8 +116,10 @@ export class SyncScreen {
         details.append(values);
         const choose = button(`选择版本 ${index + 1}`, () => {
           if (this.dirty) { feedback(this.status, '选择其他版本会替换尚未保存的编辑。请先保存，或点击「放弃编辑」。'); return; }
+          for (const control of versionButtons) control.setAttribute('aria-pressed', String(control === choose));
+          article.dataset.selectedRevision = version.revision;
           this.resolutionCommitted = false; selected = true; draft.value = structuredClone(version); renderEditor(); markDirty(); editor.querySelector('textarea, input, select')?.focus();
-        }, {variant: 'secondary', label: `${recordName}：选择版本 ${index + 1}`}); choose.disabled = Boolean(blocked); details.append(choose); article.append(details);
+        }, {variant: 'secondary', label: `${recordName}：选择版本 ${index + 1}`}); choose.disabled = Boolean(blocked); choose.dataset.revision = version.revision; choose.setAttribute('aria-pressed', 'false'); versionButtons.push(choose); details.append(choose); article.append(details);
       }
       const heading = document.createElement('h4'); heading.textContent = '2. 审核与编辑解决内容'; article.append(heading, editStatus, editor);
       renderEditor();
@@ -126,7 +133,10 @@ export class SyncScreen {
           for (const control of editor.querySelectorAll('[data-field]')) { control.disabled = Boolean(blocked); control.value = parsed[control.dataset.field] ?? ''; }
         } catch { json.setAttribute('aria-invalid', 'true'); editStatus.textContent = 'JSON 格式无效。请修正后保存，编辑仍保留。'; for (const control of editor.querySelectorAll('[data-field]')) control.disabled = true; }
       }; advanced.append(diagnostics, json); article.append(advanced);
-      const discard = button('放弃编辑', () => { selected = false; this.dirty = false; this.resolutionCommitted = false; this.saved = ''; this.render(); this.panel.querySelector('button')?.focus(); }, {variant: 'danger'}); discard.disabled = true; article.append(discard);
+      const discard = button('放弃编辑', () => { selected = false; this.dirty = false; this.resolutionCommitted = false; this.saved = ''; const revision = article.dataset.selectedRevision; this.render();
+        const restored = [...this.panel.querySelectorAll('article')].find(node => node.dataset.recordId === id && node.dataset.entityType === repo.entityType);
+        const opener = [...(restored?.querySelectorAll('[data-revision]') || [])].find(node => node.dataset.revision === revision);
+        if (opener) { opener.closest('details').open = true; opener.focus(); } }, {variant: 'danger'}); discard.disabled = true; article.append(discard);
       const consequence = document.createElement('p'); consequence.textContent = '保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。'; article.append(consequence);
       const saveResolution = () => {
         if (this.savePending) return this.savePending;

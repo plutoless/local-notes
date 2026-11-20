@@ -51,8 +51,10 @@ try {
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', 'e8a869b:web/' + name]) : await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', (process.env.ISSUE86 ? 'a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3' : 'e8a869b') + ':web/' + name]) : await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
+  const evidenceDir = process.env.ISSUE86 ? 'docs/validation/issue86' : 'docs/validation/issue36';
+  await mkdir(evidenceDir, {recursive:true});
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   const {ActionRepository} = await import('../web/actions.js');
@@ -66,12 +68,22 @@ try {
   const panel = page.getByRole('dialog', {name: '同步检查'});
   await panel.waitFor();
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
-  await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
+  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
   await page.setViewportSize({width:393,height:852});
   assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-393px-long.png`,fullPage:true});
+  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px-long.png`,fullPage:true});
   await page.setViewportSize({width:1180,height:800});
+  async function capture(state) {
+    if (!process.env.ISSUE86) return;
+    for (const [size,width,height] of [['desktop',1180,800],['393px',393,852],['short',1180,480]]) {
+      await page.setViewportSize({width,height});
+      await panel.evaluate(el=>{if(el.contains(document.activeElement)) document.activeElement.scrollIntoView({block:'nearest'});});
+      assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
+      await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-${state}-${size}.png`});
+    }
+    await page.setViewportSize({width:1180,height:800});
+  }
   const editor = panel.getByLabel('合并版本 JSON');
   delayFiles = true;
   await panel.getByRole('button',{name:'重新检查',exact:true}).click();
@@ -90,13 +102,32 @@ try {
     await panel.getByRole('navigation',{name:'冲突记录'}).getByRole('button').first().click();
     assert.equal(await panel.locator('h3').first().evaluate(el=>el===document.activeElement),true);
   }
-  await panel.getByRole('button', {name: /选择版本 /}).first().click();
+  const firstVersion = panel.getByRole('button', {name: /选择版本 /}).first();
+  await firstVersion.click();
+  await capture('pointer-selected');
+  // Keyboard return to the selected control while retaining its independent selection.
+  if (process.env.ISSUE86) {
+    await firstVersion.focus(); await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Tab');
+    assert.equal(await firstVersion.evaluate(el=>el===document.activeElement && el.matches(':focus-visible')),true);
+  }
+  await capture('keyboard-selected');
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
+    assert.equal(await firstVersion.getAttribute('aria-pressed'),'true');
+    await page.keyboard.press('Tab');
+    assert.equal(await firstVersion.getAttribute('aria-pressed'),'true');
+    assert.equal(await panel.locator('.sync-version:focus-visible, .sync-version:focus-within').evaluateAll(nodes=>nodes.every(n=>getComputedStyle(n).outlineStyle==='none')),true);
+  }
   await panel.getByRole('button', {name: '关闭检查', exact: true}).click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
   await page.waitForFunction(async()=>!(await import('/presentation.js')).taskLeavePending());
   await page.keyboard.press('Escape'); await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click(); assert.equal(await panel.isVisible(), true);
   await panel.getByText('高级：完整 JSON 与版本诊断', {exact:true}).click();
   await editor.fill('{bad json');
+  await capture('invalid-focused');
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
+    assert.equal(await editor.getAttribute('aria-invalid'),'true');
+    assert.equal(await editor.evaluate(el=>document.getElementById(el.getAttribute('aria-describedby'))?.textContent.includes('JSON 格式无效')),true);
+  }
   await panel.getByRole('button', {name: '3. 保存解决结果到本地'}).click();
   await panel.getByText('解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。').waitFor();
   assert.equal(await editor.inputValue(), '{bad json');
@@ -166,6 +197,7 @@ try {
   const cycleB = {...cycleA,revision:randomUUID(),parents:[cycleA.revision]}; cycleA.parents=[cycleB.revision];
   for(const record of [missing,cycleA,cycleB]) await fixture.adapter('actionWrite',{workspaceId:repo.workspaceId,path:`revisions/${record.entityId}/${record.revision}.json`,text:JSON.stringify(record)});
   await panel.getByRole('button',{name:'重新检查',exact:true}).click();
+  await capture('warnings');
   await panel.getByText('缺少前序版本，暂不能保存。请等待文件到达后重新检查。').waitFor();
   await panel.getByText('版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。').waitFor();
   for(const save of await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).all()) assert.equal(await save.isDisabled(),true);
@@ -209,14 +241,14 @@ try {
   console.log('Focus outline:',await page.evaluate(()=>getComputedStyle(document.activeElement).outline));
   const colors=await page.evaluate(()=>({text:getComputedStyle(document.querySelector('.sync-panel')).color,background:getComputedStyle(document.querySelector('.sync-panel')).backgroundColor}));
   console.log('Rendered contrast inputs:',JSON.stringify(colors));
-  await page.screenshot({path:`docs/validation/issue36/${process.env.PHASE || 'after'}-web-393px.png`,fullPage:true});
+  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px.png`,fullPage:true});
   if(process.env.PHASE !== 'before') {
     // A background failure notice must not cover or intercept modal controls.
     const close=panel.getByRole('button',{name:'关闭检查',exact:true});
     await close.scrollIntoViewIfNeeded();
     const box=await close.boundingBox();
     assert.equal(await page.evaluate(({x,y})=>document.elementFromPoint(x,y)?.textContent,{x:box.x+box.width/2,y:box.y+box.height/2}),'关闭检查');
-    await page.screenshot({path:'docs/validation/issue36/after-web-393px-top.png',fullPage:true});
+    await page.screenshot({path:`${evidenceDir}/after-web-393px-top.png`,fullPage:true});
   }
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   delayFiles=true;await page.evaluate(()=>window.dispatchEvent(new Event('focus')));
