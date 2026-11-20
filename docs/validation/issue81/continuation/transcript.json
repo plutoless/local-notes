@@ -1,0 +1,2926 @@
+[
+  {
+    "preflight": {
+      "firstResponderIsWeb": true,
+      "main": true,
+      "active": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 27167,
+      "webHidden": false,
+      "visible": true,
+      "key": true
+    },
+    "document": {
+      "focused": true,
+      "visibility": "visible"
+    },
+    "pid": 94451,
+    "head": "db3aa4bf6102ed53a3df4f5efd070b46ae800f28"
+  },
+  {
+    "hostBeforeInput": {
+      "firstResponderIsWeb": true,
+      "main": true,
+      "active": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 27167,
+      "webHidden": false,
+      "visible": true,
+      "key": true
+    },
+    "documentFocus": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "255"
+    ],
+    "receipt": {
+      "id": "4064ec29-07b3-451f-aa5d-0c33acbd4b4e",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t5 text 拾记\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t45 heading 当前重点\n\t\t\t46 summary 更多操作, Value: 0\n\t\t\t47 button 新建行动\n\t\t\t48 button 全部行动\n\t\t\t49 heading 优先处理\n\t\t\t50 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t51 summary 管理：核对本周资料并保留上下文 0, Value: 0\n\t\t\t52 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t53 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t54 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t55 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t56 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t57 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t58 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t59 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t60 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t61 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t62 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t63 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t64 button 展开更多重点行动\n\t\t\t65 heading 等待与跟进\n\t\t\t66 text 没有等待中的行动。\n\t\t\t67 heading 继续推进\n\t\t\t68 heading 保留目标与进展的事项\n\t\t\t69 text 待核对\n\t\t\t70 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "10E5C64E-221F-4C7D-BD1D-A7040E73384C",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 45,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "746",
+      "--y",
+      "273"
+    ],
+    "receipt": {
+      "id": "3f5bc68a-cdef-437e-9fec-ed099e30361e",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t5 text 拾记\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t71 heading 当前重点\n\t\t\t72 summary 更多操作, Value: 0\n\t\t\t73 button 新建行动\n\t\t\t74 button 全部行动\n\t\t\t75 heading 优先处理\n\t\t\t76 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t97 container (expanded)\n\t\t\t\t77 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1\n\t\t\t\t98 button 移出重点\n\t\t\t\t99 button 下移\n\t\t\t78 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t79 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t80 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t81 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t82 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t83 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t84 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t85 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t86 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t87 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t88 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t89 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t90 button 展开更多重点行动\n\t\t\t91 heading 等待与跟进\n\t\t\t92 text 没有等待中的行动。\n\t\t\t93 heading 继续推进\n\t\t\t94 heading 保留目标与进展的事项\n\t\t\t95 text 待核对\n\t\t\t96 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 77 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1.",
+          "focusedElementId": 77,
+          "id": "092F72F3-E8EC-49CF-8B8C-93AC7FB28EE6",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-pointer-1180",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      }
+    ],
+    "scroll": 0,
+    "active": "管理",
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px none rgb(93, 104, 120)",
+    "focusVisible": false
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "receipt": {
+      "id": "5ba8392e-04e4-44ad-bb21-35a7a4e4857b",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 98 button 移出重点.",
+          "focusedElementId": 98,
+          "id": "0974DB94-74CD-4CDD-96FB-EFCDEE087929",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "092F72F3-E8EC-49CF-8B8C-93AC7FB28EE6",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-keyboard-1180",
+    "active": "移出重点",
+    "scroll": 0,
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      }
+    ],
+    "collection": 0,
+    "selected": null,
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "hotkey",
+    "args": [
+      "--key",
+      "Shift+Tab"
+    ],
+    "receipt": {
+      "id": "9b4a1df3-7f6c-41ec-bb73-9d906f339ff2",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "hotkey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 77 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1.",
+          "focusedElementId": 77,
+          "id": "2C164771-5FF1-482E-A0F1-D16487FF432D",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "0974DB94-74CD-4CDD-96FB-EFCDEE087929",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-reverse-1180",
+    "scroll": 0,
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      }
+    ],
+    "active": "管理",
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "hostBeforeInput": {
+      "firstResponderIsWeb": true,
+      "main": true,
+      "active": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 27167,
+      "webHidden": false,
+      "visible": true,
+      "key": true
+    },
+    "documentFocus": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "63",
+      "--y",
+      "154"
+    ],
+    "receipt": {
+      "id": "ec1f2f08-4c47-479c-909b-4dbb0f3e3f5a",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t100 heading 当前重点\n\t\t\t101 summary 更多操作, Value: 0\n\t\t\t102 button 新建行动\n\t\t\t103 button 全部行动\n\t\t\t104 heading 优先处理\n\t\t\t105 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t106 container (expanded)\n\t\t\t\t107 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1\n\t\t\t\t108 button 移出重点\n\t\t\t\t109 button 下移\n\t\t\t110 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t111 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t112 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t113 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t114 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t115 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t116 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t117 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t118 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t119 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t120 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t121 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t122 button 展开更多重点行动\n\t\t\t123 heading 等待与跟进\n\t\t\t124 text 没有等待中的行动。\n\t\t\t125 heading 继续推进\n\t\t\t126 heading 保留目标与进展的事项\n\t\t\t127 text 待核对\n\t\t\t128 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "B5D1341A-7AAF-4495-91E1-8A21283989CD",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 393,
+            "id": 27167,
+            "height": 884,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 47,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "337",
+      "--y",
+      "508"
+    ],
+    "receipt": {
+      "id": "86e5a72b-b841-4c45-978e-7cf0bc3c66ea",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t129 heading 当前重点\n\t\t\t130 summary 更多操作, Value: 0\n\t\t\t131 button 新建行动\n\t\t\t132 button 全部行动\n\t\t\t133 heading 优先处理\n\t\t\t134 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t136 summary 管理：核对本周资料并保留上下文 0, Value: 0\n\t\t\t139 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t140 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t141 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t142 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t143 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t144 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t145 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t146 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t147 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t148 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t149 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t150 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t151 button 展开更多重点行动\n\t\t\t152 heading 等待与跟进\n\t\t\t153 text 没有等待中的行动。\n\t\t\t154 heading 继续推进\n\t\t\t155 heading 保留目标与进展的事项\n\t\t\t156 text 待核对\n\t\t\t157 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 136 summary 管理：核对本周资料并保留上下文 0, Value: 0.",
+          "focusedElementId": 136,
+          "id": "DC16C607-FD9C-4A65-A42E-96CCE4158D21",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 393,
+            "id": 27167,
+            "height": 884,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 44,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-pointer-393",
+    "scroll": 0,
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      }
+    ],
+    "active": "管理",
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px none rgb(93, 104, 120)",
+    "focusVisible": false
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "receipt": {
+      "id": "2d3ce69f-0633-4836-85fe-cdad88121f5a",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 139 button 打开行动：核对本周资料并保留上下文 1.",
+          "focusedElementId": 139,
+          "id": "0A4642E5-D66F-4366-90CD-C31589AB000A",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 393,
+            "id": 27167,
+            "height": 884,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 44,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "DC16C607-FD9C-4A65-A42E-96CCE4158D21",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-keyboard-393",
+    "active": "c0edce77-5a5c-4c35-a82e-21290e7495c0",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      }
+    ],
+    "scroll": 0,
+    "collection": 0,
+    "selected": "false",
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "hotkey",
+    "args": [
+      "--key",
+      "Shift+Tab"
+    ],
+    "receipt": {
+      "id": "1eddf231-4b89-4b0b-9a85-f92ec9b6da83",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "hotkey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 136 summary 管理：核对本周资料并保留上下文 0, Value: 0.",
+          "focusedElementId": 136,
+          "id": "42CF2A3A-D18D-4328-B871-AF54181B9486",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 393,
+            "id": 27167,
+            "height": 884,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 44,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "0A4642E5-D66F-4366-90CD-C31589AB000A",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-reverse-393",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      }
+    ],
+    "active": "管理",
+    "scroll": 0,
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "hostBeforeInput": {
+      "firstResponderIsWeb": true,
+      "main": true,
+      "active": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 27167,
+      "webHidden": false,
+      "visible": true,
+      "key": true
+    },
+    "documentFocus": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "255"
+    ],
+    "receipt": {
+      "id": "0f91670d-de15-445d-a0b4-2be5410d0814",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t158 text 拾记\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t159 heading 当前重点\n\t\t\t160 summary 更多操作, Value: 0\n\t\t\t161 button 新建行动\n\t\t\t162 button 全部行动\n\t\t\t163 heading 优先处理\n\t\t\t164 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t165 summary 管理：核对本周资料并保留上下文 0, Value: 0\n\t\t\t166 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t167 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t168 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t169 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t170 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t171 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t172 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t173 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t174 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t175 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t176 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t177 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t178 button 展开更多重点行动\n\t\t\t179 heading 等待与跟进\n\t\t\t180 text 没有等待中的行动。\n\t\t\t181 heading 继续推进\n\t\t\t182 heading 保留目标与进展的事项\n\t\t\t183 text 待核对\n\t\t\t184 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "97B8B53E-C513-4B2E-B7C8-9B4A5B813C2E",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 800,
+            "id": 27167,
+            "height": 432,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 45,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "742",
+      "--y",
+      "257"
+    ],
+    "receipt": {
+      "id": "ae4c80b2-4dbf-4bd0-a4aa-247c570a6982",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t3 button 搜索笔记 ⌘K\n\t\t\t4 container\n\t\t\t\t158 text 拾记\n\t\t\t\t6 button 随手记\n\t\t\t\t7 container 主导航\n\t\t\t\t\t8 button 当前重点\n\t\t\t\t\t9 button 笔记库\n\t\t\t\t\t10 button 事项\n\t\t\t\t\t11 button 整理\n\t\t\t\t\t12 button 收藏\n\t\t\t\t\t13 button 同步检查\n\t\t\t\t14 summary Sync, Value: 0\n\t\t\t185 heading 当前重点\n\t\t\t186 summary 更多操作, Value: 0\n\t\t\t187 button 新建行动\n\t\t\t188 button 全部行动\n\t\t\t189 heading 优先处理\n\t\t\t190 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t211 container (expanded)\n\t\t\t\t191 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1\n\t\t\t\t212 button 移出重点\n\t\t\t\t213 button 下移\n\t\t\t192 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t193 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t194 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t195 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t196 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t197 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t198 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t199 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t200 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t201 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t202 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t203 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t204 button 展开更多重点行动\n\t\t\t205 heading 等待与跟进\n\t\t\t206 text 没有等待中的行动。\n\t\t\t207 heading 继续推进\n\t\t\t208 heading 保留目标与进展的事项\n\t\t\t209 text 待核对\n\t\t\t210 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 191 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1.",
+          "focusedElementId": 191,
+          "id": "EB526B19-22F1-47D0-BE56-0BBA6F09538E",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 800,
+            "id": 27167,
+            "height": 432,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-pointer-800",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      }
+    ],
+    "scroll": 0,
+    "active": "管理",
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px none rgb(93, 104, 120)",
+    "focusVisible": false
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "receipt": {
+      "id": "a2845e6c-f6b2-48c2-8aa5-f51df95841f6",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 212 button 移出重点.",
+          "focusedElementId": 212,
+          "id": "D0E5C062-4F71-4BF7-A00C-C1F7D81C0367",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 800,
+            "id": 27167,
+            "height": 432,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "EB526B19-22F1-47D0-BE56-0BBA6F09538E",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-keyboard-800",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      }
+    ],
+    "active": "移出重点",
+    "scroll": 0,
+    "collection": 0,
+    "selected": null,
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "hotkey",
+    "args": [
+      "--key",
+      "Shift+Tab"
+    ],
+    "receipt": {
+      "id": "4aaeffae-f058-4cbf-96bd-67e14cd4705c",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "hotkey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 191 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1.",
+          "focusedElementId": 191,
+          "id": "DE9BA08C-5E82-4910-952D-542E96D5CF34",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 800,
+            "id": 27167,
+            "height": 432,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "D0E5C062-4F71-4BF7-A00C-C1F7D81C0367",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "home-reverse-800",
+    "active": "管理",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      }
+    ],
+    "scroll": 0,
+    "collection": 0,
+    "selected": null,
+    "tag": "SUMMARY",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "469",
+      "--y",
+      "284"
+    ],
+    "receipt": {
+      "id": "4cf96439-7eb0-4ab4-ac9b-01e435f40a90",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t214 container 编辑行动\n\t\t\t\t215 container\n\t\t\t\t\t216 heading 编辑行动\n\t\t\t\t\t217 button 关闭编辑行动\n\t\t\t\t218 container\n\t\t\t\t\t219 container\n\t\t\t\t\t\t220 text 行动描述\n\t\t\t\t\t\t221 text entry area (settable) 行动描述 核对本周资料并保留上下文 0\n\t\t\t\t\t\t\t222 text 核对本周资料并保留上下文 0\n\t\t\t\t\t223 container\n\t\t\t\t\t\t224 text 状态\n\t\t\t\t\t\t225 pop up button 状态, Value: 待办\n\t\t\t\t\t226 summary 事项、日期与等待条件（可选）, Value: 0\n\t\t\t\t\t227 summary 来源引用（可选）, Value: 0\n\t\t\t\t\t228 text 已保存到本地\n\t\t\t\t\t229 container 行动管理\n\t\t\t\t\t\t230 summary 当前重点与历史, Value: 0\n\t\t\t\t\t\t231 summary 放弃编辑, Value: 0\n\t\t\t\t232 summary 记录详情, Value: 0\n\t\t\t\t233 container\n\t\t\t\t\t234 button 取消\n\t\t\t\t\t235 button 保存行动\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 221 text entry area (settable) 行动描述 核对本周资料并保留上下文 0.",
+          "focusedElementId": 221,
+          "id": "23CEAE92-1235-4765-B564-A5BDD3AD3D2C",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 29,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "action-open",
+    "active": "action-description",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      }
+    ],
+    "scroll": 0,
+    "collection": 0,
+    "selected": null,
+    "tag": "TEXTAREA",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "1043",
+      "--y",
+      "794"
+    ],
+    "receipt": {
+      "id": "8e2323dd-f7a2-452e-8dfd-4c8bd4865f87",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t236 button 搜索笔记 ⌘K\n\t\t\t237 container\n\t\t\t\t238 text 拾记\n\t\t\t\t239 button 随手记\n\t\t\t\t240 container 主导航\n\t\t\t\t\t241 button 当前重点\n\t\t\t\t\t242 button 笔记库\n\t\t\t\t\t243 button 事项\n\t\t\t\t\t244 button 整理\n\t\t\t\t\t245 button 收藏\n\t\t\t\t\t246 button 同步检查\n\t\t\t\t247 summary Sync, Value: 0\n\t\t\t248 heading 当前重点\n\t\t\t249 summary 更多操作, Value: 0\n\t\t\t250 button 新建行动\n\t\t\t251 button 全部行动\n\t\t\t252 heading 优先处理\n\t\t\t253 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t254 container (expanded)\n\t\t\t\t255 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1\n\t\t\t\t256 button 移出重点\n\t\t\t\t257 button 下移\n\t\t\t258 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t259 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t260 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t261 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t262 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t263 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t264 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t265 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t266 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t267 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t268 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t269 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t270 button 展开更多重点行动\n\t\t\t271 heading 等待与跟进\n\t\t\t272 text 没有等待中的行动。\n\t\t\t273 heading 继续推进\n\t\t\t274 heading 保留目标与进展的事项\n\t\t\t275 text 待核对\n\t\t\t276 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 253 button 打开行动：核对本周资料并保留上下文 0.",
+          "focusedElementId": 253,
+          "id": "3E732958-5747-409F-9357-9BE098AFE651",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "action-pointer-return",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "action-back"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "action-back"
+      }
+    ],
+    "scroll": 0,
+    "active": "b656df0d-df2a-4b14-93d3-4e59d3234cc8",
+    "collection": 0,
+    "selected": "false",
+    "tag": "BUTTON",
+    "outline": "3px none rgb(32, 38, 51)",
+    "focusVisible": false
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "receipt": {
+      "id": "d015a859-9fbe-49bc-bd07-9a788a173480",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 255 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1.",
+          "focusedElementId": 255,
+          "id": "1AD9CDA8-9447-4DEA-92D5-83B95A428B98",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "3E732958-5747-409F-9357-9BE098AFE651",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "hotkey",
+    "args": [
+      "--key",
+      "Shift+Tab"
+    ],
+    "receipt": {
+      "id": "3c88b4cb-a919-4b57-bb49-38353ac5de82",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "hotkey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\nNo change in the accessibility tree since the previous snapshot.\n\nThe focused UI element is 253 button 打开行动：核对本周资料并保留上下文 0.",
+          "focusedElementId": 253,
+          "id": "4AC70651-A00D-435E-8D28-7EC48A2B6827",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          },
+          "treeDiff": {
+            "baseSnapshotId": "1AD9CDA8-9447-4DEA-92D5-83B95A428B98",
+            "changed": 0,
+            "added": 0,
+            "removed": 0
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "action-keyboard-opener",
+    "scroll": 0,
+    "active": "b656df0d-df2a-4b14-93d3-4e59d3234cc8",
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "action-back"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "action-back"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      }
+    ],
+    "collection": 0,
+    "selected": "false",
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Return"
+    ],
+    "receipt": {
+      "id": "e7f211ef-3d8f-4e5a-8741-ade3fe7c5b4a",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t277 container 编辑行动\n\t\t\t\t278 container\n\t\t\t\t\t279 heading 编辑行动\n\t\t\t\t\t280 button 关闭编辑行动\n\t\t\t\t281 container\n\t\t\t\t\t282 container\n\t\t\t\t\t\t283 text 行动描述\n\t\t\t\t\t\t284 text entry area (settable) 行动描述 核对本周资料并保留上下文 0\n\t\t\t\t\t\t\t285 text 核对本周资料并保留上下文 0\n\t\t\t\t\t286 container\n\t\t\t\t\t\t287 text 状态\n\t\t\t\t\t\t288 pop up button 状态, Value: 待办\n\t\t\t\t\t289 summary 事项、日期与等待条件（可选）, Value: 0\n\t\t\t\t\t290 summary 来源引用（可选）, Value: 0\n\t\t\t\t\t291 text 已保存到本地\n\t\t\t\t\t292 container 行动管理\n\t\t\t\t\t\t293 summary 当前重点与历史, Value: 0\n\t\t\t\t\t\t294 summary 放弃编辑, Value: 0\n\t\t\t\t295 summary 记录详情, Value: 0\n\t\t\t\t296 container\n\t\t\t\t\t297 button 取消\n\t\t\t\t\t298 button 保存行动\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 284 text entry area (settable) 行动描述 核对本周资料并保留上下文 0.",
+          "focusedElementId": 284,
+          "id": "F24A6A71-B8D5-40C9-90BB-BA89749B28B7",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 29,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "press-key",
+    "args": [
+      "--key",
+      "Escape"
+    ],
+    "receipt": {
+      "id": "ec64411b-bdac-49f4-83f5-1d9307fcddbe",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": "pressKey",
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t299 button 搜索笔记 ⌘K\n\t\t\t300 container\n\t\t\t\t301 text 拾记\n\t\t\t\t302 button 随手记\n\t\t\t\t303 container 主导航\n\t\t\t\t\t304 button 当前重点\n\t\t\t\t\t305 button 笔记库\n\t\t\t\t\t306 button 事项\n\t\t\t\t\t307 button 整理\n\t\t\t\t\t308 button 收藏\n\t\t\t\t\t309 button 同步检查\n\t\t\t\t310 summary Sync, Value: 0\n\t\t\t311 heading 当前重点\n\t\t\t312 summary 更多操作, Value: 0\n\t\t\t313 button 新建行动\n\t\t\t314 button 全部行动\n\t\t\t315 heading 优先处理\n\t\t\t316 button 打开行动：核对本周资料并保留上下文 0\n\t\t\t317 container (expanded)\n\t\t\t\t318 summary (expanded) 管理：核对本周资料并保留上下文 0, Value: 1\n\t\t\t\t319 button 移出重点\n\t\t\t\t320 button 下移\n\t\t\t321 button 打开行动：核对本周资料并保留上下文 1\n\t\t\t322 summary 管理：核对本周资料并保留上下文 1, Value: 0\n\t\t\t323 button 打开行动：核对本周资料并保留上下文 2\n\t\t\t324 summary 管理：核对本周资料并保留上下文 2, Value: 0\n\t\t\t325 button 打开行动：核对本周资料并保留上下文 3\n\t\t\t326 summary 管理：核对本周资料并保留上下文 3, Value: 0\n\t\t\t327 button 打开行动：核对本周资料并保留上下文 4\n\t\t\t328 summary 管理：核对本周资料并保留上下文 4, Value: 0\n\t\t\t329 button 打开行动：核对本周资料并保留上下文 5\n\t\t\t330 summary 管理：核对本周资料并保留上下文 5, Value: 0\n\t\t\t331 button 打开行动：核对本周资料并保留上下文 6\n\t\t\t332 summary 管理：核对本周资料并保留上下文 6, Value: 0\n\t\t\t333 button 展开更多重点行动\n\t\t\t334 heading 等待与跟进\n\t\t\t335 text 没有等待中的行动。\n\t\t\t336 heading 继续推进\n\t\t\t337 heading 保留目标与进展的事项\n\t\t\t338 text 待核对\n\t\t\t339 button 打开事项\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 316 button 打开行动：核对本周资料并保留上下文 0.",
+          "focusedElementId": 316,
+          "id": "47A2EA0C-A471-4908-92F6-8B9FC889F453",
+          "app": {
+            "name": "LocalNotes",
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 48,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "state": "action-keyboard-return",
+    "active": "b656df0d-df2a-4b14-93d3-4e59d3234cc8",
+    "scroll": 0,
+    "events": [
+      {
+        "trusted": false,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "SUMMARY"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "pointerdown",
+        "target": "action-back"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "action-back"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Shift",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Tab",
+        "trusted": true,
+        "type": "keydown",
+        "target": "SUMMARY"
+      },
+      {
+        "key": "Enter",
+        "trusted": true,
+        "type": "keydown",
+        "target": "BUTTON"
+      },
+      {
+        "trusted": true,
+        "type": "click",
+        "target": "BUTTON"
+      },
+      {
+        "key": "Escape",
+        "trusted": true,
+        "type": "keydown",
+        "target": "TEXTAREA"
+      }
+    ],
+    "collection": 0,
+    "selected": "false",
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "304"
+    ],
+    "receipt": {
+      "id": "7d21b70a-b60c-4289-b214-b32cdae776d3",
+      "ok": true,
+      "result": {
+        "action": {
+          "verification": {
+            "expected": null,
+            "actualPreview": null,
+            "state": "unverified",
+            "reason": "synthetic_input"
+          },
+          "delivery": "foreground",
+          "actionName": null,
+          "fallbackReason": null,
+          "path": "synthetic",
+          "targetWindowId": 27167
+        },
+        "snapshot": {
+          "treeText": "App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t299 button 搜索笔记 ⌘K\n\t\t\t300 container\n\t\t\t\t301 text 拾记\n\t\t\t\t302 button 随手记\n\t\t\t\t303 container 主导航\n\t\t\t\t\t304 button 当前重点\n\t\t\t\t\t305 button 笔记库\n\t\t\t\t\t306 button 事项\n\t\t\t\t\t307 button 整理\n\t\t\t\t\t308 button 收藏\n\t\t\t\t\t309 button 同步检查\n\t\t\t\t310 summary Sync, Value: 0\n\t\t\t340 container\n\t\t\t\t341 heading 笔记库\n\t\t\t\t342 container\n\t\t\t\t\t343 text 搜索\n\t\t\t\t\t344 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…\n\t\t\t345 container 主题筛选与管理\n\t\t\t\t346 pop up button 筛选主题, Value: 全部主题\n\t\t\t\t347 button 新建主题\n\t\t\t\t348 button (disabled) 重命名主题\n\t\t\t349 container 目录导航\n\t\t\t\t350 text 全部目录\n\t\t\t\t351 button (disabled) 上一级目录\n\t\t\t\t352 button 刷新\n\t\t\t353 container 笔记分页\n\t\t\t\t354 button (disabled) 上一页\n\t\t\t\t355 button 下一页\n\t\t\t356 button 浏览目录\n\t\t\t357 button 核对资料与下一步的长中文标题 0 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-00.md 文件修改：11/19/2026\n\t\t\t358 button 核对资料与下一步的长中文标题 1 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-01.md 文件修改：11/19/2026\n\t\t\t359 button 核对资料与下一步的长中文标题 2 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-02.md 文件修改：11/19/2026\n\t\t\t360 button 核对资料与下一步的长中文标题 3 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-03.md 文件修改：11/19/2026\n\t\t\t361 button 核对资料与下一步的长中文标题 4 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-04.md 文件修改：11/19/2026\n\t\t\t362 button 核对资料与下一步的长中文标题 5 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-05.md 文件修改：11/19/2026\n\t\t\t363 button 核对资料与下一步的长中文标题 6 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-06.md 文件修改：11/19/2026\n\t\t\t364 button 核对资料与下一步的长中文标题 7 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-07.md 文件修改：11/19/2026\n\t\t\t365 button 核对资料与下一步的长中文标题 8 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-08.md 文件修改：11/19/2026\n\t\t\t366 button 核对资料与下一步的长中文标题 9 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-09.md 文件修改：11/19/2026\n\t\t\t367 button 核对资料与下一步的长中文标题 10 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-10.md 文件修改：11/19/2026\n\t\t\t368 button 核对资料与下一步的长中文标题 11 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-11.md 文件修改：11/19/2026\n\t\t\t369 button 核对资料与下一步的长中文标题 12 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-12.md 文件修改：11/19/2026\n\t\t\t370 button 核对资料与下一步的长中文标题 13 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-13.md 文件修改：11/19/2026\n\t\t\t371 button 核对资料与下一步的长中文标题 14 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-14.md 文件修改：11/19/2026\n\t\t\t372 button 核对资料与下一步的长中文标题 15 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-15.md 文件修改：11/19/2026\n\t\t\t373 button 核对资料与下一步的长中文标题 16 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-16.md 文件修改：11/19/2026\n\t\t\t374 button 核对资料与下一步的长中文标题 17 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-17.md 文件修改：11/19/2026\n\t\t\t375 button 核对资料与下一步的长中文标题 18 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-18.md 文件修改：11/19/2026\n\t\t\t376 button 核对资料与下一步的长中文标题 19 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-19.md 文件修改：11/19/2026\n\t\t\t377 button 核对资料与下一步的长中文标题 20 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-20.md 文件修改：11/19/2026\n\t\t\t378 button 核对资料与下一步的长中文标题 21 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-21.md 文件修改：11/19/2026\n\t\t\t379 button 核对资料与下一步的长中文标题 22 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-22.md 文件修改：11/19/2026\n\t\t\t380 button 核对资料与下一步的长中文标题 23 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-23.md 文件修改：11/19/2026\n\t\t\t381 button 核对资料与下一步的长中文标题 24 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-24.md 文件修改：11/19/2026\n\t\t\t382 button 核对资料与下一步的长中文标题 25 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-25.md 文件修改：11/19/2026\n\t\t\t383 button 核对资料与下一步的长中文标题 26 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-26.md 文件修改：11/19/2026\n\t\t\t384 button 核对资料与下一步的长中文标题 27 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-27.md 文件修改：11/19/2026\n\t\t\t385 button 核对资料与下一步的长中文标题 28 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-28.md 文件修改：11/19/2026\n\t\t\t386 button 核对资料与下一步的长中文标题 29 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-29.md 文件修改：11/19/2026\n\t\t\t387 button 核对资料与下一步的长中文标题 30 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-30.md 文件修改：11/19/2026\n\t\t\t388 button 核对资料与下一步的长中文标题 31 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-31.md 文件修改：11/19/2026\n\t\t\t389 button 核对资料与下一步的长中文标题 32 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-32.md 文件修改：11/19/2026\n\t\t\t390 button 核对资料与下一步的长中文标题 33 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-33.md 文件修改：11/19/2026\n\t\t\t391 button 核对资料与下一步的长中文标题 34 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-34.md 文件修改：11/19/2026\n\t\t\t392 button 核对资料与下一步的长中文标题 35 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-35.md 文件修改：11/19/2026\n\t\t\t393 button 核对资料与下一步的长中文标题 36 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-36.md 文件修改：11/19/2026\n\t\t\t394 button 核对资料与下一步的长中文标题 37 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-37.md 文件修改：11/19/2026\n\t\t\t395 button 核对资料与下一步的长中文标题 38 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-38.md 文件修改：11/19/2026\n\t\t\t396 button 核对资料与下一步的长中文标题 39 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-39.md 文件修改：11/19/2026\n\t\t\t397 button 核对资料与下一步的长中文标题 40 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-40.md 文件修改：11/19/2026\n\t\t\t398 button 核对资料与下一步的长中文标题 41 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-41.md 文件修改：11/19/2026\n\t\t\t399 button 核对资料与下一步的长中文标题 42 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-42.md 文件修改：11/19/2026\n\t\t\t400 button 核对资料与下一步的长中文标题 43 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-43.md 文件修改：11/19/2026\n\t\t\t401 button 核对资料与下一步的长中文标题 44 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-44.md 文件修改：11/19/2026\n\t\t\t402 button 核对资料与下一步的长中文标题 45 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-45.md 文件修改：11/19/2026\n\t\t\t403 button 核对资料与下一步的长中文标题 46 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-46.md 文件修改：11/19/2026\n\t\t\t404 button 核对资料与下一步的长中文标题 47 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-47.md 文件修改：11/19/2026\n\t\t\t405 button 核对资料与下一步的长中文标题 48 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-48.md 文件修改：11/19/2026\n\t\t\t406 button 核对资料与下一步的长中文标题 49 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-49.md 文件修改：11/19/2026\n\t41 close button\n\t42 full screen button, Secondary Actions: zoom the window\n\t43 minimize button\n\t44 text 拾记 · Local Notes\n\nThe focused UI element is 2 HTML content 拾记 · Local Notes.",
+          "focusedElementId": 2,
+          "id": "C63E9693-26E6-4718-82DE-61FE1990ACC7",
+          "app": {
+            "bundleId": "dev.localnotes.validation.issue81continuation60dbc846",
+            "pid": 94451,
+            "name": "LocalNotes"
+          },
+          "window": {
+            "x": 166,
+            "screenIndex": 0,
+            "title": "拾记 · Local Notes",
+            "width": 1180,
+            "id": 27167,
+            "height": 832,
+            "isOffscreen": false,
+            "y": 47,
+            "isMinimized": false,
+            "platform": {
+              "layer": 0
+            }
+          },
+          "coordinateSpace": "window",
+          "elementCount": 86,
+          "truncation": {
+            "maxDepth": 64,
+            "truncated": false,
+            "maxDepthReached": false,
+            "maxNodes": 1200
+          }
+        },
+        "screenshot": null,
+        "screenshotStatus": {
+          "state": "skipped",
+          "reason": "no_screenshot_flag"
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "input": "click",
+    "args": [
+      "--x",
+      "688",
+      "--y",
+      "467"
+    ],
+    "receipt": {
+      "id": "f5f2f04f-0eb1-46c2-b0a8-59e85adcabd0",
+      "ok": false,
+      "error": {
+        "code": "window_not_focused",
+        "message": "pointer input aborted because target pid 94451 window 27167 is no longer the focused topmost recipient (current: no focused window); 1 press(es) may already have been delivered; run get-app-state and verify state before retrying",
+        "data": {
+          "nextSteps": [
+            "Run `orca computer get-app-state --app <app> --json` and verify whether the intended action already occurred before retrying.",
+            "Do not retry the click if it already took effect; otherwise bring the target window forward and use fresh state before trying again."
+          ]
+        }
+      },
+      "_meta": {
+        "runtimeId": "8fa795e6-4f9d-4fe1-8626-61201a312033"
+      }
+    }
+  },
+  {
+    "diagnostic": "list-windows",
+    "result": "{\n  \"id\": \"1947d2be-6c23-4e95-ba23-cee7bd342f98\",\n  \"ok\": true,\n  \"result\": {\n    \"windows\": [\n      {\n        \"index\": 0,\n        \"screenIndex\": 0,\n        \"id\": 27167,\n        \"isMinimized\": false,\n        \"height\": 832,\n        \"isMain\": null,\n        \"app\": {\n          \"name\": \"LocalNotes\",\n          \"bundleId\": \"dev.localnotes.validation.issue81continuation60dbc846\",\n          \"pid\": 94451\n        },\n        \"platform\": {\n          \"layer\": 0,\n          \"alpha\": 1\n        },\n        \"title\": \"拾记 · Local Notes\",\n        \"width\": 1180,\n        \"y\": 47,\n        \"x\": 166,\n        \"isOffscreen\": false\n      }\n    ],\n    \"app\": {\n      \"isRunning\": true,\n      \"useCount\": null,\n      \"bundleId\": \"dev.localnotes.validation.issue81continuation60dbc846\",\n      \"lastUsedAt\": null,\n      \"name\": \"LocalNotes\",\n      \"pid\": 94451\n    }\n  },\n  \"_meta\": {\n    \"runtimeId\": \"8fa795e6-4f9d-4fe1-8626-61201a312033\"\n  }\n}\n"
+  },
+  {
+    "diagnostic": "get-app-state",
+    "result": "{\n  \"id\": \"9b1ee797-b36a-4db3-91dd-e1739c46a8df\",\n  \"ok\": true,\n  \"result\": {\n    \"snapshot\": {\n      \"treeText\": \"App=dev.localnotes.validation.issue81continuation60dbc846 (pid 94451)\\nWindow: \\\"拾记 · Local Notes\\\", App: LocalNotes.\\n\\n0 standard window 拾记 · Local Notes\\n\\t1 scroll area\\n\\t\\t2 HTML content 拾记 · Local Notes\\n\\t\\t\\t299 button 搜索笔记 ⌘K\\n\\t\\t\\t300 container\\n\\t\\t\\t\\t301 text 拾记\\n\\t\\t\\t\\t302 button 随手记\\n\\t\\t\\t\\t303 container 主导航\\n\\t\\t\\t\\t\\t304 button 当前重点\\n\\t\\t\\t\\t\\t305 button 笔记库\\n\\t\\t\\t\\t\\t306 button 事项\\n\\t\\t\\t\\t\\t307 button 整理\\n\\t\\t\\t\\t\\t308 button 收藏\\n\\t\\t\\t\\t\\t309 button 同步检查\\n\\t\\t\\t\\t310 summary Sync, Value: 0\\n\\t\\t\\t340 container\\n\\t\\t\\t\\t341 heading 笔记库\\n\\t\\t\\t\\t342 container\\n\\t\\t\\t\\t\\t343 text 搜索\\n\\t\\t\\t\\t\\t344 text field (settable) 搜索笔记, Placeholder: 搜索标题与正文…\\n\\t\\t\\t345 container 主题筛选与管理\\n\\t\\t\\t\\t346 pop up button 筛选主题, Value: 全部主题\\n\\t\\t\\t\\t347 button 新建主题\\n\\t\\t\\t\\t348 button (disabled) 重命名主题\\n\\t\\t\\t349 container 目录导航\\n\\t\\t\\t\\t407 text 全部目录\\n\\t\\t\\t\\t351 button (disabled) 上一级目录\\n\\t\\t\\t\\t352 button 刷新\\n\\t\\t\\t353 container 笔记分页\\n\\t\\t\\t\\t354 button (disabled) 上一页\\n\\t\\t\\t\\t355 button 下一页\\n\\t\\t\\t408 button 浏览目录\\n\\t\\t\\t409 button 核对资料与下一步的长中文标题 0 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-00.md 文件修改：11/19/2026\\n\\t\\t\\t410 button 核对资料与下一步的长中文标题 1 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-01.md 文件修改：11/19/2026\\n\\t\\t\\t411 button 核对资料与下一步的长中文标题 2 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-02.md 文件修改：11/19/2026\\n\\t\\t\\t412 button 核对资料与下一步的长中文标题 3 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-03.md 文件修改：11/19/2026\\n\\t\\t\\t413 button 核对资料与下一步的长中文标题 4 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-04.md 文件修改：11/19/2026\\n\\t\\t\\t414 button 核对资料与下一步的长中文标题 5 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-05.md 文件修改：11/19/2026\\n\\t\\t\\t415 button 核对资料与下一步的长中文标题 6 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-06.md 文件修改：11/19/2026\\n\\t\\t\\t416 button 核对资料与下一步的长中文标题 7 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-07.md 文件修改：11/19/2026\\n\\t\\t\\t417 button 核对资料与下一步的长中文标题 8 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-08.md 文件修改：11/19/2026\\n\\t\\t\\t418 button 核对资料与下一步的长中文标题 9 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-09.md 文件修改：11/19/2026\\n\\t\\t\\t419 button 核对资料与下一步的长中文标题 10 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-10.md 文件修改：11/19/2026\\n\\t\\t\\t420 button 核对资料与下一步的长中文标题 11 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-11.md 文件修改：11/19/2026\\n\\t\\t\\t421 button 核对资料与下一步的长中文标题 12 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-12.md 文件修改：11/19/2026\\n\\t\\t\\t422 button 核对资料与下一步的长中文标题 13 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-13.md 文件修改：11/19/2026\\n\\t\\t\\t423 button 核对资料与下一步的长中文标题 14 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-14.md 文件修改：11/19/2026\\n\\t\\t\\t424 button 核对资料与下一步的长中文标题 15 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-15.md 文件修改：11/19/2026\\n\\t\\t\\t425 button 核对资料与下一步的长中文标题 16 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-16.md 文件修改：11/19/2026\\n\\t\\t\\t426 button 核对资料与下一步的长中文标题 17 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-17.md 文件修改：11/19/2026\\n\\t\\t\\t427 button 核对资料与下一步的长中文标题 18 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-18.md 文件修改：11/19/2026\\n\\t\\t\\t428 button 核对资料与下一步的长中文标题 19 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-19.md 文件修改：11/19/2026\\n\\t\\t\\t429 button 核对资料与下一步的长中文标题 20 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-20.md 文件修改：11/19/2026\\n\\t\\t\\t430 button 核对资料与下一步的长中文标题 21 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-21.md 文件修改：11/19/2026\\n\\t\\t\\t431 button 核对资料与下一步的长中文标题 22 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-22.md 文件修改：11/19/2026\\n\\t\\t\\t432 button 核对资料与下一步的长中文标题 23 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-23.md 文件修改：11/19/2026\\n\\t\\t\\t433 button 核对资料与下一步的长中文标题 24 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-24.md 文件修改：11/19/2026\\n\\t\\t\\t434 button 核对资料与下一步的长中文标题 25 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-25.md 文件修改：11/19/2026\\n\\t\\t\\t435 button 核对资料与下一步的长中文标题 26 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-26.md 文件修改：11/19/2026\\n\\t\\t\\t436 button 核对资料与下一步的长中文标题 27 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-27.md 文件修改：11/19/2026\\n\\t\\t\\t437 button 核对资料与下一步的长中文标题 28 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-28.md 文件修改：11/19/2026\\n\\t\\t\\t438 button 核对资料与下一步的长中文标题 29 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-29.md 文件修改：11/19/2026\\n\\t\\t\\t439 button 核对资料与下一步的长中文标题 30 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-30.md 文件修改：11/19/2026\\n\\t\\t\\t440 button 核对资料与下一步的长中文标题 31 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-31.md 文件修改：11/19/2026\\n\\t\\t\\t441 button 核对资料与下一步的长中文标题 32 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-32.md 文件修改：11/19/2026\\n\\t\\t\\t442 button 核对资料与下一步的长中文标题 33 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-33.md 文件修改：11/19/2026\\n\\t\\t\\t443 button 核对资料与下一步的长中文标题 34 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-34.md 文件修改：11/19/2026\\n\\t\\t\\t444 button 核对资料与下一步的长中文标题 35 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-35.md 文件修改：11/19/2026\\n\\t\\t\\t445 button 核对资料与下一步的长中文标题 36 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-36.md 文件修改：11/19/2026\\n\\t\\t\\t446 button 核对资料与下一步的长中文标题 37 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-37.md 文件修改：11/19/2026\\n\\t\\t\\t447 button 核对资料与下一步的长中文标题 38 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-38.md 文件修改：11/19/2026\\n\\t\\t\\t448 button 核对资料与下一步的长中文标题 39 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-39.md 文件修改：11/19/2026\\n\\t\\t\\t449 button 核对资料与下一步的长中文标题 40 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-40.md 文件修改：11/19/2026\\n\\t\\t\\t450 button 核对资料与下一步的长中文标题 41 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-41.md 文件修改：11/19/2026\\n\\t\\t\\t451 button 核对资料与下一步的长中文标题 42 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-42.md 文件修改：11/19/2026\\n\\t\\t\\t452 button 核对资料与下一步的长中文标题 43 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-43.md 文件修改：11/19/2026\\n\\t\\t\\t453 button 核对资料与下一步的长中文标题 44 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-44.md 文件修改：11/19/2026\\n\\t\\t\\t454 button 核对资料与下一步的长中文标题 45 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-45.md 文件修改：11/19/2026\\n\\t\\t\\t455 button 核对资料与下一步的长中文标题 46 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-46.md 文件修改：11/19/2026\\n\\t\\t\\t456 button 核对资料与下一步的长中文标题 47 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-47.md 文件修改：11/19/2026\\n\\t\\t\\t457 button 核对资料与下一步的长中文标题 48 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-48.md 文件修改：11/19/2026\\n\\t\\t\\t458 button 核对资料与下一步的长中文标题 49 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文与阅读位置。 保留原文 note-49.md 文件修改：11/19/2026\\n\\t\\t\\t459 container\\n\\t\\t\\t\\t460 button ‹ 返回列表\\n\\t\\t\\t\\t461 text 阅读笔记\\n\\t\\t\\t\\t462 button 编辑\\n\\t\\t\\t\\t463 button 从笔记创建行动\\n\\t\\t\\t\\t464 button 从选段创建行动\\n\\t\\t\\t\\t465 text field 笔记标题, Value: 核对资料与下一步的长中文标题 0, Placeholder: 无标题\\n\\t\\t\\t\\t466 button 笔记信息与整理\\n\\t\\t\\t\\t467 container 笔记阅读内容\\n\\t\\t\\t\\t\\t468 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t469 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t470 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t471 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t472 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t473 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t474 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t475 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t476 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t477 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t478 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t479 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t480 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t481 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t482 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t483 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t484 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t485 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t486 text 保留原文与阅读位置。\\n\\t\\t\\t\\t\\t487 text 保留原文与阅读位置。\\n\\t41 close button\\n\\t42 full screen button, Secondary Actions: zoom the window\\n\\t43 minimize button\\n\\t44 text 拾记 · Local Notes\\n\\nThe focused UI element is 462 button 编辑.\",\n      \"focusedElementId\": 462,\n      \"id\": \"2C310DCE-5730-41FC-AC31-CC39E8C56661\",\n      \"app\": {\n        \"bundleId\": \"dev.localnotes.validation.issue81continuation60dbc846\",\n        \"pid\": 94451,\n        \"name\": \"LocalNotes\"\n      },\n      \"window\": {\n        \"x\": 166,\n        \"screenIndex\": 0,\n        \"title\": \"拾记 · Local Notes\",\n        \"width\": 1180,\n        \"id\": 27167,\n        \"height\": 832,\n        \"isOffscreen\": false,\n        \"y\": 47,\n        \"isMinimized\": false,\n        \"platform\": {\n          \"layer\": 0\n        }\n      },\n      \"coordinateSpace\": \"window\",\n      \"elementCount\": 115,\n      \"truncation\": {\n        \"truncated\": false,\n        \"maxDepth\": 64,\n        \"maxDepthReached\": false,\n        \"maxNodes\": 1200\n      }\n    },\n    \"screenshot\": {\n      \"format\": \"png\",\n      \"width\": 2360,\n      \"height\": 1664,\n      \"scale\": 2,\n      \"path\": \"/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/orca-computer-use/9b1ee797-b36a-4db3-91dd-e1739c46a8df-screenshot.png\",\n      \"dataOmitted\": true,\n      \"expiresAt\": \"2026-11-21T07:25:14.652Z\"\n    },\n    \"screenshotStatus\": {\n      \"metadata\": {\n        \"engine\": \"screenCaptureKit\",\n        \"windowId\": 27167\n      },\n      \"state\": \"captured\"\n    }\n  },\n  \"_meta\": {\n    \"runtimeId\": \"8fa795e6-4f9d-4fe1-8626-61201a312033\"\n  }\n}\n"
+  },
+  {
+    "nativeFocus": {
+      "visibility": "visible",
+      "hasFocus": true,
+      "active": "BUTTON"
+    }
+  },
+  {
+    "provenance": {
+      "head": "db3aa4bf6102ed53a3df4f5efd070b46ae800f28",
+      "executableSHA256": "2165cd0f13bbf2ec8c489417a20bbf3cd61b308a93ae454727254f9281753cc3",
+      "probeSHA256": "1bdcbca493e38a5694e90d98d9e6dafa9870c3f852c33fe818c37bb17103ecc1",
+      "hostSHA256": "fd2432dd0c880d68948f1f9c5dfe9254e01115c81439bcc167e4959eee1062f4",
+      "sourcePackage": {
+        "library-screen.js": {
+          "source": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c",
+          "package": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c"
+        },
+        "organization.js": {
+          "source": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+          "package": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8"
+        },
+        "index.html": {
+          "source": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6",
+          "package": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6"
+        },
+        "core.js": {
+          "source": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+          "package": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509"
+        },
+        "bridge.js": {
+          "source": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+          "package": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c"
+        },
+        "actions.js": {
+          "source": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+          "package": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019"
+        },
+        "reading-history.js": {
+          "source": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+          "package": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643"
+        },
+        "initiative-screen.js": {
+          "source": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5",
+          "package": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5"
+        },
+        "library.js": {
+          "source": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9",
+          "package": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9"
+        },
+        "focus-screen.js": {
+          "source": "91e8630e0b824ac141ed45432ed5d65b087006956dfed0b9d24e2bef1933582c",
+          "package": "91e8630e0b824ac141ed45432ed5d65b087006956dfed0b9d24e2bef1933582c"
+        },
+        "global-search.js": {
+          "source": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+          "package": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862"
+        },
+        "task-drafts.js": {
+          "source": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+          "package": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3"
+        },
+        "revision-graph.js": {
+          "source": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+          "package": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032"
+        },
+        "search-screen.js": {
+          "source": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea",
+          "package": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea"
+        },
+        "style.css": {
+          "source": "95b030e61010df3a401a4fb8c131dac76b3d93e4d3f68b266852c7d5ff797658",
+          "package": "95b030e61010df3a401a4fb8c131dac76b3d93e4d3f68b266852c7d5ff797658"
+        },
+        "organize-screen.js": {
+          "source": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
+          "package": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b"
+        },
+        "action-screen.js": {
+          "source": "5c84c1ad4d0664dc24a4a1c62791042cac5fab74c9870d9fea6eab55485d26ad",
+          "package": "5c84c1ad4d0664dc24a4a1c62791042cac5fab74c9870d9fea6eab55485d26ad"
+        },
+        "presentation.js": {
+          "source": "b3e0a7f4a073306e1ded3d29452e3b8ccfe3a13596b172a26593f4b7fbe14490",
+          "package": "b3e0a7f4a073306e1ded3d29452e3b8ccfe3a13596b172a26593f4b7fbe14490"
+        },
+        "sync-screen.js": {
+          "source": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
+          "package": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd"
+        },
+        "app.js": {
+          "source": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b",
+          "package": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b"
+        },
+        "initiatives.js": {
+          "source": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+          "package": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+        }
+      },
+      "clipboard": "untouched",
+      "inputSource": "untouched"
+    }
+  },
+  {
+    "ownedHostExited": -15
+  }
+]

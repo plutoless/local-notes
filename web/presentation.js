@@ -14,6 +14,20 @@ export function button(text, run, {primary = false, variant = primary ? 'primary
   return node;
 }
 
+// Keep keyboard position meaningful when the activated page direction becomes disabled.
+export function pageAvailability(previous, next, hasPrevious, hasNext) {
+  const active = document.activeElement;
+  previous.disabled = !hasPrevious; next.disabled = !hasNext;
+  if ((active === previous || active === next) && active.disabled) {
+    const fallback = previous.disabled ? next : previous;
+    if (!fallback.disabled) fallback.focus({preventScroll: true});
+    else {
+      const result = document.querySelector('#items .ui-row') || document.querySelector('#view-title');
+      if (result) { if (result.id === 'view-title') result.tabIndex = -1; result.focus({preventScroll: true}); }
+    }
+  }
+}
+
 export function feedback(target, message, diagnostic = '') {
   target.classList.add('ui-feedback');
   target.dataset.state = diagnostic ? 'failed' : 'saved';
@@ -184,7 +198,7 @@ export async function requestTaskLeave(task) {
     await task.pending?.();
     let failure = '';
     while (task.dirty()) {
-      const choice = await taskLeaveChoice(task.label, failure, task.committed?.());
+      const choice = await taskLeaveChoice(task.label, failure, task.committed?.(), task.focusOrigin?.());
       if (choice === 'continue') return false;
       if (choice === 'discard') { await task.discard(); break; }
       try {
@@ -196,9 +210,9 @@ export async function requestTaskLeave(task) {
   } finally { leavingTask = false; task.resume?.(); }
 }
 
-function taskLeaveChoice(label, failure, committed) {
+function taskLeaveChoice(label, failure, committed, focusOrigin) {
   return new Promise(resolve => {
-    const origin = document.activeElement;
+    const origin = focusOrigin || document.activeElement;
     const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
     const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;

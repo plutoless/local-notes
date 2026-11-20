@@ -82,7 +82,7 @@ try {
   await page.locator('#action-initiative').focus();
   await page.locator('#action-initiative').selectOption(second.entityId);
   releaseAssignments();
-  await page.waitForFunction(()=>document.activeElement.id==='action-description');
+  await page.waitForFunction(()=>document.activeElement.id==='action-initiative');
   assert.equal(await page.locator('#action-initiative').inputValue(),second.entityId,'Late assignment options must preserve the current user choice');
   await page.locator('#action-back').click();
   await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
