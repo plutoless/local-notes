@@ -16,6 +16,7 @@ browse = Path(__file__).with_name('native-browse-focus.py')
 shared = browse.read_text().split('\ntry:\n process=subprocess.Popen', 1)
 assert len(shared) == 2
 prefix = shared[0].replace('issue81', 'issue85')
+prefix = prefix.replace('self?.window.setContentSize', 'self?.window.minSize = NSSize(width:1,height:1); self?.window.setContentSize')
 prefix = prefix.replace('"Tab":CGKeyCode(48)', '"Space":CGKeyCode(49),"Tab":CGKeyCode(48)')
 prefix = prefix.replace('"Tab":"\\\\t"', '"Space":" ","Tab":"\\\\t"')
 prefix = prefix.replace("'Tab':('Tab',False,False)", "'Space':(' ',False,False),'Tab':('Tab',False,False)")
@@ -26,6 +27,9 @@ server = HTTPServer(('127.0.0.1', 0), m.Service)
 threading.Thread(target=server.serve_forever, daemon=True).start()
 # Synthetic configuration exists only in this run's isolated private root.
 (m.OUT/'Private/ai-service.json').write_text(json.dumps(dict(address=f'http://127.0.0.1:{server.server_port}',model='synthetic-controlled',token='synthetic-review-key')))
+helper=m.OUT/'input-source'
+subprocess.run(['swiftc','tests/InputSourceHarness.swift','-o',str(helper)],check=True)
+initial_input=subprocess.check_output([str(helper)],text=True).splitlines()[0]
 source_hashes = {str(p.relative_to(m.OUT/'Sync')):hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
 try:
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
@@ -65,6 +69,9 @@ finally:
  server.shutdown();server.server_close()
  if process:process.terminate();process.wait(timeout=10)
  absent=process is None or subprocess.run(['kill','-0',str(process.pid)],capture_output=True).returncode!=0
+ final_input=subprocess.check_output([str(helper)],text=True).splitlines()[0]
+ assert final_input == initial_input
+ log.append({'nativeSources':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('mac').glob('*.swift')},'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'bundleIdentifier':subprocess.check_output(['/usr/libexec/PlistBuddy','-c','Print :CFBundleIdentifier',str(m.APP/'Contents/Info.plist')],text=True).strip(),'initialInputSource':initial_input,'finalInputSource':final_input})
  log.append({'cleanup':{'pid':process.pid if process else None,'exit':process.returncode if process else None,'waited':True,'absent':absent,'clipboard':'untouched','inputSource':'untouched'},'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'probeHashes':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__),browse,Path(__file__).with_name('native-browse-input.swift'),m.OUT/'main.swift']},'sourcePackage':{p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()}})
  (out/'transcript.json').write_text(json.dumps(log,ensure_ascii=False,indent=2))
  assert absent

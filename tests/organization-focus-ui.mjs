@@ -6,31 +6,24 @@ import {InitiativeRepository} from '../web/initiatives.js';
 const fixture = await storageFixture();
 const phase = process.env.PHASE || 'after';
 await mkdir(`build/issue85-${phase}`, {recursive:true});
-const text = '历史计划需要确认。核对来源证据。'.repeat(450);
+const text = '# 合成长中文来源标题：核对历史计划、保留原文、逐条确认当前适用性与后续行动\n\n' + '历史计划需要确认。核对来源证据。'.repeat(450);
 await writeFile(fixture.root + '/reference.md', text);
 const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
 const initiative = (await initiatives.save({title:'合成事项', goal:'验证关联', progress:'', status:'active', sources:[]})).record;
 const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
-let mode = 'ok', requests = 0, pending, failTarget = false, delayRead = false, releaseRead;
+let requests = 0;
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
  const errors = []; page.on('pageerror', e => errors.push(e.message));
  await page.exposeFunction('bridge', async request => {
   try {
    if (request.cmd === 'aiSettings') return {address:'http://127.0.0.1/controlled', model:'controlled', configured:true};
-   if (request.cmd === 'aiCancel') { pending?.({error:'Canceled'}); pending = null; return {}; }
    if (request.cmd === 'aiAnalyze') {
     requests++;
-    if (mode === 'hold') return await new Promise(resolve => pending = resolve);
-    if (mode === 'offline') return {error:'Offline or connection failed; retry explicitly'};
-    if (mode === 'invalid') return {text:'{invalid'};
-    if (mode === 'partial' && requests === 2) return {error:'Rate limited; retry explicitly'};
     const batch = JSON.parse(request.messages[1].content);
     return {text:JSON.stringify({candidates:Array.from({length:6}, (_, i) => ({type:'action', content:`合成建议 ${i} · ${batch.start}`, placement:'独立行动', reasoning:'来源明确提及核对证据', relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]}))})};
    }
-   if (request.cmd === 'read' && delayRead) await new Promise(resolve => releaseRead = resolve);
    if (request.cmd === 'read') return {text:await readFile(fixture.root + '/' + request.path, 'utf8')};
-   if (failTarget && request.cmd === 'actionWrite' && request.path.startsWith('revisions/') && JSON.parse(request.text).entityType === 'action') { failTarget = false; return {error:'Synthetic target write failure'}; }
    return await fixture.adapter(request.cmd, request);
   } catch (error) { return {error:error.message}; }
  });
@@ -71,6 +64,8 @@ try {
  await card(0).getByLabel('已有事项',{exact:true}).selectOption(initiative.entityId);
  await edit.evaluate(n=>n.setSelectionRange(2,8));
  const source = card(0).getByRole('button',{name:/^打开来源：/});
+ await source.scrollIntoViewIfNeeded();
+ const sourceScroll = await page.locator('#organize-tools').evaluate(n=>n.scrollTop);
  await source.click(); await page.locator('#back').click();
  await card(0).getByLabel('已有事项',{exact:true}).waitFor();
  if(phase==='after' || process.env.ASSERT_FOCUS) {
@@ -78,9 +73,14 @@ try {
   assert.deepEqual(await edit.evaluate(n=>[n.selectionStart,n.selectionEnd]),[2,8]);
   await page.waitForFunction(()=>document.activeElement.getAttribute('aria-label')?.startsWith('打开来源：'));
   assert.equal(await source.evaluate(n=>n===document.activeElement),true);
+  assert.equal(await page.locator('#organize-tools').evaluate(n=>n.scrollTop),sourceScroll);
+  assert.equal(await checkbox.isChecked(),true);
  }
  for(const size of [{width:1180,height:800},{width:393,height:650},{width:1180,height:480}]) {
   await page.setViewportSize(size);
+  await source.click(); await page.locator('#back').click();
+  await card(0).getByLabel('已有事项',{exact:true}).waitFor();
+  if(phase==='after') await page.waitForFunction(()=>document.activeElement.getAttribute('aria-label')?.startsWith('打开来源：'));
   await source.scrollIntoViewIfNeeded();
   await page.screenshot({path:`build/issue85-${phase}/candidate-pointer-${size.width}-${size.height}.png`});
   await confirm.focus(); await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab');
@@ -88,6 +88,7 @@ try {
   assert.equal(await confirm.evaluate(n=>getComputedStyle(n).outlineWidth),'3px');
   assert.ok(await confirm.evaluate(n=>n.getBoundingClientRect().height>=44));
   await edit.fill('');
+  await edit.evaluate(n=>n.scrollIntoView({block:'center'}));
   await page.screenshot({path:`build/issue85-${phase}/invalid-field-${size.width}-${size.height}.png`});
   assert.equal(await edit.getAttribute('aria-invalid'),'true');
   await edit.fill('合成长中文建议：逐条核对当前适用性、保留来源与用户决定'.repeat(5));

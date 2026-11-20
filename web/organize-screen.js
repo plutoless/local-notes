@@ -234,7 +234,7 @@ export class OrganizeScreen {
           }), {variant: decision === 'confirm' ? 'primary' : 'quiet', label: `${label}：${record.description}`}); decisions.append(button);
         }
       } else if (record.review?.state === 'pending' && !record.syncState) {
-        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { await this.review.recover(); await this.candidates(); }), {variant: 'secondary'}); card.append(retry);
+        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { try { await this.review.recover(); } finally { await this.candidates({owner: retry}); } }), {variant: 'secondary', label: `恢复已确认的决定：${record.description}`}); card.append(retry);
       }
       const raw = document.createElement('pre');
       raw.textContent = JSON.stringify({entityId: record.entityId, revision: record.revision, review: record.review || null}, null, 2); card.append(disclosure('建议记录详情', [raw]));
