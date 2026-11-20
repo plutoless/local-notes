@@ -168,6 +168,7 @@ export class ActionScreen {
     try { page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset}); }
     catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; errorFeedback($('#items'), error.message); } return; }
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
+    const focusedRow = document.activeElement.closest('#items [data-entity-id]')?.dataset.entityId;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const action of page.actions) {
       const row = selectionRow('', () => this.edit(action), {selected: action.entityId === this.previous?.entityId}); row.classList.add('card'); row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
@@ -175,6 +176,7 @@ export class ActionScreen {
       $('#items').append(row);
     }
     if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
+    if (focusedRow) [...$('#items').querySelectorAll('[data-entity-id]')].find(node => node.dataset.entityId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
     $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
     $('#action-page').textContent = `第 ${this.offset / 30 + 1} 页`;
