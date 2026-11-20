@@ -67,6 +67,9 @@ try {
   await closeSavedAction(page); await page.getByRole('button', {name: '同步检查'}).click();
   const panel = page.getByRole('dialog', {name: '同步检查'});
   await panel.waitFor();
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
+    assert.equal(await panel.evaluate(el=>el.contains(document.activeElement)),true,'First open must focus a modal control');
+  }
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
   await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
   await page.setViewportSize({width:393,height:852});
@@ -105,6 +108,12 @@ try {
   const firstVersion = panel.getByRole('button', {name: /选择版本 /}).first();
   await firstVersion.click();
   await capture('pointer-selected');
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
+    await panel.getByRole('button',{name:'放弃编辑',exact:true}).click();
+    assert.equal(await firstVersion.evaluate(el=>el===document.activeElement),true);
+    await page.keyboard.press('Enter');
+    assert.equal(await firstVersion.getAttribute('aria-pressed'),'true');
+  }
   // Keyboard return to the selected control while retaining its independent selection.
   if (process.env.ISSUE86) {
     await firstVersion.focus(); await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Tab');
@@ -226,7 +235,9 @@ try {
   await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   await first.getByRole('button',{name:'3. 保存解决结果到本地'}).focus(); await page.keyboard.press('Tab');
   assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
+  const selectedRevision=process.env.PHASE !== 'before' ? await first.locator('[aria-pressed=true]').getAttribute('data-revision') : null;
   await first.getByRole('button',{name:'放弃编辑',exact:true}).click();
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') assert.equal(await first.evaluate((el,revision)=>el.contains(document.activeElement) && document.activeElement.dataset.revision===revision,selectedRevision),true);
   await page.setViewportSize({width:393,height:852});
   if (process.env.PHASE !== 'before') {
     await panel.getByText('部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。').waitFor();
@@ -300,6 +311,20 @@ try {
   await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   assert.equal(await page.locator('#body').inputValue(),'冲突检查返回笔记编辑');
+  if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
+    // A brand-new consumer has no background-populated panel or controls.
+    await page.evaluate(async()=>{
+      const {SyncScreen}=await import('/sync-screen.js');
+      const {ActionRepository}=await import('/actions.js');
+      const {native}=await import('/bridge.js');
+      window.firstOpenProbe=new SyncScreen(()=>[new ActionRepository(native)],()=>{},async()=>{});
+      firstOpenProbe.opener.id='sync-first-open-probe';
+    });
+    await page.locator('#sync-first-open-probe').click();
+    await page.waitForFunction(()=>firstOpenProbe.panel.getAttribute('aria-busy')==='false');
+    assert.equal(await page.evaluate(()=>firstOpenProbe.panel.contains(document.activeElement)),true);
+    await page.evaluate(()=>firstOpenProbe.close());
+  }
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
 } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }

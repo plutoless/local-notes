@@ -44,7 +44,7 @@ try:
  click('#native-discard');state('discard-return')
  assert c("return document.activeElement.dataset.revision===syncLeft.revision || document.activeElement.dataset.revision===syncRight.revision || document.activeElement.dataset.revision===syncBase.revision")
  c("document.querySelector('.sync-version button').id='native-version'")
- click('#native-version')
+ key('Return')
  c("const n=document.querySelector('.sync-editor textarea');n.value='人工合并并保留来源';n.dispatchEvent(new Event('input',{bubbles:true}));[...document.querySelectorAll('.sync-panel button')].find(n=>n.textContent==='3. 保存解决结果到本地').id='native-save'")
  click('#native-save');w("document.querySelector('.sync-panel').textContent.includes('现有版本中未发现待处理冲突。')")
  outcome=c("await syncRepo.recover();const history=await syncRepo.history(syncBase.entityId);return {history,record:(await syncRepo.query()).actions.find(n=>n.entityId===syncBase.entityId),expected:[syncLeft.revision,syncRight.revision]}")
