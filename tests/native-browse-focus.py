@@ -73,6 +73,10 @@ def state(name):
  value=c("const n=document.activeElement;return {active:n.id||n.dataset.path||n.dataset.entityId||n.textContent.slice(0,60),tag:n.tagName,focusVisible:n.matches(':focus-visible'),outline:getComputedStyle(n).outline,selected:n.getAttribute('aria-current'),invalid:n.getAttribute('aria-invalid'),scroll:document.querySelector('#items').scrollTop,collection:document.querySelector('.collection').scrollTop,events:window.inputEvents}")
  log.append({'state':name,**value});c('__snapshot');shutil.copy(m.OUT/'native.png',out/(name+'.png'));return value
 
+def browse_metrics(name):
+ value=c("const collection=document.querySelector('.collection'),list=document.querySelector('#items'),row=list.querySelector('[data-path]');return {utc:new Date().toISOString(),time:performance.now(),path:row?.dataset.path,selectedPath:list.querySelector('[aria-current=true]')?.dataset.path,collection:collection.scrollTop,list:list.scrollTop,collectionHeight:collection.clientHeight,collectionScrollHeight:collection.scrollHeight,listHeight:list.clientHeight,listScrollHeight:list.scrollHeight,rowRect:row?.getBoundingClientRect().toJSON(),windowScroll:scrollY}")
+ log.append({'browseMetrics':name,**value});return value
+
 def native(action,*args,target=None):
  host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'beforeInput':action,'args':args,'utc':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'pid':process.pid,'host':host,'document':document})
@@ -134,9 +138,14 @@ def native(action,*args,target=None):
   log.append({'nativeFocus':c("return {hasFocus:document.hasFocus(),active:document.activeElement.tagName,visibility:document.visibilityState,editorHidden:document.querySelector('#editor').hidden,file:document.querySelector('#file-path').textContent}"),'hostAfterError':c('__host')})
   raise AssertionError(r.stdout)
 
-def click(selector):
+def click(selector,capture_browse=None):
+ browse_metrics('before scrollIntoView '+selector)
  c('const node=document.querySelector('+json.dumps(selector)+');if(!node || !node.getClientRects().length || node.disabled)throw Error("Native target unavailable");node.scrollIntoView({block:"nearest"})')
+ browse_metrics('after scrollIntoView '+selector)
  rect=c('const node=document.querySelector('+json.dumps(selector)+');const r=node.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;if(!node.contains(document.elementFromPoint(x,y)))throw Error("Native target occluded or outside viewport");return {x,y}')
+ if capture_browse:
+  c('const row=document.querySelector('+json.dumps(selector)+');window['+json.dumps(capture_browse)+']={path:row.dataset.path,scroll:document.querySelector(".collection").scrollTop,list:document.querySelector("#items").scrollTop}')
+  log.append({'browseBaseline':capture_browse,'value':c('return window['+json.dumps(capture_browse)+']')})
  if not os.environ.get('EXTERNAL_INPUT'):rect['y']+=28
  log.append({'clickTarget':selector,'rect':rect})
  native('click','--x',str(round(rect['x'])),'--y',str(round(rect['y'])),target=selector)
@@ -155,7 +164,7 @@ try:
   log.append({'routePreflight':c('__route')})
   if not os.environ.get('CONSTRUCTOR_ONLY'):log.append({'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
- c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,utc:new Date().toISOString()}),true)")
+ c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  if not os.environ.get('REMAINING_ONLY'):
@@ -175,6 +184,7 @@ try:
   c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').id='probe-continue'");click('#probe-continue')
   assert c("return document.querySelector('#action-description').value")=='保留原草稿与选择'
   assert c("return [document.querySelector('#action-description').selectionStart,document.querySelector('#action-description').selectionEnd]")==selected
+  assert c("return document.activeElement.id==='action-description'"), 'Continue Editing must restore the editing field, not the entire drawer'
   state('action-retained-draft-selection')
   c("const field=document.querySelector('#action-description');field.value=window.savedActionText;field.dispatchEvent(new Event('input',{bubbles:true}))")
   click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-pointer-return')
@@ -193,6 +203,23 @@ try:
   click('[data-view=focus]')
   w("document.querySelector('.focus-row')!==window.nativeFocusRowBefore && document.querySelector('[data-view=focus]').getAttribute('aria-current')==='page' && document.querySelector('#index-state').textContent===''")
   log.append({'focusNavigationOutcome':'Remaining-run route preflight: actual native Current Focus navigation completed'})
+  if os.environ.get('VALIDATE_ACTION_CONTINUE'):
+   click('.focus-row-open');w("document.querySelector('#action-drawer').open")
+   c("const field=document.querySelector('#action-description');window.beforeCorrectionText=field.value;field.value='保留原草稿与选择';field.dispatchEvent(new Event('input',{bubbles:true}))")
+   click('#action-description');key('CmdOrCtrl+A')
+   selected=c("return [document.querySelector('#action-description').selectionStart,document.querySelector('#action-description').selectionEnd]")
+   for intended in ['action-description','action-status']:
+    if intended=='action-status':key('Tab')
+    assert c('return document.activeElement.id')==intended
+    click('#action-back');w("document.querySelector('#task-leave-decision').open")
+    c("[...document.querySelectorAll('#task-leave-decision button')].find(n=>n.textContent==='继续编辑').id='probe-continue'")
+    click('#probe-continue')
+    assert c('return document.activeElement.id')==intended, 'Continue Editing must restore the eligible intended control'
+    assert c("return document.querySelector('#action-description').value")=='保留原草稿与选择'
+    assert c("return [document.querySelector('#action-description').selectionStart,document.querySelector('#action-description').selectionEnd]")==selected
+    state('action-continue-'+intended)
+   c("const field=document.querySelector('#action-description');field.value=window.beforeCorrectionText;field.dispatchEvent(new Event('input',{bubbles:true}))")
+   click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-corrected-return')
   c('__size:393,852');c("document.querySelector('[data-view=notes]').click()")
   w("document.querySelectorAll('#items [data-path]').length===50")
   c("document.querySelector('#items [data-path=\"note-12.md\"]').click()")
@@ -204,9 +231,10 @@ try:
   w("!document.querySelector('#note-info-drawer').open");c("document.querySelector('#back').click()")
   w("document.querySelector('#editor').hidden")
  click('[data-view=favorites]');w("document.querySelectorAll('#items [data-path]').length===1")
- c("const row=document.querySelector('#items [data-path]');window.favoriteBefore={path:row.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
- click('#items [data-path]');w("!document.querySelector('#editor').hidden");click('#back')
+ browse_metrics('Favorites before target preparation')
+ click('#items [data-path]',capture_browse='favoriteBefore');w("!document.querySelector('#editor').hidden");click('#back')
  w("document.querySelector('#editor').hidden && document.activeElement.dataset.path===window.favoriteBefore.path")
+ browse_metrics('Favorites immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites settled return')
  assert c("return document.querySelector('.collection').scrollTop===window.favoriteBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteBefore.list")
  state('favorites-pointer-return');key('Tab');key('Shift+Tab');state('favorites-selected-keyboard')
  assert c("return document.activeElement.dataset.path===window.favoriteBefore.path && document.activeElement.getAttribute('aria-current')==='true' && document.activeElement.matches(':focus-visible')")
