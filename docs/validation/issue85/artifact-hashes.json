@@ -1,4 +1,5 @@
 {
+  "README.md": "2c2e2a691355b8be7861da870109a89887e3ffbb38039dedfacda2e7aacc0b32",
   "after/candidate-keyboard-1180-480.png": "7945589e74749a946def4117313020ddb21cb0780b0956ea5e4194e08a16ca9e",
   "after/candidate-keyboard-1180-800.png": "b421ae712555ff0adc8d1b367098adad25936a7c0e48dd998a337362efc41072",
   "after/candidate-keyboard-393-650.png": "5185125ce2d785819a6dd867bc348d85a07fb7c87934b97e76049a6a6cc890fc",
@@ -13,7 +14,6 @@
   "after/invalid-field-1180-480.png": "d12a0f660fbc2805e1627971bb34080bdad0eeade9d09ac4ece479f0cb212577",
   "after/invalid-field-1180-800.png": "3e0dce651097cd4c435334959b4571e6ad34f5e32499a96807a24eadc3e5688f",
   "after/invalid-field-393-650.png": "2eb08ebad9232067afea64d364485bc84f89bb2cab50fce3bf8d9c8ad5957f5e",
-  "before/candidate-1180-800.png": "0f7c5ca4e08aa7303e5c3e9e31be9d73c700cc19a9f6ae1ba9b79dc33339fc24",
   "before/candidate-keyboard-1180-480.png": "555d0538841976655cc790ec8301694415b49cfa6f6320046542d5e0b1ea4555",
   "before/candidate-keyboard-1180-800.png": "970b8d808e8509402c3a85096bff669d26b00fce540fb14a2fb5d48b2f0eda1a",
   "before/candidate-keyboard-393-650.png": "62451a6d3bed398812c747f0213e0eedcdd287d6e7ac831965ebf0ce254fb362",
@@ -27,5 +27,16 @@
   "before/confirmed-keyboard.png": "b452b2c237fed6b18d76563469c5ef116b9043cf62e54a3ca79e5978b033d255",
   "before/invalid-field-1180-480.png": "4f2062c032fe3ad1be2d1f46349258477283fb32d0bfaef887f8da89cd4dd437",
   "before/invalid-field-1180-800.png": "a01eb8304311665e0a8163e2dec4498ae113e3d0cffc2ebef6210236a681bbfd",
-  "before/invalid-field-393-650.png": "d737efc1f4434692997b0f0184188ffdef7716181c8391bcd8a1040a564a518e"
+  "before/invalid-field-393-650.png": "d737efc1f4434692997b0f0184188ffdef7716181c8391bcd8a1040a564a518e",
+  "native/checked-keyboard.png": "8dce192e56b78c287723578c8d62b0899a05a74190e14f813b3f1190d17d1c7b",
+  "native/checked-pointer.png": "430ec1aced297177c641c86d82a2745d7e3915179fcbb203a265e536d80aca60",
+  "native/confirmed-1180-480.png": "efb0bd34587cf4ab0a9e19f378b2d701b758aa0c9530f668f12e34d1a8fd33a1",
+  "native/confirmed-1180-800.png": "bf98913e7dfa06668ef24fc8e3b581368d8cd7064b7c368f25fdb87e8f826381",
+  "native/confirmed-393-650.png": "bc889273b0e314290309ccc2cc01e87acea41ae01ac7ad9c884a8a8bb7da9067",
+  "native/confirmed-keyboard.png": "bf98913e7dfa06668ef24fc8e3b581368d8cd7064b7c368f25fdb87e8f826381",
+  "native/review-keyboard.png": "488c19ae0df33a48951d9bc9584530523520ef631082c0f1e18daed1eb36bea0",
+  "native/send-canceled.png": "b88685c237f93384d3cc6f4c87d149f81aaee571afe8d2717d6f3cbfe81c7d80",
+  "native/send-error.png": "f90f4df6705d71a5d1a221033735f094bc68a9b23665c04668b4d4623decedd5",
+  "native/source-return-pointer.png": "d301ff1cccb9abedc159f96653c2864f5d03caaf1dbc46a0a00d9943f3b68857",
+  "native/transcript.json": "57e08c0cb57d69a0a97ee04d3c6d1b69c018087f1dfa87c7e8033547c0bcd203"
 }
