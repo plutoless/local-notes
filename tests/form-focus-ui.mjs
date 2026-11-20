@@ -159,6 +159,12 @@ try {
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   assert.equal(await page.locator('#note-location').inputValue(),'../invalid.md');
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
+  await keyboardOpen('#note-info-open'); await page.waitForFunction(()=>document.activeElement.id==='star');
+  await keyboardOpen('#rename'); assert.equal(await active(),'note-location');
+  await page.keyboard.press('Escape');
+  assert.equal(await active(),'note-info-open','location returns to the surviving note-information opener');
+  await keyboardOpen('#note-info-open','Space'); await page.waitForFunction(()=>document.activeElement.id==='star');
+  await page.keyboard.press('Escape'); assert.equal(await active(),'note-info-open');
   assert.equal(await readFile(join(fixture.root,'reference.md'),'utf8') !== '',true);
   assert.deepEqual(errors,[]); await writeFile(join(evidence,'transcript.json'),JSON.stringify(report,null,2));
   console.log((process.env.FORM_BASELINE ? 'CAPTURE baseline (cycles recorded, not passed)' : 'PASS')+' contextual form focus: real-storage bridge, modality, cycles, invalid, recovery, selection, return and responsive states');
