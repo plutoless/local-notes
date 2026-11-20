@@ -22,7 +22,7 @@ try {
   await writeFile(sourcePath, original);
   for(let n=0;n<54;n++) await writeFile(join(fixture.root,`browse-${n}.md`), '# 很长的中文资料标题与保留的浏览上下文 '+n+'\n\n保留原文。');
   const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
-  const first = (await initiatives.save({progress: '待核对', title: '整理工作资料', goal: '让常用资料有清晰的入口', progress: '资料目录已整理，正在确定本周行动。', status: 'active', sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: (await import('../web/initiatives.js')).fingerprint(original), role: 'reference'}]})).record;
+  const first = (await initiatives.save({title: '整理工作资料', goal: '让常用资料有清晰的入口', progress: '资料目录已整理，正在确定本周行动。', status: 'active', sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: (await import('../web/initiatives.js')).fingerprint(original), role: 'reference'}]})).record;
   const second = (await initiatives.save({title: '准备下次评审', goal: '确认需要讨论的问题', progress: '等待评审时间确认。', status: 'active', sources: []})).record;
   const actions = new ActionRepository(fixture.adapter); await actions.open();
   for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
@@ -110,8 +110,10 @@ try {
   await page.locator('#workspace-context').waitFor({state:'visible'});
   assert.equal(await page.locator('#items [aria-current=true]').count(),1);
   await page.locator('[data-view=focus]').click();await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.locator('#items [data-entity-id]').first().click();
+  await page.waitForFunction(()=>[...document.querySelectorAll('#items [data-entity-id]')].every(n=>!n.disabled));
   await page.locator('#action-back').click();await page.locator('#action-drawer').waitFor({state:'hidden'});
-  assert.equal(await page.locator(':focus').getAttribute('data-entity-id')!==null,true);
+  await page.waitForFunction(()=>Boolean(document.activeElement.dataset.entityId));
+  assert.equal(await page.evaluate(()=>Boolean(document.activeElement.dataset.entityId)),true);
   let release; const started = new Promise(resolve=>{queryBegan=resolve;});
   queryGate = new Promise(resolve=>{release=resolve;});
   await page.locator('#search').fill('分页');await started;
