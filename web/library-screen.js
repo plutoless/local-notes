@@ -1,4 +1,4 @@
-import {requestTaskLeave, feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
+import {pageAvailability, requestTaskLeave, feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
 import {Library} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
@@ -126,9 +126,8 @@ export class LibraryScreen {
     $('#library-rename-topic').disabled = !this.library.records?.some(t => t.entityId === this.topic);
     $('#library-location').textContent = this.directory === '*' ? '全部目录' : this.directory || '/';
     $('#library-back').disabled = this.directory === '*';
-    $('#library-previous').disabled = this.offset === 0; $('#library-next').disabled = !result.hasMore;
     const focusedPath = document.activeElement.closest('#items [data-path]')?.dataset.path;
-    const scroll = $('.collection').scrollTop;
+    const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
     const list = $('#items'); list.replaceChildren();
     if (!this.search && this.offset === 0) {
       const inventory = (this.library.directories || []).map(directory => ({path: directory + '/_'}));
@@ -144,15 +143,16 @@ export class LibraryScreen {
       list.append(empty);
     }
     for (const note of result.notes) {
-      const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
+      const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; this.browseListScroll = $('#items').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
       card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt || '暂无正文摘要')}</p><small>${esc(note.path)}</small><small>${Number.isFinite(note.modified) ? '文件修改：' + new Date(note.modified * 1000).toLocaleDateString() : '文件修改时间未知'}</small>`;
       list.append(card);
     }
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
-    $('.collection').scrollTop = scroll;
+    $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
+    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0, result.hasMore);
   }
   captureContext() {
-    return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseScroll: $('.collection').scrollTop};
+    return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
   }
   async restoreContext(context) {
     Object.assign(this, context); $('#search').value = this.search;
@@ -162,6 +162,7 @@ export class LibraryScreen {
     await this.render();
     $('#items .selected')?.focus({preventScroll: true});
     $('.collection').scrollTop = this.browseScroll || 0;
+    $('#items').scrollTop = this.browseListScroll || 0;
   }
   async noteTopics(path, focusId = null) {
     this.noteTopicPath = path;

@@ -71,6 +71,7 @@ try {
   const pagingFailure = await page.evaluate(async () => {
     const {FocusScreen} = await import('/focus-screen.js');
     const screen = Object.create(FocusScreen.prototype);
+    screen.actions = {repository: {}};
     screen.focusOffset = 99; screen.show = async () => {throw Error('Controlled page failure');};
     screen.notice = message => {screen.failure = message;};
     await screen.pageFocus(198);

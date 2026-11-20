@@ -1,5 +1,5 @@
 import {recoverTaskDraft} from './task-drafts.js';
-import {requestTaskLeave, actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback, drawer} from './presentation.js';
+import {pageAvailability, requestTaskLeave, actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback, drawer} from './presentation.js';
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
 import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
@@ -76,6 +76,11 @@ export class ActionScreen {
     const form = $('#action-form'); form.querySelector('h2').remove();
     this.drawer.body.append(form);
     this.drawer.body.append($('#action-editor .toolbar details'));
+    // Native pointer dismissal can leave the dialog itself active. Retain the
+    // last editing control instead of returning Continue Editing to the frame.
+    this.drawer.body.addEventListener('focusin', event => {
+      if (event.target.matches('input, textarea, select, button, summary, [tabindex]')) this.editingFocus = event.target;
+    });
     for (const node of form.querySelectorAll('.ui-field, .ui-action')) node.classList.add('ui-compact');
     const cancel = $('#action-back'), submit = $('#action-save');
     cancel.classList.add('ui-action', 'quiet', 'ui-compact'); submit.setAttribute('form', form.id);
@@ -115,6 +120,10 @@ export class ActionScreen {
   leaveDrawer() { return this.drawer.panel.open ? requestTaskLeave(this.task()) : Promise.resolve(true); }
   task() {
     return {label: '行动', pending: () => this.saving, dirty: () => this.dirty, committed: () => Boolean(this.retry),
+      focusOrigin: () => {
+        const control = this.editingFocus;
+        return control?.isConnected && this.drawer.body.contains(control) && control.tabIndex >= 0 && !control.matches(':disabled') && !control.closest('[inert]') && control.getClientRects().length ? control : $('#action-description');
+      },
       save: () => this.save(), discard: () => {
         if (!this.creationUncertain) localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
         this.editRequest = (this.editRequest || 0) + 1;
@@ -160,7 +169,6 @@ export class ActionScreen {
   }
   async list() {
     if (!this.active) return;
-    const scroll = $('#items').scrollTop;
     const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
     $('#index-state').textContent = '正在载入行动…';
@@ -168,6 +176,8 @@ export class ActionScreen {
     try { page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset}); }
     catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; errorFeedback($('#items'), error.message); } return; }
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
+    const scroll = $('#items').scrollTop;
+    const focusedRow = document.activeElement.closest('#items [data-entity-id]')?.dataset.entityId;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const action of page.actions) {
       const row = selectionRow('', () => this.edit(action), {selected: action.entityId === this.previous?.entityId}); row.classList.add('card'); row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
@@ -175,8 +185,9 @@ export class ActionScreen {
       $('#items').append(row);
     }
     if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
+    if (focusedRow) [...$('#items').querySelectorAll('[data-entity-id]')].find(node => node.dataset.entityId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
-    $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
+    pageAvailability($('#action-previous'), $('#action-next'), this.offset > 0, page.hasMore);
     $('#action-page').textContent = `第 ${this.offset / 30 + 1} 页`;
   }
   async assignments(selected = $('#action-initiative').value || '') {
@@ -269,6 +280,8 @@ export class ActionScreen {
     this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     const context = this.captureContext(action);
+    // The shared row is temporarily disabled during opening, which can move DOM focus to body.
+    if (context.opener === document.body && action) context.opener = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === action.entityId) || context.opener;
     this.contextualProposal = proposal;
     this.showForm(proposal?.fields || action || {}, action);
     const baseline = this.baseline;
@@ -278,12 +291,14 @@ export class ActionScreen {
     this.creationUncertain = Boolean(this.creationAttempt);
     this.recoveredDraft = Boolean(draft);
     this.drawer.open($('#action-description'));
+    // Once the modal owns input, the underlying row must remain a usable return target.
+    if (context.opener?.matches('#items .ui-row')) context.opener.disabled = false;
     this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
     await this.assignments($('#action-initiative').value || '');
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.() || !this.drawer.panel.open) return;
     if (draft) this.state('已恢复行动草稿，请核对后保存。');
     if (!this.dirty) this.state(action ? '已保存到本地' : '写下你已决定执行的下一步。');
-    $('#action-description').focus();
+    // Opening already placed focus; late option loading must not move it again.
   }
   async refreshSources(action) {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;

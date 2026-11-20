@@ -1,5 +1,5 @@
 import {recoverTaskDraft} from './task-drafts.js';
-import {requestTaskLeave, statusLabel, errorFeedback, progressLabel, selectionRow, drawer, button} from './presentation.js';
+import {pageAvailability, requestTaskLeave, statusLabel, errorFeedback, progressLabel, selectionRow, drawer, button} from './presentation.js';
 import {InitiativeRepository, allRecords, endInitiative, unfinished, fingerprint, sourceState} from './initiatives.js';
 import {native} from './bridge.js';
 const $ = selector => document.querySelector(selector);
@@ -199,11 +199,13 @@ export class InitiativeScreen {
   }
   async list() {
     const repository = this.repository, generation = ++this.listGeneration;
-    const query = `${this.search}:${this.offset}`, scroll = this.lastListQuery === query ? $('#items').scrollTop : 0;
+    const query = `${this.search}:${this.offset}`, sameQuery = this.lastListQuery === query;
     this.lastListQuery = query;
     $('#index-state').textContent = '正在载入事项…';
     const page = await repository.query({limit: 50, offset: this.offset, search: this.search});
     if (!this.active || repository !== this.repository || generation !== this.listGeneration) return;
+    const scroll = sameQuery ? $('#items').scrollTop : 0;
+    const focusedRow = document.activeElement.closest('#items [data-initiative-id]')?.dataset.initiativeId;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const record of page.actions) {
       const button = selectionRow('', () => this.edit(record).catch(e => this.notice(e.message)), {selected: record.entityId === this.previous?.entityId}); button.classList.add('card'); button.dataset.initiativeId = record.entityId; button.classList.toggle('selected', record.entityId === this.previous?.entityId); button.setAttribute('aria-current', String(record.entityId === this.previous?.entityId));
@@ -212,8 +214,9 @@ export class InitiativeScreen {
       button.append(heading, summary); $('#items').append(button);
     }
     if (!page.actions.length) $('#items').textContent = this.search ? '没有找到匹配事项。请缩短关键词，或清空搜索。' : '还没有事项。点击「新建事项」记录目标和进展。';
+    if (focusedRow) [...$('#items').querySelectorAll('[data-initiative-id]')].find(node => node.dataset.initiativeId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
-    $('#initiative-next').disabled = !page.hasMore; $('#initiative-previous').disabled = !this.offset;
+    pageAvailability($('#initiative-previous'), $('#initiative-next'), this.offset > 0, page.hasMore);
   }
   fields() {
     return {title: $('#initiative-title').value, goal: $('#initiative-goal').value, progress: $('#initiative-progress').value, status: $('#initiative-status').value,
