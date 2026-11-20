@@ -16,7 +16,7 @@ source=source.replace("source=(REPO/'mac/main.swift').read_text()", "source=(REP
 source=source.replace("generated=OUT/'main.swift';generated.write_text(source)","generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped ='))")
 EXTRA='''if script == "__host" { let result:[String:Any] = ["ok":true,"value":["active":NSApp.isActive,"hidden":NSApp.isHidden,"key":self?.window.isKeyWindow ?? false,"visible":self?.window.isVisible ?? false,"occluded":!(self?.window.occlusionState.contains(.visible) ?? false),"webHidden":self?.web.isHidden ?? true,"windowNumber":self?.window.windowNumber ?? -1,"main":self?.window.isMainWindow ?? false,"firstResponderIsWeb":self?.window.firstResponder === self?.web]]; try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script.hasPrefix("__pointer:") { let p=script.dropFirst(10).split(separator:",").compactMap { Double($0) }; if let window=self?.window { let point=CGPoint(x:window.frame.minX+p[0],y:(NSScreen.screens.first?.frame.height ?? 0)-window.frame.maxY+p[1]); for type in [CGEventType.leftMouseDown,CGEventType.leftMouseUp] { CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)?.postToPid(getpid()) } };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
-if script.hasPrefix("__key:") { let key=script.dropFirst(6);let code:CGKeyCode=key.contains("Tab") ? 48 : key == "Escape" ? 53 : 36;for down in [true,false] { let event=CGEvent(keyboardEventSource:nil,virtualKey:code,keyDown:down);if key.hasPrefix("Shift+") {event?.flags = .maskShift};event?.postToPid(getpid()) };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script.hasPrefix("__key:") { let key=String(script.dropFirst(6));let codes:[String:CGKeyCode] = ["Tab":48,"Shift+Tab":48,"Escape":53,"Return":36,"CmdOrCtrl+A":0];guard let code=codes[key] else {try? JSONSerialization.data(withJSONObject:["ok":false,"error":"Unsupported native key: " + key]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return};for down in [true,false] { let event=CGEvent(keyboardEventSource:nil,virtualKey:code,keyDown:down);if key.hasPrefix("Shift+") {event?.flags = .maskShift};if key.hasPrefix("CmdOrCtrl+") {event?.flags = .maskCommand};event?.postToPid(getpid()) };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script == "__focus" { NSApp.unhide(nil); self?.window.deminiaturize(nil); self?.window.orderFrontRegardless(); self?.window.makeKeyAndOrderFront(nil); self?.window.makeFirstResponder(self?.web); NSApp.activate(ignoringOtherApps:true); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script.hasPrefix("__size:") { let size=script.dropFirst(7).split(separator:",").compactMap { Double($0) }; self?.window.setContentSize(NSSize(width:size[0],height:size[1])); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
@@ -34,13 +34,20 @@ def state(name):
 
 def native(action,*args):
  host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
- log.append({'beforeInput':action,'pid':process.pid,'host':host,'document':document})
+ log.append({'beforeInput':action,'args':args,'utc':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'pid':process.pid,'host':host,'document':document})
  assert host['windowNumber']==owned_window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned host lost visible keyboard/input ownership; no operation attempted'
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
   assert host['active'] and host['key'] and host['visible'] and not host['occluded'], 'Native acceptance requires a visibly focused owned host'
+  previous=c('return window.inputEvents.length')
   if action=='click':c('__pointer:'+args[1]+','+args[3])
   else:c('__key:'+args[1])
+  events=[]
+  for _ in range(10):
+   time.sleep(.05);events=c('return window.inputEvents.slice('+str(previous)+')')
+   if any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events):break
+  log.append({'quartzInput':action,'args':args,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'hostAfter':c('__host'),'documentAfter':c('return {focused:document.hasFocus(),visibility:document.visibilityState}')})
+  assert any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events), 'Native delivery unverified; no replay'
   return
  r=subprocess.run(['orca','computer',action,'--app',f'pid:{process.pid}','--window-id',str(owned_window),'--restore-window',*args,'--no-screenshot','--json'],capture_output=True,text=True)
  receipt=json.loads(r.stdout);log.append({'input':action,'args':args,'receipt':receipt});
@@ -101,7 +108,7 @@ try:
  hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('web').glob('*') if p.is_file()}
  for p in Path('web').glob('*'):
   if p.is_file():assert p.read_bytes()==(m.APP/'Contents/Resources/web'/p.name).read_bytes()
- log.append({'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'sourcePackageHashes':hashes,'probeHash':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostHash':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'input':'Orca process-targeted OS injection; DOM fixture/setup; no physical input; clipboard/input source untouched'})
+ log.append({'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'sourcePackageHashes':hashes,'probeHash':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostHash':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'input':('Quartz CGEvent.postToPid' if os.environ.get('QUARTZ_INPUT') else 'Orca process-targeted OS injection')+'; DOM fixture/setup; no physical input; clipboard/input source untouched'})
  print('PASS native browse pointer/keyboard/open/return evidence')
 finally:
  log.append({'provenance':{'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'sourcePackage':{p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()},'clipboard':'untouched','inputSource':'untouched'}})
