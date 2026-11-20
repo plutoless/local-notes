@@ -1,4 +1,5 @@
 import {searchFocusJourney} from './search-focus-journey.js';
+import {execFileSync} from 'node:child_process';
 import {enterNoteEditing} from './form-journeys.js';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -32,7 +33,7 @@ try {
     } catch (e) { return {error:e.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async text => { const r = JSON.parse(text); window.nativeReply(r.id, await window.bridge(r)); }}; });
-  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(new URL('../web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: process.env.SEARCH_FOCUS_PHASE === 'before' && ['style.css','search-screen.js'].includes(name) ? execFileSync('git',['show','a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3:web/'+name]) : await readFile(new URL('../web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   let releaseWorkspace; workspaceDelay = new Promise(resolve=>releaseWorkspace=resolve);
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
