@@ -15,7 +15,7 @@ The `:root` declarations in `web/style.css` are the implemented source of truth.
 | Action / selection | `--accent`, `--selected`, `--selected-text`, `--hover` | Restrained blue; selection also uses weight and `aria-current` |
 | Status | `--success`, `--warning`, `--danger` | Always pair color with a Chinese receipt, warning or failure message |
 | Interactive / decorative boundaries | `--line`, `--divider` | `--line` ≥3:1 on light surfaces; `--divider` only separates noninteractive regions |
-| Keyboard indicator | `--focus` | Keyboard: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows; pointer buttons remain restrained |
+| Keyboard indicator | `--focus` | Keyboard actions: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows. Contextual editable fields use the 2px active boundary described below; pointer buttons remain restrained |
 | Rhythm | `--space-small`, `--space`, `--space-section` | 4/8/24px; 16px field margin, 24–32px document padding |
 | Shape / elevation | `--radius`, `--radius-panel`, `--shadow-panel` | 8px controls, 14px panels; elevation only for overlays |
 
@@ -188,3 +188,11 @@ This supersedes the blanket outline/focus-within interpretation for shared brows
 Scrollable `.ui-row` controls draw the shared 3px outline inward so the scrollport cannot clip the cue. Selected fill, weight and `aria-current` remain present with or without transient keyboard focus. Composite checkbox labels use `:has(input:focus-visible)` rather than `:focus-within`, with a single label outline and independent checked fill. Never outline a broad field/form/container merely because a child is active. Programmatically focused return headings retain a visible keyboard cue.
 
 Real consumers are Current Focus row openers and management disclosures, shell sidebar, Library/Favorites rows, Initiative/Action rows and their existing pagination. Rerender restoration uses stable record identity and never takes focus from another active surface. Preserve both collection and row-list scrolling on return. Drawer lifecycle, drafts, source selection and storage remain owned by existing consumers. Catalogue examples demonstrate role states; native OS input evidence is separate from browser/DOM setup. Other feature journeys (#82–#86) are outside this slice.
+
+## Contextual form focus (issue #83)
+
+Contextual drawers reuse the shared focus token for a single 2px active editable-field boundary (border plus 1px inset). This replaces the text field's outer outline for pointer and keyboard editing while retaining the caret. Invalid fields retain their danger border and message alongside the blue inset; invalid is never a focus or selection state. Buttons, disclosure summaries and the three-way leave decision keep the #81 keyboard-only 3px outline. No form, label or drawer receives a competing parent frame. Checkbox rows retain the existing single keyboard label outline and independent checked fill.
+
+Tab containment excludes controls inside closed disclosures, even when the browser reports layout rectangles for those descendants. Opening a disclosure makes its controls reachable in document order. First meaningful focus, task ownership, recovery, submitted-write waiting and native close/quit decisions remain with existing consumers. The catalogue topic drawer demonstrates normal and invalid fields using the same production styles.
+
+The drawer declares its requested first receiver with native `autofocus` while open, in addition to synchronous focus. This prevents WKWebView keyboard reopening from choosing the header Close button after a previous Tab cycle. Closing removes only an autofocus attribute introduced by the drawer; pre-existing attributes remain intact.
