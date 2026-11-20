@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -53,7 +54,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await mkdir('docs/validation/issue31', {recursive: true});
@@ -70,6 +71,7 @@ try {
   const pagingFailure = await page.evaluate(async () => {
     const {FocusScreen} = await import('/focus-screen.js');
     const screen = Object.create(FocusScreen.prototype);
+    screen.actions = {repository: {}};
     screen.focusOffset = 99; screen.show = async () => {throw Error('Controlled page failure');};
     screen.notice = message => {screen.failure = message;};
     await screen.pageFocus(198);
@@ -80,8 +82,8 @@ try {
   await closeSavedAction(page); await captureNote(page);
   await page.locator('#title').waitFor({state:'visible'});
   await page.waitForFunction(()=>document.activeElement.id==='title');
-  await page.locator('#title').fill('随手记：很长的中文标题'.repeat(10));
-  await closeNoteInfo(page); await page.locator('#body').fill('保留原来的任务，上下文不会丢失。'.repeat(25));
+  await enterNoteEditing(page); await page.locator('#title').fill('随手记：很长的中文标题'.repeat(10));
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('保留原来的任务，上下文不会丢失。'.repeat(25));
   failNoteSave = true;
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText:'未保存'}).waitFor();
@@ -107,7 +109,7 @@ try {
   await page.locator('#items .card').first().click();
   assert.equal(await page.locator('#file-path').textContent(),capturedPath);
   assert.match(await page.locator('#body').inputValue(),/上下文/);
-  await closeNoteInfo(page); await page.locator('#body').fill('重新打开后恢复的草稿');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('重新打开后恢复的草稿');
   failNoteSave=true;
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText:'未保存'}).waitFor();

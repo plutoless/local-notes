@@ -7,3 +7,25 @@ test('title update preserves dollar signs literally',()=>{assert.equal(withTitle
 test('Chinese reading renders semantic lists, quotations and named checkboxes without changing source lines',()=>{const source='# 长标题\n\n中文段落\n\n- 第一项\n- 第二项\n\n> 引用原文\n\n1. 顺序\n\n- [ ] 单独跟进';const html=renderMarkdown(source);assert.match(html, /<ul>/);assert.match(html, /<ol start="1">/);assert.match(html, /<blockquote>/);assert.match(html, /aria-label="单独跟进"/);assert.match(html, /data-line="11"/);assert.equal(toggleTask(source,11,true),source.replace('[ ]','[x]'));});
 
 test('ordered lists preserve the author start number',()=>{assert.match(renderMarkdown('5. 第五步\n6. 第六步'), /<ol start="5"><li>第五步<\/li>/);});
+
+test('tables require delimiter cells and protect escaped pipes, inline code and fences',()=>{
+  const html=renderMarkdown('| 项目 | Code |\r\n| :--- | ---: |\r\n| A\\|B | `x|y` |\r\n\n~~~md\n| a | b |\n| --- | --- |\n~~~');
+  assert.equal((html.match(/<table>/g)||[]).length,1);
+  assert.match(html,/<th scope="col">项目<\/th>/); assert.match(html,/<td>A\|B<\/td><td><code>x\|y<\/code>/);
+  for(const text of ['literal | prose','`a|b`\n--- | ---','a | b\n--- | invalid']) assert.ok(!renderMarkdown(text).includes('<table>'));
+});
+test('reader links and table cells never execute markup or unsafe protocols',()=>{
+  const html=renderMarkdown('A | B\n--- | ---\n<img onerror=x> | [bad](javascript:alert)\n\n[web](https://example.com/?q="x") [mail](mailto:a@example.com) `**literal**`');
+  assert.ok(!html.includes('<img')); assert.ok(!html.includes('href="javascript:')); assert.match(html,/href="https:\/\/example.com/); assert.match(html,/<code>\*\*literal\*\*<\/code>/);
+  assert.match(renderMarkdown('- [ ] original',{readOnly:true}),/disabled/);
+});
+
+test('table bodies stop before following Markdown blocks containing pipes',()=>{
+  const html=renderMarkdown('A | B\n--- | ---\nx | y\n# Heading | title\n- List | item\n> Quote | text\n- [ ] Task | text',{readOnly:true});
+  assert.match(html,/<\/table>/);assert.match(html,/<h1>Heading \| title<\/h1>/);assert.match(html,/<ul><li>List \| item/);assert.match(html,/<blockquote>Quote \| text/);assert.match(html,/aria-label="Task \| text"/);
+});
+
+test('search source anchors retain authored offsets across tables',()=>{
+  const html=renderMarkdown('# Header\n\nA | B\n--- | ---\nx | y\nz | q\n\nAfter',{sourceLines:true,readOnly:true});
+  assert.match(html,/<h1 data-source-line="0">/);assert.match(html,/<div data-source-line="2"/);assert.match(html,/<tr data-source-line="4">/);assert.match(html,/<tr data-source-line="5">/);assert.match(html,/<p data-source-line="7">After/);
+});

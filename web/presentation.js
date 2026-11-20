@@ -14,6 +14,20 @@ export function button(text, run, {primary = false, variant = primary ? 'primary
   return node;
 }
 
+// Keep keyboard position meaningful when the activated page direction becomes disabled.
+export function pageAvailability(previous, next, hasPrevious, hasNext) {
+  const active = document.activeElement;
+  previous.disabled = !hasPrevious; next.disabled = !hasNext;
+  if ((active === previous || active === next) && active.disabled) {
+    const fallback = previous.disabled ? next : previous;
+    if (!fallback.disabled) fallback.focus({preventScroll: true});
+    else {
+      const result = document.querySelector('#items .ui-row') || document.querySelector('#view-title');
+      if (result) { if (result.id === 'view-title') result.tabIndex = -1; result.focus({preventScroll: true}); }
+    }
+  }
+}
+
 export function feedback(target, message, diagnostic = '') {
   target.classList.add('ui-feedback');
   target.dataset.state = diagnostic ? 'failed' : 'saved';
@@ -150,20 +164,32 @@ export function drawer({id, title, onDismiss}) {
   panel.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
     const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
-      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length);
+      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length && !node.closest('[inert]')
+        // Closed disclosure descendants can have layout rectangles but cannot receive focus.
+        && ![...panel.querySelectorAll('details:not([open])')].some(detail => detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
     const index = controls.indexOf(document.activeElement);
-    if (controls.length && (event.shiftKey ? index <= 0 : index === controls.length - 1 || index < 0)) {
-      event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0].focus();
+    if (controls.length) {
+      // WKWebView can skip buttons under the system text-fields-only Tab setting.
+      // Advance explicitly so every short-task control stays reachable and contained.
+      const next = index < 0 ? (event.shiftKey ? controls.length - 1 : 0) : (index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
+      event.preventDefault(); controls[next].focus();
     }
   });
   panel.addEventListener('click', event => {
     const rect = panel.getBoundingClientRect();
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();
   });
-  let opener;
+  let opener, autofocusTarget;
   return {panel, body, footer, close, setTitle(text) { heading.textContent = text; close.setAttribute('aria-label', '关闭' + text); },
-    open(first, origin = document.activeElement) { if (panel.open) return; opener = origin; panel.showModal(); first?.focus(); },
-    hide() { panel.close(); (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
+    open(first, origin = document.activeElement) {
+      if (panel.open) return;
+      opener = origin;
+      // WKWebView's native dialog autofocus can run after keyboard activation.
+      // Declare the intended receiver as well as focusing it synchronously.
+      if (first && !first.hasAttribute('autofocus')) { autofocusTarget = first; first.setAttribute('autofocus', ''); }
+      panel.showModal(); first?.focus();
+    },
+    hide() { panel.close(); autofocusTarget?.removeAttribute('autofocus'); autofocusTarget = null; (opener?.isConnected ? opener : document.querySelector('#library-create-topic'))?.focus({preventScroll: true}); }
   };
 }
 
@@ -181,7 +207,7 @@ export async function requestTaskLeave(task) {
     await task.pending?.();
     let failure = '';
     while (task.dirty()) {
-      const choice = await taskLeaveChoice(task.label, failure, task.committed?.());
+      const choice = await taskLeaveChoice(task.label, failure, task.committed?.(), task.focusOrigin?.());
       if (choice === 'continue') return false;
       if (choice === 'discard') { await task.discard(); break; }
       try {
@@ -193,9 +219,9 @@ export async function requestTaskLeave(task) {
   } finally { leavingTask = false; task.resume?.(); }
 }
 
-function taskLeaveChoice(label, failure, committed) {
+function taskLeaveChoice(label, failure, committed, focusOrigin) {
   return new Promise(resolve => {
-    const origin = document.activeElement;
+    const origin = focusOrigin || document.activeElement;
     const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
     const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;

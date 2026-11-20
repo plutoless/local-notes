@@ -27,6 +27,7 @@ export async function captureNote(page, title = '随手记测试', body = '') {
 }
 
 export async function moveNote(page, target) {
+  await page.waitForFunction(() => document.querySelector('#note-info-drawer').open || !document.querySelector('#note-info-open').disabled);
   if (!await page.locator('#note-info-drawer').evaluate(node => node.open)) await page.locator('#note-info-open').click();
   await page.locator('#rename').click();
   await page.locator('#note-location').fill(target);
@@ -39,4 +40,8 @@ export async function saveAndLeave(page) {
     await page.locator('#task-leave-decision').getByRole('button', {name:'保存并离开',exact:true}).click();
     await page.waitForFunction(async () => !(await import('/presentation.js')).taskLeavePending());
   }
+}
+
+export async function enterNoteEditing(page) {
+  if (await page.locator('#title').evaluate(node => node.readOnly)) await page.locator('#mode').click();
 }

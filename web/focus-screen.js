@@ -11,6 +11,7 @@ export class FocusScreen {
     return controlButton(text, async () => { try { await run(); } catch (error) { this.notice(error.message); } }, {density: 'compact', ...options});
   }
   async show() {
+    const readingFocus = document.activeElement?.dataset.readingPath;
     $('.app').classList.remove('workspace'); $('#workspace-context').hidden = true; $('.app').classList.add('home'); $('#library-tools').hidden = true; $('#index-state').textContent = '正在载入重点…';
     const request = this.request = (this.request || 0) + 1;
     const repository = this.actions.repository;
@@ -23,10 +24,16 @@ export class FocusScreen {
       this.initiatives.repository.query({status: 'active', limit: this.initiativeLimit})
     ]);
     if (!this.active || repository !== this.actions.repository || request !== this.request) return;
-    $('#index-state').textContent = ''; const list = $('#items'); list.replaceChildren();
+    $('#index-state').textContent = ''; const list = $('#items');
+    const active = document.activeElement;
+    const focusedAction = list.contains(active) ? active.dataset.entityId : null;
+    const focusedSummary = list.contains(active) && active.tagName === 'SUMMARY' ? active.dataset.focusKey : null;
+    const expanded = [...list.querySelectorAll('details[open] > summary')].map(node => node.dataset.focusKey);
+    const listScroll = list.scrollTop, collectionScroll = $('.collection').scrollTop;
+    list.replaceChildren();
     const tools = document.createElement('div'); tools.className = 'home-tools'; list.append(tools);
     const title = sectionHeading('当前重点'); tools.append(title);
-    const utilities = disclosure('更多操作', [], 'home-utilities'); tools.append(utilities);
+    const utilities = disclosure('更多操作', [], 'home-utilities'); utilities.querySelector('summary').dataset.focusKey = 'utilities'; tools.append(utilities);
     tools.append(this.button('新建行动', () => this.openAction(null), {primary: true}),
       this.button('全部行动', () => this.navigate('actions')));
     utilities.append(this.button('新建事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(null); }),
@@ -44,7 +51,7 @@ export class FocusScreen {
     const shown = focused.actions.slice(0, this.limit);
     for (const [index, action] of shown.entries()) {
       const row = this.actionRow(action);
-      const menu = disclosure(`管理：${action.description}`, [], 'row-menu'); menu.querySelector('summary').textContent = '管理'; menu.querySelector('summary').setAttribute('aria-label', `管理：${action.description}`); row.append(menu);
+      const menu = disclosure(`管理：${action.description}`, [], 'row-menu'); menu.querySelector('summary').textContent = '管理'; menu.querySelector('summary').setAttribute('aria-label', `管理：${action.description}`); row.append(menu); menu.querySelector('summary').dataset.focusKey = 'action:' + action.entityId;
       menu.append(this.button('移出重点', async () => { await repository.save({...action, focusPosition: null}, action); await this.show(); $('#items .focus-row-open, .home-tools .primary')?.focus(); }, {variant: 'danger'}));
       for (const direction of [-1, 1]) {
         if (index + direction < 0 || !focused.actions[index + direction]) continue;
@@ -77,23 +84,56 @@ export class FocusScreen {
       row.append(this.button('打开事项', async () => { await this.navigate('initiatives'); await this.initiatives.edit(initiative); })); work.append(row);
     }
     if (initiatives.hasMore) work.append(this.button('全部事项', () => this.navigate('initiatives')));
+    const recent = this.recentReading?.() || [];
+    if (recent.length) {
+      const reading = section('继续阅读'); reading.className = 'recent-reading';
+      for (const entry of recent) {
+        const row = document.createElement('div'); row.className = 'card';
+        const open = selectionRow('', () => this.resumeReading(entry));
+        open.setAttribute('aria-label', `继续阅读：${entry.title}`); open.dataset.readingPath = entry.path;
+        open.innerHTML = `<span><h3>${esc(entry.title)}</h3><span class="row-meta">笔记 · ${esc(entry.path.includes('/') ? entry.path.split('/').at(-2) : '根目录')}</span></span>`;
+        const menu = disclosure(`管理阅读入口：${entry.title}`, [], 'row-menu');
+        menu.querySelector('summary').dataset.focusKey = 'reading:' + entry.path;
+        const source = document.createElement('p'); source.textContent = entry.path;
+        menu.append(source, this.button('移除此阅读入口', () => this.removeReading(entry.path)));
+        row.append(open, menu); reading.append(row);
+      }
+      if (readingFocus && document.activeElement === document.body) [...reading.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === readingFocus)?.focus({preventScroll:true});
+    }
+    for (const summary of list.querySelectorAll('summary')) {
+      const key = summary.dataset.focusKey;
+      if (expanded.includes(key)) summary.parentElement.open = true;
+      if (focusedSummary === key) summary.focus({preventScroll: true});
+    }
+    if (focusedAction) [...list.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === focusedAction)?.focus({preventScroll: true});
+    list.scrollTop = listScroll; $('.collection').scrollTop = collectionScroll;
+    return true;
   }
   async pageFocus(offset) {
     const previous = this.focusOffset;
     this.focusOffset = offset;
-    try { await this.show(); }
+    const repository = this.actions.repository, request = (this.request || 0) + 1;
+    try { if (await this.show() && this.active && repository === this.actions.repository && request === this.request) $('#items .focus-row-open')?.focus({preventScroll: true}); }
     catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
   }
   async openAction(action) {
-    const scroll = $('.collection').scrollTop;
-    await this.actions.edit(action);
-    this.actions.returnToFocus = async () => {
+    const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
+    const repository = this.actions.repository, request = (this.actions.openRequest || 0) + 1;
+    const owns = () => repository === this.actions.repository && request === this.actions.openRequest;
+    const returnToFocus = async () => {
+      if (!owns()) return;
       if (!this.active) { if (!await this.navigate('focus')) return; }
-      else await this.show();
+      else if (!await this.show()) return;
+      if (!owns() || !this.active) return;
       const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
       (opener || $('.home-tools .primary')).focus({preventScroll: true});
-      $('.collection').scrollTop = scroll;
+      $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
+      if (this.actions.returnToFocus === returnToFocus) this.actions.returnToFocus = null;
     };
+    // Install the opener-owned return before option loading so early Cancel has the correct origin.
+    this.actions.returnToFocus = returnToFocus;
+    await this.actions.edit(action);
+    if ((!owns() || !this.active || !this.actions.drawer.panel.open) && this.actions.returnToFocus === returnToFocus) this.actions.returnToFocus = null;
   }
 
   actionRow(action) {

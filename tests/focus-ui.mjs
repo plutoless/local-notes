@@ -44,7 +44,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js', 'library.js', 'library-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js', 'reading-history.js', 'library.js', 'library-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -57,7 +57,7 @@ try {
   assert.equal(await page.evaluate(() => document.activeElement.matches('button')), true);
   assert.equal(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle), 'solid');
   assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 0);
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '整理所选笔记', exact: true}).waitFor();
   await page.getByRole('button', {name: '新建行动', exact: true}).click();
   await page.locator('#action-description').fill('Chosen next step');
@@ -106,7 +106,7 @@ try {
   await page.locator('#items section').first().locator('.card').nth(1).locator('summary').click();
   await page.locator('#items section').first().locator('.card').nth(1).getByRole('button', {name: '上移'}).click();
   await page.waitForFunction(() => document.querySelector('#items section h3').textContent === 'Focus item 1');
-  await page.locator('#items section').first().locator('.card').first().locator('summary').click();
+  assert.equal(await page.locator('#items section').first().locator('.card').first().locator('details').evaluate(n=>n.open),true,'management disclosure stays open across row rerender');
   await page.locator('#items section').first().locator('.card').first().getByRole('button', {name: '移出重点', exact: true}).click();
   await page.getByRole('heading', {name: 'Focus item 1', exact: true}).waitFor({state: 'detached'});
   await page.reload();
@@ -138,7 +138,7 @@ try {
   assert.equal(await page.locator('#action-filter').inputValue(), 'waiting');
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await writeFile(join(fixture.root, 'LocalNotesData/actions/broken.json'), '{');
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '刷新本地记录'}).click();
   await page.locator('#notice summary').click(); await page.locator('#notice pre').filter({hasText: /broken.json/}).waitFor();
   await page.getByRole('button', {name: '关闭提示'}).click();
@@ -163,7 +163,7 @@ try {
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   for (const node of await page.locator('nav button').all()) assert.equal(await node.evaluate(n => n.getBoundingClientRect().height >= 44), true);
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name:'整理所选笔记'}).click();
   assert.equal(await page.locator('#ai-help').isVisible(), true);
   assert.equal(await page.locator('#ai-send').isDisabled(), true);

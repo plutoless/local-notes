@@ -3,8 +3,9 @@ import {WorkspaceSearch} from './global-search.js';
 import {button, field, bindDialog, selectionRow} from './presentation.js';
 
 export class SearchScreen {
-  constructor() {
-    this.service = new WorkspaceSearch(native, () => { if (this.panel.open) this.query(); });
+  constructor(navigation = {}) {
+    this.navigation = navigation;
+    this.service = new WorkspaceSearch(native, () => { if (this.panel.open && !this.openingSource) this.query(); });
     this.scope = 'all'; this.sequence = 0; this.session = 0; this.ready = false; this.rows = []; this.offset = 0;
     const panel = this.panel = document.createElement('dialog'); panel.id = 'global-search'; panel.className = 'ui-panel search-dialog';
     panel.setAttribute('aria-labelledby', 'global-search-title');
@@ -51,14 +52,16 @@ export class SearchScreen {
   }
   updateScopes() { for (const control of this.scopes.children) control.setAttribute('aria-pressed', String(control.dataset.scope === this.scope)); }
   async open() {
+    if (this.continuation) return this.returnToSearch();
     if (this.panel.open) { this.input.focus(); return; }
     if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])')) return;
+    this.invocation = this.navigation.capture?.();
     this.opener = document.activeElement; this.panel.showModal(); this.input.focus();
     const session = ++this.session; this.ready = false;
     try { await this.service.open(); if (!this.panel.open || session !== this.session) return; this.ready = true; this.service.sync(); await this.query(); }
     catch { if (this.panel.open && session === this.session) this.status.textContent = '搜索暂不可用，请关闭后重试'; }
   }
-  close() { this.session++; this.ready = false; this.sequence++; this.panel.close(); this.opener?.focus({preventScroll: true}); }
+  close() { this.continuation = null; this.session++; this.ready = false; this.sequence++; this.panel.close(); (this.opener?.isConnected ? this.opener : document.querySelector('#global-search-open'))?.focus({preventScroll: true}); }
   reset() { this.close(); this.service.reset(); this.input.value = ''; this.scope = 'all'; this.updateScopes(); this.include.checked = false; this.rows = []; this.results.replaceChildren(); this.selected = null; this.offset = 0; }
   async query() {
     const token = ++this.sequence, query = this.input.value.trim();
@@ -88,7 +91,7 @@ export class SearchScreen {
     const passage = document.createElement('pre'); passage.className = 'search-passage'; passage.setAttribute('aria-label', '复制范围');
     const row = {note, node, select, passage, query, text: note.passage};
     this.highlight(passage, row.text, query);
-    node.append(select, locator, passage, button('复制片段', () => this.copy(row))); this.results.append(node); return row;
+    node.append(select, locator, passage, button('复制片段', () => this.copy(row)), button({note: '打开原文', initiative: '打开事项', action: '打开行动'}[note.type], () => this.openSource(row))); this.results.append(node); return row;
   }
   highlight(node, text, query) {
     node.replaceChildren(); let start = 0, position; const lower = text.toLowerCase(), term = query.toLowerCase();
@@ -100,6 +103,59 @@ export class SearchScreen {
     if (!row || this.results.inert) return; this.select(row, false); const token = this.sequence;
     try { const text = await this.service.context(row.note, row.query); if (!this.panel.open || token !== this.sequence || !row.node.isConnected) return; row.text = text; this.highlight(row.passage, text, row.query); }
     catch { if (this.panel.open && token === this.sequence) this.status.textContent = '来源已改变或不可读取，请刷新重试'; }
+  }
+  resume(focus = this.input) {
+    if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])')) return false;
+    const scroll = this.savedScroll;
+    this.panel.showModal(); this.results.scrollTop = scroll;
+    (focus?.isConnected ? focus : this.input).focus({preventScroll: true});
+    return true;
+  }
+  async openSource(row) {
+    if (!row || this.openingSource || this.results.inert || !this.navigation.open) return;
+    this.openingSource = true;
+    const session = this.session, sequence = this.sequence, invocation = this.invocation;
+    const valid = () => session === this.session && sequence === this.sequence && this.navigation.owns(invocation);
+    this.savedScroll = this.results.scrollTop;
+    const focus = document.activeElement;
+    try {
+      // Capture before the first read; closing/dismissal invalidates this intent.
+      await this.service.source(row.note);
+      if (!valid() || !this.panel.open) return;
+      this.panel.close();
+      this.continuation = {session, invocation, focus};
+      const opened = await this.navigation.open(row.note, invocation, valid);
+      if (session !== this.session) return;
+      if (!opened) {
+        this.continuation = null;
+        if (this.navigation.owns(invocation)) this.resume(focus);
+        return;
+      }
+      this.continuation = {session, invocation, focus};
+      this.navigation.returnAvailable(true);
+    } catch {
+      if (!this.panel.open && session === this.session && this.navigation.sameWorkspace(invocation)) {
+        this.navigation.returnAvailable(true);
+        this.navigation.error('来源打开失败，可返回搜索结果后重试');
+      }
+      if (valid()) {
+        this.continuation = null; this.navigation.returnAvailable(false);
+        if (!this.panel.open) this.resume(focus);
+        this.status.textContent = '来源已移动、改变或不可读取，请刷新后重试；搜索与原页面仍可返回';
+      }
+    } finally { this.openingSource = false; }
+  }
+  async returnToSearch() {
+    const continuation = this.continuation;
+    if (!continuation || this.returning) return;
+    this.returning = true;
+    try {
+      if (!await this.navigation.restore(continuation.invocation, () => this.continuation === continuation)) return;
+      if (this.continuation !== continuation || continuation.session !== this.session) return;
+      this.navigation.returnAvailable(false); this.continuation = null;
+      this.resume(continuation.focus);
+    } catch { this.navigation.error('返回原页面失败，请重试；搜索状态已保留'); }
+    finally { this.returning = false; }
   }
   async copy(row) {
     if (!row || row.copying || this.results.inert) return; row.copying = true; const token = this.sequence;

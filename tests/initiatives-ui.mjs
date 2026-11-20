@@ -1,3 +1,4 @@
+import {enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -45,7 +46,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -138,11 +139,11 @@ try {
   await page.locator('#initiative-new-note').click();
   await page.waitForFunction(()=>!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent.startsWith('Notes/') && document.querySelector('#title')===document.activeElement);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
-  await page.locator('#title').fill('Working log');
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update');
+  assert.equal(await page.locator('#title').evaluate(n=>n.readOnly),false); await page.locator('#title').fill('Working log');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   failNoteSave = true;
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update draft');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Manual research update draft');
   await page.locator('#workspace-overview').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
@@ -150,7 +151,7 @@ try {
   assert.equal(await page.locator('#editor').isVisible(), true);
   assert.equal(await page.locator('#body').inputValue(), 'Manual research update draft');
   failNoteSave = false;
-  await closeNoteInfo(page); await page.locator('#body').fill('Manual research update');
+  await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Manual research update');
   await page.locator('#note-save').click();
   await page.locator('#save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();
@@ -287,7 +288,7 @@ try {
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
   assert.equal(await page.locator('#initiative-goal').evaluate(el => el === document.activeElement), true);
-  assert.equal(await page.locator('#initiative-goal').evaluate(el => getComputedStyle(el).outlineStyle), 'solid');
+  assert.deepEqual(await page.locator('#initiative-goal').evaluate(el => { const style = getComputedStyle(el); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(7, 95, 204)', 'rgb(7, 95, 204) 0px 0px 0px 1px inset']);
   await page.screenshot({path: 'docs/validation/issue33/after-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   // Hold real adapter calls to observe loading/saving rather than assuming transient states.
