@@ -139,6 +139,7 @@ try {
   console.log('PASS nested return and action management');
   // Late source reads may not reopen a drawer after workspace switching.
   await page.locator('[data-view=notes]').click();
+  if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('#items [data-path="reference.md"]').click();
   await page.locator('#reading').waitFor({state:'visible'});
   let readStarted;
