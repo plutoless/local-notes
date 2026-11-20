@@ -42,7 +42,7 @@ export class ActionScreen {
     };
     $('#action-next').onclick = () => { this.offset += 30; this.list().catch(error => notice(error.message)); };
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
-    $('#action-new').onclick = () => this.edit(null);
+    $('#action-new').onclick = event => this.edit(null, null, null, event.currentTarget);
     $('#action-discard').onclick = () => this.leaveDrawer();
     $('#action-back').textContent = '取消';
     $('#action-back').onclick = () => this.dismissDrawer();
@@ -260,7 +260,7 @@ export class ActionScreen {
     // Source availability is advisory and must survive every form reconstruction.
     if (!this.contextualProposal) this.refreshSources(fields).catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
   }
-  async edit(action, recovered = null, proposal = null) {
+  async edit(action, recovered = null, proposal = null, origin = document.activeElement) {
     const request = this.openRequest = (this.openRequest || 0) + 1;
     const repository = this.repository;
 
@@ -279,7 +279,7 @@ export class ActionScreen {
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.()) return;
     this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
-    const context = this.captureContext(action);
+    const context = this.captureContext(action); context.opener = origin;
     // The shared row is temporarily disabled during opening, which can move DOM focus to body.
     if (context.opener === document.body && action) context.opener = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === action.entityId) || context.opener;
     this.contextualProposal = proposal;
@@ -290,7 +290,7 @@ export class ActionScreen {
     this.creationAttempt = proposal ? draft?.attempt || null : null;
     this.creationUncertain = Boolean(this.creationAttempt);
     this.recoveredDraft = Boolean(draft);
-    this.drawer.open($('#action-description'));
+    this.drawer.open($('#action-description'), context.opener);
     // Once the modal owns input, the underlying row must remain a usable return target.
     if (context.opener?.matches('#items .ui-row')) context.opener.disabled = false;
     this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;

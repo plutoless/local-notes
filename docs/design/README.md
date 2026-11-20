@@ -15,7 +15,7 @@ The `:root` declarations in `web/style.css` are the implemented source of truth.
 | Action / selection | `--accent`, `--selected`, `--selected-text`, `--hover` | Restrained blue; selection also uses weight and `aria-current` |
 | Status | `--success`, `--warning`, `--danger` | Always pair color with a Chinese receipt, warning or failure message |
 | Interactive / decorative boundaries | `--line`, `--divider` | `--line` ≥3:1 on light surfaces; `--divider` only separates noninteractive regions |
-| Keyboard indicator | `--focus` | Keyboard: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows; pointer buttons remain restrained |
+| Keyboard indicator | `--focus` | Keyboard actions: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows. Contextual editable fields use the 2px active boundary described below; pointer buttons remain restrained |
 | Rhythm | `--space-small`, `--space`, `--space-section` | 4/8/24px; 16px field margin, 24–32px document padding |
 | Shape / elevation | `--radius`, `--radius-panel`, `--shadow-panel` | 8px controls, 14px panels; elevation only for overlays |
 

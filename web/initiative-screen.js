@@ -12,7 +12,7 @@ export class InitiativeScreen {
       if (!draft) { this.notice('没有待恢复的事项草稿。', true); return; }
       await this.edit(draft.value.previous || null, true, draft);
     }));
-    $('#initiative-new').onclick = () => this.edit(null, true);
+    $('#initiative-new').onclick = event => this.edit(null, true, null, event.currentTarget);
     $('#initiative-next').onclick = () => { this.offset += 50; this.list().catch(e => notice(e.message)); };
     $('#initiative-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.list().catch(e => notice(e.message)); };
     $('#initiative-form').oninput = event => { event.target.setAttribute('aria-invalid', String(!event.target.validity?.valid)); if (event.target.validity?.valid) event.target.removeAttribute('aria-describedby'); this.changed(); this.ending(); };
@@ -129,9 +129,9 @@ export class InitiativeScreen {
         return this.closeDrawer(true);
       }, close: () => this.closeDrawer()};
   }
-  openDrawer() {
+  openDrawer(origin) {
     this.drawer.setTitle(this.previous ? '编辑事项' : '新建事项');
-    this.drawer.open($('#initiative-title'));
+    this.drawer.open($('#initiative-title'), origin);
   }
   state(message) {
     const target = $('#initiative-save-state'); target.textContent = message;
@@ -260,13 +260,13 @@ export class InitiativeScreen {
     this.ending();
     $('#initiative-new-action').disabled = !previous || previous.status === 'ended'; $('#initiative-new-note').disabled = !previous;
   }
-  async edit(record, metadata = false, recovered = null) {
+  async edit(record, metadata = false, recovered = null, origin = document.activeElement) {
     if (this.opening) return;
     this.opening = true; $('#workspace-overview').disabled = true;
-    try { await this.prepareEdit(record, metadata, recovered); }
+    try { await this.prepareEdit(record, metadata, recovered, origin); }
     finally { this.opening = false; $('#workspace-overview').disabled = false; }
   }
-  async prepareEdit(record, metadata, recovered) {
+  async prepareEdit(record, metadata, recovered, origin) {
     const owner = this.actions.owner?.(), repository = this.repository;
     const ownsOpen = () => owner === this.actions.owner?.() && repository === this.repository;
     const leaving = this.previous;
@@ -300,7 +300,7 @@ export class InitiativeScreen {
       for (const [selector, nodes] of Object.entries(this.drawerContext.nodes)) $(selector).replaceChildren(...nodes);
       for (const [selector, text] of Object.entries(this.drawerContext.text)) $(selector).textContent = text;
       this.selectInitiative(this.drawerContext.previous);
-      this.openDrawer();
+      this.openDrawer(origin);
     } else this.restoreContext();
   }
   renderContext() {
