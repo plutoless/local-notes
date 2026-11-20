@@ -77,6 +77,26 @@ try {
   await page.locator('#action-drawer').waitFor({state:'hidden'});
   await page.waitForFunction(()=>document.activeElement.matches('.focus-row-open'));
   assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'solid', 'keyboard return stays visible');
+  // A delayed Focus replacement must retain the real action entry, without a transient probe ID.
+  const allActionsSelector='#items .home-tools > button:last-child';
+  const staleAllActions=await page.locator(allActionsSelector).elementHandle();
+  await staleAllActions.evaluate(n=>n.id='probe-all-actions');
+  const oldActionRect=await staleAllActions.boundingBox();
+  const actionTargetStarted=new Promise(resolve=>{queryBegan=resolve;});let releaseActionTarget;
+  queryGate=new Promise(resolve=>{releaseActionTarget=resolve;});
+  await page.locator('[data-view=focus]').click();await actionTargetStarted;
+  assert.equal(await page.locator('#probe-all-actions').count(),1,'held render still has the previous entry');
+  await page.evaluate(selector=>{window.actionTargetReceipt=[];for(const type of ['pointerdown','click'])document.addEventListener(type,event=>{const target=event.target.closest('button');actionTargetReceipt.push({type,trusted:event.isTrusted,oldProbe:!!document.querySelector('#probe-all-actions')?.contains(event.target),stableTarget:!!document.querySelector(selector)?.contains(event.target),text:target?.textContent});},{capture:true,once:true});},allActionsSelector);
+  releaseActionTarget();await page.waitForFunction(()=>document.querySelector('#index-state').textContent==='');
+  assert.equal(await staleAllActions.evaluate(n=>n.isConnected),false);
+  assert.equal(await page.locator('#probe-all-actions').count(),0);
+  assert.equal(await page.locator(allActionsSelector).textContent(),'全部行动');
+  await page.mouse.click(oldActionRect.x+oldActionRect.width/2,oldActionRect.y+oldActionRect.height/2);
+  await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='行动' && !document.querySelector('#action-tools').hidden && document.querySelector('#index-state').textContent==='');
+  const actionTargetReceipt=await page.evaluate(()=>window.actionTargetReceipt);
+  assert.deepEqual(actionTargetReceipt.map(event=>[event.type,event.trusted,event.oldProbe,event.stableTarget,event.text]),[['pointerdown',true,false,true,'全部行动'],['click',true,false,true,'全部行动']]);
+  await writeFile('build/issue81-action-target-headless.json',JSON.stringify({scope:'Deterministic delayed production Focus replacement in headless Chromium, not native receipt',events:actionTargetReceipt,navigation:'actions',staleNodeConnected:false},null,2));
+  await page.locator('[data-view=focus]').click();await page.waitForFunction(()=>document.querySelector('#index-state').textContent==='' && !!document.querySelector('.focus-row-open'));
   for (const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport); await page.locator('[data-view=focus]').click();
     const menu=page.locator('.row-menu summary').first();await menu.click();

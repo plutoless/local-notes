@@ -2,6 +2,8 @@
 """Issue 81 synthetic Cocoa/WKWebView, OS input and trusted-event evidence."""
 import hashlib, importlib.util, inspect, json, os, shutil, subprocess, time, uuid
 from pathlib import Path
+if os.environ.get('ACTION_ONLY') and not (os.environ.get('REMAINING_ONLY') and os.environ.get('TAIL_ONLY') and os.environ.get('PAGING_ONLY')):
+ raise SystemExit('Action-only mode requires REMAINING_ONLY, TAIL_ONLY and PAGING_ONLY; no host or sender launched')
 if os.environ.get('PAGING_ONLY') and not (os.environ.get('REMAINING_ONLY') and os.environ.get('TAIL_ONLY')):
  raise SystemExit('Paging-only mode requires REMAINING_ONLY and TAIL_ONLY; no host or sender launched')
 if os.environ.get('TAIL_ONLY') and not os.environ.get('REMAINING_ONLY'):
@@ -176,7 +178,7 @@ try:
   log.append({'routePreflight':c('__route')})
   if not os.environ.get('CONSTRUCTOR_ONLY'):log.append({'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
- c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
+ c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,targetText:e.target.closest('button,summary,input')?.textContent?.slice(0,120),composedPath:e.composedPath().filter(n=>n instanceof Element).slice(0,8).map(n=>({tag:n.tagName,id:n.id,classes:n.className,text:n.matches('button,summary')?n.textContent.slice(0,120):undefined})),view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  if not os.environ.get('REMAINING_ONLY'):
@@ -276,15 +278,19 @@ try:
   assert c("return document.activeElement.matches(':focus-visible') && document.activeElement.getAttribute('aria-current')==='true'")
   browse_metrics('Favorites keyboard immediate return');c('return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))');browse_metrics('Favorites keyboard settled return')
   assert c("return document.querySelector('.collection').scrollTop===window.favoriteKeyboardBefore.scroll && document.querySelector('#items').scrollTop===window.favoriteKeyboardBefore.list")
- c('__size:1180,800');click('[data-view=initiatives]');w("!!document.querySelector('#items [data-initiative-id]')")
- c("window.initiativeBeforeId=document.querySelector('#items [data-initiative-id]').dataset.initiativeId")
- click('#items [data-initiative-id]');w("document.querySelector('#items [aria-current=true]')?.dataset.initiativeId===window.initiativeBeforeId")
- state('initiative-selected');key('Tab');state('initiative-keyboard');c('__size:393,852');click('#workspace-back')
- page_key_entry('#initiative-next','initiative-paging');key('Return')
- w("document.querySelector('#initiative-next').disabled && document.activeElement.id==='initiative-previous'");state('initiative-page-boundary')
- assert c("return document.activeElement.matches(':focus-visible')")
- click('[data-view=focus]');c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').id='probe-all-actions'");click('#probe-all-actions')
- w("document.querySelector('#action-tools').getClientRects().length>0 && document.querySelector('#index-state').textContent==='' && !document.querySelector('#action-next').disabled")
+ if not os.environ.get('ACTION_ONLY'):
+  c('__size:1180,800');click('[data-view=initiatives]');w("!!document.querySelector('#items [data-initiative-id]')")
+  c("window.initiativeBeforeId=document.querySelector('#items [data-initiative-id]').dataset.initiativeId")
+  click('#items [data-initiative-id]');w("document.querySelector('#items [aria-current=true]')?.dataset.initiativeId===window.initiativeBeforeId")
+  state('initiative-selected');key('Tab');state('initiative-keyboard');c('__size:393,852');click('#workspace-back')
+  page_key_entry('#initiative-next','initiative-paging');key('Return')
+  w("document.querySelector('#initiative-next').disabled && document.activeElement.id==='initiative-previous'");state('initiative-page-boundary')
+  assert c("return document.activeElement.matches(':focus-visible')")
+  click('[data-view=focus]')
+ if os.environ.get('ACTION_ONLY'):c('__size:393,852')
+ w("document.querySelector('[data-view=focus]').getAttribute('aria-current')==='page' && document.querySelector('#index-state').textContent==='' && document.querySelector('#items .home-tools > button:last-child')?.textContent==='全部行动'")
+ click('#items .home-tools > button:last-child')
+ w("document.querySelector('#view-title').textContent==='行动' && document.querySelector('#action-tools').getClientRects().length>0 && document.querySelector('#index-state').textContent==='' && !!document.querySelector('#items [data-entity-id]') && !document.querySelector('#action-next').disabled")
  page_key_entry('#action-next','action-paging');key('Return')
  w("document.querySelector('#action-next').disabled && document.activeElement.id==='action-previous'");state('action-page-boundary')
  assert c("return document.activeElement.matches(':focus-visible')")
