@@ -13,8 +13,12 @@ English project material; Simplified Chinese app copy. No schema/storage changes
 ## Steps
 
 - [ ] Capture baseline pointer, Tab/Shift+Tab, programmatic return and selected states using synthetic native storage and unique host/PID.
-- [ ] Add regressions in `tests/browse-focus-ui.mjs` for real Focus, sidebar, Library/Favorites, Action and Initiative controls, rerendered rows, pagination, disclosures and return context.
-- [ ] Refine shared CSS role/modality treatment without blurring controls or changing containment. Keep input/caret, invalid and selected states independent. Reconcile `docs/design/README.md` and catalogue with actual consumers.
-- [ ] Preserve row identity and both list/collection scroll when lists rerender or return; do not steal focus after asynchronous navigation.
+- [x] Add regressions in `tests/browse-focus-ui.mjs` for real Focus, sidebar, Library/Favorites, Action and Initiative controls, rerendered rows, pagination, disclosures and return context.
+- [x] Refine shared CSS role/modality treatment without blurring controls or changing containment. Keep input/caret, invalid and selected states independent. Reconcile `docs/design/README.md` and catalogue with actual consumers.
+- [x] Preserve row identity and both list/collection scroll when lists rerender or return; do not steal focus after asynchronous navigation.
 - [ ] Run syntax/shared tests, maintained UI journeys and Mac build. Capture matched native after states with source/package/probe hashes and trusted OS input receipts. Inspect screenshots at desktop, 393px and reduced height.
 - [ ] Commit, run separate Standards and Spec reviews against starting SHA, resolve findings, push and create one PR. Coordinator owns merge.
+
+## Delivery limitation
+
+Native after acceptance is blocked by an occluded, inactive owned host and unavailable AX window. The exclusive GUI lease was released; the draft PR remains incomplete pending a new focused desktop window. See `docs/validation/issue81/README.md` for actual execution scope.

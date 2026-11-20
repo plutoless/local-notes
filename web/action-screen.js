@@ -1,5 +1,5 @@
 import {recoverTaskDraft} from './task-drafts.js';
-import {requestTaskLeave, actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback, drawer} from './presentation.js';
+import {pageAvailability, requestTaskLeave, actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback, drawer} from './presentation.js';
 import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
 import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
@@ -160,7 +160,6 @@ export class ActionScreen {
   }
   async list() {
     if (!this.active) return;
-    const scroll = $('#items').scrollTop;
     const repository = this.repository;
     const request = this.listRequest = (this.listRequest || 0) + 1;
     $('#index-state').textContent = '正在载入行动…';
@@ -168,6 +167,7 @@ export class ActionScreen {
     try { page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset}); }
     catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; errorFeedback($('#items'), error.message); } return; }
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
+    const scroll = $('#items').scrollTop;
     const focusedRow = document.activeElement.closest('#items [data-entity-id]')?.dataset.entityId;
     $('#index-state').textContent = ''; $('#items').replaceChildren();
     for (const action of page.actions) {
@@ -178,7 +178,7 @@ export class ActionScreen {
     if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
     if (focusedRow) [...$('#items').querySelectorAll('[data-entity-id]')].find(node => node.dataset.entityId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
-    $('#action-next').disabled = !page.hasMore; $('#action-previous').disabled = this.offset === 0;
+    pageAvailability($('#action-previous'), $('#action-next'), this.offset > 0, page.hasMore);
     $('#action-page').textContent = `第 ${this.offset / 30 + 1} 页`;
   }
   async assignments(selected = $('#action-initiative').value || '') {

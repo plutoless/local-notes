@@ -12,8 +12,12 @@ for name in ['Sync','Private']:
  (m.OUT/name).mkdir()
 for i in range(55): (m.OUT/f'Sync/note-{i:02}.md').write_text('# 核对资料与下一步的长中文标题 '+str(i)+'\n\n保留原文与阅读位置。\n'*20)
 source=inspect.getsource(m.build).replace('dev.localnotes.validation.issue7','dev.localnotes.validation.issue81'+phase+uuid.uuid4().hex[:8])
+source=source.replace("source=(REPO/'mac/main.swift').read_text()", "source=(REPO/'mac/main.swift').read_text().replace('config.preferences.tabFocusesLinks = true;', '')" ) if os.environ.get('NATIVE_DIAGNOSE') else source
 source=source.replace("generated=OUT/'main.swift';generated.write_text(source)","generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped ='))")
-EXTRA='''if script == "__focus" { self?.window.makeKeyAndOrderFront(nil); self?.window.makeFirstResponder(self?.web); NSApp.activate(ignoringOtherApps:true); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
+EXTRA='''if script == "__host" { let result:[String:Any] = ["ok":true,"value":["active":NSApp.isActive,"hidden":NSApp.isHidden,"key":self?.window.isKeyWindow ?? false,"visible":self?.window.isVisible ?? false,"occluded":!(self?.window.occlusionState.contains(.visible) ?? false),"webHidden":self?.web.isHidden ?? true]]; try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script.hasPrefix("__pointer:") { let p=script.dropFirst(10).split(separator:",").compactMap { Double($0) }; if let window=self?.window { let point=CGPoint(x:window.frame.minX+p[0],y:(NSScreen.screens.first?.frame.height ?? 0)-window.frame.maxY+p[1]); for type in [CGEventType.leftMouseDown,CGEventType.leftMouseUp] { CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)?.postToPid(getpid()) } };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script.hasPrefix("__key:") { let key=script.dropFirst(6);let code:CGKeyCode=key.contains("Tab") ? 48 : key == "Escape" ? 53 : 36;for down in [true,false] { let event=CGEvent(keyboardEventSource:nil,virtualKey:code,keyDown:down);if key.hasPrefix("Shift+") {event?.flags = .maskShift};event?.postToPid(getpid()) };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script == "__focus" { NSApp.unhide(nil); self?.window.deminiaturize(nil); self?.window.orderFrontRegardless(); self?.window.makeKeyAndOrderFront(nil); self?.window.makeFirstResponder(self?.web); NSApp.activate(ignoringOtherApps:true); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script.hasPrefix("__size:") { let size=script.dropFirst(7).split(separator:",").compactMap { Double($0) }; self?.window.setContentSize(NSSize(width:size[0],height:size[1])); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
 if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
  if let tiff=image?.tiffRepresentation, let bitmap=NSBitmapImageRep(data:tiff),let png=bitmap.representation(using:.png,properties:[:]) {try? png.write(to:reviewProbe.directory.appendingPathComponent("native.png"))}
@@ -29,6 +33,12 @@ def state(name):
  log.append({'state':name,**value});c('__snapshot');shutil.copy(m.OUT/'native.png',out/(name+'.png'));return value
 
 def native(action,*args):
+ if os.environ.get('QUARTZ_INPUT'):
+  host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
+  assert host['active'] and host['key'] and host['visible'] and not host['occluded'], 'Native acceptance requires a visibly focused owned host'
+  if action=='click':c('__pointer:'+args[1]+','+args[3])
+  else:c('__key:'+args[1])
+  return
  r=subprocess.run(['orca','computer',action,'--app',f'pid:{process.pid}','--window-index','0','--restore-window',*args,'--no-screenshot','--json'],capture_output=True,text=True)
  receipt=json.loads(r.stdout);log.append({'input':action,'args':args,'receipt':receipt});
  if r.returncode!=0 or not receipt.get('ok'):
@@ -47,12 +57,12 @@ def key(value):
  native('hotkey' if '+' in value else 'press-key','--key',value);time.sleep(.15)
 try:
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
- w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(1)
+ w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(1);log.append({'initialHost':c('__host')});c('__snapshot');shutil.copy(m.OUT/'native.png',out/'host-start.png')
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  for width,height in [(1180,800),(393,852),(800,400)]:
-  c(f'__size:{width},{height}');c('__focus');time.sleep(.5);click('[data-view=focus]');w("!!document.querySelector('.focus-row-open')")
+  c(f'__size:{width},{height}');c('__focus');time.sleep(.5);log.append({'hostBeforeInput':c('__host'),'documentFocus':c('return {focused:document.hasFocus(),visibility:document.visibilityState}')});click('[data-view=focus]');w("!!document.querySelector('.focus-row-open')")
   click('.row-menu summary');state(f'home-pointer-{width}');key('Tab');state(f'home-keyboard-{width}');key('Shift+Tab');state(f'home-reverse-{width}')
  c('__size:1180,800');click('.focus-row-open');w("document.querySelector('#action-drawer').open")
  state('action-open');click('#action-back');w("!document.querySelector('#action-drawer').open");state('action-pointer-return')
