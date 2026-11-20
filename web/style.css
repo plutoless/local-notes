@@ -446,11 +446,13 @@ details { overflow-wrap: anywhere; }
 .search-dialog h2 { margin: 0 0 16px; }
 .search-results { max-height: 48dvh; overflow: auto; }
 .search-result { padding: 12px 0; border-bottom: 1px solid var(--divider); }
+/* Child actions share the inward scrollport cue used by result openers. */
+.search-result > .ui-action:focus-visible { outline-offset: -3px; }
 .search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; }
 .search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
 .search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; user-select: text; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
 .search-attribution { padding: 0; border-bottom: 0; display: flex; align-items: center; min-height: 44px; gap: 8px; }
-.search-attribution input { width: auto; }
+.search-attribution input { width: auto; scroll-margin-block: 16px; }
 @media (max-width: 600px) { .search-dialog { padding: 16px; } }
 
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid var(--divider); border-radius: var(--radius-panel); color: var(--text); background: var(--surface); box-shadow: var(--shadow-panel); }

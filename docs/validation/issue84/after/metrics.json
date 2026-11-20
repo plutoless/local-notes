@@ -579,10 +579,12 @@
     "width": 393,
     "height": 760,
     "mode": "checked",
-    "active": "ui-action quiet",
+    "active": "",
     "focusVisible": true,
-    "outline": "rgb(7, 95, 204) solid 3px",
-    "ancestors": [],
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [
+      "ui-selection search-attribution"
+    ],
     "panel": {
       "x": 17,
       "y": 16,
@@ -907,10 +909,12 @@
     "width": 1180,
     "height": 480,
     "mode": "checked",
-    "active": "ui-action quiet",
+    "active": "",
     "focusVisible": true,
-    "outline": "rgb(7, 95, 204) solid 3px",
-    "ancestors": [],
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [
+      "ui-selection search-attribution"
+    ],
     "panel": {
       "x": 280,
       "y": 16,
@@ -1235,10 +1239,12 @@
     "width": 393,
     "height": 480,
     "mode": "checked",
-    "active": "ui-action quiet",
+    "active": "",
     "focusVisible": true,
-    "outline": "rgb(7, 95, 204) solid 3px",
-    "ancestors": [],
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [
+      "ui-selection search-attribution"
+    ],
     "panel": {
       "x": 17,
       "y": 16,

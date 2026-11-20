@@ -19,7 +19,7 @@ export async function searchFocusJourney(page) {
       if (mode === 'pointer') await title.click();
       if (mode === 'keyboard') { await input.click(); await page.keyboard.press('ArrowDown'); await page.keyboard.press('Tab'); }
       if (mode === 'selected-child') { await title.click(); await page.keyboard.press('Tab'); }
-      if (mode === 'checked') { await page.locator('.search-attribution input').check(); await page.keyboard.press('Tab'); await page.keyboard.press('Shift+Tab'); }
+      if (mode === 'checked') { await page.locator('.search-attribution input').uncheck(); await page.locator('.search-attribution input').check(); await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Tab'); }
       await page.screenshot({path:`${out}/${width}-${height}-${mode}.png`});
       const state = await page.evaluate(() => {
         const active = document.activeElement, panel = document.querySelector('#global-search');
@@ -29,6 +29,9 @@ export async function searchFocusJourney(page) {
       });
       metrics.push({width,height,mode,...state});
       assert.equal(state.overflow,false); assert.ok(state.targets.every(n=>n.height>=44));
+      if (mode === 'checked' && phase !== 'before') {
+        assert.ok(await page.locator('.search-attribution input').evaluate(n=>n===document.activeElement && n.checked && getComputedStyle(n).outlineStyle==='none' && getComputedStyle(n.parentElement).outlineStyle==='solid'),JSON.stringify(state));
+      }
       if (mode === 'selected-child') { assert.ok(state.focusVisible); assert.deepEqual(state.ancestors,[]); }
     }
     await title.evaluate((n,text)=>n.textContent=text,original);

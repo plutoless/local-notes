@@ -5,6 +5,8 @@ The issue81 host constructors/route recorder and external sender are reused.
 DOM calls inspect/setup only; all claimed journey input is posted through the OS.
 Requires a coordinator GUI lease. Restores every original clipboard type/item.
 """
+import sys
+sys.dont_write_bytecode=True
 import ast, hashlib, importlib.util, inspect, json, os, shutil, subprocess, time, uuid
 from pathlib import Path
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
@@ -20,7 +22,7 @@ tree=ast.parse(Path('tests/native-browse-focus.py').read_text())
 for node in tree.body:
  if isinstance(node,ast.Assign) and any(isinstance(t,ast.Name) and t.id in ['EXTRA','ROUTE_RECORDER'] for t in node.targets):
   m.__dict__[node.targets[0].id]=ast.literal_eval(node.value)
-extra=m.EXTRA
+extra=m.EXTRA.replace('"firstResponderIsWeb":self?.window.firstResponder === self?.web', '"firstResponderIsWeb":self?.window.firstResponder === self?.web,"firstResponderInWeb":self.map { owner in (owner.window.firstResponder as? NSView)?.isDescendant(of:owner.web) ?? false } ?? false')
 extra=extra.replace('"CmdOrCtrl+A":0][key]', '"CmdOrCtrl+A":0,"CmdOrCtrl+K":40,"CmdOrCtrl+Return":36,"ArrowDown":125][key]')
 extra=extra.replace('"CmdOrCtrl+A":"a"][key]', '"CmdOrCtrl+A":"a","CmdOrCtrl+K":"k","CmdOrCtrl+Return":"\\r","ArrowDown":"\\u{f701}"][key]')
 extra=extra.replace('key == "CmdOrCtrl+A" ? .command', 'key.hasPrefix("CmdOrCtrl+") ? .command')
@@ -42,6 +44,9 @@ else { let items=try! JSONSerialization.jsonObject(with:Data(contentsOf:file)) a
 ''')
 subprocess.run(['swiftc',str(clipboard),'-o',str(m.OUT/'clipboard')],check=True)
 clip=[str(m.OUT/'clipboard')];backup=str(m.OUT/'clipboard.json');subprocess.run(clip+['save',backup],check=True)
+input_source=m.OUT/'input-source'
+subprocess.run(['swiftc','tests/InputSourceHarness.swift','-o',str(input_source)],check=True)
+initial_source=subprocess.check_output([str(input_source)],text=True).splitlines()[0]
 log=[];process=None;passed=False
 c,w=m.command,m.wait
 
@@ -51,7 +56,7 @@ def click(selector):
  native=c('__point:'+str(point['x'])+','+str(point['y']))
  post({'action':'click','x':native['windowX'],'y':native['windowY']},selector)
 def post(request,selector=None):
- host=c('__host');assert host['active'] and host['key'] and host['firstResponderIsWeb'] and host['visible'] and not host['occluded'],host
+ host=c('__host');assert host['active'] and host['key'] and (host['firstResponderIsWeb'] or host['firstResponderInWeb']) and host['visible'] and not host['occluded'],host
  before=c('__route');index=c('return inputEvents.length');c('window.expectedPointer='+json.dumps(selector))
  payload=c('__events:'+json.dumps(request));assert len(payload['events'])==2
  result=subprocess.run([str(sender),str(process.pid),str(host['windowNumber']),'post'],input=json.dumps(payload),text=True,capture_output=True)
@@ -59,7 +64,8 @@ def post(request,selector=None):
  receipt={'request':request,'selector':selector,'host':host,'sender':result.stdout,'events':events,'cocoa':after['cocoa'][len(before['cocoa']):],'quartz':after['quartz'][len(before['quartz']):]};log.append(receipt)
  assert result.returncode==0 and any(e['trusted'] for e in events),receipt
  assert receipt['cocoa'] and all(e['window']==host['windowNumber'] for e in receipt['cocoa']),receipt
- assert all(any(e['type']==t and e['marker']==810053 for e in receipt['quartz']) for t in ([1,2] if selector else [10,11])),receipt
+ sender_receipt=json.loads(result.stdout)
+ assert all(any(e['type']==t and e['marker']==810053 and e['sourcePID']==sender_receipt['senderPID'] for e in receipt['quartz']) for t in ([1,2] if selector else [10,11])),receipt
  if selector:assert any(e['type']=='click' and e.get('matchesExpectedPointer') for e in events),receipt
  else:assert any(e['type']=='keydown' and e['key']=={'Return':'Enter','CmdOrCtrl+Return':'Enter','CmdOrCtrl+K':'k'}.get(request['key'],request['key']) for e in events),receipt
 
@@ -67,13 +73,17 @@ def state(name):
  log.append({'state':name,'value':c("const a=document.activeElement;return {active:a.id||a.className,focus:a.matches(':focus-visible'),outline:getComputedStyle(a).outline,query:document.querySelector('#global-search-input').value,selected:document.querySelector('.search-select[aria-current=true]')?.textContent}")})
  c('__snapshot');shutil.copy(m.OUT/'native.png',m.OUT/(name+'.png'))
 try:
+ subprocess.run([str(input_source),'com.apple.keylayout.ABC'],check=True)
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
  w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(.3)
  c("window.inputEvents=[];for(const type of ['pointerdown','click','keydown','input'])document.addEventListener(type,e=>inputEvents.push({type:e.type,key:e.key,trusted:e.isTrusted,matchesExpectedPointer:!!window.expectedPointer&&e.target.matches(window.expectedPointer),target:e.target.id?'#'+e.target.id:e.target.className}),true)")
  click('#global-search-open');w("document.activeElement.id==='global-search-input'");state('pointer-open')
  key('CmdOrCtrl+K');w("document.activeElement.id==='global-search-input'")
+ typing_start=c('return inputEvents.length');assert c("return document.hasFocus() && document.activeElement.id==='global-search-input'")
  # OS typing uses the native input system (not a JS value assignment).
  subprocess.run(['osascript','-e',f'tell application "System Events" to keystroke "latency"'],check=True)
+ log.append({'OSTyping':'latency','targetPID':process.pid,'events':c('return inputEvents.slice('+str(typing_start)+')')})
+ assert any(e['type']=='input' and e['trusted'] for e in log[-1]['events'])
  w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('.search-results').inert")
  key('ArrowDown');key('Return');state('keyboard-expanded')
  key('CmdOrCtrl+Return');w("document.querySelector('#global-search [role=status]').textContent==='已复制片段'")
@@ -91,11 +101,25 @@ try:
  assert (m.OUT/'Sync/source.md').read_text()==original
  passed=True
 finally:
- if process:process.terminate();process.wait(timeout=10)
- subprocess.run(clip+['restore',backup],check=True)
- subprocess.run(clip+['save',str(m.OUT/'clipboard-restored.json')],check=True)
- restored=Path(backup).read_bytes()==(m.OUT/'clipboard-restored.json').read_bytes();assert restored
+ try:
+  if process:
+   process.terminate()
+   try:process.wait(timeout=10)
+   except subprocess.TimeoutExpired:process.kill();process.wait(timeout=10)
+ finally:
+  try:
+   subprocess.run(clip+['restore',backup],check=True)
+   subprocess.run(clip+['save',str(m.OUT/'clipboard-restored.json')],check=True)
+   restored=json.loads(Path(backup).read_text())==json.loads((m.OUT/'clipboard-restored.json').read_text());assert restored
+  finally:
+   subprocess.run([str(input_source),initial_source],check=True)
+   source_restored=subprocess.check_output([str(input_source)],text=True).splitlines()[0]==initial_source
+   assert source_restored
+ if process:
+  try:os.kill(process.pid,0)
+  except ProcessLookupError:pass
+  else:raise AssertionError('Owned host still exists after wait')
  hashes={p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()}
  assert all(v['source']==v['package'] for v in hashes.values())
- (m.OUT/'result.json').write_text(json.dumps({'passed':passed,'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'pid':process.pid if process else None,'exit':process.returncode if process else None,'clipboardRestored':restored,'inputSource':'untouched','sourcePreserved':(m.OUT/'Sync/source.md').read_text()==original,'sourceSHA256':hashlib.sha256(original.encode()).hexdigest(),'assets':hashes,'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'senderSHA256':hashlib.sha256(sender.read_bytes()).hexdigest(),'events':log},ensure_ascii=False,indent=2))
+ (m.OUT/'result.json').write_text(json.dumps({'passed':passed,'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'pid':process.pid if process else None,'exit':process.returncode if process else None,'clipboardRestored':restored,'inputSourceRestored':source_restored,'initialInputSource':initial_source,'sourcePreserved':(m.OUT/'Sync/source.md').read_text()==original,'sourceSHA256':hashlib.sha256(original.encode()).hexdigest(),'assets':hashes,'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'senderSHA256':hashlib.sha256(sender.read_bytes()).hexdigest(),'events':log},ensure_ascii=False,indent=2))
 print('PASS native search focus, source return and clipboard; owned host exited; original clipboard restored')
