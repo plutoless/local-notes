@@ -36,6 +36,18 @@ let browseRouteRecorder=BrowseRouteRecorder()
 '''
 EXTRA='''if script == "__host" { let result:[String:Any] = ["ok":true,"value":["active":NSApp.isActive,"hidden":NSApp.isHidden,"key":self?.window.isKeyWindow ?? false,"visible":self?.window.isVisible ?? false,"occluded":!(self?.window.occlusionState.contains(.visible) ?? false),"webHidden":self?.web.isHidden ?? true,"windowNumber":self?.window.windowNumber ?? -1,"main":self?.window.isMainWindow ?? false,"firstResponderIsWeb":self?.window.firstResponder === self?.web]]; try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script == "__route" { browseRouteRecorder.start();let result:[String:Any] = ["postAccess":CGPreflightPostEventAccess(),"listenAccess":CGPreflightListenEventAccess(),"axTrusted":AXIsProcessTrusted(),"tapAvailable":browseRouteRecorder.tap != nil,"tapEnabled":browseRouteRecorder.tap.map { CGEvent.tapIsEnabled(tap:$0) } ?? false,"cocoa":browseRouteRecorder.cocoa,"quartz":browseRouteRecorder.quartz];try? JSONSerialization.data(withJSONObject:["ok":true,"value":result]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script.hasPrefix("__events:"),let data=String(script.dropFirst(9)).data(using:.utf8),let request=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any],let window=self?.window {
+ var native:[NSEvent]=[]
+ if request["action"] as? String == "click",let x=request["x"] as? Double,let y=request["y"] as? Double {
+  native=[NSEvent.EventType.leftMouseDown,.leftMouseUp].compactMap { type in NSEvent.mouseEvent(with:type,location:NSPoint(x:x,y:y),modifierFlags:[],timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:window.windowNumber,context:nil,eventNumber:1,clickCount:1,pressure:type == .leftMouseDown ? 1 : 0) }
+ } else if let key=request["key"] as? String,let code=["Tab":CGKeyCode(48),"Shift+Tab":48,"Escape":53,"Return":36,"CmdOrCtrl+A":0][key],let text=["Tab":"\\t","Shift+Tab":"\\t","Escape":"\\u{1b}","Return":"\\r","CmdOrCtrl+A":"a"][key] {
+  let flags:NSEvent.ModifierFlags=key == "Shift+Tab" ? .shift : key == "CmdOrCtrl+A" ? .command : []
+  native=[true,false].compactMap { down in NSEvent.keyEvent(with:down ? .keyDown : .keyUp,location:.zero,modifierFlags:flags,timestamp:ProcessInfo.processInfo.systemUptime,windowNumber:window.windowNumber,context:nil,characters:text,charactersIgnoringModifiers:text,isARepeat:false,keyCode:code) }
+ }
+ var events:[String]=[];var roundtrip:[[String:Any]]=[]
+ for event in native { if event.window === window,let cg=event.cgEvent,let flattened=cg.data {let decoded=CGEvent(withDataAllocator:nil,data:flattened)!;let back=NSEvent(cgEvent:decoded)!;events.append((flattened as Data).base64EncodedString());roundtrip.append(["window":back.windowNumber,"x":back.locationInWindow.x,"y":back.locationInWindow.y,"globalX":decoded.location.x,"globalY":decoded.location.y,"resolvedWindow":event.window === window])} }
+ try? JSONSerialization.data(withJSONObject:["ok":events.count==2,"value":["events":events,"roundtrip":roundtrip]]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return
+}
 if script.hasPrefix("__point:") { let p=script.dropFirst(8).split(separator:",").compactMap { Double($0) };if p.count==2,let web=self?.web,let window=self?.window {let local=NSPoint(x:p[0],y:web.isFlipped ? p[1] : web.bounds.height-p[1]);let inWindow=web.convert(local,to:nil);let screen=window.convertPoint(toScreen:inWindow);let height=CGDisplayBounds(CGMainDisplayID()).height;let hit=web.hitTest(local);let result:[String:Any] = ["quartzX":screen.x,"quartzY":height-screen.y,"windowX":inWindow.x,"windowY":inWindow.y,"webFlipped":web.isFlipped,"webWidth":web.bounds.width,"webHeight":web.bounds.height,"frame":NSStringFromRect(window.frame),"hitClass":hit.map {String(describing:type(of:$0))} ?? "none","legacyQuartzX":window.frame.minX+p[0],"legacyQuartzY":height-window.frame.maxY+p[1]+28];try? JSONSerialization.data(withJSONObject:["ok":true,"value":result]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return } }
 if script.hasPrefix("__pointer:") { let p=script.dropFirst(10).split(separator:",").compactMap { Double($0) }; if let window=self?.window { let point=CGPoint(x:window.frame.minX+p[0],y:(NSScreen.screens.first?.frame.height ?? 0)-window.frame.maxY+p[1]); for type in [CGEventType.leftMouseDown,CGEventType.leftMouseUp] { CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)?.postToPid(getpid()) } };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script.hasPrefix("__key:") { let key=String(script.dropFirst(6));let codes:[String:CGKeyCode] = ["Tab":48,"Shift+Tab":48,"Escape":53,"Return":36,"CmdOrCtrl+A":0];guard let code=codes[key] else {try? JSONSerialization.data(withJSONObject:["ok":false,"error":"Unsupported native key: " + key]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return};for down in [true,false] { let event=CGEvent(keyboardEventSource:nil,virtualKey:code,keyDown:down);if key.hasPrefix("Shift+") {event?.flags = .maskShift};if key.hasPrefix("CmdOrCtrl+") {event?.flags = .maskCommand};event?.postToPid(getpid()) };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
@@ -69,9 +81,16 @@ def native(action,*args,target=None):
   if action=='click':
    point=c('__point:'+args[1]+','+args[3]);log.append({'coordinateMapping':point})
    assert point['hitClass']!='none', 'Native target outside the web view; nothing posted'
-   command=[str(sender),str(process.pid),str(owned_window),'click',str(point['quartzX']),str(point['quartzY']),str(point['windowX']),str(point['windowY'])]
-  else:command=[str(sender),str(process.pid),str(owned_window),'key',args[1]]
-  result=subprocess.run(command,capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
+   payload=c('__events:'+json.dumps({'action':'click','x':point['windowX'],'y':point['windowY']}))
+   log.append({'constructorRoundtrip':payload['roundtrip']})
+   assert all(e['window']==owned_window and e['resolvedWindow'] and abs(e['x']-point['windowX'])<=1 and abs(e['y']-point['windowY'])<=1 and abs(e['globalX']-point['quartzX'])<=1 and abs(e['globalY']-point['quartzY'])<=1 for e in payload['roundtrip']), 'Read-only native coordinate roundtrip failed; nothing posted'
+  else:
+   payload=c('__events:'+json.dumps({'key':args[1]}));log.append({'constructorRoundtrip':payload['roundtrip']})
+   assert all(e['window']==owned_window and e['resolvedWindow'] for e in payload['roundtrip']), 'Read-only native key window roundtrip failed; nothing posted'
+  if os.environ.get('CONSTRUCTOR_ONLY'):
+   log.append({'constructorOnly':'PASS actual owned-window and local/global coordinate roundtrip; no OS input posted'});raise SystemExit(0)
+  command=[str(sender),str(process.pid),str(owned_window),'post']
+  result=subprocess.run(command,input=json.dumps(payload),capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
   def delivered(events):
    if action=='click':return all(any(e['trusted'] and e['type']==kind and e['matchesExpectedTarget'] for e in events) for kind in ['pointerdown','click'])
    expected={'Tab':('Tab',False,False),'Shift+Tab':('Tab',True,False),'Escape':('Escape',False,False),'Return':('Enter',False,False),'CmdOrCtrl+A':('a',False,True)}[args[1]]
