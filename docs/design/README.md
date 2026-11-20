@@ -15,7 +15,7 @@ The `:root` declarations in `web/style.css` are the implemented source of truth.
 | Action / selection | `--accent`, `--selected`, `--selected-text`, `--hover` | Restrained blue; selection also uses weight and `aria-current` |
 | Status | `--success`, `--warning`, `--danger` | Always pair color with a Chinese receipt, warning or failure message |
 | Interactive / decorative boundaries | `--line`, `--divider` | `--line` ≥3:1 on light surfaces; `--divider` only separates noninteractive regions |
-| Keyboard indicator | `--focus` | Keyboard: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows; pointer buttons remain restrained |
+| Keyboard indicator | `--focus` | Keyboard actions: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows. Contextual editable fields use the 2px active boundary described below; pointer buttons remain restrained |
 | Rhythm | `--space-small`, `--space`, `--space-section` | 4/8/24px; 16px field margin, 24–32px document padding |
 | Shape / elevation | `--radius`, `--radius-panel`, `--shadow-panel` | 8px controls, 14px panels; elevation only for overlays |
 
@@ -192,3 +192,11 @@ Real consumers are Current Focus row openers and management disclosures, shell s
 ## Search focus adoption (issue #84)
 
 The compact A search dialog reuses issue #81's native `:focus-visible` treatment for scopes, result openers and child actions. Result selection (`aria-current` and selected fill), pressed scope (`aria-pressed`) and keyboard focus remain independent. Focusing Copy or Open source does not outline the containing result; these scrollport child actions use the shared inward offset so the cue cannot be clipped. Attribution reuses `.ui-selection` for one keyboard outline on its checkbox label and independent checked fill, retaining its existing 44px target and spacing. Arrow selection keeps the search input/caret available; repeated Command+K refocuses that input. A delayed refresh restores a result control only when its previous focus was displaced by the inert results, never over a newly chosen input/control. Source return retains the actual Open source control before the shared action disables it, then restores that control or the search input if it no longer exists. Search has no invalid-field state; unavailable sources and copy failures use the existing status/retry receipts.
+
+## Contextual form focus (issue #83)
+
+Contextual drawers reuse the shared focus token for a single 2px active editable-field boundary (border plus 1px inset). This replaces the text field's outer outline for pointer and keyboard editing while retaining the caret. Invalid fields retain their danger border and message alongside the blue inset; invalid is never a focus or selection state. Buttons, disclosure summaries and the three-way leave decision keep the #81 keyboard-only 3px outline. No form, label or drawer receives a competing parent frame. Checkbox rows retain the existing single keyboard label outline and independent checked fill.
+
+Tab containment excludes controls inside closed disclosures, even when the browser reports layout rectangles for those descendants. Opening a disclosure makes its controls reachable in document order. First meaningful focus, task ownership, recovery, submitted-write waiting and native close/quit decisions remain with existing consumers. The catalogue topic drawer demonstrates normal and invalid fields using the same production styles.
+
+The drawer declares its requested first receiver with native `autofocus` while open, in addition to synchronous focus. This prevents WKWebView keyboard reopening from choosing the header Close button after a previous Tab cycle. Closing removes only an autofocus attribute introduced by the drawer; pre-existing attributes remain intact.
