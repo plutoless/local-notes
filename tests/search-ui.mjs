@@ -1,3 +1,4 @@
+import {searchFocusJourney} from './search-focus-journey.js';
 import {enterNoteEditing} from './form-journeys.js';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -39,6 +40,16 @@ try {
   await page.locator('[data-scope=note]').click();
   const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
+  await searchFocusJourney(page);
+  if (process.env.SEARCH_FOCUS_PHASE !== 'before') {
+    await page.locator('.search-result').first().getByRole('button',{name:'复制片段',exact:true}).focus();
+    let releaseFocus; delay = new Promise(resolve=>releaseFocus=resolve);
+    await input.dispatchEvent('input');
+    await page.waitForFunction(()=>document.querySelector('.search-results').inert);
+    await input.click(); releaseFocus(); delay = null;
+    await page.waitForFunction(()=>!document.querySelector('.search-results').inert);
+    assert.equal(await input.evaluate(n=>n===document.activeElement),true,'Refresh must not steal focus from search input');
+  }
   // Deterministic event-order regression; actual IME evidence is native-search-ime.py.
   for (const route of ['keyboard', 'cancel']) {
     assert.equal(await page.evaluate(route => {

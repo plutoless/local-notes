@@ -449,7 +449,7 @@ details { overflow-wrap: anywhere; }
 .search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; }
 .search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
 .search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; user-select: text; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
-.search-attribution { display: flex; align-items: center; min-height: 44px; gap: 8px; }
+.search-attribution { padding: 0; border-bottom: 0; display: flex; align-items: center; min-height: 44px; gap: 8px; }
 .search-attribution input { width: auto; }
 @media (max-width: 600px) { .search-dialog { padding: 16px; } }
 
