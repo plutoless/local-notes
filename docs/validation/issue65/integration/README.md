@@ -18,21 +18,21 @@ Main's direct-reader descriptor refresh and contextual Topic creation now increm
 
 The first full UI attempt failed because a deliberately generated earlier failure notice blocked a later archive-row pointer target under the new ordering. The search-navigation journey explicitly dismisses that notice before the unrelated click, retaining its assertions. The raw failure remains in `ui-attempt1-notice-overlay.txt`.
 
-## Native execution gate
+## Historical pre-grant native execution gate
 
 `tests/native-library-keyboard.py --build-only` compiles the synthetic isolated host and existing external process-targeted sender without launching any app or posting input. The actual run refuses to launch unless `ISSUE65_GUI_GRANT` contains an explicit exclusive coordinator grant receipt. It will record exact PID/window, sender/recipient receipts, trusted target key events, AppKit window receipts, source/package hashes, duplicate-free paging, and query/control/page/selection/scroll/focus return outcomes.
 
-DOM setup establishes fixtures, values and initial focus only; OS-generated Tab/Shift+Tab/Enter provide keyboard evidence. No physical-input claim is made. The journey performs no input-source switch or copy/paste operation and saves the original input source and full clipboard representations in a mode-0600 private build snapshot, restores them if necessary, verifies their final state, and deletes that private snapshot. Cleanup terminates/waits for its exact owned PID and records absence before release. No native activation/input has yet occurred in this resume.
+DOM setup establishes fixtures, values and initial focus only; OS-generated Tab/Shift+Tab/Enter provide keyboard evidence. No physical-input claim is made. The journey performs no input-source switch or copy/paste operation and saves the original input source and full clipboard representations in a mode-0600 private build snapshot, restores them if necessary, verifies their final state, and deletes that private snapshot. Cleanup terminates/waits for its exact owned PID and records absence before release. At this historical pre-grant checkpoint, no native activation/input had occurred; the granted failed attempt and release are recorded below.
 
 Android runtime and standalone Syncthing checks remain deferred. No models or private notes are used.
 
-## Non-GUI review and validation status
+## Historical pre-grant review and validation status
 
 Production and test head under review: `1709273c960db42d6c3da03503bf2ea9b5aea041`; merge-base/main `13cc92c65cf6877586cf5364211a2df570b80032`. Separate pre-GUI Standards and Spec reports are included. Both report zero remaining code findings and explicitly retain the unexecuted native acceptance requirement. Standards initially found public clipboard-derived hashes; the probe now keeps those private and publishes boolean restoration receipts only.
 
-Static checks, all 68 shared tests, Mac packaging, Android debug packaging and the separately invoked browse-focus browser suite passed. Android packaging does not establish Android runtime behavior. The first full browser retry progressed through form-focus, then exposed a Topic-drawer assertion racing the asynchronous list refresh; `ui-attempt2-topic-refresh-race.txt` preserves that failure. The test now awaits the actual refreshed options without changing its count assertion, and the full browser suite is being rerun.
+Static checks, all 68 shared tests, Mac packaging, Android debug packaging and the separately invoked browse-focus browser suite passed. Android packaging does not establish Android runtime behavior. The first full browser retry progressed through form-focus, then exposed a Topic-drawer assertion racing the asynchronous list refresh; `ui-attempt2-topic-refresh-race.txt` preserves that failure. The test now awaits the actual refreshed options without changing its count assertion, and the full browser suite was being rerun at this checkpoint; its completed clean result is recorded below.
 
-Native grant is still pending; no host has been launched or activated in this resume, and no native input has been posted. Final native execution/reviews and explicit GUI release remain required before task completion.
+At this historical checkpoint, the grant was pending and no host had been launched or activated. The later grant, rejected first sender guard, cleanup, explicit release and final reviews are recorded below; native acceptance remains unmet.
 
 ## Granted native attempt and explicit release
 
