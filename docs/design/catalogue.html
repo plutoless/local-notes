@@ -36,7 +36,8 @@ const section = document.createElement('section');
 section.innerHTML = '<h2>Contextual topic drawer</h2><p>Production drawer constructor, consumed by LibraryScreen for real topic creation and renaming. This isolated catalogue example has no persistence. The actual journey and guards are verified in issue46 evidence.</p>';
 const panel = drawer({id:'catalogue-drawer', title:'新建主题', onDismiss:()=>panel.hide()});
 const input = document.createElement('input');
-panel.body.append(field('主题名称',input,{density:'compact'}));
+const invalidInput = document.createElement('input'); invalidInput.value = '需要核对的长中文主题名称';
+panel.body.append(field('主题名称',input,{density:'compact'}), field('无效名称示例', invalidInput, {density:'compact',invalid:true,help:'名称需要核对，输入仍保留。'}));
 panel.footer.append(button('取消',()=>panel.hide(),{density:'compact'}),button('创建',()=>panel.hide(),{primary:true,density:'compact'}));
 section.append(button('打开主题抽屉',()=>panel.open(input))); document.body.append(section);
 </script>

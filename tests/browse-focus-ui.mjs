@@ -67,15 +67,24 @@ try {
   await page.locator('.focus-row-open').first().waitFor();
   const outline = async node => { await page.waitForTimeout(100); return node.evaluate(n=>getComputedStyle(n).outlineStyle); };
   const row = page.locator('.focus-row-open').first();
+  // Closing restores the old opener before the asynchronous Focus refresh finishes.
+  // Wait for its replacement and final return before gating another render.
+  const waitForFocusReturn = async origin => {
+    const entityId = await origin.getAttribute('data-entity-id');
+    await page.waitForFunction(({origin, entityId}) => !origin.isConnected &&
+      document.activeElement.matches('.focus-row-open') && document.activeElement.dataset.entityId === entityId,
+    {origin, entityId});
+  };
+  const pointerOrigin = await row.elementHandle();
   await row.click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-back').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
-  await page.waitForFunction(()=>document.activeElement.matches('.focus-row-open'));
+  await waitForFocusReturn(pointerOrigin);
   assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'none', 'pointer return must not inherit field keyboard frames');
   await page.keyboard.press('Tab'); assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'solid');
-  await page.keyboard.press('Shift+Tab'); await page.keyboard.press('Enter');
+  await page.keyboard.press('Shift+Tab'); const keyboardOrigin = await row.elementHandle(); await page.keyboard.press('Enter');
   await page.locator('#action-drawer').waitFor({state:'visible'}); await page.keyboard.press('Escape');
   await page.locator('#action-drawer').waitFor({state:'hidden'});
-  await page.waitForFunction(()=>document.activeElement.matches('.focus-row-open'));
+  await waitForFocusReturn(keyboardOrigin);
   assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle), 'solid', 'keyboard return stays visible');
   // A delayed Focus replacement must retain the real action entry, without a transient probe ID.
   const allActionsSelector='#items .home-tools > button:last-child';
