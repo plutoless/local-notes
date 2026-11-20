@@ -41,9 +41,11 @@ export class SyncScreen {
     if (show) { this.dialog.open(); document.querySelector('.app').inert = true; }
     if (this.running || this.saving) return;
     if (this.dirty) { if (show) this.canLeave(); return; }
-    const refreshHadFocus = this.panel.contains(document.activeElement);
+    const restoreFocus = show || this.panel.contains(document.activeElement);
     this.running = true;
-    this.render(); for (const article of this.panel.querySelectorAll('article')) article.inert = true; feedback(this.status, '正在检查本地版本…'); this.panel.setAttribute('aria-busy', 'true');
+    this.render();
+    if (show && !this.panel.contains(document.activeElement)) this.panel.querySelector('button')?.focus();
+    for (const article of this.panel.querySelectorAll('article')) article.inert = true; feedback(this.status, '正在检查本地版本…'); this.panel.setAttribute('aria-busy', 'true');
     try {
       const warnings = [];
       for (const repo of this.repositories()) {
@@ -57,7 +59,7 @@ export class SyncScreen {
     } catch (error) {
       feedback(this.status, '检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。', error.message);
     } finally { this.running = false; this.panel.setAttribute('aria-busy', 'false'); this.refreshButton.disabled = false;
-      if (!this.panel.hidden && refreshHadFocus && document.activeElement === document.body) this.refreshButton.focus();
+      if (!this.panel.hidden && restoreFocus && document.activeElement === document.body) this.refreshButton.focus();
       for (const article of this.panel.querySelectorAll('article')) article.inert = false; }
   }
   render() {
