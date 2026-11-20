@@ -14,7 +14,29 @@ for i in range(55): (m.OUT/f'Sync/note-{i:02}.md').write_text('# 核对资料与
 source=inspect.getsource(m.build).replace('dev.localnotes.validation.issue7','dev.localnotes.validation.issue81'+phase+uuid.uuid4().hex[:8])
 source=source.replace("source=(REPO/'mac/main.swift').read_text()", "source=(REPO/'mac/main.swift').read_text().replace('config.preferences.tabFocusesLinks = true;', '')" ) if os.environ.get('NATIVE_DIAGNOSE') else source
 source=source.replace("generated=OUT/'main.swift';generated.write_text(source)","generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped ='))")
+source=source.replace("source.replace('let wrapped =', EXTRA+'let wrapped =')", "source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()')")
+ROUTE_RECORDER='''
+final class BrowseRouteRecorder {
+ var cocoa:[[String:Any]] = []; var quartz:[[String:Any]] = []
+ var monitor:Any?; var tap:CFMachPort?; var tapSource:CFRunLoopSource?
+ func start() {
+  guard monitor == nil else { return }
+  monitor=NSEvent.addLocalMonitorForEvents(matching:[.leftMouseDown,.leftMouseUp,.keyDown,.keyUp]) { [weak self] event in
+   self?.cocoa.append(["type":event.type.rawValue,"window":event.windowNumber,"x":event.locationInWindow.x,"y":event.locationInWindow.y,"keyCode":event.type == .keyDown || event.type == .keyUp ? Int(event.keyCode) : -1,"flags":event.modifierFlags.rawValue,"utc":ISO8601DateFormatter().string(from:Date())]);return event
+  }
+  let mask:CGEventMask = (1 << CGEventType.leftMouseDown.rawValue) | (1 << CGEventType.leftMouseUp.rawValue) | (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
+  tap=CGEvent.tapCreateForPid(pid:getpid(),place:.headInsertEventTap,options:.listenOnly,eventsOfInterest:mask,callback:{ _,type,event,info in
+   let recorder=Unmanaged<BrowseRouteRecorder>.fromOpaque(info!).takeUnretainedValue()
+   recorder.quartz.append(["type":type.rawValue,"x":event.location.x,"y":event.location.y,"marker":event.getIntegerValueField(.eventSourceUserData),"sourcePID":event.getIntegerValueField(.eventSourceUnixProcessID),"utc":ISO8601DateFormatter().string(from:Date())]);return Unmanaged.passUnretained(event)
+  },userInfo:Unmanaged.passUnretained(self).toOpaque())
+  if let tap=tap { tapSource=CFMachPortCreateRunLoopSource(kCFAllocatorDefault,tap,0);CFRunLoopAddSource(CFRunLoopGetMain(),tapSource,.commonModes) }
+ }
+}
+let browseRouteRecorder=BrowseRouteRecorder()
+'''
 EXTRA='''if script == "__host" { let result:[String:Any] = ["ok":true,"value":["active":NSApp.isActive,"hidden":NSApp.isHidden,"key":self?.window.isKeyWindow ?? false,"visible":self?.window.isVisible ?? false,"occluded":!(self?.window.occlusionState.contains(.visible) ?? false),"webHidden":self?.web.isHidden ?? true,"windowNumber":self?.window.windowNumber ?? -1,"main":self?.window.isMainWindow ?? false,"firstResponderIsWeb":self?.window.firstResponder === self?.web]]; try? JSONSerialization.data(withJSONObject:result).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script == "__route" { browseRouteRecorder.start();let result:[String:Any] = ["postAccess":CGPreflightPostEventAccess(),"listenAccess":CGPreflightListenEventAccess(),"axTrusted":AXIsProcessTrusted(),"tapAvailable":browseRouteRecorder.tap != nil,"tapEnabled":browseRouteRecorder.tap.map { CGEvent.tapIsEnabled(tap:$0) } ?? false,"cocoa":browseRouteRecorder.cocoa,"quartz":browseRouteRecorder.quartz];try? JSONSerialization.data(withJSONObject:["ok":true,"value":result]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
+if script.hasPrefix("__point:") { let p=script.dropFirst(8).split(separator:",").compactMap { Double($0) };if p.count==2,let web=self?.web,let window=self?.window {let local=NSPoint(x:p[0],y:web.isFlipped ? p[1] : web.bounds.height-p[1]);let inWindow=web.convert(local,to:nil);let screen=window.convertPoint(toScreen:inWindow);let height=CGDisplayBounds(CGMainDisplayID()).height;let hit=web.hitTest(local);let result:[String:Any] = ["quartzX":screen.x,"quartzY":height-screen.y,"windowX":inWindow.x,"windowY":inWindow.y,"webFlipped":web.isFlipped,"webWidth":web.bounds.width,"webHeight":web.bounds.height,"frame":NSStringFromRect(window.frame),"hitClass":hit.map {String(describing:type(of:$0))} ?? "none","legacyQuartzX":window.frame.minX+p[0],"legacyQuartzY":height-window.frame.maxY+p[1]+28];try? JSONSerialization.data(withJSONObject:["ok":true,"value":result]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return } }
 if script.hasPrefix("__pointer:") { let p=script.dropFirst(10).split(separator:",").compactMap { Double($0) }; if let window=self?.window { let point=CGPoint(x:window.frame.minX+p[0],y:(NSScreen.screens.first?.frame.height ?? 0)-window.frame.maxY+p[1]); for type in [CGEventType.leftMouseDown,CGEventType.leftMouseUp] { CGEvent(mouseEventSource:nil,mouseType:type,mouseCursorPosition:point,mouseButton:.left)?.postToPid(getpid()) } };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script.hasPrefix("__key:") { let key=String(script.dropFirst(6));let codes:[String:CGKeyCode] = ["Tab":48,"Shift+Tab":48,"Escape":53,"Return":36,"CmdOrCtrl+A":0];guard let code=codes[key] else {try? JSONSerialization.data(withJSONObject:["ok":false,"error":"Unsupported native key: " + key]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return};for down in [true,false] { let event=CGEvent(keyboardEventSource:nil,virtualKey:code,keyDown:down);if key.hasPrefix("Shift+") {event?.flags = .maskShift};if key.hasPrefix("CmdOrCtrl+") {event?.flags = .maskCommand};event?.postToPid(getpid()) };try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }
 if script == "__focus" { NSApp.unhide(nil); self?.window.deminiaturize(nil); self?.window.orderFrontRegardless(); self?.window.makeKeyAndOrderFront(nil); self?.window.makeFirstResponder(self?.web); NSApp.activate(ignoringOtherApps:true); try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")); return }
@@ -24,7 +46,12 @@ if script == "__snapshot" { self?.web.takeSnapshot(with:nil) { image,_ in
  try? JSONSerialization.data(withJSONObject:["ok":true]).write(to:reviewProbe.directory.appendingPathComponent("response.json")) }; return }
 '''
 # Execute the transformed build in the module globals used by command().
-m.__dict__['EXTRA']=EXTRA;exec(source,m.__dict__);m.build()
+m.__dict__['EXTRA']=EXTRA;m.__dict__['ROUTE_RECORDER']=ROUTE_RECORDER;exec(source,m.__dict__);m.build()
+sender=m.OUT/'native-browse-input'
+if os.environ.get('EXTERNAL_INPUT'):
+ subprocess.run(['swiftc',str(Path(__file__).with_name('native-browse-input.swift')),'-o',str(sender)],check=True)
+if os.environ.get('NATIVE_BUILD_ONLY'):
+ print('PASS build-only native probe; no host launched or input posted');raise SystemExit(0)
 c,w=m.command,m.wait
 log=[];process=None
 out=Path(os.environ.get('NATIVE_EVIDENCE_DIR',str(Path('docs/validation/issue81')/phase)));out.mkdir(parents=True,exist_ok=True)
@@ -36,6 +63,23 @@ def native(action,*args):
  host=c('__host');document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'beforeInput':action,'args':args,'utc':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'pid':process.pid,'host':host,'document':document})
  assert host['windowNumber']==owned_window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned host lost visible keyboard/input ownership; no operation attempted'
+ if os.environ.get('EXTERNAL_INPUT'):
+  route_before=c('__route');previous=c('return window.inputEvents.length')
+  if action=='click':
+   point=c('__point:'+args[1]+','+args[3]);log.append({'coordinateMapping':point})
+   assert point['hitClass']!='none', 'Native target outside the web view; nothing posted'
+   command=[str(sender),str(process.pid),str(owned_window),'click',str(point['quartzX']),str(point['quartzY'])]
+  else:command=[str(sender),str(process.pid),str(owned_window),'key',args[1]]
+  result=subprocess.run(command,capture_output=True,text=True);log.append({'sender':result.stdout,'senderExit':result.returncode,'routeBefore':route_before})
+  events=[]
+  for _ in range(20):
+   time.sleep(.05);events=c('return window.inputEvents.slice('+str(previous)+')')
+   if any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events):break
+  host_after=c('__host');document_after=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
+  log.append({'externalInput':action,'utcCompleted':time.strftime('%Y-%m-%dT%H:%M:%S',time.gmtime()),'epochNS':time.time_ns(),'trustedEvents':events,'routeAfter':c('__route'),'hostAfter':host_after,'documentAfter':document_after})
+  assert result.returncode==0 and host_after['windowNumber']==owned_window and host_after['active'] and host_after['key'] and host_after['visible'] and not host_after['occluded'] and document_after['focused'], 'Recipient or sender uncertain; no replay'
+  assert any(e['trusted'] and e['type']==('pointerdown' if action=='click' else 'keydown') for e in events), 'External native delivery unverified; no replay'
+  return
  if os.environ.get('QUARTZ_INPUT'):
   host=c('__host');log.append({'nativeHost':host,'inputMethod':'Quartz CGEvent.postToPid owned host'})
   assert host['active'] and host['key'] and host['visible'] and not host['occluded'], 'Native acceptance requires a visibly focused owned host'
@@ -59,7 +103,8 @@ def native(action,*args):
 
 def click(selector):
  c('const node=document.querySelector('+json.dumps(selector)+');if(!node || !node.getClientRects().length || node.disabled)throw Error("Native target unavailable");node.scrollIntoView({block:"nearest"})')
- rect=c('const r=document.querySelector('+json.dumps(selector)+').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2+28}')
+ rect=c('const node=document.querySelector('+json.dumps(selector)+');const r=node.getBoundingClientRect();const x=r.x+r.width/2,y=r.y+r.height/2;if(!node.contains(document.elementFromPoint(x,y)))throw Error("Native target occluded or outside viewport");return {x,y}')
+ if not os.environ.get('EXTERNAL_INPUT'):rect['y']+=28
  native('click','--x',str(round(rect['x'])),'--y',str(round(rect['y'])))
  time.sleep(.25)
 
@@ -71,9 +116,10 @@ try:
  host=c('__host');owned_window=host['windowNumber'];document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'preflight':host,'document':document,'pid':process.pid,'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()})
  c('__snapshot');shutil.copy(m.OUT/'native.png',out/'host-start.png')
- assert host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Preflight unavailable: unlock the Mac desktop and activate the isolated Browse81 window; no OS input attempted'
+ assert host['active'] and host['key'] and host['visible'] and not host['occluded'] and document['focused'] and document['visibility']=='visible', 'Owned fixture unavailable in observed preflight; no OS input attempted'
+ if os.environ.get('EXTERNAL_INPUT'):log.append({'routePreflight':c('__route'),'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
- c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName}),true)")
+ c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,utc:new Date().toISOString()}),true)")
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  for width,height in [(1180,800),(393,852),(800,400)]:
@@ -108,10 +154,13 @@ try:
  hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path('web').glob('*') if p.is_file()}
  for p in Path('web').glob('*'):
   if p.is_file():assert p.read_bytes()==(m.APP/'Contents/Resources/web'/p.name).read_bytes()
- log.append({'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'sourcePackageHashes':hashes,'probeHash':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostHash':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'input':('Quartz CGEvent.postToPid' if os.environ.get('QUARTZ_INPUT') else 'Orca process-targeted OS injection')+'; DOM fixture/setup; no physical input; clipboard/input source untouched'})
+ method='external Swift CGEvent.postToPid' if os.environ.get('EXTERNAL_INPUT') else 'fixture self-posted CGEvent.postToPid' if os.environ.get('QUARTZ_INPUT') else 'Orca process-targeted OS injection'
+ log.append({'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'sourcePackageHashes':hashes,'probeHash':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostHash':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'input':method+'; DOM fixture/setup; no physical input; clipboard/input source untouched'})
  print('PASS native browse pointer/keyboard/open/return evidence')
 finally:
- log.append({'provenance':{'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'sourcePackage':{p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()},'clipboard':'untouched','inputSource':'untouched'}})
+ if os.environ.get('EXTERNAL_INPUT'):
+  log.append({'externalSenderProvenance':{'sourceSHA256':hashlib.sha256(Path(__file__).with_name('native-browse-input.swift').read_bytes()).hexdigest(),'executableSHA256':hashlib.sha256(sender.read_bytes()).hexdigest()}})
+ log.append({'provenance':{'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'applicationPath':str(m.APP),'bundleIdentifier':subprocess.check_output(['/usr/libexec/PlistBuddy','-c','Print :CFBundleIdentifier',str(m.APP/'Contents/Info.plist')],text=True).strip(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'sourcePackage':{p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()},'clipboard':'untouched','inputSource':'untouched'}})
  if process:process.terminate();process.wait(timeout=10)
  log.append({'ownedHostExited':process.returncode if process else None})
  (out/'transcript.json').write_text(json.dumps(log,ensure_ascii=False,indent=2))
