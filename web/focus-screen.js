@@ -118,7 +118,9 @@ export class FocusScreen {
   }
   async openAction(action) {
     const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
+    const repository = this.actions.repository;
     await this.actions.edit(action);
+    if (!this.active || repository !== this.actions.repository || !this.actions.drawer.panel.open) return;
     this.actions.returnToFocus = async () => {
       if (!this.active) { if (!await this.navigate('focus')) return; }
       else if (!await this.show()) return;

@@ -271,6 +271,8 @@ export class ActionScreen {
     this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     const context = this.captureContext(action);
+    // The shared row is temporarily disabled during opening, which can move DOM focus to body.
+    if (context.opener === document.body && action) context.opener = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === action.entityId) || context.opener;
     this.contextualProposal = proposal;
     this.showForm(proposal?.fields || action || {}, action);
     const baseline = this.baseline;
@@ -280,12 +282,14 @@ export class ActionScreen {
     this.creationUncertain = Boolean(this.creationAttempt);
     this.recoveredDraft = Boolean(draft);
     this.drawer.open($('#action-description'));
+    // Once the modal owns input, the underlying row must remain a usable return target.
+    if (context.opener?.matches('#items .ui-row')) context.opener.disabled = false;
     this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
     await this.assignments($('#action-initiative').value || '');
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.() || !this.drawer.panel.open) return;
     if (draft) this.state('已恢复行动草稿，请核对后保存。');
     if (!this.dirty) this.state(action ? '已保存到本地' : '写下你已决定执行的下一步。');
-    $('#action-description').focus();
+    // Opening already placed focus; late option loading must not move it again.
   }
   async refreshSources(action) {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;

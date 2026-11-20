@@ -15,7 +15,7 @@ let page;
 try {
   page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let queryGate = null, queryBegan, referenceGate, referenceBegan;
+  let queryGate = null, queryBegan, referenceGate, referenceBegan, assignmentGate, assignmentBegan;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = '# 资料整理约定\n\n保留原文，只整理入口。\n\n先确认本周需要推进的内容，再补充关联资料。\n';
@@ -27,10 +27,12 @@ try {
   const actions = new ActionRepository(fixture.adapter); await actions.open();
   for (const [i, description] of ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'].entries()) await actions.save({description, initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo'});
   await actions.save({description: '确认评审时间', waitingOn: '等待对方回复可用时间', status: 'waiting', initiativeId: second.entityId});
+  for(let n=0;n<51;n++) await initiatives.save({title:'分页事项 '+n,goal:'保留上下文',progress:'待核对',status:'later'});
   for(let n=0;n<32;n++) await actions.save({description:'分页行动 '+n,status:'todo'});
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if (assignmentGate && request.cmd==='actionQuery' && request.entityType==='initiative' && !request.entityId && await page.locator('#action-drawer').evaluate(n=>n.open)) { const gate=assignmentGate;assignmentGate=null;assignmentBegan();await gate; }
       if (request.cmd === 'referenceQuery' && referenceGate) { const gate=referenceGate;referenceGate=null;referenceBegan();await gate; }
       if (request.cmd === 'actionQuery' && queryGate) { const gate = queryGate; queryGate = null; queryBegan?.(); await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
@@ -117,11 +119,12 @@ try {
   let release; const started = new Promise(resolve=>{queryBegan=resolve;});
   queryGate = new Promise(resolve=>{release=resolve;});
   await page.locator('#search').fill('分页');await started;
-  const retainedId = await page.locator('#items [data-entity-id]').first().getAttribute('data-entity-id');
-  await page.locator('#items [data-entity-id]').first().focus();
+  const retainedRow=page.locator('#items [data-entity-id]').filter({hasText:'分页行动'}).first();
+  const retainedId = await retainedRow.getAttribute('data-entity-id');
+  await retainedRow.focus();
   await page.locator('#items').evaluate(n=>n.scrollTop=160);release();
   await page.waitForFunction(()=>document.querySelector('#index-state').textContent==='');
-  assert.equal(await page.locator(':focus').getAttribute('data-entity-id'),retainedId);
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.entityId),retainedId);
   assert.equal(await page.locator('#items').evaluate(n=>n.scrollTop),160,'delayed query preserves the latest list scroll');
   await page.locator('#action-next').focus();await page.keyboard.press('Enter');
   await page.waitForFunction(()=>document.querySelector('#action-next').disabled && document.activeElement.id==='action-previous');
@@ -139,6 +142,38 @@ try {
   assert.equal(await menuA.evaluate(n=>n.parentElement.open),true);
   assert.equal(await menuB.evaluate(n=>n.parentElement.open),false);
   assert.equal(await menuA.evaluate(n=>document.activeElement===n),true,'duplicate labels cannot redirect return focus');
+  // Initiative boundary focus, and an obsolete response after navigating away.
+  await page.locator('[data-view=initiatives]').click();await page.locator('#initiative-next').waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#index-state').textContent==='' && !document.querySelector('#initiative-next').disabled);
+  await page.locator('#initiative-next').focus();await page.keyboard.press('Enter');
+  await page.waitForFunction(()=>document.querySelector('#initiative-next').disabled && document.activeElement.id==='initiative-previous');
+  assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineStyle),'solid');
+  await page.locator('#initiative-previous').click();await page.waitForFunction(()=>!document.querySelector('#initiative-next').disabled);
+  let releaseInactive;const inactiveStarted=new Promise(resolve=>{queryBegan=resolve;});queryGate=new Promise(resolve=>{releaseInactive=resolve;});
+  await page.locator('#search').fill('分页事项');await inactiveStarted;
+  await page.locator('[data-view=favorites]').click();await page.locator('#items [data-path="reference.md"]').waitFor();
+  await page.locator('#search').focus();releaseInactive();await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'search');assert.equal(await page.locator('#items [data-initiative-id]').count(),0);
+  // Cancel a clean Action while assignment options are still loading.
+  await page.locator('[data-view=focus]').click();await page.getByRole('button',{name:'全部行动',exact:true}).click();
+  await page.locator('#action-tools').waitFor({state:'visible'});await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='行动' && document.querySelector('#index-state').textContent==='' && document.querySelectorAll('#items [data-entity-id]').length>0);
+  let releaseAssignment;const assignmentStarted=new Promise(resolve=>{assignmentBegan=resolve;});assignmentGate=new Promise(resolve=>{releaseAssignment=resolve;});
+  const earlyRow=page.locator('#items [data-entity-id]').first();const earlyId=await earlyRow.getAttribute('data-entity-id');
+  await earlyRow.click();await assignmentStarted;await page.locator('#action-back').click();
+  await page.waitForFunction(id=>!document.querySelector('#action-drawer').open && document.activeElement.dataset.entityId===id,earlyId);
+  releaseAssignment();await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(()=>document.activeElement.dataset.entityId),earlyId,'late opening cannot take return focus');
+  // A late assignment response must preserve an actively edited draft, selection and caret.
+  const draftStarted=new Promise(resolve=>{assignmentBegan=resolve;});assignmentGate=new Promise(resolve=>{releaseAssignment=resolve;});
+  await earlyRow.click();await draftStarted;
+  await page.locator('#action-description').fill('尚未保存的行动草稿');
+  await page.locator('#action-description').evaluate(n=>n.setSelectionRange(2,6));
+  await page.locator('#action-status').focus();releaseAssignment();await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'action-status');
+  assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
+  assert.deepEqual(await page.locator('#action-description').evaluate(n=>[n.selectionStart,n.selectionEnd]),[2,6]);
+  await page.locator('#action-back').click();await page.getByRole('button',{name:'继续编辑',exact:true}).click();
+  assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
+  await page.locator('#action-back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   assert.equal(await readFile(sourcePath,'utf8'),original);assert.deepEqual(errors,[]);
   console.log('PASS browse focus modality, Focus/disclosure, Library selected-return, Initiative and Action consumers');
 } catch(error) { console.error(await page.evaluate(()=>({active:document.activeElement.outerHTML,style:getComputedStyle(document.activeElement).cssText,offset:getComputedStyle(document.activeElement).outlineOffset}))); throw error; } finally {await browser.close();await fixture.close();}
