@@ -12,6 +12,7 @@ from pathlib import Path
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 m.OUT=Path('build/issue84-native').resolve();m.APP=m.OUT/'Search84.app';m.OUT.mkdir(parents=True,exist_ok=True)
+(m.OUT/'result.json').unlink(missing_ok=True)
 for name in ['Sync','Private']:
  if (m.OUT/name).exists():shutil.rmtree(m.OUT/name)
  (m.OUT/name).mkdir()
@@ -52,6 +53,8 @@ clip=[str(m.OUT/'clipboard')];backup=str(m.OUT/'clipboard.json');subprocess.run(
 input_source=m.OUT/'input-source'
 subprocess.run(['swiftc','tests/InputSourceHarness.swift','-o',str(input_source)],check=True)
 initial_source=subprocess.check_output([str(input_source)],text=True).splitlines()[0]
+(m.OUT/'initial-input-source.txt').write_text(initial_source+'\n')
+subprocess.run(['git','diff','--quiet','--','web','tests/native-search-focus.py'],check=True)
 log=[];process=None;passed=False
 w=m.wait
 def c(script):
@@ -94,7 +97,7 @@ try:
  key('CmdOrCtrl+K');w("document.activeElement.id==='global-search-input'")
  typing_start=c('return inputEvents.length');assert c("return document.hasFocus() && document.activeElement.id==='global-search-input'")
  # OS typing uses the native input system (not a JS value assignment).
- subprocess.run(['osascript','-e',f'tell application \"System Events\" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e','tell application \"System Events\" to keystroke \"latency\"','-e','tell application \"System Events\" to key code 48'],check=True)
+ subprocess.run(['osascript','-e',f'tell application \"System Events\" to tell (first application process whose unix id is {process.pid}) to set frontmost to true','-e',f'tell application \"System Events\" to if unix id of first application process whose frontmost is true is not {process.pid} then error \"Owned recipient is not frontmost\"','-e','tell application \"System Events\" to keystroke \"latency\"','-e','tell application \"System Events\" to key code 48'],check=True)
  log.append({'OSTyping':'latency','targetPID':process.pid,'events':c('return inputEvents.slice('+str(typing_start)+')')})
  assert any(e['type']=='input' and e['trusted'] for e in log[-1]['events'])
  w("document.querySelectorAll('.search-result').length===1 && !document.querySelector('.search-results').inert")
