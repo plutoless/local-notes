@@ -1,0 +1,5890 @@
+[
+  {
+    "preflight": {
+      "key": true,
+      "visible": true,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "windowNumber": 28545,
+      "occluded": false,
+      "webHidden": false,
+      "active": true,
+      "hidden": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    },
+    "pid": 32807,
+    "head": "c1a59811f0e52ed32e81066b589e842898220c1a"
+  },
+  {
+    "routePreflight": {
+      "cocoa": [],
+      "tapAvailable": true,
+      "axTrusted": true,
+      "postAccess": true,
+      "listenAccess": true,
+      "tapEnabled": true,
+      "quartz": []
+    }
+  },
+  {
+    "senderPreflight": {
+      "axTrusted": true,
+      "listenAccess": true,
+      "parentPID": 32702,
+      "postAccess": true,
+      "senderPID": 32884
+    }
+  },
+  {
+    "setup": "Remaining-only fixture: DOM setup creates one favorite; completed Focus/Action/Library journeys are retained from the prior verified route run"
+  },
+  {
+    "browseMetrics": "before scrollIntoView [data-view=focus]",
+    "windowScroll": 0,
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 882,
+    "time": 2263,
+    "listHeight": 748,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "utc": "2026-11-20T10:44:19.933Z"
+  },
+  {
+    "browseMetrics": "after scrollIntoView [data-view=focus]",
+    "windowScroll": 0,
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 882,
+    "time": 2362,
+    "listHeight": 748,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "utc": "2026-11-20T10:44:20.033Z"
+  },
+  {
+    "clickTarget": "[data-view=focus]",
+    "rect": {
+      "y": 227,
+      "x": 97.5
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "227"
+    ],
+    "utc": "2026-11-20T10:44:20",
+    "epochNS": 1795171460220628000,
+    "pid": 32807,
+    "host": {
+      "key": true,
+      "visible": true,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "windowNumber": 28545,
+      "occluded": false,
+      "webHidden": false,
+      "active": true,
+      "hidden": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "coordinateMapping": {
+      "webHeight": 800,
+      "windowX": 98,
+      "hitClass": "WKWebView",
+      "windowY": 573,
+      "legacyQuartzX": 264,
+      "webWidth": 1180,
+      "quartzY": 306,
+      "webFlipped": true,
+      "frame": "{{166, 103}, {1180, 832}}",
+      "legacyQuartzY": 302,
+      "quartzX": 264
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "globalY": 306,
+        "x": 98,
+        "sourcePID": 32807,
+        "y": 573,
+        "resolvedWindow": true,
+        "window": 28545,
+        "constructorPID": 32807,
+        "globalX": 264
+      },
+      {
+        "y": 573,
+        "sourcePID": 32807,
+        "globalX": 264,
+        "x": 98,
+        "window": 28545,
+        "globalY": 306,
+        "constructorPID": 32807,
+        "resolvedWindow": true
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32897,\"type\":1,\"utc\":\"2026-11-20T10:44:20Z\",\"x\":264,\"y\":306},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32897,\"type\":2,\"utc\":\"2026-11-20T10:44:20Z\",\"x\":264,\"y\":306}],\"recipientPID\":32807,\"senderPID\":32897,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "cocoa": [],
+      "tapAvailable": true,
+      "axTrusted": true,
+      "postAccess": true,
+      "listenAccess": true,
+      "tapEnabled": true,
+      "quartz": []
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:20",
+    "epochNS": 1795171460958992000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      }
+    ],
+    "routeAfter": {
+      "axTrusted": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        }
+      ],
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        }
+      ],
+      "postAccess": true,
+      "tapAvailable": true,
+      "tapEnabled": true
+    },
+    "hostAfter": {
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "occluded": false,
+      "active": true,
+      "main": true,
+      "visible": true,
+      "key": true,
+      "windowNumber": 28545
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "focusNavigationOutcome": "Remaining-run route preflight: actual native Current Focus navigation completed"
+  },
+  {
+    "browseMetrics": "before scrollIntoView [data-view=initiatives]",
+    "windowScroll": 0,
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 882,
+    "time": 3663.0000000000005,
+    "listHeight": 748,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "utc": "2026-11-20T10:44:21.333Z"
+  },
+  {
+    "browseMetrics": "after scrollIntoView [data-view=initiatives]",
+    "utc": "2026-11-20T10:44:21.433Z",
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 882,
+    "time": 3762,
+    "listHeight": 748,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "clickTarget": "[data-view=initiatives]",
+    "rect": {
+      "x": 97.5,
+      "y": 325
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "98",
+      "--y",
+      "325"
+    ],
+    "utc": "2026-11-20T10:44:21",
+    "epochNS": 1795171461647058000,
+    "pid": 32807,
+    "host": {
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "occluded": false,
+      "active": true,
+      "main": true,
+      "visible": true,
+      "key": true,
+      "windowNumber": 28545
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "coordinateMapping": {
+      "legacyQuartzY": 400,
+      "windowX": 98,
+      "windowY": 475,
+      "webHeight": 800,
+      "webWidth": 1180,
+      "quartzY": 404,
+      "quartzX": 264,
+      "frame": "{{166, 103}, {1180, 832}}",
+      "hitClass": "WKWebView",
+      "legacyQuartzX": 264,
+      "webFlipped": true
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "x": 98,
+        "window": 28545,
+        "globalX": 264,
+        "constructorPID": 32807,
+        "sourcePID": 32807,
+        "globalY": 404,
+        "resolvedWindow": true,
+        "y": 475
+      },
+      {
+        "globalX": 264,
+        "globalY": 404,
+        "window": 28545,
+        "resolvedWindow": true,
+        "sourcePID": 32807,
+        "constructorPID": 32807,
+        "y": 475,
+        "x": 98
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32912,\"type\":1,\"utc\":\"2026-11-20T10:44:22Z\",\"x\":264,\"y\":404},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32912,\"type\":2,\"utc\":\"2026-11-20T10:44:22Z\",\"x\":264,\"y\":404}],\"recipientPID\":32807,\"senderPID\":32912,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "axTrusted": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        }
+      ],
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        }
+      ],
+      "postAccess": true,
+      "tapAvailable": true,
+      "tapEnabled": true
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:22",
+    "epochNS": 1795171462506437000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      }
+    ],
+    "routeAfter": {
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        }
+      ],
+      "tapEnabled": true,
+      "postAccess": true,
+      "tapAvailable": true,
+      "axTrusted": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        }
+      ]
+    },
+    "hostAfter": {
+      "windowNumber": 28545,
+      "visible": true,
+      "main": true,
+      "active": true,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "key": true,
+      "occluded": false,
+      "webHidden": false
+    },
+    "documentAfter": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "browseMetrics": "before scrollIntoView #items [data-initiative-id]",
+    "utc": "2026-11-20T10:44:22.883Z",
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 3924,
+    "time": 5212,
+    "listHeight": 401,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "browseMetrics": "after scrollIntoView #items [data-initiative-id]",
+    "utc": "2026-11-20T10:44:22.983Z",
+    "collectionScrollHeight": 748,
+    "listScrollHeight": 3924,
+    "time": 5312,
+    "listHeight": 401,
+    "list": 0,
+    "collectionHeight": 748,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "clickTarget": "#items [data-initiative-id]",
+    "rect": {
+      "y": 440.890625,
+      "x": 288.5
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "288",
+      "--y",
+      "441"
+    ],
+    "utc": "2026-11-20T10:44:23",
+    "epochNS": 1795171463190071000,
+    "pid": 32807,
+    "host": {
+      "windowNumber": 28545,
+      "visible": true,
+      "main": true,
+      "active": true,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "key": true,
+      "occluded": false,
+      "webHidden": false
+    },
+    "document": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "coordinateMapping": {
+      "webFlipped": true,
+      "hitClass": "WKWebView",
+      "windowY": 359,
+      "frame": "{{166, 103}, {1180, 832}}",
+      "windowX": 288,
+      "webWidth": 1180,
+      "legacyQuartzX": 454,
+      "legacyQuartzY": 516,
+      "webHeight": 800,
+      "quartzY": 520,
+      "quartzX": 454
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "x": 288,
+        "sourcePID": 32807,
+        "constructorPID": 32807,
+        "resolvedWindow": true,
+        "window": 28545,
+        "globalX": 454,
+        "globalY": 520,
+        "y": 359
+      },
+      {
+        "globalY": 520,
+        "y": 359,
+        "constructorPID": 32807,
+        "globalX": 454,
+        "x": 288,
+        "window": 28545,
+        "sourcePID": 32807,
+        "resolvedWindow": true
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32917,\"type\":1,\"utc\":\"2026-11-20T10:44:23Z\",\"x\":454,\"y\":520},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32917,\"type\":2,\"utc\":\"2026-11-20T10:44:23Z\",\"x\":454,\"y\":520}],\"recipientPID\":32807,\"senderPID\":32917,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        }
+      ],
+      "tapEnabled": true,
+      "postAccess": true,
+      "tapAvailable": true,
+      "axTrusted": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        }
+      ]
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:23",
+    "epochNS": 1795171463970378000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      }
+    ],
+    "routeAfter": {
+      "tapAvailable": true,
+      "axTrusted": true,
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        }
+      ],
+      "postAccess": true,
+      "tapEnabled": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        }
+      ]
+    },
+    "hostAfter": {
+      "visible": true,
+      "active": true,
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "main": true,
+      "key": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 28545
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "state": "initiative-selected",
+    "active": "\n    返回搜索结果搜索笔记 ⌘K\n    \n      \n        拾记\n        随手记\n      ",
+    "scroll": 0,
+    "events": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": false,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": false,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:19.764Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "target": "H3",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      }
+    ],
+    "collection": 0,
+    "selected": null,
+    "tag": "BODY",
+    "outline": "3px none rgb(32, 38, 51)",
+    "focusVisible": false,
+    "invalid": null
+  },
+  {
+    "beforeInput": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "utc": "2026-11-20T10:44:24",
+    "epochNS": 1795171464552333000,
+    "pid": 32807,
+    "host": {
+      "visible": true,
+      "active": true,
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "main": true,
+      "key": true,
+      "hidden": false,
+      "occluded": false,
+      "windowNumber": 28545
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "y": 0,
+        "globalY": 879,
+        "constructorPID": 32807,
+        "window": 28545,
+        "resolvedWindow": true,
+        "globalX": 166,
+        "x": 0,
+        "sourcePID": 32807
+      },
+      {
+        "y": 0,
+        "sourcePID": 32807,
+        "constructorPID": 32807,
+        "x": 0,
+        "globalX": 166,
+        "window": 28545,
+        "globalY": 879,
+        "resolvedWindow": true
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32918,\"type\":10,\"utc\":\"2026-11-20T10:44:24Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32918,\"type\":11,\"utc\":\"2026-11-20T10:44:24Z\",\"x\":166,\"y\":879}],\"recipientPID\":32807,\"senderPID\":32918,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "tapAvailable": true,
+      "axTrusted": true,
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        }
+      ],
+      "postAccess": true,
+      "tapEnabled": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        }
+      ]
+    }
+  },
+  {
+    "externalInput": "press-key",
+    "utcCompleted": "2026-11-20T10:44:25",
+    "epochNS": 1795171465353024000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Tab",
+        "matchesExpectedTarget": false,
+        "meta": false,
+        "target": "BODY",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:24.929Z"
+      }
+    ],
+    "routeAfter": {
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        }
+      ],
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        }
+      ],
+      "listenAccess": true,
+      "postAccess": true,
+      "axTrusted": true,
+      "tapEnabled": true
+    },
+    "hostAfter": {
+      "hidden": false,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "visible": true,
+      "occluded": false,
+      "active": true,
+      "key": true,
+      "windowNumber": 28545,
+      "webHidden": false
+    },
+    "documentAfter": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "state": "initiative-keyboard",
+    "events": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": false,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": false,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:19.764Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "target": "H3",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Tab",
+        "matchesExpectedTarget": false,
+        "target": "BODY",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:24.929Z"
+      }
+    ],
+    "scroll": 0,
+    "active": "分页事项 25以后再做",
+    "collection": 0,
+    "selected": "false",
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true,
+    "invalid": null
+  },
+  {
+    "browseMetrics": "before scrollIntoView #workspace-back",
+    "utc": "2026-11-20T10:44:25.733Z",
+    "collectionScrollHeight": 0,
+    "listScrollHeight": 0,
+    "time": 8061.999999999999,
+    "listHeight": 0,
+    "list": 0,
+    "collectionHeight": 0,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "browseMetrics": "after scrollIntoView #workspace-back",
+    "utc": "2026-11-20T10:44:25.833Z",
+    "collectionScrollHeight": 0,
+    "listScrollHeight": 0,
+    "time": 8162.000000000001,
+    "listHeight": 0,
+    "list": 0,
+    "collectionHeight": 0,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "clickTarget": "#workspace-back",
+    "rect": {
+      "x": 61.203125,
+      "y": 273
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "61",
+      "--y",
+      "273"
+    ],
+    "utc": "2026-11-20T10:44:26",
+    "epochNS": 1795171466045370000,
+    "pid": 32807,
+    "host": {
+      "hidden": false,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "visible": true,
+      "occluded": false,
+      "active": true,
+      "key": true,
+      "windowNumber": 28545,
+      "webHidden": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "coordinateMapping": {
+      "quartzX": 227,
+      "windowY": 579,
+      "webHeight": 852,
+      "frame": "{{166, 51}, {393, 884}}",
+      "windowX": 61,
+      "legacyQuartzX": 227,
+      "webFlipped": true,
+      "hitClass": "WKWebView",
+      "legacyQuartzY": 348,
+      "webWidth": 393,
+      "quartzY": 352
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "x": 61,
+        "globalY": 352,
+        "constructorPID": 32807,
+        "y": 579,
+        "globalX": 227,
+        "window": 28545,
+        "resolvedWindow": true,
+        "sourcePID": 32807
+      },
+      {
+        "y": 579,
+        "globalX": 227,
+        "constructorPID": 32807,
+        "window": 28545,
+        "resolvedWindow": true,
+        "x": 61,
+        "globalY": 352,
+        "sourcePID": 32807
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32920,\"type\":1,\"utc\":\"2026-11-20T10:44:26Z\",\"x\":227,\"y\":352},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32920,\"type\":2,\"utc\":\"2026-11-20T10:44:26Z\",\"x\":227,\"y\":352}],\"recipientPID\":32807,\"senderPID\":32920,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        }
+      ],
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        }
+      ],
+      "listenAccess": true,
+      "postAccess": true,
+      "axTrusted": true,
+      "tapEnabled": true
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:26",
+    "epochNS": 1795171466779729000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "meta": false,
+        "target": "workspace-back",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.408Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "meta": false,
+        "target": "workspace-back",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.457Z"
+      }
+    ],
+    "routeAfter": {
+      "listenAccess": true,
+      "postAccess": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "tapEnabled": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        }
+      ]
+    },
+    "hostAfter": {
+      "visible": true,
+      "windowNumber": 28545,
+      "main": true,
+      "active": true,
+      "key": true,
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "occluded": false
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "setup": "DOM positions the paging target before genuine native Shift+Tab/Tab entry; positioning is not keyboard-modality evidence",
+    "selector": "#initiative-next"
+  },
+  {
+    "beforeInput": "hotkey",
+    "args": [
+      "--key",
+      "Shift+Tab"
+    ],
+    "utc": "2026-11-20T10:44:27",
+    "epochNS": 1795171467191011000,
+    "pid": 32807,
+    "host": {
+      "visible": true,
+      "windowNumber": 28545,
+      "main": true,
+      "active": true,
+      "key": true,
+      "webHidden": false,
+      "firstResponderIsWeb": true,
+      "hidden": false,
+      "occluded": false
+    },
+    "document": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "window": 28545,
+        "x": 0,
+        "y": 0,
+        "sourcePID": 32807,
+        "constructorPID": 32807,
+        "resolvedWindow": true,
+        "globalX": 166,
+        "globalY": 931
+      },
+      {
+        "y": 0,
+        "x": 0,
+        "window": 28545,
+        "globalX": 166,
+        "globalY": 931,
+        "resolvedWindow": true,
+        "constructorPID": 32807,
+        "sourcePID": 32807
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32973,\"type\":10,\"utc\":\"2026-11-20T10:44:27Z\",\"x\":166,\"y\":931},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":32973,\"type\":11,\"utc\":\"2026-11-20T10:44:27Z\",\"x\":166,\"y\":931}],\"recipientPID\":32807,\"senderPID\":32973,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "listenAccess": true,
+      "postAccess": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "tapEnabled": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        }
+      ]
+    }
+  },
+  {
+    "externalInput": "hotkey",
+    "utcCompleted": "2026-11-20T10:44:27",
+    "epochNS": 1795171467929685000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "target": "initiative-next",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": true,
+        "utc": "2026-11-20T10:44:27.553Z"
+      }
+    ],
+    "routeAfter": {
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        }
+      ],
+      "postAccess": true,
+      "tapEnabled": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        }
+      ]
+    },
+    "hostAfter": {
+      "visible": true,
+      "firstResponderIsWeb": true,
+      "windowNumber": 28545,
+      "active": true,
+      "main": true,
+      "key": true,
+      "occluded": false,
+      "hidden": false,
+      "webHidden": false
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "state": "initiative-paging-preceding-control",
+    "active": "initiative-new",
+    "events": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": false,
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": false,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:19.764Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "type": "keydown",
+        "target": "BODY",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:24.929Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "target": "workspace-back",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.408Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "meta": false,
+        "target": "workspace-back",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.457Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Tab",
+        "matchesExpectedTarget": false,
+        "target": "initiative-next",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": true,
+        "utc": "2026-11-20T10:44:27.553Z"
+      }
+    ],
+    "scroll": 0,
+    "collection": 0,
+    "selected": null,
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true,
+    "invalid": null
+  },
+  {
+    "beforeInput": "press-key",
+    "args": [
+      "--key",
+      "Tab"
+    ],
+    "utc": "2026-11-20T10:44:28",
+    "epochNS": 1795171468405254000,
+    "pid": 32807,
+    "host": {
+      "visible": true,
+      "firstResponderIsWeb": true,
+      "windowNumber": 28545,
+      "active": true,
+      "main": true,
+      "key": true,
+      "occluded": false,
+      "hidden": false,
+      "webHidden": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "y": 0,
+        "x": 0,
+        "globalX": 166,
+        "constructorPID": 32807,
+        "globalY": 931,
+        "window": 28545,
+        "sourcePID": 32807,
+        "resolvedWindow": true
+      },
+      {
+        "x": 0,
+        "resolvedWindow": true,
+        "constructorPID": 32807,
+        "sourcePID": 32807,
+        "y": 0,
+        "window": 28545,
+        "globalX": 166,
+        "globalY": 931
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33034,\"type\":10,\"utc\":\"2026-11-20T10:44:28Z\",\"x\":166,\"y\":931},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33034,\"type\":11,\"utc\":\"2026-11-20T10:44:28Z\",\"x\":166,\"y\":931}],\"recipientPID\":32807,\"senderPID\":33034,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "listenAccess": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        }
+      ],
+      "postAccess": true,
+      "tapEnabled": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        }
+      ]
+    }
+  },
+  {
+    "externalInput": "press-key",
+    "utcCompleted": "2026-11-20T10:44:29",
+    "epochNS": 1795171469151626000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "type": "keydown",
+        "meta": false,
+        "target": "initiative-new",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:28.723Z"
+      }
+    ],
+    "routeAfter": {
+      "postAccess": true,
+      "axTrusted": true,
+      "listenAccess": true,
+      "tapEnabled": true,
+      "tapAvailable": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        }
+      ]
+    },
+    "hostAfter": {
+      "active": true,
+      "visible": true,
+      "main": true,
+      "occluded": false,
+      "key": true,
+      "webHidden": false,
+      "hidden": false,
+      "windowNumber": 28545,
+      "firstResponderIsWeb": true
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "state": "initiative-paging-next-control",
+    "active": "initiative-next",
+    "scroll": 0,
+    "events": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": false,
+        "type": "click",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": false,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:19.764Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "initiatives",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "target": "H3",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "target": "BODY",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:24.929Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "meta": false,
+        "target": "workspace-back",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.408Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "target": "workspace-back",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.457Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "target": "initiative-next",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": true,
+        "utc": "2026-11-20T10:44:27.553Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "matchesExpectedTarget": false,
+        "key": "Tab",
+        "target": "initiative-new",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:28.723Z"
+      }
+    ],
+    "collection": 0,
+    "selected": null,
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true,
+    "invalid": null
+  },
+  {
+    "beforeInput": "press-key",
+    "args": [
+      "--key",
+      "Return"
+    ],
+    "utc": "2026-11-20T10:44:29",
+    "epochNS": 1795171469574756000,
+    "pid": 32807,
+    "host": {
+      "active": true,
+      "visible": true,
+      "main": true,
+      "occluded": false,
+      "key": true,
+      "webHidden": false,
+      "hidden": false,
+      "windowNumber": 28545,
+      "firstResponderIsWeb": true
+    },
+    "document": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "y": 0,
+        "window": 28545,
+        "resolvedWindow": true,
+        "x": 0,
+        "globalY": 931,
+        "globalX": 166,
+        "constructorPID": 32807,
+        "sourcePID": 32807
+      },
+      {
+        "window": 28545,
+        "globalX": 166,
+        "resolvedWindow": true,
+        "globalY": 931,
+        "sourcePID": 32807,
+        "x": 0,
+        "y": 0,
+        "constructorPID": 32807
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33035,\"type\":10,\"utc\":\"2026-11-20T10:44:29Z\",\"x\":166,\"y\":931},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33035,\"type\":11,\"utc\":\"2026-11-20T10:44:29Z\",\"x\":166,\"y\":931}],\"recipientPID\":32807,\"senderPID\":33035,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "postAccess": true,
+      "axTrusted": true,
+      "listenAccess": true,
+      "tapEnabled": true,
+      "tapAvailable": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        }
+      ]
+    }
+  },
+  {
+    "externalInput": "press-key",
+    "utcCompleted": "2026-11-20T10:44:30",
+    "epochNS": 1795171470302467000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "matchesExpectedTarget": false,
+        "key": "Enter",
+        "type": "keydown",
+        "meta": false,
+        "target": "initiative-next",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:29.882Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "matchesExpectedTarget": false,
+        "type": "click",
+        "target": "initiative-next",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:29.883Z"
+      }
+    ],
+    "routeAfter": {
+      "tapEnabled": true,
+      "postAccess": true,
+      "listenAccess": true,
+      "axTrusted": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        },
+        {
+          "window": 28545,
+          "keyCode": 36,
+          "flags": 0,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:29Z"
+        },
+        {
+          "y": 0,
+          "window": 28545,
+          "keyCode": 36,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-20T10:44:29Z",
+          "flags": 0
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        },
+        {
+          "y": 931,
+          "x": 166,
+          "sourcePID": 33035,
+          "utc": "2026-11-20T10:44:29Z",
+          "marker": 810053,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "utc": "2026-11-20T10:44:29Z",
+          "sourcePID": 33035
+        }
+      ],
+      "tapAvailable": true
+    },
+    "hostAfter": {
+      "key": true,
+      "webHidden": false,
+      "active": true,
+      "hidden": false,
+      "visible": true,
+      "windowNumber": 28545,
+      "main": true,
+      "occluded": false,
+      "firstResponderIsWeb": true
+    },
+    "documentAfter": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "state": "initiative-page-boundary",
+    "scroll": 0,
+    "active": "initiative-previous",
+    "events": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": false,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": false,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:19.764Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.584Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:20.636Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.073Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "initiatives",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:22.120Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": true,
+        "target": "H3",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.608Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "meta": false,
+        "target": "H3",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:23.653Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Tab",
+        "matchesExpectedTarget": false,
+        "target": "BODY",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:24.929Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "meta": false,
+        "target": "workspace-back",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.408Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "target": "workspace-back",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:26.457Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "matchesExpectedTarget": false,
+        "type": "keydown",
+        "key": "Tab",
+        "target": "initiative-next",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": true,
+        "utc": "2026-11-20T10:44:27.553Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Tab",
+        "matchesExpectedTarget": false,
+        "meta": false,
+        "target": "initiative-new",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:28.723Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "keydown",
+        "key": "Enter",
+        "matchesExpectedTarget": false,
+        "meta": false,
+        "target": "initiative-next",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:29.882Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": true,
+        "type": "click",
+        "matchesExpectedTarget": false,
+        "meta": false,
+        "target": "initiative-next",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:29.883Z"
+      }
+    ],
+    "collection": 0,
+    "selected": null,
+    "tag": "BUTTON",
+    "outline": "3px solid rgb(7, 95, 204)",
+    "focusVisible": true,
+    "invalid": null
+  },
+  {
+    "browseMetrics": "before scrollIntoView [data-view=focus]",
+    "utc": "2026-11-20T10:44:30.683Z",
+    "collectionScrollHeight": 309,
+    "listScrollHeight": 180,
+    "time": 13012,
+    "listHeight": 24,
+    "list": 0,
+    "collectionHeight": 305,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "browseMetrics": "after scrollIntoView [data-view=focus]",
+    "utc": "2026-11-20T10:44:30.833Z",
+    "collectionScrollHeight": 309,
+    "listScrollHeight": 180,
+    "time": 13163,
+    "listHeight": 24,
+    "list": 0,
+    "collectionHeight": 305,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "clickTarget": "[data-view=focus]",
+    "rect": {
+      "y": 126,
+      "x": 54.84375
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "55",
+      "--y",
+      "126"
+    ],
+    "utc": "2026-11-20T10:44:31",
+    "epochNS": 1795171471003658000,
+    "pid": 32807,
+    "host": {
+      "key": true,
+      "webHidden": false,
+      "active": true,
+      "hidden": false,
+      "visible": true,
+      "windowNumber": 28545,
+      "main": true,
+      "occluded": false,
+      "firstResponderIsWeb": true
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "coordinateMapping": {
+      "hitClass": "WKWebView",
+      "frame": "{{166, 51}, {393, 884}}",
+      "webHeight": 852,
+      "legacyQuartzX": 221,
+      "windowX": 55,
+      "webFlipped": true,
+      "windowY": 726,
+      "legacyQuartzY": 201,
+      "webWidth": 393,
+      "quartzX": 221,
+      "quartzY": 205
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "sourcePID": 32807,
+        "globalY": 205,
+        "globalX": 221,
+        "window": 28545,
+        "resolvedWindow": true,
+        "x": 55,
+        "constructorPID": 32807,
+        "y": 726
+      },
+      {
+        "x": 55,
+        "globalX": 221,
+        "window": 28545,
+        "globalY": 205,
+        "sourcePID": 32807,
+        "y": 726,
+        "resolvedWindow": true,
+        "constructorPID": 32807
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33051,\"type\":1,\"utc\":\"2026-11-20T10:44:31Z\",\"x\":221,\"y\":205},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33051,\"type\":2,\"utc\":\"2026-11-20T10:44:31Z\",\"x\":221,\"y\":205}],\"recipientPID\":32807,\"senderPID\":33051,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "tapEnabled": true,
+      "postAccess": true,
+      "listenAccess": true,
+      "axTrusted": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        },
+        {
+          "window": 28545,
+          "keyCode": 36,
+          "flags": 0,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:29Z"
+        },
+        {
+          "y": 0,
+          "window": 28545,
+          "keyCode": 36,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-20T10:44:29Z",
+          "flags": 0
+        }
+      ],
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        },
+        {
+          "y": 931,
+          "x": 166,
+          "sourcePID": 33035,
+          "utc": "2026-11-20T10:44:29Z",
+          "marker": 810053,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "utc": "2026-11-20T10:44:29Z",
+          "sourcePID": 33035
+        }
+      ],
+      "tapAvailable": true
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:31",
+    "epochNS": 1795171471736419000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:31.363Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": true,
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:31.411Z"
+      }
+    ],
+    "routeAfter": {
+      "postAccess": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        },
+        {
+          "y": 931,
+          "x": 166,
+          "sourcePID": 33035,
+          "utc": "2026-11-20T10:44:29Z",
+          "marker": 810053,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "utc": "2026-11-20T10:44:29Z",
+          "sourcePID": 33035
+        },
+        {
+          "y": 205,
+          "marker": 810053,
+          "x": 221,
+          "type": 1,
+          "utc": "2026-11-20T10:44:31Z",
+          "sourcePID": 33051
+        },
+        {
+          "utc": "2026-11-20T10:44:31Z",
+          "type": 2,
+          "y": 205,
+          "x": 221,
+          "sourcePID": 33051,
+          "marker": 810053
+        }
+      ],
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        },
+        {
+          "window": 28545,
+          "keyCode": 36,
+          "flags": 0,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:29Z"
+        },
+        {
+          "y": 0,
+          "window": 28545,
+          "keyCode": 36,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-20T10:44:29Z",
+          "flags": 0
+        },
+        {
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:31Z",
+          "window": 28545,
+          "x": 55,
+          "type": 1,
+          "y": 726
+        },
+        {
+          "window": 28545,
+          "x": 55,
+          "type": 2,
+          "keyCode": -1,
+          "flags": 0,
+          "y": 726,
+          "utc": "2026-11-20T10:44:31Z"
+        }
+      ],
+      "listenAccess": true,
+      "tapEnabled": true
+    },
+    "hostAfter": {
+      "webHidden": false,
+      "visible": true,
+      "hidden": false,
+      "key": true,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "active": true,
+      "windowNumber": 28545,
+      "occluded": false
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "browseMetrics": "before scrollIntoView #probe-all-actions",
+    "utc": "2026-11-20T10:44:32.083Z",
+    "collectionScrollHeight": 601,
+    "listScrollHeight": 1153,
+    "time": 14412,
+    "listHeight": 601,
+    "list": 0,
+    "collectionHeight": 601,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "browseMetrics": "after scrollIntoView #probe-all-actions",
+    "utc": "2026-11-20T10:44:32.183Z",
+    "collectionScrollHeight": 601,
+    "listScrollHeight": 1153,
+    "time": 14512,
+    "listHeight": 601,
+    "list": 0,
+    "collectionHeight": 601,
+    "collection": 0,
+    "windowScroll": 0
+  },
+  {
+    "clickTarget": "#probe-all-actions",
+    "rect": {
+      "x": 143.3671875,
+      "y": 361
+    }
+  },
+  {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "143",
+      "--y",
+      "361"
+    ],
+    "utc": "2026-11-20T10:44:32",
+    "epochNS": 1795171472373908000,
+    "pid": 32807,
+    "host": {
+      "webHidden": false,
+      "visible": true,
+      "hidden": false,
+      "key": true,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "active": true,
+      "windowNumber": 28545,
+      "occluded": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": true
+    }
+  },
+  {
+    "coordinateMapping": {
+      "legacyQuartzY": 436,
+      "webWidth": 393,
+      "windowX": 143,
+      "quartzX": 309,
+      "webHeight": 852,
+      "legacyQuartzX": 309,
+      "frame": "{{166, 51}, {393, 884}}",
+      "quartzY": 440,
+      "windowY": 491,
+      "webFlipped": true,
+      "hitClass": "WKWebView"
+    }
+  },
+  {
+    "constructorRoundtrip": [
+      {
+        "x": 143,
+        "constructorPID": 32807,
+        "globalY": 440,
+        "resolvedWindow": true,
+        "window": 28545,
+        "globalX": 309,
+        "sourcePID": 32807,
+        "y": 491
+      },
+      {
+        "resolvedWindow": true,
+        "y": 491,
+        "sourcePID": 32807,
+        "globalY": 440,
+        "x": 143,
+        "window": 28545,
+        "globalX": 309,
+        "constructorPID": 32807
+      }
+    ]
+  },
+  {
+    "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":32702,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33093,\"type\":1,\"utc\":\"2026-11-20T10:44:32Z\",\"x\":309,\"y\":440},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":28545,\"sourcePID\":33093,\"type\":2,\"utc\":\"2026-11-20T10:44:32Z\",\"x\":309,\"y\":440}],\"recipientPID\":32807,\"senderPID\":33093,\"window\":28545}\n",
+    "senderExit": 0,
+    "routeBefore": {
+      "postAccess": true,
+      "axTrusted": true,
+      "tapAvailable": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        },
+        {
+          "y": 931,
+          "x": 166,
+          "sourcePID": 33035,
+          "utc": "2026-11-20T10:44:29Z",
+          "marker": 810053,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "utc": "2026-11-20T10:44:29Z",
+          "sourcePID": 33035
+        },
+        {
+          "y": 205,
+          "marker": 810053,
+          "x": 221,
+          "type": 1,
+          "utc": "2026-11-20T10:44:31Z",
+          "sourcePID": 33051
+        },
+        {
+          "utc": "2026-11-20T10:44:31Z",
+          "type": 2,
+          "y": 205,
+          "x": 221,
+          "sourcePID": 33051,
+          "marker": 810053
+        }
+      ],
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        },
+        {
+          "window": 28545,
+          "keyCode": 36,
+          "flags": 0,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:29Z"
+        },
+        {
+          "y": 0,
+          "window": 28545,
+          "keyCode": 36,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-20T10:44:29Z",
+          "flags": 0
+        },
+        {
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:31Z",
+          "window": 28545,
+          "x": 55,
+          "type": 1,
+          "y": 726
+        },
+        {
+          "window": 28545,
+          "x": 55,
+          "type": 2,
+          "keyCode": -1,
+          "flags": 0,
+          "y": 726,
+          "utc": "2026-11-20T10:44:31Z"
+        }
+      ],
+      "listenAccess": true,
+      "tapEnabled": true
+    }
+  },
+  {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T10:44:35",
+    "epochNS": 1795171475228724000,
+    "trustedEvents": [
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "pointerdown",
+        "matchesExpectedTarget": false,
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:32.803Z"
+      },
+      {
+        "collectionScroll": 0,
+        "listScroll": 0,
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "type": "click",
+        "matchesExpectedTarget": false,
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T10:44:32.846Z"
+      }
+    ],
+    "routeAfter": {
+      "tapAvailable": true,
+      "listenAccess": true,
+      "axTrusted": true,
+      "tapEnabled": true,
+      "cocoa": [
+        {
+          "flags": 0,
+          "y": 573,
+          "type": 1,
+          "x": 98,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:20Z",
+          "keyCode": -1
+        },
+        {
+          "x": 98,
+          "y": 573,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:20Z",
+          "window": 28545,
+          "type": 2,
+          "keyCode": -1
+        },
+        {
+          "window": 28545,
+          "flags": 0,
+          "y": 475,
+          "type": 1,
+          "keyCode": -1,
+          "utc": "2026-11-20T10:44:22Z",
+          "x": 98
+        },
+        {
+          "x": 98,
+          "window": 28545,
+          "type": 2,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:22Z",
+          "keyCode": -1,
+          "y": 475
+        },
+        {
+          "y": 359,
+          "type": 1,
+          "window": 28545,
+          "x": 288,
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:23Z"
+        },
+        {
+          "x": 288,
+          "type": 2,
+          "keyCode": -1,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:23Z",
+          "flags": 0,
+          "y": 359
+        },
+        {
+          "flags": 0,
+          "utc": "2026-11-20T10:44:24Z",
+          "y": 0,
+          "keyCode": 48,
+          "x": 0,
+          "window": 28545,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "window": 28545,
+          "type": 11,
+          "keyCode": 48,
+          "x": 0,
+          "utc": "2026-11-20T10:44:24Z"
+        },
+        {
+          "y": 579,
+          "utc": "2026-11-20T10:44:26Z",
+          "window": 28545,
+          "type": 1,
+          "x": 61,
+          "keyCode": -1,
+          "flags": 0
+        },
+        {
+          "type": 2,
+          "keyCode": -1,
+          "x": 61,
+          "utc": "2026-11-20T10:44:26Z",
+          "flags": 0,
+          "y": 579,
+          "window": 28545
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "window": 28545,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 10
+        },
+        {
+          "window": 28545,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:27Z",
+          "keyCode": 48,
+          "type": 11,
+          "flags": 131072
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-20T10:44:28Z",
+          "y": 0,
+          "type": 10,
+          "keyCode": 48,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "type": 11,
+          "utc": "2026-11-20T10:44:28Z",
+          "keyCode": 48,
+          "window": 28545
+        },
+        {
+          "window": 28545,
+          "keyCode": 36,
+          "flags": 0,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-20T10:44:29Z"
+        },
+        {
+          "y": 0,
+          "window": 28545,
+          "keyCode": 36,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-20T10:44:29Z",
+          "flags": 0
+        },
+        {
+          "keyCode": -1,
+          "flags": 0,
+          "utc": "2026-11-20T10:44:31Z",
+          "window": 28545,
+          "x": 55,
+          "type": 1,
+          "y": 726
+        },
+        {
+          "window": 28545,
+          "x": 55,
+          "type": 2,
+          "keyCode": -1,
+          "flags": 0,
+          "y": 726,
+          "utc": "2026-11-20T10:44:31Z"
+        },
+        {
+          "type": 1,
+          "utc": "2026-11-20T10:44:32Z",
+          "y": 491,
+          "x": 143,
+          "keyCode": -1,
+          "window": 28545,
+          "flags": 0
+        },
+        {
+          "x": 143,
+          "type": 2,
+          "flags": 0,
+          "keyCode": -1,
+          "window": 28545,
+          "y": 491,
+          "utc": "2026-11-20T10:44:32Z"
+        }
+      ],
+      "postAccess": true,
+      "quartz": [
+        {
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053,
+          "x": 264,
+          "type": 1,
+          "utc": "2026-11-20T10:44:20Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:20Z",
+          "type": 2,
+          "x": 264,
+          "y": 306,
+          "sourcePID": 32897,
+          "marker": 810053
+        },
+        {
+          "x": 264,
+          "utc": "2026-11-20T10:44:22Z",
+          "sourcePID": 32912,
+          "y": 404,
+          "type": 1,
+          "marker": 810053
+        },
+        {
+          "type": 2,
+          "x": 264,
+          "marker": 810053,
+          "sourcePID": 32912,
+          "y": 404,
+          "utc": "2026-11-20T10:44:22Z"
+        },
+        {
+          "y": 520,
+          "marker": 810053,
+          "sourcePID": 32917,
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 1,
+          "x": 454
+        },
+        {
+          "utc": "2026-11-20T10:44:23Z",
+          "type": 2,
+          "y": 520,
+          "marker": 810053,
+          "x": 454,
+          "sourcePID": 32917
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053,
+          "sourcePID": 32918,
+          "x": 166,
+          "type": 10
+        },
+        {
+          "sourcePID": 32918,
+          "y": 879,
+          "x": 166,
+          "type": 11,
+          "utc": "2026-11-20T10:44:24Z",
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:26Z",
+          "marker": 810053,
+          "x": 227,
+          "type": 1,
+          "y": 352,
+          "sourcePID": 32920
+        },
+        {
+          "type": 2,
+          "sourcePID": 32920,
+          "marker": 810053,
+          "y": 352,
+          "x": 227,
+          "utc": "2026-11-20T10:44:26Z"
+        },
+        {
+          "utc": "2026-11-20T10:44:27Z",
+          "y": 931,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 32973
+        },
+        {
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 32973,
+          "y": 931,
+          "x": 166,
+          "utc": "2026-11-20T10:44:27Z"
+        },
+        {
+          "type": 10,
+          "sourcePID": 33034,
+          "y": 931,
+          "utc": "2026-11-20T10:44:28Z",
+          "marker": 810053,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "sourcePID": 33034,
+          "utc": "2026-11-20T10:44:28Z",
+          "type": 11
+        },
+        {
+          "y": 931,
+          "x": 166,
+          "sourcePID": 33035,
+          "utc": "2026-11-20T10:44:29Z",
+          "marker": 810053,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "y": 931,
+          "marker": 810053,
+          "utc": "2026-11-20T10:44:29Z",
+          "sourcePID": 33035
+        },
+        {
+          "y": 205,
+          "marker": 810053,
+          "x": 221,
+          "type": 1,
+          "utc": "2026-11-20T10:44:31Z",
+          "sourcePID": 33051
+        },
+        {
+          "utc": "2026-11-20T10:44:31Z",
+          "type": 2,
+          "y": 205,
+          "x": 221,
+          "sourcePID": 33051,
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-20T10:44:32Z",
+          "y": 440,
+          "type": 1,
+          "x": 309,
+          "sourcePID": 33093,
+          "marker": 810053
+        },
+        {
+          "marker": 810053,
+          "type": 2,
+          "x": 309,
+          "y": 440,
+          "sourcePID": 33093,
+          "utc": "2026-11-20T10:44:32Z"
+        }
+      ]
+    },
+    "hostAfter": {
+      "occluded": false,
+      "active": true,
+      "windowNumber": 28545,
+      "key": true,
+      "webHidden": false,
+      "visible": true,
+      "main": true,
+      "firstResponderIsWeb": true,
+      "hidden": false
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  {
+    "externalSenderProvenance": {
+      "sourceSHA256": "5888b1aecc8789eda7b545ad5ffd93071dbce4c4d0a1294f54b2248ded4d2c82",
+      "executableSHA256": "15c34d8d586dfb11eb5b8518c738d2eb3867c277203cde2f55d2e869c024e900"
+    }
+  },
+  {
+    "provenance": {
+      "head": "c1a59811f0e52ed32e81066b589e842898220c1a",
+      "applicationPath": "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-81/build/issue81-native-paging-native-final-20261120/Browse81.app",
+      "bundleIdentifier": "dev.localnotes.validation.issue81paging-native-final-20261120115e29c1",
+      "executableSHA256": "223495a6b9a913cedb6c03474eaa7239020e566b81910fc4dc7cd053f318ddf6",
+      "probeSHA256": "3d82dccbcd00b3915d3a97c89a55ea611268e4367fdf9cbe4e1948bd59f89582",
+      "hostSHA256": "a29e9c0c500698f930e0a11a9c888e7392b8aae1ab3a41343a22841cd3cb5fee",
+      "sourcePackage": {
+        "library-screen.js": {
+          "source": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c",
+          "package": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c"
+        },
+        "organization.js": {
+          "source": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+          "package": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8"
+        },
+        "index.html": {
+          "source": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6",
+          "package": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6"
+        },
+        "core.js": {
+          "source": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+          "package": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509"
+        },
+        "bridge.js": {
+          "source": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+          "package": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c"
+        },
+        "actions.js": {
+          "source": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+          "package": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019"
+        },
+        "reading-history.js": {
+          "source": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+          "package": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643"
+        },
+        "initiative-screen.js": {
+          "source": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5",
+          "package": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5"
+        },
+        "library.js": {
+          "source": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9",
+          "package": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9"
+        },
+        "focus-screen.js": {
+          "source": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+          "package": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21"
+        },
+        "global-search.js": {
+          "source": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+          "package": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862"
+        },
+        "task-drafts.js": {
+          "source": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+          "package": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3"
+        },
+        "revision-graph.js": {
+          "source": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+          "package": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032"
+        },
+        "search-screen.js": {
+          "source": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea",
+          "package": "d15429e36c8e72f4c51eddd8dc688e82e9c640d9a05a3b55a4a9f0185ec475ea"
+        },
+        "style.css": {
+          "source": "95b030e61010df3a401a4fb8c131dac76b3d93e4d3f68b266852c7d5ff797658",
+          "package": "95b030e61010df3a401a4fb8c131dac76b3d93e4d3f68b266852c7d5ff797658"
+        },
+        "organize-screen.js": {
+          "source": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
+          "package": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b"
+        },
+        "action-screen.js": {
+          "source": "618346343d78d631bd9069ab300db437668c065d371834a0c467957a9a97a3fa",
+          "package": "618346343d78d631bd9069ab300db437668c065d371834a0c467957a9a97a3fa"
+        },
+        "presentation.js": {
+          "source": "854499c765cf97da8f7a694b2107bc99a0c65a9e111468d10a7f797d9820bfae",
+          "package": "854499c765cf97da8f7a694b2107bc99a0c65a9e111468d10a7f797d9820bfae"
+        },
+        "sync-screen.js": {
+          "source": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
+          "package": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd"
+        },
+        "app.js": {
+          "source": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b",
+          "package": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b"
+        },
+        "initiatives.js": {
+          "source": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+          "package": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+        }
+      },
+      "clipboard": "untouched",
+      "inputSource": "untouched"
+    }
+  },
+  {
+    "ownedHostExited": -15
+  }
+]

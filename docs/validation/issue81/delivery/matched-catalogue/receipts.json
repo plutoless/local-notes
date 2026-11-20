@@ -1,0 +1,740 @@
+{
+  "base": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+  "head": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+  "scope": "Headless shared-role controlled comparison using identical starting catalogue markup; not native or physical input",
+  "fixtureSHA256": "6c9ddbe67406ac760b6031bbc014c9d7bec5338dc45d7a129bb60cef6119b8f7",
+  "receipts": [
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-pointer-current-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 134,
+          "y": 378.359375,
+          "width": 912,
+          "height": 44,
+          "top": 378.359375,
+          "right": 1046,
+          "bottom": 422.359375,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-selected-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 134,
+          "y": 378.359375,
+          "width": 912,
+          "height": 44,
+          "top": 378.359375,
+          "right": 1046,
+          "bottom": 422.359375,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-checked-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 146,
+          "y": 389.796875,
+          "width": 20,
+          "height": 20,
+          "top": 389.796875,
+          "right": 166,
+          "bottom": 409.796875,
+          "left": 146
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-invalid-focused-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 134,
+          "y": 379.6875,
+          "width": 600,
+          "height": 40,
+          "top": 379.6875,
+          "right": 734,
+          "bottom": 419.6875,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-pointer-current-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 403.9375,
+          "width": 114.4375,
+          "height": 44,
+          "top": 403.9375,
+          "right": 138.4375,
+          "bottom": 447.9375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-selected-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 403.9375,
+          "width": 345,
+          "height": 44,
+          "top": 403.9375,
+          "right": 369,
+          "bottom": 447.9375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-checked-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 36,
+          "y": 416.375,
+          "width": 20,
+          "height": 20,
+          "top": 416.375,
+          "right": 56,
+          "bottom": 436.375,
+          "left": 36
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-invalid-focused-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 24,
+          "y": 406.328125,
+          "width": 345,
+          "height": 40,
+          "top": 406.328125,
+          "right": 369,
+          "bottom": 446.328125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-pointer-current-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 177.53125,
+          "width": 752,
+          "height": 44,
+          "top": 177.53125,
+          "right": 776,
+          "bottom": 221.53125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-selected-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 177.53125,
+          "width": 752,
+          "height": 44,
+          "top": 177.53125,
+          "right": 776,
+          "bottom": 221.53125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-keyboard-checked-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 36,
+          "y": 189.96875,
+          "width": 20,
+          "height": 20,
+          "top": 189.96875,
+          "right": 56,
+          "bottom": 209.96875,
+          "left": 36
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "before",
+      "sourceRef": "36be0ae2da853a2a1cb004f9a27cf6769b788dd6",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/before-invalid-focused-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 24,
+          "y": 179.859375,
+          "width": 600,
+          "height": 40,
+          "top": 179.859375,
+          "right": 624,
+          "bottom": 219.859375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-pointer-current-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 134,
+          "y": 378.359375,
+          "width": 912,
+          "height": 44,
+          "top": 378.359375,
+          "right": 1046,
+          "bottom": 422.359375,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-selected-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "-3px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 134,
+          "y": 378.359375,
+          "width": 912,
+          "height": 44,
+          "top": 378.359375,
+          "right": 1046,
+          "bottom": 422.359375,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-checked-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 146,
+          "y": 389.796875,
+          "width": 20,
+          "height": 20,
+          "top": 389.796875,
+          "right": 166,
+          "bottom": 409.796875,
+          "left": 146
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-invalid-focused-1180.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 134,
+          "y": 379.6875,
+          "width": 600,
+          "height": 40,
+          "top": 379.6875,
+          "right": 734,
+          "bottom": 419.6875,
+          "left": 134
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-pointer-current-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 403.9375,
+          "width": 114.4375,
+          "height": 44,
+          "top": 403.9375,
+          "right": 138.4375,
+          "bottom": 447.9375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-selected-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "-3px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 403.9375,
+          "width": 345,
+          "height": 44,
+          "top": 403.9375,
+          "right": 369,
+          "bottom": 447.9375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-checked-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 36,
+          "y": 416.375,
+          "width": 20,
+          "height": 20,
+          "top": 416.375,
+          "right": 56,
+          "bottom": 436.375,
+          "left": 36
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-invalid-focused-393.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 24,
+          "y": 406.328125,
+          "width": 345,
+          "height": 40,
+          "top": 406.328125,
+          "right": 369,
+          "bottom": 446.328125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "pointer-current",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-pointer-current-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": false,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "0px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "page",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 177.53125,
+          "width": 752,
+          "height": 44,
+          "top": 177.53125,
+          "right": 776,
+          "bottom": 221.53125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-selected",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-selected-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "-3px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": "true",
+        "invalid": null,
+        "rect": {
+          "x": 24,
+          "y": 177.53125,
+          "width": 752,
+          "height": 44,
+          "top": 177.53125,
+          "right": 776,
+          "bottom": 221.53125,
+          "left": 24
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "keyboard-checked",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-keyboard-checked-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(32, 78, 159) none 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(7, 95, 204) solid 3px",
+        "current": null,
+        "checked": true,
+        "invalid": null,
+        "rect": {
+          "x": 36,
+          "y": 189.96875,
+          "width": 20,
+          "height": 20,
+          "top": 189.96875,
+          "right": 56,
+          "bottom": 209.96875,
+          "left": 36
+        },
+        "overflow": false
+      }
+    },
+    {
+      "version": "after",
+      "sourceRef": "2a8a4a4b72522770eb318d858cb5453431ee072d",
+      "state": "invalid-focused",
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "path": "build/issue81-route-diagnosis/matched-catalogue/after-invalid-focused-800.png",
+      "computed": {
+        "active": true,
+        "focusVisible": true,
+        "outline": "rgb(7, 95, 204) solid 3px",
+        "offset": "2px",
+        "parentOutline": "rgb(32, 38, 51) none 3px",
+        "current": null,
+        "checked": false,
+        "invalid": "true",
+        "rect": {
+          "x": 24,
+          "y": 179.859375,
+          "width": 600,
+          "height": 40,
+          "top": 179.859375,
+          "right": 624,
+          "bottom": 219.859375,
+          "left": 24
+        },
+        "overflow": false
+      }
+    }
+  ]
+}

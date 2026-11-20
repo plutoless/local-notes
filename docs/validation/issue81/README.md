@@ -1,5 +1,7 @@
 # Issue 81 validation and incomplete delivery
 
+> Historical implementation report: its incomplete/unrun statements describe the original attempt. See [delivered acceptance evidence](delivery/README.md) for the later source-bound native results, aggregate acceptance matrix and preserved limitations. The original report below is retained unchanged.
+
 ## Scope and starting state
 
 Starting/fetched main SHA: `36be0ae2da853a2a1cb004f9a27cf6769b788dd6`.

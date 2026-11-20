@@ -1,0 +1,144 @@
+{
+  "head": "5379f61df24ebf0c87e21c7dd22288d4edec8253",
+  "pid": 58858,
+  "window": 27988,
+  "completedInputs": 32,
+  "completedStates": [
+    "home-pointer-1180",
+    "home-keyboard-1180",
+    "home-reverse-1180",
+    "home-pointer-393",
+    "home-keyboard-393",
+    "home-reverse-393",
+    "home-pointer-800",
+    "home-keyboard-800",
+    "home-reverse-800",
+    "action-open",
+    "action-retained-draft-selection",
+    "action-pointer-return",
+    "action-keyboard-opener",
+    "action-keyboard-return",
+    "note-open",
+    "library-pointer-return",
+    "library-return"
+  ],
+  "FocusNavigationOutcomes": 3,
+  "firstInput": {
+    "externalInput": "click",
+    "utcCompleted": "2026-11-20T08:49:20",
+    "epochNS": 1795164560418675000,
+    "trustedEvents": [
+      {
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "pointerdown",
+        "view": "focus",
+        "meta": false,
+        "target": "BUTTON",
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T08:49:20.041Z"
+      },
+      {
+        "ctrl": false,
+        "matchesExpectedKeyTarget": false,
+        "matchesExpectedTarget": true,
+        "type": "click",
+        "view": "focus",
+        "target": "BUTTON",
+        "meta": false,
+        "trusted": true,
+        "alt": false,
+        "shift": false,
+        "utc": "2026-11-20T08:49:20.088Z"
+      }
+    ],
+    "hostAfter": {
+      "key": true,
+      "firstResponderIsWeb": true,
+      "webHidden": false,
+      "hidden": false,
+      "windowNumber": 27988,
+      "active": true,
+      "occluded": false,
+      "main": true,
+      "visible": true
+    },
+    "documentAfter": {
+      "focused": true,
+      "visibility": "visible"
+    }
+  },
+  "stoppedBeforeInput": {
+    "beforeInput": "click",
+    "args": [
+      "--x",
+      "350",
+      "--y",
+      "126"
+    ],
+    "utc": "2026-11-20T08:50:02",
+    "epochNS": 1795164602413229000,
+    "pid": 58858,
+    "host": {
+      "main": false,
+      "visible": true,
+      "occluded": false,
+      "windowNumber": 27988,
+      "hidden": false,
+      "webHidden": false,
+      "active": false,
+      "firstResponderIsWeb": true,
+      "key": false
+    },
+    "document": {
+      "visibility": "visible",
+      "focused": false
+    }
+  },
+  "sourcesUnchanged": 55,
+  "ownedHostExited": -15,
+  "remainingOwnedHosts": "",
+  "clipboard": "untouched",
+  "inputSource": "untouched",
+  "firstTap": [
+    {
+      "sourcePID": 58940,
+      "utc": "2026-11-20T08:49:20Z",
+      "y": 306,
+      "marker": 810053,
+      "x": 264,
+      "type": 1
+    },
+    {
+      "sourcePID": 58940,
+      "y": 306,
+      "type": 2,
+      "marker": 810053,
+      "utc": "2026-11-20T08:49:20Z",
+      "x": 264
+    }
+  ],
+  "firstCocoa": [
+    {
+      "y": 573,
+      "flags": 0,
+      "type": 1,
+      "x": 98,
+      "utc": "2026-11-20T08:49:20Z",
+      "keyCode": -1,
+      "window": 27988
+    },
+    {
+      "keyCode": -1,
+      "flags": 0,
+      "window": 27988,
+      "x": 98,
+      "utc": "2026-11-20T08:49:20Z",
+      "type": 2,
+      "y": 573
+    }
+  ]
+}
