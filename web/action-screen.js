@@ -76,6 +76,11 @@ export class ActionScreen {
     const form = $('#action-form'); form.querySelector('h2').remove();
     this.drawer.body.append(form);
     this.drawer.body.append($('#action-editor .toolbar details'));
+    // Native pointer dismissal can leave the dialog itself active. Retain the
+    // last editing control instead of returning Continue Editing to the frame.
+    this.drawer.body.addEventListener('focusin', event => {
+      if (event.target.matches('input, textarea, select, button, summary, [tabindex]')) this.editingFocus = event.target;
+    });
     for (const node of form.querySelectorAll('.ui-field, .ui-action')) node.classList.add('ui-compact');
     const cancel = $('#action-back'), submit = $('#action-save');
     cancel.classList.add('ui-action', 'quiet', 'ui-compact'); submit.setAttribute('form', form.id);
@@ -115,6 +120,10 @@ export class ActionScreen {
   leaveDrawer() { return this.drawer.panel.open ? requestTaskLeave(this.task()) : Promise.resolve(true); }
   task() {
     return {label: '行动', pending: () => this.saving, dirty: () => this.dirty, committed: () => Boolean(this.retry),
+      focusOrigin: () => {
+        const control = this.editingFocus;
+        return control?.isConnected && this.drawer.body.contains(control) && control.tabIndex >= 0 && !control.matches(':disabled') && !control.closest('[inert]') && control.getClientRects().length ? control : $('#action-description');
+      },
       save: () => this.save(), discard: () => {
         if (!this.creationUncertain) localStorage.removeItem(this.key()); this.dirty = false; this.retry = null; this.recoveredDraft = false;
         this.editRequest = (this.editRequest || 0) + 1;

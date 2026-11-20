@@ -198,7 +198,7 @@ export async function requestTaskLeave(task) {
     await task.pending?.();
     let failure = '';
     while (task.dirty()) {
-      const choice = await taskLeaveChoice(task.label, failure, task.committed?.());
+      const choice = await taskLeaveChoice(task.label, failure, task.committed?.(), task.focusOrigin?.());
       if (choice === 'continue') return false;
       if (choice === 'discard') { await task.discard(); break; }
       try {
@@ -210,9 +210,9 @@ export async function requestTaskLeave(task) {
   } finally { leavingTask = false; task.resume?.(); }
 }
 
-function taskLeaveChoice(label, failure, committed) {
+function taskLeaveChoice(label, failure, committed, focusOrigin) {
   return new Promise(resolve => {
-    const origin = document.activeElement;
+    const origin = focusOrigin || document.activeElement;
     const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
     const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;

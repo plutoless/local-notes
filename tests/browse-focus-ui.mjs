@@ -171,8 +171,17 @@ try {
   assert.equal(await page.evaluate(()=>document.activeElement.id),'action-status');
   assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
   assert.deepEqual(await page.locator('#action-description').evaluate(n=>[n.selectionStart,n.selectionEnd]),[2,6]);
-  await page.locator('#action-back').click();await page.getByRole('button',{name:'继续编辑',exact:true}).click();
-  assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
+  for(const intended of ['action-description','action-status']) {
+    await page.locator('#'+intended).focus();
+    // Reproduce WKWebView's observed container focus before a native dismissal.
+    await page.locator('#action-drawer').evaluate(n=>n.focus());
+    await page.evaluate(()=>document.querySelector('#action-back').click());await page.getByRole('button',{name:'继续编辑',exact:true}).click();
+    await page.waitForTimeout(100);
+    assert.equal(await page.evaluate(()=>document.activeElement.id),intended,'Continue editing restores the intended eligible editing control');
+    assert.equal(await page.locator('#action-description').inputValue(),'尚未保存的行动草稿');
+    assert.deepEqual(await page.locator('#action-description').evaluate(n=>[n.selectionStart,n.selectionEnd]),[2,6]);
+  }
+
   await page.locator('#action-back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   // Distinct Focus openings own their returns even if their option requests overlap.
   await page.locator('[data-view=focus]').click();await page.locator('.focus-row-open').nth(1).waitFor();
