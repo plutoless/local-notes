@@ -2,6 +2,8 @@
 """Issue 81 synthetic Cocoa/WKWebView, OS input and trusted-event evidence."""
 import hashlib, importlib.util, inspect, json, os, shutil, subprocess, time, uuid
 from pathlib import Path
+if os.environ.get('TAIL_ONLY') and not os.environ.get('REMAINING_ONLY'):
+ raise SystemExit('Tail-only mode requires REMAINING_ONLY; no host or sender launched')
 if os.environ.get('CONSTRUCTOR_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
  raise SystemExit('Constructor-only mode requires EXTERNAL_INPUT; no host or sender launched')
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
