@@ -57,7 +57,7 @@ try {
   assert.equal(await page.evaluate(() => document.activeElement.matches('button')), true);
   assert.equal(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle), 'solid');
   assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 0);
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '整理所选笔记', exact: true}).waitFor();
   await page.getByRole('button', {name: '新建行动', exact: true}).click();
   await page.locator('#action-description').fill('Chosen next step');
@@ -138,7 +138,7 @@ try {
   assert.equal(await page.locator('#action-filter').inputValue(), 'waiting');
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await writeFile(join(fixture.root, 'LocalNotesData/actions/broken.json'), '{');
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name: '刷新本地记录'}).click();
   await page.locator('#notice summary').click(); await page.locator('#notice pre').filter({hasText: /broken.json/}).waitFor();
   await page.getByRole('button', {name: '关闭提示'}).click();
@@ -163,7 +163,7 @@ try {
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   for (const node of await page.locator('nav button').all()) assert.equal(await node.evaluate(n => n.getBoundingClientRect().height >= 44), true);
-  await page.locator('.home-utilities summary').click();
+  if (!await page.locator('.home-utilities').evaluate(n=>n.open)) await page.locator('.home-utilities summary').click();
   await page.getByRole('button', {name:'整理所选笔记'}).click();
   assert.equal(await page.locator('#ai-help').isVisible(), true);
   assert.equal(await page.locator('#ai-send').isDisabled(), true);
