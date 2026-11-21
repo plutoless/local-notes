@@ -1,3 +1,5 @@
+> Historical failure record: preserved unchanged below. For the revision 2 repair, current browser evidence and explicit native-only limitations, see [repair report](repair/README.md).
+
 # Issue 86 synchronization focus evidence
 
 ## Scope and inventory

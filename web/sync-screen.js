@@ -38,7 +38,12 @@ export class SyncScreen {
   }
   close() { return requestTaskLeave(this.task()); }
   async refresh(show) {
-    if (show) { this.dialog.open(); document.querySelector('.app').inert = true; }
+    if (show) {
+      // Some pointer activations do not focus buttons. Capture the actual sync
+      // opener rather than whichever editor or body happened to retain focus.
+      if (this.panel.hidden) this.opener.focus({preventScroll: true});
+      this.dialog.open(); document.querySelector('.app').inert = true;
+    }
     if (this.running || this.saving) return;
     if (this.dirty) { if (show) this.canLeave(); return; }
     const restoreFocus = show || this.panel.contains(document.activeElement);
