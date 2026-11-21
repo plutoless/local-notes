@@ -14,7 +14,9 @@ changes are introduced.
 | Current Focus sections, rows, menus and continuation | `FocusContent` in shared `#items` while home owns it | `FocusScreen`, Action/Initiative repositories and existing task drawers |
 | Reading continuation and home return | React home rows and delivered shared reader | Existing workspace-scoped `ReadingHistory`, source fingerprints, app generation fences and `sourceOrigin` |
 | Library/reader | Delivered #92 React owners | See `library-react.md` |
-| Favorites data, capture, Actions, Initiatives, Topics, Organization, synchronization dialogs | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
+| Favorites, capture, Topics, classification and note locations | Typed React note views with retained C sheet/task controllers | See `note-forms-react.md` |
+| Actions | React Action rows/editor/source/history with stable controller ports | See `actions-react.md` |
+| Initiatives, Organization, synchronization dialogs | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
 
 The shell renders once synchronously before legacy controllers register controls.
 Navigation selection and `aria-current` are derived from the same model, including
