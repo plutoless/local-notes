@@ -102,3 +102,11 @@ not rewritten as a pass. Source head for executed implementation:
 without changing production code. Baseline and migrated desktop/393px/reduced-height
 screenshots were visually inspected; the approved layout is retained. Updated
 catalogue additionally passes contrast minima, actual focus and reduced-motion checks.
+
+Standards review identified a type-only mismatch: ActionRepository returns null
+focusPosition/dueDate/waitingOn on waiting and unassigned records. The presentation
+interface now includes those nulls. One correction cycle: typecheck, production
+build and targeted ownership/order/manifest tests all exit 0. All rebuilt assets
+are byte-identical to the previously exercised and packaged assets; no runtime
+behavior changed, so the passing browser/storage/package evidence is reused.
+See `logs/review-*.log` and the updated source-artifact binding.

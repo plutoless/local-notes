@@ -27,7 +27,7 @@
     "web/initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
     "web/react/shell.tsx": "27306e75ee20c6beb54e7d630557a021390d75b98c9938a0e76559063f74bd51",
     "web/react/host.tsx": "1368bf4d228ffd19c5b445b544987bc82ab55a04aa64ee4e07ae25e5fd58796f",
-    "web/react/focus.tsx": "89e6bf96e1579adfa38fffbbb0c1c92250d2050fbf89b4a0e7afd846566a34ec",
+    "web/react/focus.tsx": "ca8b2f7e3b3678ff1c277d6d7ea0d48e01007436edbab358390d0c467ef52140",
     "web/react/styles.css": "e7ab7685e448b1434d91342f16085fdf60bc2e1b7eab2c2e6de061df6730bc21",
     "web/react/reader.tsx": "486b9e9d07d77edb87f5b1c9bfc8f30c0b96d11f54fcec08e93af9754ca2c677",
     "web/react/library.tsx": "c3c9a9831e328493eef4184955b4571812695994744b33cbe7f57c843b5aa213",
@@ -333,5 +333,6 @@
   },
   "packagedAssetsMatch": true,
   "macBinarySHA256": "8451f1c167c38736f09a5fd1b348ba1f92c37d20d5d73dd08d1c01ad45d20c3a",
-  "limitations": "Built and codesign verified, not launched; no native transport/OS/minimum OS/Intel/physical runtime evidence. Baseline git archive has different Tailwind automatic discovery context."
+  "limitations": "Built and codesign verified, not launched; no native transport/OS/minimum OS/Intel/physical runtime evidence. Baseline git archive has different Tailwind automatic discovery context.",
+  "typeOnlyReviewCorrection": "FocusAction includes domain nullable focusPosition/dueDate/waitingOn; rebuilt asset hashes are identical to executed implementation611b301 and packaged bytes."
 }

@@ -1,0 +1,12 @@
+✔ a released or replaced home cannot reclaim the visible legacy list after a delayed query (0.505083ms)
+✔ focus reordering preserves neighbor positions and chooses the requested bounded slot (0.541125ms)
+✔ focus reordering rejects unavailable or unrepresentable slots before persistence (0.118084ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (8.039042ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 123.343666
