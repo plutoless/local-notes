@@ -159,6 +159,7 @@ export class LibraryScreen {
       progress: this.progress || '', detail: this.detail, count: this.count || '', refreshing: Boolean(this.refreshing), previous: Boolean(this.previous), next: Boolean(this.next)});
   }
   switchCollection(next) {
+    this.sequence++;
     this.collectionContexts ||= new CollectionContexts();
     const context = this.collectionContexts.switch(next, this.captureContext());
     if (context) Object.assign(this, context);
