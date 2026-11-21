@@ -6,8 +6,8 @@
       "bytes": 12141
     },
     "web/react/search.tsx": {
-      "sha256": "785bcfe574f2896627747d4398d1176ea69421d160c327ab3691175db5702040",
-      "bytes": 3484
+      "sha256": "eb8806b1b644c6dd5247f5a44df41a5352cf3b7fd6351e504d538f4638c2e3aa",
+      "bytes": 3536
     },
     "web/react/search-model.ts": {
       "sha256": "9cb645d50411b52f2e8c10d695ac39288765185a2cc91dea8c8f2a3b4fe9818a",
@@ -22,16 +22,16 @@
       "bytes": 3143
     },
     "tests/search-ui.mjs": {
-      "sha256": "11d4b2270a61f6d0ff5fb27e2b5d40dd8e3359d3b1bb15a125e833ca6b9edfa7",
-      "bytes": 12682
+      "sha256": "de28405050152c18afe75f3bda9c54c9ab68612e7cdac22d30e68745997d3b58",
+      "bytes": 14163
     },
     "tests/search-model.test.js": {
       "sha256": "4cb5dc9a2266ae8c0189ba544ebe98aab7e624d6735f22f3139148340bf151f1",
       "bytes": 1704
     },
     "build/web/assets/react-host.js": {
-      "sha256": "f21ed8294a2fabc7e9c02b65bdaa5e1ffe116f89209d715eee6c93f77bd4a184",
-      "bytes": 329004
+      "sha256": "d34d10fd3c78d67251864dd7999150a8d1d66c6959306da126c928ad1b4133e7",
+      "bytes": 329094
     },
     "build/web/assets/react-host.css": {
       "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
@@ -42,15 +42,15 @@
       "bytes": 12141
     },
     "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
-      "sha256": "f21ed8294a2fabc7e9c02b65bdaa5e1ffe116f89209d715eee6c93f77bd4a184",
-      "bytes": 329004
+      "sha256": "d34d10fd3c78d67251864dd7999150a8d1d66c6959306da126c928ad1b4133e7",
+      "bytes": 329094
     },
     "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css": {
       "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
       "bytes": 6132
     },
     "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
-      "sha256": "bef51838937e51a3ced5cabe40f331f1c905cd4aaa901fed7fb463ae1757fa64",
+      "sha256": "640256114b78e436174f1b7c4b1f93ea8d485b308ad7b13780cbbda79701ec19",
       "bytes": 471920
     }
   }

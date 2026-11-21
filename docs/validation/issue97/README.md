@@ -44,7 +44,15 @@ bundle parse/startup overhead. No native process startup/memory claim is made.
 
 ## Failures, recovery and remaining coverage
 
-No completed failing product/harness correction cycles occurred. Controlled failed
+The independent initial Standards review found missing pending-action disabling on
+scope/expansion/paging (P2); Spec found no findings. One product correction restores
+the existing Button `busyOnAction` contract. Focused search/navigation/catalogue
+journeys and Mac packaging/signature were rerun successfully; the new delayed-query
+UI assertions verify paging and scope cannot be submitted twice. The new paging
+harness initially matched both background and dialog Next controls (one completed
+selector-failure cycle); scoping the accessible lookup to the search dialog fixed
+it and the next run passed. Initial reviews and failed command receipts are
+retained. No two consecutive same-signature failures occurred. Controlled failed
 copy, source change/missing, failed Save, delayed reads and query failures are
 intentional passing recovery assertions in maintained journeys. The first slow
 performance observation is preserved and was investigated as described above.
@@ -62,3 +70,8 @@ deferred by user decision. Browser reload/readback does not establish native qui
 Independent final-head Standards and Spec review reports are returned to the
 coordinator separately, alongside final SHA/base/PR and command receipts. The
 coordinator alone decides integration/merge/closure; no prerequisite was rewritten.
+
+Final correction receipts use the `issue97-correction-*` names; earlier passing
+receipts remain historical source-bound evidence. The 86-test full suite preceded
+the pending-button correction; its domain/model/storage code is unchanged, so the
+affected UI/packaging layers were rerun rather than repeating unrelated tests.

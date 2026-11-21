@@ -120,5 +120,21 @@ try {
   releaseScope(); delay = null; await page.waitForTimeout(100); assert.equal(await page.locator('.search-result').count(),0);
   await input.fill('latency'); await page.locator('.search-result').first().waitFor(); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k');
   assert.equal(await input.inputValue(),'latency'); assert.equal(await page.locator('[data-scope=action]').getAttribute('aria-pressed'),'true');
+  await page.locator('[data-scope=note]').click();
+  for(let i=0;i<25;i++) await writeFile(join(fixture.root,`paging-${i}.md`),'# 分页等待样本 '+i+'\n\n分页等待样本');
+  await input.fill('分页等待样本'); await page.getByRole('button',{name:'刷新索引',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelectorAll('.search-result').length===20 && document.querySelector('#global-search [role=status]').textContent==='本页 20 条结果');
+  let releasePaging; delay=new Promise(resolve=>releasePaging=resolve);
+  const next=page.locator('#global-search').getByRole('button',{name:'下一页',exact:true}); await next.click();
+  assert.equal(await next.isDisabled(),true,'Pending paging cannot be submitted twice');
+  releasePaging(); delay=null;
+  await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent==='本页 5 条结果');
+  await page.locator('#global-search').getByRole('button',{name:'上一页',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelectorAll('.search-result').length===20);
+  let releaseScopeBusy; delay=new Promise(resolve=>releaseScopeBusy=resolve);
+  const noteScope=page.locator('[data-scope=note]'); await noteScope.click();
+  assert.equal(await noteScope.isDisabled(),true,'Pending scope refresh cannot be submitted twice');
+  releaseScopeBusy(); delay=null;
+  await page.waitForFunction(()=>!document.querySelector('[data-scope=note]').disabled);
   assert.deepEqual(errors, []); console.log('PASS: real UI/bridge/Swift SQLite search, grounding/copy, optional attribution/failure, pages, repeated shortcut, dismissal fencing, narrow focus cycle.');
 } finally { await browser.close(); await fixture.close(); }
