@@ -56,7 +56,7 @@ do not permit an asynchronous custom three-way dialog in that event.
 
 ## Validation boundaries
 
-See [maintained journeys](journeys.md) and [issue55 evidence](../validation/issue55/README.md).
+See [maintained journeys](journeys.md) and [the issue #55 delivery discussion](https://github.com/plutoless/local-notes/issues/55).
 Native production close/quit/restart evidence and instrumented native failure
 coverage are reported separately from Chromium and storage tests. OS-injected
 Cmd+Q is not a claim of physical keyboard testing. Android-specific and standalone

@@ -29,12 +29,12 @@ No typography, spacing, icon, palette, breakpoint or control variant is added. T
 - [ ] Preserve immutable revisions, private drafts, SQLite indexes, source guards, bounded loading and storage format; failed saves must block destructive transitions.
 - [ ] Run shared syntax/unit/UI checks, Mac build and isolated actual WKWebView probes on final product head; bind resource hashes to evidence. Distinguish native DOM events from physical input.
 
-See [execution evidence](../validation/issue37/README.md). Android-specific checks/builds and standalone Syncthing are deferred. Physical native input and two-device E2E are unrun; synthetic local revision coverage is not transport proof. Catalogue token contrast is not certification of every rendered pixel. Human visual judgment remains necessary.
+See [issue #37](https://github.com/plutoless/local-notes/issues/37) for the delivery discussion; retain execution evidence outside Git. Android-specific checks/builds and standalone Syncthing are deferred. Physical native input and two-device E2E are unrun; synthetic local revision coverage is not transport proof. Catalogue token contrast is not certification of every rendered pixel. Human visual judgment remains necessary.
 
 
 ## Remaining forms checklist (#48)
 
-Use the [finite entry-point inventory](../validation/issue48/inventory.md), rather than treating every form as a drawer candidate. Maintained coverage is in `remaining-forms-ui`, `ui`, `focus-ui`, `library-ui`, `initiatives-ui`, `workspace-ui`, `initiative-drawer-ui`, `design-system-ui` and `sync-ui`.
+Use the [finite entry-point inventory](form-entry-points.md), rather than treating every form as a drawer candidate. Maintained coverage is in `remaining-forms-ui`, `ui`, `focus-ui`, `library-ui`, `initiatives-ui`, `workspace-ui`, `initiative-drawer-ui`, `design-system-ui` and `sync-ui`.
 
 - [ ] Replay Home → new action → save → close → open, retaining Home behind the task and restoring focus/scroll.
 - [ ] Replay Library → selected note → information → topic association → Done, preserving search/filter/page/selection/document scroll; failures must be reachable inside the modal.
@@ -43,7 +43,7 @@ Use the [finite entry-point inventory](../validation/issue48/inventory.md), rath
 - [ ] Capture settled desktop, 393px and reduced-height task views, including body scrolling and a reachable footer; visually reject duplicate/tiled captures. Keep before/after browser and native evidence separate.
 - [ ] Observe actual production Mac close and OS-menu Quit with dirty/pending tasks; direct delegate invocation and browser `hasUnsavedChanges()` assertions are insufficient.
 
-These checklist items are review requirements, not blanket assertions that every check has passed. See [issue48 execution evidence](../validation/issue48/README.md) for browser/native input boundaries, production close/quit results and unrun checks. Async openers that temporarily disable themselves must explicitly preserve their identity for focus return; check this in WKWebView as well as Chromium.
+These checklist items are review requirements, not blanket assertions that every check has passed. Record browser/native input boundaries, production close/quit results and unrun checks in PR summaries. See [issue #48](https://github.com/plutoless/local-notes/issues/48) for the delivery discussion. Async openers that temporarily disable themselves must explicitly preserve their identity for focus return; check this in WKWebView as well as Chromium.
 
 
 ## Task lifecycle coverage (#55)
@@ -71,4 +71,4 @@ committed action results when ending an initiative partially succeeds.
 
 ## Search source continuation (#60)
 
-`tests/search-navigation-ui.mjs` maintains the compact search → real note/action/initiative → return journey through isolated Swift storage/indexes. Retain the search result DOM and invocation selection/caret, list/context/detail state and scroll; use the active-task leave lifecycle for source navigation only. Exact-source validation must not substitute duplicate titles. Both opening and return must yield to newer workspace/page/record requests after asynchronous reads and context refreshes. See [issue60 execution status](../validation/issue60/README.md), including separate successful native Mac continuation/input evidence and the bounded diagnosis of the historical input failure; browser coverage is not native acceptance.
+`tests/search-navigation-ui.mjs` maintains the compact search → real note/action/initiative → return journey through isolated Swift storage/indexes. Retain the search result DOM and invocation selection/caret, list/context/detail state and scroll; use the active-task leave lifecycle for source navigation only. Exact-source validation must not substitute duplicate titles. Both opening and return must yield to newer workspace/page/record requests after asynchronous reads and context refreshes. See [issue #60](https://github.com/plutoless/local-notes/issues/60) for the delivery discussion. Keep native continuation/input results and input-routing diagnosis separate from browser coverage; browser coverage does not establish native integration.

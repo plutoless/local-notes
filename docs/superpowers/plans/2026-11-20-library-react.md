@@ -36,7 +36,7 @@ Files: `web/react/reader.tsx`, typed host adapter, `web/app.js`, `web/index.html
 
 ## Task 4: Catalogue, acceptance and delivery
 
-Files: production-consumer catalogue, architecture/build docs, `docs/validation/issue92/`.
+Files: production-consumer catalogue and architecture/build docs. Keep execution evidence in ignored local output or CI artifacts and summarize results in the PR, under `docs/agents/validation.md`.
 
 - [x] Probe actual contextual drawer/search coexistence before documenting primitive choice. Record consumed components and ownership inventory, desktop/393px/short/reduced-motion/contrast/hit-target observations and same-state source-bound baseline comparisons.
 - [x] Run affected checks, full unit suite once, TypeScript/build/package and selected maintained cross-page UI suites because shared reader ownership changes broadly. Preserve failures and cumulative repairs.
