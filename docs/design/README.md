@@ -189,6 +189,11 @@ Scrollable `.ui-row` controls draw the shared 3px outline inward so the scrollpo
 
 Real consumers are Current Focus row openers and management disclosures, shell sidebar, Library/Favorites rows, Initiative/Action rows and their existing pagination. Rerender restoration uses stable record identity and never takes focus from another active surface. Preserve both collection and row-list scrolling on return. Drawer lifecycle, drafts, source selection and storage remain owned by existing consumers. Catalogue examples demonstrate role states; native OS input evidence is separate from browser/DOM setup. Other feature journeys (#82–#86) are outside this slice.
 
+
+## Reader focus adoption (issue #82)
+
+The reader reuses issue #81's modality contract for inline wiki buttons and its toolbar. Source-location blocks and the read-only reading container retain programmatic focus and source hooks without a decorative outline; search matches retain their existing text highlight. These are reading destinations rather than operable controls. Keyboard Tab proceeds to the existing operable controls, whose focus cues remain visible. Horizontally scrollable Markdown tables use the shared 3px focus token with an inset cue. Editable title/body fields retain their caret, selection and field focus treatment, including pointer entry. No focus operation writes Markdown or confirmed records. The note source editor has no invalid-field validation state; conflict and failed-save feedback retain their existing separate meanings.
+
 ## Contextual form focus (issue #83)
 
 Contextual drawers reuse the shared focus token for a single 2px active editable-field boundary (border plus 1px inset). This replaces the text field's outer outline for pointer and keyboard editing while retaining the caret. Invalid fields retain their danger border and message alongside the blue inset; invalid is never a focus or selection state. Buttons, disclosure summaries and the three-way leave decision keep the #81 keyboard-only 3px outline. No form, label or drawer receives a competing parent frame. Checkbox rows retain the existing single keyboard label outline and independent checked fill.

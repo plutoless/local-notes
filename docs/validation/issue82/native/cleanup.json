@@ -1,0 +1,4799 @@
+{
+  "pid": 71705,
+  "exited": true,
+  "sourcePreserved": true,
+  "clipboardRestoredExactItemBytes": true,
+  "inputSource": "untouched",
+  "events": [
+    {
+      "click": "[data-view=notes]",
+      "host": {
+        "windowNumber": 29373,
+        "main": true,
+        "hidden": false,
+        "firstResponderIsWeb": true,
+        "key": true,
+        "active": true,
+        "occluded": false,
+        "webHidden": false,
+        "visible": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71774,\"type\":1,\"utc\":\"2026-11-20T11:27:28Z\",\"x\":263.5,\"y\":355},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71774,\"type\":2,\"utc\":\"2026-11-20T11:27:28Z\",\"x\":263.5,\"y\":355}],\"recipientPID\":71705,\"senderPID\":71774,\"window\":29373}\n",
+      "events": [
+        {
+          "trusted": true,
+          "type": "pointerdown",
+          "target": "BUTTON",
+          "expected": true
+        },
+        {
+          "expected": true,
+          "type": "click",
+          "target": "BUTTON",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "tapAvailable": true,
+        "postAccess": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          }
+        ],
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          }
+        ],
+        "tapEnabled": true,
+        "axTrusted": true,
+        "listenAccess": true
+      }
+    },
+    {
+      "click": "[data-path=\"reference.md\"]",
+      "host": {
+        "occluded": false,
+        "visible": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "windowNumber": 29373,
+        "active": true,
+        "hidden": false,
+        "webHidden": false,
+        "key": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71800,\"type\":1,\"utc\":\"2026-11-20T11:27:29Z\",\"x\":853.5,\"y\":508.390625},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71800,\"type\":2,\"utc\":\"2026-11-20T11:27:29Z\",\"x\":853.5,\"y\":508.390625}],\"recipientPID\":71705,\"senderPID\":71800,\"window\":29373}\n",
+      "events": [
+        {
+          "trusted": true,
+          "expected": true,
+          "target": "P",
+          "type": "pointerdown"
+        },
+        {
+          "trusted": true,
+          "expected": true,
+          "type": "click",
+          "target": "P"
+        }
+      ],
+      "route": {
+        "listenAccess": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          }
+        ],
+        "tapEnabled": true,
+        "axTrusted": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          }
+        ],
+        "postAccess": true,
+        "tapAvailable": true
+      }
+    },
+    {
+      "click": ".wiki-link",
+      "host": {
+        "windowNumber": 29373,
+        "main": true,
+        "key": true,
+        "occluded": false,
+        "visible": true,
+        "hidden": false,
+        "webHidden": false,
+        "active": true,
+        "firstResponderIsWeb": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71847,\"type\":1,\"utc\":\"2026-11-20T11:27:30Z\",\"x\":829.3984375,\"y\":445.984375},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71847,\"type\":2,\"utc\":\"2026-11-20T11:27:30Z\",\"x\":829.3984375,\"y\":445.984375}],\"recipientPID\":71705,\"senderPID\":71847,\"window\":29373}\n",
+      "events": [
+        {
+          "expected": true,
+          "type": "pointerdown",
+          "target": "BUTTON",
+          "trusted": true
+        },
+        {
+          "trusted": true,
+          "type": "click",
+          "target": "BUTTON",
+          "expected": true
+        }
+      ],
+      "route": {
+        "tapAvailable": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          }
+        ],
+        "tapEnabled": true,
+        "axTrusted": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          }
+        ],
+        "listenAccess": true,
+        "postAccess": true
+      }
+    },
+    {
+      "click": "#back",
+      "host": {
+        "key": true,
+        "hidden": false,
+        "occluded": false,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "visible": true,
+        "windowNumber": 29373,
+        "main": true,
+        "webHidden": false
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71872,\"type\":1,\"utc\":\"2026-11-20T11:27:31Z\",\"x\":723.71875,\"y\":161},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":71872,\"type\":2,\"utc\":\"2026-11-20T11:27:31Z\",\"x\":723.71875,\"y\":161}],\"recipientPID\":71705,\"senderPID\":71872,\"window\":29373}\n",
+      "events": [
+        {
+          "trusted": true,
+          "type": "pointerdown",
+          "target": "back",
+          "expected": true
+        },
+        {
+          "expected": true,
+          "type": "click",
+          "target": "back",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "tapEnabled": true,
+        "listenAccess": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          }
+        ],
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          }
+        ],
+        "tapAvailable": true,
+        "axTrusted": true,
+        "postAccess": true
+      }
+    },
+    {
+      "state": "pointer-return",
+      "focus": {
+        "selection": "",
+        "id": "",
+        "documentFocus": true,
+        "outline": "3px none rgb(36, 91, 195)",
+        "tag": "BUTTON",
+        "visible": false
+      }
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "key": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "occluded": false,
+        "visible": true,
+        "hidden": false,
+        "windowNumber": 29373,
+        "active": true,
+        "main": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72045,\"type\":10,\"utc\":\"2026-11-20T11:27:33Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72045,\"type\":11,\"utc\":\"2026-11-20T11:27:33Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72045,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Tab",
+          "trusted": true,
+          "expected": true,
+          "target": "BUTTON",
+          "type": "keydown"
+        }
+      ],
+      "route": {
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          }
+        ],
+        "postAccess": true,
+        "tapEnabled": true,
+        "axTrusted": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          }
+        ],
+        "tapAvailable": true,
+        "listenAccess": true
+      }
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "key": true,
+        "firstResponderIsWeb": true,
+        "main": true,
+        "occluded": false,
+        "visible": true,
+        "active": true,
+        "webHidden": false,
+        "hidden": false,
+        "windowNumber": 29373
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72063,\"type\":10,\"utc\":\"2026-11-20T11:27:33Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72063,\"type\":11,\"utc\":\"2026-11-20T11:27:34Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72063,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Tab",
+          "expected": true,
+          "type": "keydown",
+          "target": "BODY",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "tapAvailable": true,
+        "listenAccess": true,
+        "tapEnabled": true,
+        "axTrusted": true,
+        "postAccess": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          }
+        ],
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          }
+        ]
+      }
+    },
+    {
+      "state": "keyboard-link",
+      "focus": {
+        "selection": "",
+        "id": "",
+        "documentFocus": true,
+        "outline": "3px solid rgb(7, 95, 204)",
+        "tag": "BUTTON",
+        "visible": true
+      }
+    },
+    {
+      "key": "Return",
+      "host": {
+        "visible": true,
+        "key": true,
+        "webHidden": false,
+        "hidden": false,
+        "occluded": false,
+        "active": true,
+        "windowNumber": 29373,
+        "firstResponderIsWeb": true,
+        "main": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72083,\"type\":10,\"utc\":\"2026-11-20T11:27:35Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72083,\"type\":11,\"utc\":\"2026-11-20T11:27:35Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72083,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Enter",
+          "expected": true,
+          "trusted": true,
+          "target": "BUTTON",
+          "type": "keydown"
+        },
+        {
+          "trusted": true,
+          "type": "click",
+          "target": "BUTTON",
+          "expected": false
+        }
+      ],
+      "route": {
+        "listenAccess": true,
+        "postAccess": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          }
+        ],
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          }
+        ],
+        "tapEnabled": true,
+        "axTrusted": true,
+        "tapAvailable": true
+      }
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "active": true,
+        "main": true,
+        "webHidden": false,
+        "windowNumber": 29373,
+        "visible": true,
+        "hidden": false,
+        "occluded": false,
+        "key": true,
+        "firstResponderIsWeb": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72084,\"type\":10,\"utc\":\"2026-11-20T11:27:36Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72084,\"type\":11,\"utc\":\"2026-11-20T11:27:36Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72084,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Tab",
+          "expected": true,
+          "trusted": true,
+          "type": "keydown",
+          "target": "back"
+        }
+      ],
+      "route": {
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          }
+        ],
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          }
+        ],
+        "listenAccess": true,
+        "postAccess": true,
+        "tapEnabled": true,
+        "tapAvailable": true,
+        "axTrusted": true
+      }
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "webHidden": false,
+        "main": true,
+        "key": true,
+        "occluded": false,
+        "windowNumber": 29373,
+        "visible": true,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "active": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72110,\"type\":10,\"utc\":\"2026-11-20T11:27:36Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72110,\"type\":11,\"utc\":\"2026-11-20T11:27:36Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72110,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Tab",
+          "expected": true,
+          "type": "keydown",
+          "target": "mode",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          }
+        ],
+        "postAccess": true,
+        "axTrusted": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          }
+        ],
+        "tapAvailable": true,
+        "tapEnabled": true,
+        "listenAccess": true
+      }
+    },
+    {
+      "key": "Return",
+      "host": {
+        "hidden": false,
+        "active": true,
+        "key": true,
+        "visible": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "windowNumber": 29373,
+        "occluded": false,
+        "webHidden": false
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72137,\"type\":10,\"utc\":\"2026-11-20T11:27:37Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72137,\"type\":11,\"utc\":\"2026-11-20T11:27:37Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72137,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "Enter",
+          "expected": true,
+          "type": "keydown",
+          "target": "back",
+          "trusted": true
+        },
+        {
+          "expected": true,
+          "type": "click",
+          "target": "back",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          }
+        ],
+        "postAccess": true,
+        "axTrusted": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          }
+        ],
+        "tapAvailable": true,
+        "tapEnabled": true,
+        "listenAccess": true
+      }
+    },
+    {
+      "state": "selected-location",
+      "focus": {
+        "documentFocus": true,
+        "id": "",
+        "selection": "\u53ef\u4ee5\u590d\u5236\u7684\u4e2d\u6587 English",
+        "outline": "3px none rgb(32, 38, 51)",
+        "tag": "H2",
+        "visible": true
+      }
+    },
+    {
+      "key": "CmdOrCtrl+C",
+      "host": {
+        "hidden": false,
+        "active": true,
+        "key": true,
+        "visible": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "windowNumber": 29373,
+        "occluded": false,
+        "webHidden": false
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":1048576,\"keyCode\":8,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72178,\"type\":10,\"utc\":\"2026-11-20T11:27:38Z\",\"x\":166,\"y\":879},{\"flags\":1048576,\"keyCode\":8,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72178,\"type\":11,\"utc\":\"2026-11-20T11:27:38Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72178,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "c",
+          "trusted": true,
+          "type": "keydown",
+          "target": "H2",
+          "expected": true
+        }
+      ],
+      "route": {
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:38Z",
+            "marker": 810053,
+            "x": 166,
+            "type": 10,
+            "y": 879,
+            "sourcePID": 72178
+          },
+          {
+            "marker": 810053,
+            "sourcePID": 72178,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:38Z",
+            "type": 11
+          }
+        ],
+        "tapEnabled": true,
+        "listenAccess": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          },
+          {
+            "flags": 1048576,
+            "y": 0,
+            "utc": "2026-11-20T11:27:38Z",
+            "window": 29373,
+            "x": 0,
+            "type": 10,
+            "keyCode": 8
+          },
+          {
+            "y": 0,
+            "window": 29373,
+            "type": 10,
+            "keyCode": 8,
+            "flags": 1048576,
+            "x": 0,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "x": 0,
+            "window": 29373,
+            "type": 11,
+            "y": 0,
+            "keyCode": 8,
+            "flags": 1048576,
+            "utc": "2026-11-20T11:27:38Z"
+          }
+        ],
+        "postAccess": true,
+        "axTrusted": true,
+        "tapAvailable": true
+      }
+    },
+    {
+      "click": "#mode",
+      "host": {
+        "key": true,
+        "active": true,
+        "occluded": false,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "webHidden": false,
+        "hidden": false,
+        "visible": true,
+        "windowNumber": 29373
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72181,\"type\":1,\"utc\":\"2026-11-20T11:27:39Z\",\"x\":863.9453125,\"y\":161},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72181,\"type\":2,\"utc\":\"2026-11-20T11:27:40Z\",\"x\":863.9453125,\"y\":161}],\"recipientPID\":71705,\"senderPID\":72181,\"window\":29373}\n",
+      "events": [
+        {
+          "expected": true,
+          "trusted": true,
+          "target": "mode",
+          "type": "pointerdown"
+        },
+        {
+          "trusted": true,
+          "type": "click",
+          "target": "mode",
+          "expected": true
+        }
+      ],
+      "route": {
+        "tapEnabled": true,
+        "tapAvailable": true,
+        "postAccess": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:38Z",
+            "marker": 810053,
+            "x": 166,
+            "type": 10,
+            "y": 879,
+            "sourcePID": 72178
+          },
+          {
+            "marker": 810053,
+            "sourcePID": 72178,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:38Z",
+            "type": 11
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125,
+            "y": 161,
+            "type": 1,
+            "marker": 810053,
+            "sourcePID": 72181
+          },
+          {
+            "sourcePID": 72181,
+            "y": 161,
+            "type": 2,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125
+          }
+        ],
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          },
+          {
+            "flags": 1048576,
+            "y": 0,
+            "utc": "2026-11-20T11:27:38Z",
+            "window": 29373,
+            "x": 0,
+            "type": 10,
+            "keyCode": 8
+          },
+          {
+            "y": 0,
+            "window": 29373,
+            "type": 10,
+            "keyCode": 8,
+            "flags": 1048576,
+            "x": 0,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "x": 0,
+            "window": 29373,
+            "type": 11,
+            "y": 0,
+            "keyCode": 8,
+            "flags": 1048576,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "flags": 0,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:40Z",
+            "window": 29373,
+            "x": 697.9453125,
+            "type": 1,
+            "y": 718
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "type": 2,
+            "x": 697.9453125,
+            "keyCode": -1,
+            "window": 29373,
+            "flags": 0,
+            "y": 718
+          }
+        ],
+        "listenAccess": true,
+        "axTrusted": true
+      }
+    },
+    {
+      "state": "editing-field",
+      "focus": {
+        "documentFocus": true,
+        "id": "body",
+        "outline": "3px solid rgb(7, 95, 204)",
+        "selection": "",
+        "tag": "TEXTAREA",
+        "visible": true
+      }
+    },
+    {
+      "key": "CmdOrCtrl+A",
+      "host": {
+        "main": true,
+        "firstResponderIsWeb": true,
+        "windowNumber": 29373,
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "hidden": false,
+        "key": true,
+        "active": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":1048576,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72214,\"type\":10,\"utc\":\"2026-11-20T11:27:41Z\",\"x\":166,\"y\":879},{\"flags\":1048576,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72214,\"type\":11,\"utc\":\"2026-11-20T11:27:41Z\",\"x\":166,\"y\":879}],\"recipientPID\":71705,\"senderPID\":72214,\"window\":29373}\n",
+      "events": [
+        {
+          "key": "a",
+          "expected": true,
+          "type": "keydown",
+          "target": "body",
+          "trusted": true
+        }
+      ],
+      "route": {
+        "listenAccess": true,
+        "tapAvailable": true,
+        "axTrusted": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          },
+          {
+            "flags": 1048576,
+            "y": 0,
+            "utc": "2026-11-20T11:27:38Z",
+            "window": 29373,
+            "x": 0,
+            "type": 10,
+            "keyCode": 8
+          },
+          {
+            "y": 0,
+            "window": 29373,
+            "type": 10,
+            "keyCode": 8,
+            "flags": 1048576,
+            "x": 0,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "x": 0,
+            "window": 29373,
+            "type": 11,
+            "y": 0,
+            "keyCode": 8,
+            "flags": 1048576,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "flags": 0,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:40Z",
+            "window": 29373,
+            "x": 697.9453125,
+            "type": 1,
+            "y": 718
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "type": 2,
+            "x": 697.9453125,
+            "keyCode": -1,
+            "window": 29373,
+            "flags": 0,
+            "y": 718
+          },
+          {
+            "type": 10,
+            "flags": 1048576,
+            "keyCode": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "window": 29373,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "type": 10,
+            "window": 29373,
+            "y": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "keyCode": 0,
+            "x": 0,
+            "flags": 1048576
+          },
+          {
+            "y": 0,
+            "flags": 1048576,
+            "keyCode": 0,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:41Z",
+            "type": 11,
+            "x": 0
+          }
+        ],
+        "postAccess": true,
+        "tapEnabled": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:38Z",
+            "marker": 810053,
+            "x": 166,
+            "type": 10,
+            "y": 879,
+            "sourcePID": 72178
+          },
+          {
+            "marker": 810053,
+            "sourcePID": 72178,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:38Z",
+            "type": 11
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125,
+            "y": 161,
+            "type": 1,
+            "marker": 810053,
+            "sourcePID": 72181
+          },
+          {
+            "sourcePID": 72181,
+            "y": 161,
+            "type": 2,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125
+          },
+          {
+            "utc": "2026-11-20T11:27:41Z",
+            "x": 166,
+            "sourcePID": 72214,
+            "type": 10,
+            "marker": 810053,
+            "y": 879
+          },
+          {
+            "x": 166,
+            "type": 11,
+            "sourcePID": 72214,
+            "y": 879,
+            "utc": "2026-11-20T11:27:41Z",
+            "marker": 810053
+          }
+        ]
+      }
+    },
+    {
+      "state": "selected-editor",
+      "focus": {
+        "selection": "## \u53ef\u4ee5\u590d\u5236\u7684\u4e2d\u6587 English\n\n[[second|\u9605\u8bfb\u53e6\u4e00\u4efd\u5f88\u957f\u7684\u4e2d\u6587\u8d44\u6599\u4e0e English]]\n\n- [ ] \u4fdd\u7559\u590d\u9009\u6846\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n\u9605\u8bfb\u957f\u6bb5\u843d Chinese English\u3002\n\n",
+        "id": "body",
+        "documentFocus": true,
+        "outline": "3px solid rgb(7, 95, 204)",
+        "tag": "TEXTAREA",
+        "visible": true
+      }
+    },
+    {
+      "click": "#mode",
+      "host": {
+        "main": true,
+        "active": true,
+        "hidden": false,
+        "visible": true,
+        "windowNumber": 29373,
+        "webHidden": false,
+        "occluded": false,
+        "key": true,
+        "firstResponderIsWeb": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72269,\"type\":1,\"utc\":\"2026-11-20T11:27:42Z\",\"x\":1171.8515625,\"y\":161},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72269,\"type\":2,\"utc\":\"2026-11-20T11:27:42Z\",\"x\":1171.8515625,\"y\":161}],\"recipientPID\":71705,\"senderPID\":72269,\"window\":29373}\n",
+      "events": [
+        {
+          "expected": true,
+          "trusted": true,
+          "type": "pointerdown",
+          "target": "mode"
+        },
+        {
+          "trusted": true,
+          "expected": true,
+          "target": "mode",
+          "type": "click"
+        }
+      ],
+      "route": {
+        "tapEnabled": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          },
+          {
+            "flags": 1048576,
+            "y": 0,
+            "utc": "2026-11-20T11:27:38Z",
+            "window": 29373,
+            "x": 0,
+            "type": 10,
+            "keyCode": 8
+          },
+          {
+            "y": 0,
+            "window": 29373,
+            "type": 10,
+            "keyCode": 8,
+            "flags": 1048576,
+            "x": 0,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "x": 0,
+            "window": 29373,
+            "type": 11,
+            "y": 0,
+            "keyCode": 8,
+            "flags": 1048576,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "flags": 0,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:40Z",
+            "window": 29373,
+            "x": 697.9453125,
+            "type": 1,
+            "y": 718
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "type": 2,
+            "x": 697.9453125,
+            "keyCode": -1,
+            "window": 29373,
+            "flags": 0,
+            "y": 718
+          },
+          {
+            "type": 10,
+            "flags": 1048576,
+            "keyCode": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "window": 29373,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "type": 10,
+            "window": 29373,
+            "y": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "keyCode": 0,
+            "x": 0,
+            "flags": 1048576
+          },
+          {
+            "y": 0,
+            "flags": 1048576,
+            "keyCode": 0,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:41Z",
+            "type": 11,
+            "x": 0
+          },
+          {
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:42Z",
+            "y": 718,
+            "type": 1,
+            "window": 29373,
+            "x": 1005.8515625,
+            "flags": 0
+          },
+          {
+            "keyCode": -1,
+            "x": 1005.8515625,
+            "y": 718,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:42Z"
+          }
+        ],
+        "postAccess": true,
+        "listenAccess": true,
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:38Z",
+            "marker": 810053,
+            "x": 166,
+            "type": 10,
+            "y": 879,
+            "sourcePID": 72178
+          },
+          {
+            "marker": 810053,
+            "sourcePID": 72178,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:38Z",
+            "type": 11
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125,
+            "y": 161,
+            "type": 1,
+            "marker": 810053,
+            "sourcePID": 72181
+          },
+          {
+            "sourcePID": 72181,
+            "y": 161,
+            "type": 2,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125
+          },
+          {
+            "utc": "2026-11-20T11:27:41Z",
+            "x": 166,
+            "sourcePID": 72214,
+            "type": 10,
+            "marker": 810053,
+            "y": 879
+          },
+          {
+            "x": 166,
+            "type": 11,
+            "sourcePID": 72214,
+            "y": 879,
+            "utc": "2026-11-20T11:27:41Z",
+            "marker": 810053
+          },
+          {
+            "utc": "2026-11-20T11:27:42Z",
+            "marker": 810053,
+            "type": 1,
+            "y": 161,
+            "x": 1171.8515625,
+            "sourcePID": 72269
+          },
+          {
+            "utc": "2026-11-20T11:27:42Z",
+            "x": 1171.8515625,
+            "marker": 810053,
+            "y": 161,
+            "sourcePID": 72269,
+            "type": 2
+          }
+        ],
+        "axTrusted": true,
+        "tapAvailable": true
+      }
+    },
+    {
+      "click": "#back",
+      "host": {
+        "hidden": false,
+        "visible": true,
+        "windowNumber": 29373,
+        "active": true,
+        "key": true,
+        "occluded": false,
+        "main": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":71093,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72416,\"type\":1,\"utc\":\"2026-11-20T11:27:43Z\",\"x\":723.71875,\"y\":161},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":29373,\"sourcePID\":72416,\"type\":2,\"utc\":\"2026-11-20T11:27:43Z\",\"x\":723.71875,\"y\":161}],\"recipientPID\":71705,\"senderPID\":72416,\"window\":29373}\n",
+      "events": [
+        {
+          "expected": true,
+          "trusted": true,
+          "type": "pointerdown",
+          "target": "back"
+        },
+        {
+          "trusted": true,
+          "expected": true,
+          "type": "click",
+          "target": "back"
+        }
+      ],
+      "route": {
+        "postAccess": true,
+        "listenAccess": true,
+        "tapAvailable": true,
+        "tapEnabled": true,
+        "cocoa": [
+          {
+            "y": 524,
+            "window": 29373,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 97.5,
+            "type": 1,
+            "keyCode": -1
+          },
+          {
+            "flags": 0,
+            "utc": "2026-11-20T11:27:28Z",
+            "y": 524,
+            "window": 29373,
+            "x": 97.5,
+            "type": 2,
+            "keyCode": -1
+          },
+          {
+            "keyCode": -1,
+            "flags": 0,
+            "x": 687.5,
+            "y": 370.609375,
+            "type": 1,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:29Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 370.609375,
+            "keyCode": -1,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "x": 687.5
+          },
+          {
+            "window": 29373,
+            "y": 433.015625,
+            "x": 663.3984375,
+            "utc": "2026-11-20T11:27:30Z",
+            "keyCode": -1,
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "keyCode": -1,
+            "type": 2,
+            "y": 433.015625,
+            "utc": "2026-11-20T11:27:30Z",
+            "flags": 0,
+            "x": 663.3984375,
+            "window": 29373
+          },
+          {
+            "x": 557.71875,
+            "window": 29373,
+            "y": 718,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:31Z",
+            "flags": 0,
+            "type": 1
+          },
+          {
+            "y": 718,
+            "window": 29373,
+            "keyCode": -1,
+            "type": 2,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:31Z"
+          },
+          {
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 0,
+            "flags": 0,
+            "type": 10,
+            "y": 0,
+            "window": 29373
+          },
+          {
+            "type": 11,
+            "window": 29373,
+            "flags": 0,
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "keyCode": 48,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:33Z",
+            "window": 29373,
+            "type": 10,
+            "flags": 131072
+          },
+          {
+            "type": 11,
+            "y": 0,
+            "flags": 131072,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:34Z",
+            "x": 0,
+            "keyCode": 48
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "keyCode": 36,
+            "window": 29373,
+            "type": 10,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "flags": 0,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "keyCode": 36,
+            "window": 29373,
+            "y": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "y": 0,
+            "x": 0,
+            "keyCode": 48,
+            "type": 10,
+            "window": 29373,
+            "flags": 0
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "type": 11,
+            "x": 0,
+            "keyCode": 48,
+            "flags": 0,
+            "y": 0
+          },
+          {
+            "keyCode": 48,
+            "flags": 131072,
+            "type": 10,
+            "window": 29373,
+            "x": 0,
+            "y": 0,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "type": 11,
+            "flags": 131072,
+            "keyCode": 48,
+            "utc": "2026-11-20T11:27:36Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "flags": 0,
+            "type": 10,
+            "keyCode": 36,
+            "utc": "2026-11-20T11:27:37Z",
+            "window": 29373,
+            "y": 0,
+            "x": 0
+          },
+          {
+            "y": 0,
+            "type": 11,
+            "window": 29373,
+            "keyCode": 36,
+            "x": 0,
+            "utc": "2026-11-20T11:27:37Z",
+            "flags": 0
+          },
+          {
+            "flags": 1048576,
+            "y": 0,
+            "utc": "2026-11-20T11:27:38Z",
+            "window": 29373,
+            "x": 0,
+            "type": 10,
+            "keyCode": 8
+          },
+          {
+            "y": 0,
+            "window": 29373,
+            "type": 10,
+            "keyCode": 8,
+            "flags": 1048576,
+            "x": 0,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "x": 0,
+            "window": 29373,
+            "type": 11,
+            "y": 0,
+            "keyCode": 8,
+            "flags": 1048576,
+            "utc": "2026-11-20T11:27:38Z"
+          },
+          {
+            "flags": 0,
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:40Z",
+            "window": 29373,
+            "x": 697.9453125,
+            "type": 1,
+            "y": 718
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "type": 2,
+            "x": 697.9453125,
+            "keyCode": -1,
+            "window": 29373,
+            "flags": 0,
+            "y": 718
+          },
+          {
+            "type": 10,
+            "flags": 1048576,
+            "keyCode": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "window": 29373,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "type": 10,
+            "window": 29373,
+            "y": 0,
+            "utc": "2026-11-20T11:27:41Z",
+            "keyCode": 0,
+            "x": 0,
+            "flags": 1048576
+          },
+          {
+            "y": 0,
+            "flags": 1048576,
+            "keyCode": 0,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:41Z",
+            "type": 11,
+            "x": 0
+          },
+          {
+            "keyCode": -1,
+            "utc": "2026-11-20T11:27:42Z",
+            "y": 718,
+            "type": 1,
+            "window": 29373,
+            "x": 1005.8515625,
+            "flags": 0
+          },
+          {
+            "keyCode": -1,
+            "x": 1005.8515625,
+            "y": 718,
+            "flags": 0,
+            "type": 2,
+            "window": 29373,
+            "utc": "2026-11-20T11:27:42Z"
+          },
+          {
+            "flags": 0,
+            "window": 29373,
+            "x": 557.71875,
+            "keyCode": -1,
+            "y": 718,
+            "type": 1,
+            "utc": "2026-11-20T11:27:43Z"
+          },
+          {
+            "window": 29373,
+            "type": 2,
+            "keyCode": -1,
+            "flags": 0,
+            "x": 557.71875,
+            "utc": "2026-11-20T11:27:43Z",
+            "y": 718
+          }
+        ],
+        "quartz": [
+          {
+            "utc": "2026-11-20T11:27:28Z",
+            "x": 263.5,
+            "type": 1,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "x": 263.5,
+            "utc": "2026-11-20T11:27:28Z",
+            "type": 2,
+            "y": 355,
+            "marker": 810053,
+            "sourcePID": 71774
+          },
+          {
+            "utc": "2026-11-20T11:27:29Z",
+            "type": 1,
+            "sourcePID": 71800,
+            "x": 853.5,
+            "y": 508.390625,
+            "marker": 810053
+          },
+          {
+            "sourcePID": 71800,
+            "type": 2,
+            "utc": "2026-11-20T11:27:29Z",
+            "y": 508.390625,
+            "marker": 810053,
+            "x": 853.5
+          },
+          {
+            "y": 445.984375,
+            "x": 829.3984375,
+            "type": 1,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "x": 829.3984375,
+            "y": 445.984375,
+            "type": 2,
+            "utc": "2026-11-20T11:27:30Z",
+            "marker": 810053,
+            "sourcePID": 71847
+          },
+          {
+            "utc": "2026-11-20T11:27:31Z",
+            "x": 723.71875,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 71872,
+            "type": 1
+          },
+          {
+            "marker": 810053,
+            "type": 2,
+            "x": 723.71875,
+            "sourcePID": 71872,
+            "utc": "2026-11-20T11:27:31Z",
+            "y": 161
+          },
+          {
+            "utc": "2026-11-20T11:27:33Z",
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72045
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "y": 879,
+            "type": 11,
+            "utc": "2026-11-20T11:27:33Z",
+            "sourcePID": 72045
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:33Z"
+          },
+          {
+            "type": 11,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72063,
+            "utc": "2026-11-20T11:27:34Z",
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:35Z",
+            "y": 879,
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "marker": 810053,
+            "sourcePID": 72083,
+            "utc": "2026-11-20T11:27:35Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "marker": 810053,
+            "type": 10,
+            "sourcePID": 72084,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "sourcePID": 72084,
+            "type": 11,
+            "marker": 810053,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:36Z"
+          },
+          {
+            "utc": "2026-11-20T11:27:36Z",
+            "type": 10,
+            "x": 166,
+            "y": 879,
+            "marker": 810053,
+            "sourcePID": 72110
+          },
+          {
+            "type": 11,
+            "utc": "2026-11-20T11:27:36Z",
+            "marker": 810053,
+            "y": 879,
+            "x": 166,
+            "sourcePID": 72110
+          },
+          {
+            "x": 166,
+            "utc": "2026-11-20T11:27:37Z",
+            "marker": 810053,
+            "sourcePID": 72137,
+            "y": 879,
+            "type": 10
+          },
+          {
+            "x": 166,
+            "sourcePID": 72137,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:37Z",
+            "type": 11,
+            "y": 879
+          },
+          {
+            "utc": "2026-11-20T11:27:38Z",
+            "marker": 810053,
+            "x": 166,
+            "type": 10,
+            "y": 879,
+            "sourcePID": 72178
+          },
+          {
+            "marker": 810053,
+            "sourcePID": 72178,
+            "x": 166,
+            "y": 879,
+            "utc": "2026-11-20T11:27:38Z",
+            "type": 11
+          },
+          {
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125,
+            "y": 161,
+            "type": 1,
+            "marker": 810053,
+            "sourcePID": 72181
+          },
+          {
+            "sourcePID": 72181,
+            "y": 161,
+            "type": 2,
+            "marker": 810053,
+            "utc": "2026-11-20T11:27:40Z",
+            "x": 863.9453125
+          },
+          {
+            "utc": "2026-11-20T11:27:41Z",
+            "x": 166,
+            "sourcePID": 72214,
+            "type": 10,
+            "marker": 810053,
+            "y": 879
+          },
+          {
+            "x": 166,
+            "type": 11,
+            "sourcePID": 72214,
+            "y": 879,
+            "utc": "2026-11-20T11:27:41Z",
+            "marker": 810053
+          },
+          {
+            "utc": "2026-11-20T11:27:42Z",
+            "marker": 810053,
+            "type": 1,
+            "y": 161,
+            "x": 1171.8515625,
+            "sourcePID": 72269
+          },
+          {
+            "utc": "2026-11-20T11:27:42Z",
+            "x": 1171.8515625,
+            "marker": 810053,
+            "y": 161,
+            "sourcePID": 72269,
+            "type": 2
+          },
+          {
+            "sourcePID": 72416,
+            "marker": 810053,
+            "y": 161,
+            "type": 1,
+            "x": 723.71875,
+            "utc": "2026-11-20T11:27:43Z"
+          },
+          {
+            "type": 2,
+            "y": 161,
+            "marker": 810053,
+            "sourcePID": 72416,
+            "x": 723.71875,
+            "utc": "2026-11-20T11:27:43Z"
+          }
+        ],
+        "axTrusted": true
+      }
+    },
+    {
+      "state": "library-return",
+      "focus": {
+        "selection": "",
+        "documentFocus": true,
+        "outline": "3px none rgb(32, 78, 159)",
+        "id": "",
+        "tag": "BUTTON",
+        "visible": false
+      }
+    }
+  ]
+}
