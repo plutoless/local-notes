@@ -1,0 +1,3237 @@
+{
+  "head": "83da35427a4d8b21fabf9cab9bb70bd03fff2be2",
+  "base": "6f2dec964856c14f98b5a805019dc03b0cc83b41",
+  "grant": "task_480faaf74043/ctx_ec2fee94de47 final-source83da354 bounded resources grant",
+  "events": [
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "hidden": false,
+        "occluded": false,
+        "main": true,
+        "recipientPID": 63606,
+        "key": true,
+        "frontmostPID": 63606,
+        "visible": true,
+        "webHidden": false,
+        "active": true,
+        "firstResponderClass": "WKWebView",
+        "firstResponderIsWeb": true,
+        "windowNumber": 3483
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "sourcePID": 63606,
+          "globalY": 879,
+          "globalX": 166,
+          "x": 0,
+          "y": 0,
+          "resolvedWindow": true,
+          "window": 3483,
+          "constructorPID": 63606
+        },
+        {
+          "sourcePID": 63606,
+          "globalY": 879,
+          "y": 0,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "x": 0,
+          "window": 3483
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63613,\"type\":10,\"window\":3483},{\"sourcePID\":63613,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63613,\"type\":10,\"utc\":\"2026-11-21T02:34:28Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63613,\"type\":11,\"utc\":\"2026-11-21T02:34:28Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:28Z\"},\"recipientPID\":63606,\"senderPID\":63613,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "recipientPID": 63606,
+        "visible": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "hidden": false,
+        "main": true,
+        "key": true,
+        "windowNumber": 3483,
+        "frontmostPID": 63606,
+        "occluded": false
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "y": 0,
+          "keyCode": 48,
+          "type": 10,
+          "flags": 131072,
+          "x": 0,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:28Z"
+        },
+        {
+          "utc": "2026-11-21T02:34:28Z",
+          "type": 11,
+          "x": 0,
+          "y": 0,
+          "keyCode": 48,
+          "window": 3483,
+          "flags": 131072
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "sourcePID": 63613,
+          "utc": "2026-11-21T02:34:28Z",
+          "y": 879,
+          "type": 10,
+          "x": 166
+        },
+        {
+          "sourcePID": 63613,
+          "x": 166,
+          "marker": 810053,
+          "type": 11,
+          "utc": "2026-11-21T02:34:28Z",
+          "y": 879
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "recipientPID": 63606,
+        "visible": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "hidden": false,
+        "main": true,
+        "key": true,
+        "windowNumber": 3483,
+        "frontmostPID": 63606,
+        "occluded": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "y": 0,
+          "globalY": 879,
+          "sourcePID": 63606,
+          "globalX": 166,
+          "x": 0,
+          "window": 3483,
+          "resolvedWindow": true,
+          "constructorPID": 63606
+        },
+        {
+          "sourcePID": 63606,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "globalY": 879,
+          "y": 0,
+          "x": 0,
+          "window": 3483
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63614,\"type\":10,\"window\":3483},{\"sourcePID\":63614,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63614,\"type\":10,\"utc\":\"2026-11-21T02:34:28Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63614,\"type\":11,\"utc\":\"2026-11-21T02:34:28Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:28Z\"},\"recipientPID\":63606,\"senderPID\":63614,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "key": true,
+        "recipientPID": 63606,
+        "active": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "visible": true,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "occluded": false,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView"
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "flags": 0,
+          "utc": "2026-11-21T02:34:28Z",
+          "keyCode": 48,
+          "y": 0,
+          "x": 0,
+          "type": 10,
+          "window": 3483
+        },
+        {
+          "type": 11,
+          "y": 0,
+          "utc": "2026-11-21T02:34:28Z",
+          "x": 0,
+          "window": 3483,
+          "flags": 0,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "type": 10,
+          "marker": 810053,
+          "sourcePID": 63614,
+          "utc": "2026-11-21T02:34:28Z",
+          "y": 879,
+          "x": 166
+        },
+        {
+          "x": 166,
+          "sourcePID": 63614,
+          "utc": "2026-11-21T02:34:28Z",
+          "type": 11,
+          "y": 879,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "key": true,
+        "recipientPID": 63606,
+        "active": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "visible": true,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "occluded": false,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView"
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "globalX": 166,
+          "window": 3483,
+          "x": 0,
+          "y": 0,
+          "resolvedWindow": true,
+          "constructorPID": 63606,
+          "sourcePID": 63606
+        },
+        {
+          "constructorPID": 63606,
+          "y": 0,
+          "sourcePID": 63606,
+          "x": 0,
+          "window": 3483,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "globalX": 166
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63615,\"type\":10,\"window\":3483},{\"sourcePID\":63615,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63615,\"type\":10,\"utc\":\"2026-11-21T02:34:29Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63615,\"type\":11,\"utc\":\"2026-11-21T02:34:29Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:29Z\"},\"recipientPID\":63606,\"senderPID\":63615,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "windowNumber": 3483,
+        "webHidden": false,
+        "key": true,
+        "visible": true,
+        "recipientPID": 63606,
+        "active": true,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606,
+        "main": true
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "y": 0,
+          "utc": "2026-11-21T02:34:29Z",
+          "x": 0,
+          "window": 3483,
+          "flags": 0,
+          "keyCode": 36,
+          "type": 10
+        },
+        {
+          "keyCode": 36,
+          "flags": 0,
+          "window": 3483,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-21T02:34:29Z",
+          "type": 11
+        }
+      ],
+      "quartz": [
+        {
+          "x": 166,
+          "marker": 810053,
+          "type": 10,
+          "utc": "2026-11-21T02:34:29Z",
+          "sourcePID": 63615,
+          "y": 879
+        },
+        {
+          "utc": "2026-11-21T02:34:29Z",
+          "x": 166,
+          "type": 11,
+          "y": 879,
+          "marker": 810053,
+          "sourcePID": 63615
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "hidden": false,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "windowNumber": 3483,
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "key": true,
+        "frontmostPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "y": 0,
+          "globalY": 879,
+          "x": 0,
+          "sourcePID": 63606,
+          "globalX": 166,
+          "constructorPID": 63606,
+          "window": 3483,
+          "resolvedWindow": true
+        },
+        {
+          "resolvedWindow": true,
+          "window": 3483,
+          "globalY": 879,
+          "sourcePID": 63606,
+          "y": 0,
+          "globalX": 166,
+          "x": 0,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63661,\"type\":10,\"window\":3483},{\"sourcePID\":63661,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63661,\"type\":10,\"utc\":\"2026-11-21T02:34:31Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63661,\"type\":11,\"utc\":\"2026-11-21T02:34:31Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:31Z\"},\"recipientPID\":63606,\"senderPID\":63661,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "active": true,
+        "frontmostPID": 63606,
+        "windowNumber": 3483,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "key": true,
+        "visible": true,
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "webHidden": false,
+        "main": true,
+        "hidden": false
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "window": 3483,
+          "type": 10,
+          "keyCode": 48,
+          "y": 0,
+          "flags": 131072,
+          "x": 0,
+          "utc": "2026-11-21T02:34:31Z"
+        },
+        {
+          "y": 0,
+          "flags": 131072,
+          "type": 11,
+          "x": 0,
+          "keyCode": 48,
+          "utc": "2026-11-21T02:34:31Z",
+          "window": 3483
+        }
+      ],
+      "quartz": [
+        {
+          "utc": "2026-11-21T02:34:31Z",
+          "y": 879,
+          "type": 10,
+          "sourcePID": 63661,
+          "x": 166,
+          "marker": 810053
+        },
+        {
+          "y": 879,
+          "x": 166,
+          "sourcePID": 63661,
+          "utc": "2026-11-21T02:34:31Z",
+          "type": 11,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "active": true,
+        "frontmostPID": 63606,
+        "windowNumber": 3483,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "key": true,
+        "visible": true,
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "webHidden": false,
+        "main": true,
+        "hidden": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "sourcePID": 63606,
+          "x": 0,
+          "globalX": 166,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "window": 3483,
+          "y": 0,
+          "constructorPID": 63606
+        },
+        {
+          "y": 0,
+          "sourcePID": 63606,
+          "globalY": 879,
+          "window": 3483,
+          "x": 0,
+          "constructorPID": 63606,
+          "resolvedWindow": true,
+          "globalX": 166
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63662,\"type\":10,\"window\":3483},{\"sourcePID\":63662,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63662,\"type\":10,\"utc\":\"2026-11-21T02:34:31Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63662,\"type\":11,\"utc\":\"2026-11-21T02:34:32Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:31Z\"},\"recipientPID\":63606,\"senderPID\":63662,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "main": true,
+        "key": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "target": "library-refresh",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "y": 0,
+          "flags": 0,
+          "type": 10,
+          "utc": "2026-11-21T02:34:31Z",
+          "window": 3483,
+          "x": 0,
+          "keyCode": 48
+        },
+        {
+          "flags": 0,
+          "type": 11,
+          "x": 0,
+          "keyCode": 48,
+          "window": 3483,
+          "y": 0,
+          "utc": "2026-11-21T02:34:32Z"
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:31Z",
+          "type": 10,
+          "y": 879,
+          "sourcePID": 63662,
+          "x": 166
+        },
+        {
+          "utc": "2026-11-21T02:34:32Z",
+          "sourcePID": 63662,
+          "x": 166,
+          "marker": 810053,
+          "type": 11,
+          "y": 879
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "main": true,
+        "key": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "constructorPID": 63606,
+          "y": 0,
+          "globalX": 166,
+          "globalY": 879,
+          "window": 3483,
+          "x": 0,
+          "resolvedWindow": true,
+          "sourcePID": 63606
+        },
+        {
+          "window": 3483,
+          "y": 0,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "resolvedWindow": true,
+          "x": 0,
+          "globalY": 879,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63663,\"type\":10,\"window\":3483},{\"sourcePID\":63663,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63663,\"type\":10,\"utc\":\"2026-11-21T02:34:32Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63663,\"type\":11,\"utc\":\"2026-11-21T02:34:32Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:32Z\"},\"recipientPID\":63606,\"senderPID\":63663,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "frontmostPID": 63606,
+        "key": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "recipientPID": 63606,
+        "hidden": false,
+        "main": true,
+        "visible": true,
+        "active": true,
+        "windowNumber": 3483
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "window": 3483,
+          "y": 0,
+          "flags": 0,
+          "keyCode": 36,
+          "x": 0,
+          "utc": "2026-11-21T02:34:32Z"
+        },
+        {
+          "type": 11,
+          "utc": "2026-11-21T02:34:32Z",
+          "y": 0,
+          "flags": 0,
+          "keyCode": 36,
+          "window": 3483,
+          "x": 0
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "type": 10,
+          "sourcePID": 63663,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:32Z",
+          "x": 166
+        },
+        {
+          "y": 879,
+          "utc": "2026-11-21T02:34:32Z",
+          "sourcePID": 63663,
+          "type": 11,
+          "x": 166,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "frontmostPID": 63606,
+        "key": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "recipientPID": 63606,
+        "hidden": false,
+        "main": true,
+        "visible": true,
+        "active": true,
+        "windowNumber": 3483
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "window": 3483,
+          "y": 0,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "globalY": 879,
+          "x": 0,
+          "constructorPID": 63606,
+          "sourcePID": 63606
+        },
+        {
+          "globalX": 166,
+          "sourcePID": 63606,
+          "globalY": 879,
+          "x": 0,
+          "window": 3483,
+          "constructorPID": 63606,
+          "resolvedWindow": true,
+          "y": 0
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63669,\"type\":10,\"window\":3483},{\"sourcePID\":63669,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63669,\"type\":10,\"utc\":\"2026-11-21T02:34:33Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63669,\"type\":11,\"utc\":\"2026-11-21T02:34:33Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:33Z\"},\"recipientPID\":63606,\"senderPID\":63669,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "visible": true,
+        "windowNumber": 3483,
+        "active": true,
+        "occluded": false,
+        "firstResponderClass": "WKWebView",
+        "key": true,
+        "firstResponderIsWeb": true
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": 48,
+          "x": 0,
+          "window": 3483,
+          "y": 0,
+          "utc": "2026-11-21T02:34:33Z",
+          "type": 10,
+          "flags": 131072
+        },
+        {
+          "utc": "2026-11-21T02:34:33Z",
+          "window": 3483,
+          "type": 11,
+          "y": 0,
+          "keyCode": 48,
+          "flags": 131072,
+          "x": 0
+        }
+      ],
+      "quartz": [
+        {
+          "utc": "2026-11-21T02:34:33Z",
+          "y": 879,
+          "marker": 810053,
+          "sourcePID": 63669,
+          "type": 10,
+          "x": 166
+        },
+        {
+          "marker": 810053,
+          "y": 879,
+          "sourcePID": 63669,
+          "utc": "2026-11-21T02:34:33Z",
+          "type": 11,
+          "x": 166
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "visible": true,
+        "windowNumber": 3483,
+        "active": true,
+        "occluded": false,
+        "firstResponderClass": "WKWebView",
+        "key": true,
+        "firstResponderIsWeb": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "sourcePID": 63606,
+          "constructorPID": 63606,
+          "window": 3483,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "window": 3483,
+          "sourcePID": 63606,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "y": 0,
+          "globalX": 166,
+          "x": 0,
+          "resolvedWindow": true
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63674,\"type\":10,\"window\":3483},{\"sourcePID\":63674,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63674,\"type\":10,\"utc\":\"2026-11-21T02:34:34Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63674,\"type\":11,\"utc\":\"2026-11-21T02:34:34Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:34Z\"},\"recipientPID\":63606,\"senderPID\":63674,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "hidden": false,
+        "key": true,
+        "occluded": false,
+        "active": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "visible": true,
+        "frontmostPID": 63606,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "windowNumber": 3483
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": 48,
+          "window": 3483,
+          "type": 10,
+          "flags": 0,
+          "y": 0,
+          "x": 0,
+          "utc": "2026-11-21T02:34:34Z"
+        },
+        {
+          "utc": "2026-11-21T02:34:34Z",
+          "type": 11,
+          "keyCode": 48,
+          "flags": 0,
+          "window": 3483,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "type": 10,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:34Z",
+          "sourcePID": 63674,
+          "x": 166
+        },
+        {
+          "y": 879,
+          "marker": 810053,
+          "type": 11,
+          "x": 166,
+          "sourcePID": 63674,
+          "utc": "2026-11-21T02:34:34Z"
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "hidden": false,
+        "key": true,
+        "occluded": false,
+        "active": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "visible": true,
+        "frontmostPID": 63606,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "windowNumber": 3483
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "resolvedWindow": true,
+          "globalY": 879,
+          "globalX": 166,
+          "constructorPID": 63606,
+          "y": 0,
+          "sourcePID": 63606,
+          "x": 0,
+          "window": 3483
+        },
+        {
+          "x": 0,
+          "constructorPID": 63606,
+          "y": 0,
+          "window": 3483,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "sourcePID": 63606,
+          "globalY": 879
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63675,\"type\":10,\"window\":3483},{\"sourcePID\":63675,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63675,\"type\":10,\"utc\":\"2026-11-21T02:34:35Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63675,\"type\":11,\"utc\":\"2026-11-21T02:34:35Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:35Z\"},\"recipientPID\":63606,\"senderPID\":63675,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "main": true,
+        "frontmostPID": 63606,
+        "windowNumber": 3483,
+        "firstResponderIsWeb": true,
+        "active": true,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "key": true,
+        "webHidden": false,
+        "recipientPID": 63606,
+        "visible": true
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "x": 0,
+          "flags": 0,
+          "y": 0,
+          "utc": "2026-11-21T02:34:35Z",
+          "keyCode": 36,
+          "type": 10,
+          "window": 3483
+        },
+        {
+          "x": 0,
+          "keyCode": 36,
+          "y": 0,
+          "flags": 0,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:35Z",
+          "type": 11
+        }
+      ],
+      "quartz": [
+        {
+          "utc": "2026-11-21T02:34:35Z",
+          "type": 10,
+          "y": 879,
+          "marker": 810053,
+          "x": 166,
+          "sourcePID": 63675
+        },
+        {
+          "marker": 810053,
+          "sourcePID": 63675,
+          "x": 166,
+          "utc": "2026-11-21T02:34:35Z",
+          "y": 879,
+          "type": 11
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "key": true,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "main": true,
+        "active": true,
+        "visible": true,
+        "occluded": false,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "y": 0,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "constructorPID": 63606,
+          "window": 3483,
+          "sourcePID": 63606,
+          "x": 0
+        },
+        {
+          "window": 3483,
+          "resolvedWindow": true,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "x": 0,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "y": 0
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63676,\"type\":10,\"window\":3483},{\"sourcePID\":63676,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63676,\"type\":10,\"utc\":\"2026-11-21T02:34:36Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63676,\"type\":11,\"utc\":\"2026-11-21T02:34:36Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:36Z\"},\"recipientPID\":63606,\"senderPID\":63676,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "recipientPID": 63606,
+        "main": true,
+        "active": true,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "key": true,
+        "visible": true,
+        "windowNumber": 3483,
+        "webHidden": false,
+        "firstResponderIsWeb": true
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:36Z",
+          "flags": 131072,
+          "x": 0,
+          "keyCode": 48,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-21T02:34:36Z",
+          "keyCode": 48,
+          "flags": 131072,
+          "window": 3483,
+          "type": 11
+        }
+      ],
+      "quartz": [
+        {
+          "sourcePID": 63676,
+          "utc": "2026-11-21T02:34:36Z",
+          "x": 166,
+          "marker": 810053,
+          "type": 10,
+          "y": 879
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "marker": 810053,
+          "y": 879,
+          "sourcePID": 63676,
+          "utc": "2026-11-21T02:34:36Z"
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "recipientPID": 63606,
+        "main": true,
+        "active": true,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "key": true,
+        "visible": true,
+        "windowNumber": 3483,
+        "webHidden": false,
+        "firstResponderIsWeb": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "constructorPID": 63606,
+          "x": 0,
+          "window": 3483,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "y": 0
+        },
+        {
+          "window": 3483,
+          "resolvedWindow": true,
+          "x": 0,
+          "sourcePID": 63606,
+          "y": 0,
+          "globalX": 166,
+          "globalY": 879,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63677,\"type\":10,\"window\":3483},{\"sourcePID\":63677,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63677,\"type\":10,\"utc\":\"2026-11-21T02:34:37Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63677,\"type\":11,\"utc\":\"2026-11-21T02:34:37Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:37Z\"},\"recipientPID\":63606,\"senderPID\":63677,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "active": true,
+        "webHidden": false,
+        "occluded": false,
+        "visible": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "firstResponderIsWeb": true,
+        "key": true,
+        "main": true,
+        "windowNumber": 3483,
+        "recipientPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "utc": "2026-11-21T02:34:37Z",
+          "flags": 0,
+          "type": 10,
+          "window": 3483,
+          "x": 0,
+          "y": 0,
+          "keyCode": 48
+        },
+        {
+          "x": 0,
+          "window": 3483,
+          "keyCode": 48,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:37Z",
+          "y": 0,
+          "type": 11
+        }
+      ],
+      "quartz": [
+        {
+          "type": 10,
+          "y": 879,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 63677,
+          "utc": "2026-11-21T02:34:37Z"
+        },
+        {
+          "sourcePID": 63677,
+          "utc": "2026-11-21T02:34:37Z",
+          "type": 11,
+          "x": 166,
+          "y": 879,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "active": true,
+        "webHidden": false,
+        "occluded": false,
+        "visible": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "firstResponderIsWeb": true,
+        "key": true,
+        "main": true,
+        "windowNumber": 3483,
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "sourcePID": 63606,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "y": 0,
+          "resolvedWindow": true,
+          "window": 3483,
+          "x": 0,
+          "globalX": 166
+        },
+        {
+          "window": 3483,
+          "y": 0,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "sourcePID": 63606,
+          "x": 0,
+          "globalY": 879,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63678,\"type\":10,\"window\":3483},{\"sourcePID\":63678,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63678,\"type\":10,\"utc\":\"2026-11-21T02:34:38Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63678,\"type\":11,\"utc\":\"2026-11-21T02:34:38Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:38Z\"},\"recipientPID\":63606,\"senderPID\":63678,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "visible": true,
+        "windowNumber": 3483,
+        "main": true,
+        "frontmostPID": 63606,
+        "recipientPID": 63606,
+        "key": true,
+        "occluded": false,
+        "active": true
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:38Z",
+          "y": 0,
+          "x": 0,
+          "keyCode": 36,
+          "flags": 0
+        },
+        {
+          "keyCode": 36,
+          "utc": "2026-11-21T02:34:38Z",
+          "type": 11,
+          "flags": 0,
+          "y": 0,
+          "window": 3483,
+          "x": 0
+        }
+      ],
+      "quartz": [
+        {
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 63678,
+          "type": 10,
+          "y": 879,
+          "utc": "2026-11-21T02:34:38Z"
+        },
+        {
+          "x": 166,
+          "sourcePID": 63678,
+          "y": 879,
+          "type": 11,
+          "utc": "2026-11-21T02:34:38Z",
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "key": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "windowNumber": 3483,
+        "visible": true,
+        "webHidden": false,
+        "active": true,
+        "frontmostPID": 63606,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "hidden": false,
+        "occluded": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "resolvedWindow": true,
+          "sourcePID": 63606,
+          "constructorPID": 63606,
+          "globalY": 879,
+          "x": 0,
+          "window": 3483,
+          "y": 0,
+          "globalX": 166
+        },
+        {
+          "y": 0,
+          "sourcePID": 63606,
+          "globalY": 879,
+          "globalX": 166,
+          "window": 3483,
+          "constructorPID": 63606,
+          "resolvedWindow": true,
+          "x": 0
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63681,\"type\":10,\"window\":3483},{\"sourcePID\":63681,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63681,\"type\":10,\"utc\":\"2026-11-21T02:34:39Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63681,\"type\":11,\"utc\":\"2026-11-21T02:34:39Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:39Z\"},\"recipientPID\":63606,\"senderPID\":63681,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "visible": true,
+        "windowNumber": 3483,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "key": true,
+        "firstResponderClass": "WKWebView",
+        "hidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "active": true,
+        "occluded": false,
+        "frontmostPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "y": 0,
+          "keyCode": 48,
+          "type": 10,
+          "flags": 131072,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:39Z",
+          "x": 0
+        },
+        {
+          "type": 11,
+          "utc": "2026-11-21T02:34:39Z",
+          "x": 0,
+          "window": 3483,
+          "y": 0,
+          "keyCode": 48,
+          "flags": 131072
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:39Z",
+          "sourcePID": 63681,
+          "x": 166,
+          "type": 10,
+          "y": 879
+        },
+        {
+          "utc": "2026-11-21T02:34:39Z",
+          "y": 879,
+          "sourcePID": 63681,
+          "marker": 810053,
+          "x": 166,
+          "type": 11
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "visible": true,
+        "windowNumber": 3483,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "key": true,
+        "firstResponderClass": "WKWebView",
+        "hidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "active": true,
+        "occluded": false,
+        "frontmostPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "y": 0,
+          "window": 3483,
+          "sourcePID": 63606,
+          "x": 0,
+          "globalX": 166,
+          "constructorPID": 63606,
+          "globalY": 879,
+          "resolvedWindow": true
+        },
+        {
+          "x": 0,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "globalY": 879,
+          "window": 3483,
+          "y": 0,
+          "resolvedWindow": true,
+          "sourcePID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63682,\"type\":10,\"window\":3483},{\"sourcePID\":63682,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63682,\"type\":10,\"utc\":\"2026-11-21T02:34:39Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63682,\"type\":11,\"utc\":\"2026-11-21T02:34:39Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:39Z\"},\"recipientPID\":63606,\"senderPID\":63682,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "key": true,
+        "occluded": false,
+        "webHidden": false,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "main": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "visible": true,
+        "windowNumber": 3483
+      },
+      "trustedDOM": [
+        {
+          "target": "library-refresh",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "x": 0,
+          "utc": "2026-11-21T02:34:39Z",
+          "window": 3483,
+          "y": 0,
+          "flags": 0,
+          "keyCode": 48
+        },
+        {
+          "y": 0,
+          "window": 3483,
+          "x": 0,
+          "keyCode": 48,
+          "utc": "2026-11-21T02:34:39Z",
+          "type": 11,
+          "flags": 0
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:39Z",
+          "x": 166,
+          "sourcePID": 63682,
+          "type": 10
+        },
+        {
+          "type": 11,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 63682,
+          "y": 879,
+          "utc": "2026-11-21T02:34:39Z"
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "key": true,
+        "occluded": false,
+        "webHidden": false,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "main": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "visible": true,
+        "windowNumber": 3483
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "y": 0,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "window": 3483,
+          "x": 0,
+          "sourcePID": 63606,
+          "constructorPID": 63606
+        },
+        {
+          "globalY": 879,
+          "window": 3483,
+          "sourcePID": 63606,
+          "y": 0,
+          "x": 0,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63728,\"type\":10,\"window\":3483},{\"sourcePID\":63728,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63728,\"type\":10,\"utc\":\"2026-11-21T02:34:40Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63728,\"type\":11,\"utc\":\"2026-11-21T02:34:40Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:40Z\"},\"recipientPID\":63606,\"senderPID\":63728,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "hidden": false,
+        "key": true,
+        "windowNumber": 3483,
+        "firstResponderIsWeb": true,
+        "occluded": false,
+        "main": true,
+        "active": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "recipientPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": 36,
+          "utc": "2026-11-21T02:34:40Z",
+          "window": 3483,
+          "type": 10,
+          "y": 0,
+          "x": 0,
+          "flags": 0
+        },
+        {
+          "y": 0,
+          "flags": 0,
+          "keyCode": 36,
+          "window": 3483,
+          "type": 11,
+          "x": 0,
+          "utc": "2026-11-21T02:34:40Z"
+        }
+      ],
+      "quartz": [
+        {
+          "x": 166,
+          "utc": "2026-11-21T02:34:40Z",
+          "sourcePID": 63728,
+          "marker": 810053,
+          "y": 879,
+          "type": 10
+        },
+        {
+          "y": 879,
+          "sourcePID": 63728,
+          "type": 11,
+          "utc": "2026-11-21T02:34:40Z",
+          "x": 166,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "hidden": false,
+        "key": true,
+        "windowNumber": 3483,
+        "firstResponderIsWeb": true,
+        "occluded": false,
+        "main": true,
+        "active": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "resolvedWindow": true,
+          "constructorPID": 63606,
+          "y": 0,
+          "x": 0,
+          "window": 3483,
+          "sourcePID": 63606,
+          "globalX": 166
+        },
+        {
+          "globalY": 879,
+          "constructorPID": 63606,
+          "x": 0,
+          "y": 0,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "window": 3483,
+          "resolvedWindow": true
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63730,\"type\":10,\"window\":3483},{\"sourcePID\":63730,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63730,\"type\":10,\"utc\":\"2026-11-21T02:34:41Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63730,\"type\":11,\"utc\":\"2026-11-21T02:34:41Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:41Z\"},\"recipientPID\":63606,\"senderPID\":63730,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "frontmostPID": 63606,
+        "occluded": false,
+        "main": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "visible": true,
+        "webHidden": false,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "windowNumber": 3483,
+        "key": true
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "flags": 131072,
+          "x": 0,
+          "y": 0,
+          "utc": "2026-11-21T02:34:41Z",
+          "window": 3483,
+          "type": 10,
+          "keyCode": 48
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "utc": "2026-11-21T02:34:41Z",
+          "type": 11,
+          "window": 3483,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "type": 10,
+          "marker": 810053,
+          "x": 166,
+          "sourcePID": 63730,
+          "utc": "2026-11-21T02:34:41Z"
+        },
+        {
+          "utc": "2026-11-21T02:34:41Z",
+          "type": 11,
+          "y": 879,
+          "marker": 810053,
+          "x": 166,
+          "sourcePID": 63730
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "frontmostPID": 63606,
+        "occluded": false,
+        "main": true,
+        "active": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "visible": true,
+        "webHidden": false,
+        "hidden": false,
+        "firstResponderClass": "WKWebView",
+        "windowNumber": 3483,
+        "key": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "constructorPID": 63606,
+          "sourcePID": 63606,
+          "window": 3483,
+          "x": 0,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "y": 0
+        },
+        {
+          "constructorPID": 63606,
+          "resolvedWindow": true,
+          "sourcePID": 63606,
+          "x": 0,
+          "y": 0,
+          "globalX": 166,
+          "globalY": 879,
+          "window": 3483
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63731,\"type\":10,\"window\":3483},{\"sourcePID\":63731,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63731,\"type\":10,\"utc\":\"2026-11-21T02:34:42Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63731,\"type\":11,\"utc\":\"2026-11-21T02:34:42Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:42Z\"},\"recipientPID\":63606,\"senderPID\":63731,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "main": true,
+        "windowNumber": 3483,
+        "hidden": false,
+        "webHidden": false,
+        "frontmostPID": 63606,
+        "recipientPID": 63606,
+        "firstResponderIsWeb": true,
+        "key": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "occluded": false
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:42Z",
+          "keyCode": 48,
+          "window": 3483
+        },
+        {
+          "utc": "2026-11-21T02:34:42Z",
+          "window": 3483,
+          "x": 0,
+          "flags": 0,
+          "y": 0,
+          "type": 11,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "type": 10,
+          "sourcePID": 63731,
+          "utc": "2026-11-21T02:34:42Z",
+          "x": 166,
+          "marker": 810053
+        },
+        {
+          "utc": "2026-11-21T02:34:42Z",
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 63731,
+          "y": 879,
+          "x": 166
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "main": true,
+        "windowNumber": 3483,
+        "hidden": false,
+        "webHidden": false,
+        "frontmostPID": 63606,
+        "recipientPID": 63606,
+        "firstResponderIsWeb": true,
+        "key": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "occluded": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "resolvedWindow": true,
+          "x": 0,
+          "window": 3483,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "y": 0
+        },
+        {
+          "window": 3483,
+          "y": 0,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "x": 0,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "sourcePID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63732,\"type\":10,\"window\":3483},{\"sourcePID\":63732,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63732,\"type\":10,\"utc\":\"2026-11-21T02:34:43Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63732,\"type\":11,\"utc\":\"2026-11-21T02:34:43Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:43Z\"},\"recipientPID\":63606,\"senderPID\":63732,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "active": true,
+        "occluded": false,
+        "windowNumber": 3483,
+        "hidden": false,
+        "key": true,
+        "webHidden": false,
+        "frontmostPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "main": true,
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "visible": true
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "x": 0,
+          "window": 3483,
+          "keyCode": 36,
+          "utc": "2026-11-21T02:34:43Z",
+          "y": 0,
+          "flags": 0
+        },
+        {
+          "window": 3483,
+          "type": 11,
+          "y": 0,
+          "keyCode": 36,
+          "flags": 0,
+          "x": 0,
+          "utc": "2026-11-21T02:34:43Z"
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "y": 879,
+          "utc": "2026-11-21T02:34:43Z",
+          "type": 10,
+          "sourcePID": 63732,
+          "x": 166
+        },
+        {
+          "sourcePID": 63732,
+          "type": 11,
+          "y": 879,
+          "x": 166,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:43Z"
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "key": true,
+        "webHidden": false,
+        "active": true,
+        "frontmostPID": 63606,
+        "occluded": false,
+        "visible": true,
+        "hidden": false,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "firstResponderClass": "WKWebView",
+        "windowNumber": 3483,
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalX": 166,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "window": 3483,
+          "resolvedWindow": true,
+          "y": 0,
+          "x": 0,
+          "sourcePID": 63606
+        },
+        {
+          "x": 0,
+          "y": 0,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "window": 3483,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63739,\"type\":10,\"window\":3483},{\"sourcePID\":63739,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63739,\"type\":10,\"utc\":\"2026-11-21T02:34:44Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63739,\"type\":11,\"utc\":\"2026-11-21T02:34:44Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:44Z\"},\"recipientPID\":63606,\"senderPID\":63739,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "active": true,
+        "key": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "webHidden": false,
+        "occluded": false,
+        "windowNumber": 3483,
+        "visible": true,
+        "frontmostPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "x": 0,
+          "y": 0,
+          "keyCode": 48,
+          "type": 10,
+          "window": 3483,
+          "flags": 131072,
+          "utc": "2026-11-21T02:34:44Z"
+        },
+        {
+          "type": 11,
+          "keyCode": 48,
+          "window": 3483,
+          "flags": 131072,
+          "y": 0,
+          "x": 0,
+          "utc": "2026-11-21T02:34:44Z"
+        }
+      ],
+      "quartz": [
+        {
+          "utc": "2026-11-21T02:34:44Z",
+          "marker": 810053,
+          "type": 10,
+          "y": 879,
+          "x": 166,
+          "sourcePID": 63739
+        },
+        {
+          "sourcePID": 63739,
+          "marker": 810053,
+          "y": 879,
+          "type": 11,
+          "utc": "2026-11-21T02:34:44Z",
+          "x": 166
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "active": true,
+        "key": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "webHidden": false,
+        "occluded": false,
+        "windowNumber": 3483,
+        "visible": true,
+        "frontmostPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "globalY": 879,
+          "globalX": 166,
+          "x": 0,
+          "resolvedWindow": true,
+          "window": 3483,
+          "y": 0,
+          "constructorPID": 63606,
+          "sourcePID": 63606
+        },
+        {
+          "resolvedWindow": true,
+          "constructorPID": 63606,
+          "sourcePID": 63606,
+          "globalX": 166,
+          "globalY": 879,
+          "window": 3483,
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63740,\"type\":10,\"window\":3483},{\"sourcePID\":63740,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63740,\"type\":10,\"utc\":\"2026-11-21T02:34:45Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63740,\"type\":11,\"utc\":\"2026-11-21T02:34:45Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:45Z\"},\"recipientPID\":63606,\"senderPID\":63740,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "key": true,
+        "visible": true,
+        "frontmostPID": 63606,
+        "occluded": false,
+        "windowNumber": 3483,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "webHidden": false
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "flags": 0,
+          "keyCode": 48,
+          "utc": "2026-11-21T02:34:45Z",
+          "type": 10,
+          "window": 3483,
+          "x": 0,
+          "y": 0
+        },
+        {
+          "utc": "2026-11-21T02:34:45Z",
+          "x": 0,
+          "window": 3483,
+          "y": 0,
+          "keyCode": 48,
+          "type": 11,
+          "flags": 0
+        }
+      ],
+      "quartz": [
+        {
+          "type": 10,
+          "x": 166,
+          "sourcePID": 63740,
+          "utc": "2026-11-21T02:34:45Z",
+          "y": 879,
+          "marker": 810053
+        },
+        {
+          "y": 879,
+          "type": 11,
+          "x": 166,
+          "marker": 810053,
+          "sourcePID": 63740,
+          "utc": "2026-11-21T02:34:45Z"
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "firstResponderIsWeb": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "key": true,
+        "visible": true,
+        "frontmostPID": 63606,
+        "occluded": false,
+        "windowNumber": 3483,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "active": true,
+        "webHidden": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "x": 0,
+          "sourcePID": 63606,
+          "y": 0,
+          "window": 3483,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "globalY": 879
+        },
+        {
+          "y": 0,
+          "x": 0,
+          "constructorPID": 63606,
+          "resolvedWindow": true,
+          "globalY": 879,
+          "window": 3483,
+          "globalX": 166,
+          "sourcePID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63741,\"type\":10,\"window\":3483},{\"sourcePID\":63741,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63741,\"type\":10,\"utc\":\"2026-11-21T02:34:45Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63741,\"type\":11,\"utc\":\"2026-11-21T02:34:45Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:45Z\"},\"recipientPID\":63606,\"senderPID\":63741,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "webHidden": false,
+        "firstResponderClass": "WKWebView",
+        "hidden": false,
+        "key": true,
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "main": true,
+        "active": true,
+        "frontmostPID": 63606,
+        "visible": true,
+        "recipientPID": 63606,
+        "windowNumber": 3483
+      },
+      "trustedDOM": [
+        {
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "y": 0,
+          "x": 0,
+          "flags": 0,
+          "keyCode": 36,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:45Z"
+        },
+        {
+          "x": 0,
+          "keyCode": 36,
+          "y": 0,
+          "type": 11,
+          "window": 3483,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:45Z"
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:45Z",
+          "sourcePID": 63741,
+          "type": 10,
+          "x": 166
+        },
+        {
+          "sourcePID": 63741,
+          "utc": "2026-11-21T02:34:45Z",
+          "x": 166,
+          "type": 11,
+          "y": 879,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "firstResponderClass": "WKWebView",
+        "visible": true,
+        "occluded": false,
+        "main": true,
+        "recipientPID": 63606,
+        "key": true,
+        "firstResponderIsWeb": true,
+        "webHidden": false,
+        "frontmostPID": 63606,
+        "windowNumber": 3483,
+        "hidden": false,
+        "active": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "resolvedWindow": true,
+          "x": 0,
+          "globalX": 166,
+          "window": 3483,
+          "constructorPID": 63606,
+          "globalY": 879,
+          "y": 0,
+          "sourcePID": 63606
+        },
+        {
+          "x": 0,
+          "globalY": 879,
+          "globalX": 166,
+          "window": 3483,
+          "sourcePID": 63606,
+          "resolvedWindow": true,
+          "constructorPID": 63606,
+          "y": 0
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63742,\"type\":10,\"window\":3483},{\"sourcePID\":63742,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63742,\"type\":10,\"utc\":\"2026-11-21T02:34:46Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63742,\"type\":11,\"utc\":\"2026-11-21T02:34:46Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:46Z\"},\"recipientPID\":63606,\"senderPID\":63742,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "frontmostPID": 63606,
+        "firstResponderIsWeb": true,
+        "active": true,
+        "hidden": false,
+        "visible": true,
+        "key": true,
+        "occluded": false,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "firstResponderClass": "WKWebView",
+        "main": true,
+        "recipientPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "x": 0,
+          "type": 10,
+          "flags": 131072,
+          "utc": "2026-11-21T02:34:46Z",
+          "window": 3483,
+          "keyCode": 48,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "type": 11,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:46Z",
+          "flags": 131072,
+          "y": 0,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "sourcePID": 63742,
+          "y": 879,
+          "x": 166,
+          "type": 10,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:46Z"
+        },
+        {
+          "y": 879,
+          "type": 11,
+          "marker": 810053,
+          "sourcePID": 63742,
+          "utc": "2026-11-21T02:34:46Z",
+          "x": 166
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "frontmostPID": 63606,
+        "firstResponderIsWeb": true,
+        "active": true,
+        "hidden": false,
+        "visible": true,
+        "key": true,
+        "occluded": false,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "firstResponderClass": "WKWebView",
+        "main": true,
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "x": 0,
+          "globalY": 879,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "y": 0,
+          "window": 3483,
+          "resolvedWindow": true
+        },
+        {
+          "window": 3483,
+          "globalX": 166,
+          "sourcePID": 63606,
+          "y": 0,
+          "resolvedWindow": true,
+          "constructorPID": 63606,
+          "x": 0,
+          "globalY": 879
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63743,\"type\":10,\"window\":3483},{\"sourcePID\":63743,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63743,\"type\":10,\"utc\":\"2026-11-21T02:34:47Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63743,\"type\":11,\"utc\":\"2026-11-21T02:34:47Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:47Z\"},\"recipientPID\":63606,\"senderPID\":63743,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "windowNumber": 3483,
+        "key": true,
+        "occluded": false,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "active": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "visible": true
+      },
+      "trustedDOM": [
+        {
+          "target": "library-refresh",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "window": 3483,
+          "type": 10,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:47Z",
+          "y": 0,
+          "x": 0,
+          "keyCode": 48
+        },
+        {
+          "x": 0,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:47Z",
+          "type": 11,
+          "y": 0,
+          "window": 3483,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "utc": "2026-11-21T02:34:47Z",
+          "type": 10,
+          "y": 879,
+          "marker": 810053,
+          "x": 166,
+          "sourcePID": 63743
+        },
+        {
+          "sourcePID": 63743,
+          "type": 11,
+          "y": 879,
+          "utc": "2026-11-21T02:34:47Z",
+          "x": 166,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "windowNumber": 3483,
+        "key": true,
+        "occluded": false,
+        "main": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "active": true,
+        "webHidden": false,
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606,
+        "hidden": false,
+        "visible": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "x": 0,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "y": 0,
+          "constructorPID": 63606,
+          "window": 3483,
+          "sourcePID": 63606,
+          "globalX": 166
+        },
+        {
+          "window": 3483,
+          "resolvedWindow": true,
+          "x": 0,
+          "y": 0,
+          "constructorPID": 63606,
+          "globalX": 166,
+          "globalY": 879,
+          "sourcePID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63744,\"type\":10,\"window\":3483},{\"sourcePID\":63744,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63744,\"type\":10,\"utc\":\"2026-11-21T02:34:48Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63744,\"type\":11,\"utc\":\"2026-11-21T02:34:48Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:48Z\"},\"recipientPID\":63606,\"senderPID\":63744,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "windowNumber": 3483,
+        "key": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "active": true,
+        "recipientPID": 63606
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "window": 3483,
+          "x": 0,
+          "y": 0,
+          "type": 10,
+          "flags": 0,
+          "keyCode": 36,
+          "utc": "2026-11-21T02:34:48Z"
+        },
+        {
+          "keyCode": 36,
+          "x": 0,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:48Z",
+          "y": 0,
+          "window": 3483,
+          "type": 11
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:48Z",
+          "x": 166,
+          "sourcePID": 63744,
+          "type": 10,
+          "y": 879
+        },
+        {
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:48Z",
+          "x": 166,
+          "y": 879,
+          "sourcePID": 63744,
+          "type": 11
+        }
+      ]
+    },
+    {
+      "key": "Shift+Tab",
+      "host": {
+        "windowNumber": 3483,
+        "key": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "hidden": false,
+        "frontmostPID": 63606,
+        "firstResponderClass": "WKWebView",
+        "occluded": false,
+        "visible": true,
+        "webHidden": false,
+        "active": true,
+        "recipientPID": 63606
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "sourcePID": 63606,
+          "constructorPID": 63606,
+          "y": 0,
+          "window": 3483,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "x": 0,
+          "globalY": 879
+        },
+        {
+          "window": 3483,
+          "sourcePID": 63606,
+          "globalY": 879,
+          "x": 0,
+          "globalX": 166,
+          "y": 0,
+          "resolvedWindow": true,
+          "constructorPID": 63606
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63746,\"type\":10,\"window\":3483},{\"sourcePID\":63746,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63746,\"type\":10,\"utc\":\"2026-11-21T02:34:49Z\",\"x\":166,\"y\":879},{\"flags\":131072,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63746,\"type\":11,\"utc\":\"2026-11-21T02:34:49Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:49Z\"},\"recipientPID\":63606,\"senderPID\":63746,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "visible": true,
+        "frontmostPID": 63606,
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "windowNumber": 3483,
+        "active": true,
+        "firstResponderClass": "WKWebView",
+        "webHidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "key": true
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": true,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "type": 10,
+          "utc": "2026-11-21T02:34:49Z",
+          "window": 3483,
+          "keyCode": 48,
+          "x": 0,
+          "flags": 131072,
+          "y": 0
+        },
+        {
+          "flags": 131072,
+          "y": 0,
+          "window": 3483,
+          "utc": "2026-11-21T02:34:49Z",
+          "x": 0,
+          "type": 11,
+          "keyCode": 48
+        }
+      ],
+      "quartz": [
+        {
+          "type": 10,
+          "marker": 810053,
+          "sourcePID": 63746,
+          "y": 879,
+          "utc": "2026-11-21T02:34:49Z",
+          "x": 166
+        },
+        {
+          "utc": "2026-11-21T02:34:49Z",
+          "x": 166,
+          "sourcePID": 63746,
+          "type": 11,
+          "y": 879,
+          "marker": 810053
+        }
+      ]
+    },
+    {
+      "key": "Tab",
+      "host": {
+        "visible": true,
+        "frontmostPID": 63606,
+        "occluded": false,
+        "firstResponderIsWeb": true,
+        "windowNumber": 3483,
+        "active": true,
+        "firstResponderClass": "WKWebView",
+        "webHidden": false,
+        "main": true,
+        "recipientPID": 63606,
+        "hidden": false,
+        "key": true
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "x": 0,
+          "constructorPID": 63606,
+          "sourcePID": 63606,
+          "globalX": 166,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "y": 0,
+          "window": 3483
+        },
+        {
+          "globalX": 166,
+          "constructorPID": 63606,
+          "x": 0,
+          "y": 0,
+          "sourcePID": 63606,
+          "window": 3483,
+          "globalY": 879,
+          "resolvedWindow": true
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63792,\"type\":10,\"window\":3483},{\"sourcePID\":63792,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63792,\"type\":10,\"utc\":\"2026-11-21T02:34:50Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":48,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63792,\"type\":11,\"utc\":\"2026-11-21T02:34:50Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:50Z\"},\"recipientPID\":63606,\"senderPID\":63792,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "firstResponderIsWeb": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "key": true,
+        "main": true,
+        "hidden": false,
+        "active": true,
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "recipientPID": 63606,
+        "occluded": false
+      },
+      "trustedDOM": [
+        {
+          "target": "Current/499.md",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Tab",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": 48,
+          "type": 10,
+          "x": 0,
+          "y": 0,
+          "window": 3483,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:50Z"
+        },
+        {
+          "x": 0,
+          "utc": "2026-11-21T02:34:50Z",
+          "flags": 0,
+          "type": 11,
+          "keyCode": 48,
+          "y": 0,
+          "window": 3483
+        }
+      ],
+      "quartz": [
+        {
+          "y": 879,
+          "sourcePID": 63792,
+          "type": 10,
+          "x": 166,
+          "marker": 810053,
+          "utc": "2026-11-21T02:34:50Z"
+        },
+        {
+          "sourcePID": 63792,
+          "type": 11,
+          "utc": "2026-11-21T02:34:50Z",
+          "marker": 810053,
+          "x": 166,
+          "y": 879
+        }
+      ]
+    },
+    {
+      "key": "Return",
+      "host": {
+        "firstResponderIsWeb": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "key": true,
+        "main": true,
+        "hidden": false,
+        "active": true,
+        "frontmostPID": 63606,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "recipientPID": 63606,
+        "occluded": false
+      },
+      "recipientPID": 63606,
+      "window": 3483,
+      "stage": "host-preflight",
+      "constructor": [
+        {
+          "sourcePID": 63606,
+          "globalX": 166,
+          "globalY": 879,
+          "resolvedWindow": true,
+          "y": 0,
+          "window": 3483,
+          "x": 0,
+          "constructorPID": 63606
+        },
+        {
+          "sourcePID": 63606,
+          "globalX": 166,
+          "resolvedWindow": true,
+          "y": 0,
+          "x": 0,
+          "window": 3483,
+          "constructorPID": 63606,
+          "globalY": 879
+        }
+      ],
+      "senderExit": 0,
+      "sender": "{\"axTrusted\":true,\"decoded\":[{\"sourcePID\":63793,\"type\":10,\"window\":3483},{\"sourcePID\":63793,\"type\":11,\"window\":3483}],\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":63563,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63793,\"type\":10,\"utc\":\"2026-11-21T02:34:51Z\",\"x\":166,\"y\":879},{\"flags\":0,\"keyCode\":36,\"marker\":810053,\"nativeWindow\":3483,\"sourcePID\":63793,\"type\":11,\"utc\":\"2026-11-21T02:34:51Z\",\"x\":166,\"y\":879}],\"recipient\":{\"checks\":{\"arguments\":true,\"frontmostRecipient\":true,\"postAccess\":true,\"recipientActive\":true,\"windowOwned\":true,\"windowQueryAvailable\":true},\"expectedWindow\":3483,\"failedChecks\":[],\"frontmostPID\":63606,\"ownedWindowRouting\":[{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3484,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3488,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3487,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3486,\"kCGWindowOwnerPID\":63606},{\"kCGWindowLayer\":0,\"kCGWindowNumber\":3485,\"kCGWindowOwnerPID\":63606},{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"recipientExists\":true,\"recipientHidden\":false,\"recipientPID\":63606,\"recipientTerminated\":false,\"requestedWindowRouting\":[{\"kCGWindowIsOnscreen\":true,\"kCGWindowLayer\":0,\"kCGWindowNumber\":3483,\"kCGWindowOwnerPID\":63606}],\"utc\":\"2026-11-21T02:34:51Z\"},\"recipientPID\":63606,\"senderPID\":63793,\"window\":3483}\n",
+      "senderStderr": "",
+      "hostAfter": {
+        "firstResponderIsWeb": true,
+        "frontmostPID": 63606,
+        "main": true,
+        "visible": true,
+        "firstResponderClass": "WKWebView",
+        "recipientPID": 63606,
+        "active": true,
+        "webHidden": false,
+        "windowNumber": 3483,
+        "hidden": false,
+        "key": true,
+        "occluded": false
+      },
+      "trustedDOM": [
+        {
+          "target": "back",
+          "expectedTarget": true,
+          "alt": false,
+          "ctrl": false,
+          "meta": false,
+          "key": "Enter",
+          "shift": false,
+          "trusted": true
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": 36,
+          "type": 10,
+          "flags": 0,
+          "utc": "2026-11-21T02:34:51Z",
+          "y": 0,
+          "window": 3483,
+          "x": 0
+        },
+        {
+          "flags": 0,
+          "y": 0,
+          "type": 11,
+          "x": 0,
+          "keyCode": 36,
+          "utc": "2026-11-21T02:34:51Z",
+          "window": 3483
+        }
+      ],
+      "quartz": [
+        {
+          "x": 166,
+          "y": 879,
+          "marker": 810053,
+          "sourcePID": 63793,
+          "utc": "2026-11-21T02:34:51Z",
+          "type": 10
+        },
+        {
+          "marker": 810053,
+          "sourcePID": 63793,
+          "x": 166,
+          "y": 879,
+          "utc": "2026-11-21T02:34:51Z",
+          "type": 11
+        }
+      ]
+    }
+  ],
+  "states": [],
+  "passed": true,
+  "bindings": {
+    "application": "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/build/issue65-keyboard/Library65Keyboard.app",
+    "bundleIdentifier": "dev.localnotes.validation.issue65keyboard",
+    "executable": "5090bdc80d98204cd03caa289cca52c4390ca08771a78c201e071095cebb07a2",
+    "generatedHost": "3fcf0cf205af6effc65dc7d6b6265a9d8bada8bf00fb9d2780587a433b667d88",
+    "probe": "d0a67c8ef69cdf297acf22e881909b73a34b0af86909d1ead594c2a04e2c4ab4",
+    "senderSource": "f1f16655d050dc88f3543db810537a9bb9ff53a190eb4d84562e4ceeb89f2335",
+    "senderExecutable": "776ce024b6d015c619e2b6f55e84eb72497b09b8429d29643425d725004d38eb",
+    "environmentSource": "5ca628cc09396ad7313fab61ab475dc602dfa4e925cb0887528a025a2dfcd1e4",
+    "environmentExecutable": "2418270ee855f6d6cea4f4591da050230d62ebd5539a15313209283a87d01474",
+    "nativeSources": {
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/ReferenceIndex.swift": "82a0bbf2a2b5e06d743df9d5e12d1998b6a7a23ff99cd35a95ba5ddc2df0eca7",
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/AIService.swift": "698f9a3a86d34f360721b4f2ca873587c17173a11e04b2c060d335cf0b1d63b0",
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/ActionIndex.swift": "18a9ad5f5f272dabb6f7c5ff0d24fac1734ee15b7f9247912cb1f732697f0d4c",
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/ReferenceScan.swift": "ff2e3cd4ae22d07b28f20c790d94bff98b495797ceef63b5cb42ef44220523b1",
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/ActionStorage.swift": "d76d070f1d60102c6ef68e46bd67896d7e4530108ae65ab48a701405028f1909",
+      "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/mac/main.swift": "125f158bed95e5ae8af0888954135c1b133f4e5add695f5a6b525c5c63979f3a"
+    },
+    "packagedAssets": {
+      "library-screen.js": "2cda69540cde8b60fd70ca21462c65b3cab18c678f4dd4a7a670c79ff2970f1a",
+      "organization.js": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "index.html": "7660766792c64dbc6f0876d103490c171fb795e02a65e53ff77ce1d419a7b083",
+      "core.js": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "actions.js": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "initiative-screen.js": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+      "asset-manifest.json": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "library.js": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "focus-screen.js": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+      "global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "search-screen.js": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+      "style.css": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+      "organize-screen.js": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+      "action-screen.js": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+      "presentation.js": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1",
+      "sync-screen.js": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf",
+      "app.js": "6f7856a780054ce3dae3f78b68f999d85b5d66c671be14d13fe2fc5a93d511f2",
+      "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "assets/react-host.js": "91527f84865725535e495c7da1ed7328f322cf0031db9c0426eef59e8fe6402f",
+      "assets/react-host.css": "057fd7ebe16e1ec370a20ab4607e20e6de7c7c06d70e19d355cc58c144dd8568"
+    },
+    "web": {
+      "library-screen.js": {
+        "source": "2cda69540cde8b60fd70ca21462c65b3cab18c678f4dd4a7a670c79ff2970f1a",
+        "package": "2cda69540cde8b60fd70ca21462c65b3cab18c678f4dd4a7a670c79ff2970f1a",
+        "productionPackage": "2cda69540cde8b60fd70ca21462c65b3cab18c678f4dd4a7a670c79ff2970f1a"
+      },
+      "organization.js": {
+        "source": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+        "package": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+        "productionPackage": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8"
+      },
+      "index.html": {
+        "source": "7660766792c64dbc6f0876d103490c171fb795e02a65e53ff77ce1d419a7b083",
+        "package": "7660766792c64dbc6f0876d103490c171fb795e02a65e53ff77ce1d419a7b083",
+        "productionPackage": "7660766792c64dbc6f0876d103490c171fb795e02a65e53ff77ce1d419a7b083"
+      },
+      "core.js": {
+        "source": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+        "package": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+        "productionPackage": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509"
+      },
+      "bridge.js": {
+        "source": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+        "package": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+        "productionPackage": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c"
+      },
+      "actions.js": {
+        "source": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+        "package": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+        "productionPackage": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019"
+      },
+      "reading-history.js": {
+        "source": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+        "package": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+        "productionPackage": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643"
+      },
+      "initiative-screen.js": {
+        "source": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+        "package": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+        "productionPackage": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e"
+      },
+      "library.js": {
+        "source": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+        "package": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+        "productionPackage": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee"
+      },
+      "focus-screen.js": {
+        "source": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+        "package": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+        "productionPackage": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21"
+      },
+      "global-search.js": {
+        "source": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+        "package": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+        "productionPackage": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862"
+      },
+      "task-drafts.js": {
+        "source": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+        "package": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+        "productionPackage": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3"
+      },
+      "revision-graph.js": {
+        "source": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+        "package": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+        "productionPackage": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032"
+      },
+      "search-screen.js": {
+        "source": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+        "package": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+        "productionPackage": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056"
+      },
+      "style.css": {
+        "source": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+        "package": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+        "productionPackage": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858"
+      },
+      "organize-screen.js": {
+        "source": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+        "package": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+        "productionPackage": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574"
+      },
+      "action-screen.js": {
+        "source": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+        "package": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+        "productionPackage": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91"
+      },
+      "presentation.js": {
+        "source": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1",
+        "package": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1",
+        "productionPackage": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1"
+      },
+      "sync-screen.js": {
+        "source": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf",
+        "package": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf",
+        "productionPackage": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf"
+      },
+      "app.js": {
+        "source": "6f7856a780054ce3dae3f78b68f999d85b5d66c671be14d13fe2fc5a93d511f2",
+        "package": "6f7856a780054ce3dae3f78b68f999d85b5d66c671be14d13fe2fc5a93d511f2",
+        "productionPackage": "6f7856a780054ce3dae3f78b68f999d85b5d66c671be14d13fe2fc5a93d511f2"
+      },
+      "initiatives.js": {
+        "source": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+        "package": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+        "productionPackage": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+      }
+    }
+  },
+  "inputSourceBefore": "com.tencent.inputmethod.wetype.pinyin",
+  "environmentSaved": {
+    "inputSource": "com.tencent.inputmethod.wetype.pinyin",
+    "privateSnapshot": true,
+    "saved": true
+  },
+  "pid": 63606,
+  "window": 3483,
+  "baseline": {
+    "startupMs": 1254.7070420041564,
+    "startupBodyReads": 0,
+    "runs": [
+      {
+        "iteration": 0,
+        "navigationMs": 3029.0175409973017,
+        "indexBodyReads": 500,
+        "searchMs": 107.37650000373833,
+        "openMs": 2583.645582999452,
+        "totalBodyReads": 501,
+        "hostRssKiB": 95488
+      },
+      {
+        "iteration": 1,
+        "navigationMs": 2545.345291000558,
+        "indexBodyReads": 0,
+        "searchMs": 108.61287499574246,
+        "openMs": 2445.115000002261,
+        "totalBodyReads": 502,
+        "hostRssKiB": 95584
+      },
+      {
+        "iteration": 2,
+        "navigationMs": 2574.2319999990286,
+        "indexBodyReads": 0,
+        "searchMs": 108.99541700200643,
+        "openMs": 2510.39658299851,
+        "totalBodyReads": 503,
+        "hostRssKiB": 95680
+      }
+    ],
+    "assetsBytes": 665382,
+    "corpusNotes": 500
+  },
+  "resources": {
+    "offlineBootstrap": true,
+    "nestedModuleExports": [
+      "Button",
+      "libraryPage",
+      "libraryView",
+      "mountLibraryCatalogue",
+      "noteReply",
+      "readerView"
+    ],
+    "styles": [
+      {
+        "rules": 348,
+        "href": "notes://local/style.css"
+      },
+      {
+        "rules": 37,
+        "href": "notes://local/assets/react-host.css"
+      }
+    ],
+    "resourceURLs": [],
+    "denials": [
+      {
+        "url": "notes://other/assets/react-host.js",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://user@local/assets/react-host.js",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local:80/assets/react-host.js",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/assets/react-host.js?forbidden=1",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/assets/%2e%2e/Current/499.md",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/assets/%2Freact-host.js",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/Current/499.md",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/LocalNotesData/workspace.json",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/asset-manifest.json",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      },
+      {
+        "url": "notes://local/not-shipped.js",
+        "error": "TypeError: Importing a module script failed.",
+        "loaded": false
+      }
+    ],
+    "activeDraftRetainedAfterDenial": true,
+    "discardAfterDenial": true,
+    "nativeTransport": "production WKScriptMessageHandler and real Markdown/SQLite adapters; DOM-driven resource/draft actions; no physical input"
+  },
+  "input": "guarded external process-targeted keyboard navigation; search input DOM-driven; no physical/IME/clipboard replay",
+  "timingScope": "monotonic Python wall-clock including polling and guarded sender launch; one fresh process plus three navigation/search/open runs; host RSS excludes WebContent process",
+  "cleanup": {
+    "pid": 63606,
+    "exit": -15,
+    "waitCompleted": true,
+    "pidAbsent": true,
+    "remainingOwnedWindows": [],
+    "independentExactExecutableProcesses": []
+  },
+  "sourcePreservedAfterAttempt": true,
+  "noFormalRevisionsAfterAttempt": true,
+  "environmentRestoration": {
+    "clipboardChangedDuringRun": false,
+    "clipboardRestored": true,
+    "inputChangedDuringRun": false,
+    "inputRestored": true,
+    "inputSource": "com.tencent.inputmethod.wetype.pinyin"
+  },
+  "inputSourceAfter": "com.tencent.inputmethod.wetype.pinyin",
+  "inputAndClipboardRetained": true,
+  "privateSnapshotDeleted": true
+}

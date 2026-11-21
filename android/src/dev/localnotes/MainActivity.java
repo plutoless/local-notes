@@ -19,7 +19,27 @@ public class MainActivity extends Activity {
   try{File sample=new File(getFilesDir(),"Sample/Notes");if(!sample.exists()){sample.mkdirs();for(String filename:new String[]{"welcome.md","weekend.md"})try(InputStream in=getAssets().open("sample/Notes/"+filename);OutputStream out=new FileOutputStream(new File(sample,filename))){byte[] b=new byte[8192];int n;while((n=in.read(b))!=-1)out.write(b,0,n);}}}catch(Exception e){throw new RuntimeException(e);}
   web=new WebView(this);web.setBackgroundColor(android.graphics.Color.WHITE);setContentView(web);WebSettings settings=web.getSettings();settings.setJavaScriptEnabled(true);settings.setDomStorageEnabled(true);settings.setAllowFileAccess(false);settings.setAllowContentAccess(false);
   web.addJavascriptInterface(new Bridge(),"NotesNative");web.setWebChromeClient(new WebChromeClient(){@Override public boolean onJsPrompt(WebView v,String u,String m,String d,JsPromptResult r){EditTextDialog(m,d,r);return true;}});
-  web.setWebViewClient(new WebViewClient(){@Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){return !r.getUrl().toString().startsWith("https://notes.local/");}@Override public WebResourceResponse shouldInterceptRequest(WebView v,WebResourceRequest r){String name=r.getUrl().getLastPathSegment();if(!r.getUrl().getHost().equals("notes.local")||!Arrays.asList("index.html","style.css","app.js", "global-search.js", "search-screen.js", "presentation.js", "task-drafts.js","core.js","bridge.js","actions.js","action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "reading-history.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js").contains(name))return new WebResourceResponse("text/plain","utf-8",new ByteArrayInputStream(new byte[0]));try{return new WebResourceResponse(name.endsWith(".js")?"text/javascript":name.endsWith(".css")?"text/css":"text/html","utf-8",getAssets().open("web/"+name));}catch(Exception e){return null;}}});web.loadUrl("https://notes.local/index.html");
+  final JSONObject assetManifest;
+  try (InputStream manifest = getAssets().open("web/asset-manifest.json")) {
+   ByteArrayOutputStream bytes = new ByteArrayOutputStream(); byte[] buffer = new byte[8192]; int count;
+   while ((count=manifest.read(buffer))!=-1) bytes.write(buffer,0,count);
+   assetManifest = new JSONObject(bytes.toString("UTF-8"));
+  } catch (Exception failure) { throw new IllegalStateException("Packaged asset manifest unavailable", failure); }
+  web.setWebViewClient(new WebViewClient(){
+   boolean local(Uri url) { return "https".equals(url.getScheme()) && "notes.local".equals(url.getHost()) && url.getUserInfo()==null && url.getPort()==-1 && url.getQuery()==null && url.getFragment()==null; }
+   @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){return !local(r.getUrl());}
+   @Override public WebResourceResponse shouldInterceptRequest(WebView v,WebResourceRequest r){
+    Uri url=r.getUrl(); String encoded=url.getEncodedPath();
+    WebResourceResponse denied = new WebResourceResponse("text/plain","utf-8",403,"Forbidden",Collections.emptyMap(),new ByteArrayInputStream(new byte[0]));
+    if(!local(url) || encoded==null || encoded.contains("%") || !encoded.startsWith("/")) return denied;
+    String path=encoded.substring(1);
+    for(String part:path.split("/",-1)) if(!part.matches("[A-Za-z0-9_-][A-Za-z0-9_.-]*") || part.equals("..")) return denied;
+    String mime=assetManifest.optString(path, "");
+    if(!Arrays.asList("text/javascript","text/css","text/html","font/woff","font/woff2","image/png","image/svg+xml").contains(mime)) return denied;
+    try{return new WebResourceResponse(mime,mime.startsWith("text/")?"utf-8":null,getAssets().open("web/"+path));}
+    catch(Exception failure){return denied;}
+   }
+  });web.loadUrl("https://notes.local/index.html");
  }
  void EditTextDialog(String message,String value,JsPromptResult result){android.widget.EditText input=new android.widget.EditText(this);input.setText(value);new AlertDialog.Builder(this).setMessage(message).setView(input).setPositiveButton("确定",(d,w)->result.confirm(input.getText().toString())).setNegativeButton("取消",(d,w)->result.cancel()).setOnCancelListener(d->result.cancel()).show();}
  void reply(JSONObject req,JSONObject result){runOnUiThread(()->web.evaluateJavascript("window.nativeReply("+req.optInt("id")+","+result.toString()+")",null));}

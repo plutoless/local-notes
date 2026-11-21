@@ -1,24 +1,28 @@
-import {pageAvailability, requestTaskLeave, feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
+import {libraryView, libraryPage} from './assets/react-host.js';
+import {requestTaskLeave, feedback, directoryLabel, button, drawer, field, errorFeedback} from './presentation.js';
 import {Library, archivedPath} from './library.js';
 import {native} from './bridge.js';
-import {escapeHTML as esc} from './core.js';
 const $ = selector => document.querySelector(selector);
 export class LibraryScreen {
   constructor(openNote, notice, isActive, favoritePaths = () => undefined) {
     this.favoritePaths = favoritePaths; this.openNote = openNote; this.notice = notice; this.isActive = isActive;
     this.library = new Library(native, () => { if (isActive()) this.render().catch(error => notice(error.message)); });
     this.order = 'current'; this.archives = 'include'; this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
-    $('#library-refresh').onclick = async () => { $('#library-refresh').disabled = true; $('#library-progress').textContent = '正在更新笔记列表…'; try { await this.library.sync(); this.failed = false; await this.render(); } catch (error) { this.failed = true; await this.render(); notice(error.message); } finally { $('#library-refresh').disabled = false; } };
-    $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
-    for (const control of ['order', 'archives']) $('#library-' + control).onchange = () => {
-      this[control] = $('#library-' + control).value; this.offset = 0; this.indexChanged = false; this.render();
-    };
     this.setupTopicDrawer();
-    $('#library-create-topic').onclick = event => this.editTopic(null, null, event.currentTarget);
-    $('#library-rename-topic').onclick = event => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic, null, event.currentTarget); };
-    $('#library-back').onclick = () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); };
-    $('#library-next').onclick = () => { this.offset += 50; this.render(); };
-    $('#library-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.render(); };
+    this.ui = libraryView($('#items'), $('#library-tools'), {
+      filter: (key, value) => { this[key] = value; this.offset = 0; this.indexChanged = false; this.render(); },
+      refresh: async () => {
+        this.refreshing = true; this.progress = '正在更新笔记列表…'; this.controls();
+        try { await this.library.sync(); this.failed = false; await this.render(); }
+        catch (error) { this.failed = true; await this.render(); notice(error.message); }
+        finally { this.refreshing = false; this.controls(); }
+      },
+      createTopic: opener => this.editTopic(null, null, opener),
+      renameTopic: opener => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic, null, opener); },
+      parent: () => { this.directory = this.directory.includes('/') ? this.directory.slice(0, this.directory.lastIndexOf('/')) : this.directory === '' ? '*' : ''; this.offset = 0; this.render(); },
+      page: direction => { this.offset = Math.max(0, this.offset + direction * 50); this.render(); }
+    });
+    this.controls();
   }
   setupTopicDrawer() {
     this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
@@ -100,7 +104,7 @@ export class LibraryScreen {
     this.failed = false;
     $('.app').classList.add('library-view');
     $('#search').value = this.search;
-    $('#library-progress').textContent = '正在打开笔记库…';
+    this.progress = '正在打开笔记库…'; this.controls();
     await this.library.open();
     if (this.topic && this.topic !== 'uncategorized' && !this.library.records.some(topic => topic.entityId === this.topic)) { this.topic = ''; this.offset = 0; }
     $('#library-tools').hidden = false; $('#filters').hidden = true;
@@ -115,52 +119,42 @@ export class LibraryScreen {
       this.browseRevision = this.library.revision;
     }
     let result;
-    try { result = await this.library.query({order: this.order, archives: this.archives, search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()}); }
+    try { result = libraryPage(await this.library.query({order: this.order, archives: this.archives, search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()})); }
     catch (error) {
       if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
       this.failed = true;
-      feedback($('#library-progress'), '笔记列表暂不可用，请刷新重试或重新选择目录。', error.message);
+      this.progress = '笔记列表暂不可用，请刷新重试或重新选择目录。'; this.detail = error.message; this.controls();
       return;
     }
     if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
     directoryLabel(this.library.root || '本地笔记');
-    $('#library-order').value = this.order; $('#library-archives').value = this.archives;
     const coverage = this.library.running || this.failed || this.library.warnings?.length ? '索引未完成' : '已索引';
-    $('#note-count').textContent = `${coverage}：${result.total ?? this.offset + result.notes.length}${result.total === undefined && result.hasMore ? '+' : ''}；本页 ${result.notes.length ? this.offset + 1 : 0}–${this.offset + result.notes.length}`;
-    $('#library-page').textContent = $('#note-count').textContent;
-    if (this.library.warnings?.length) feedback($('#library-progress'), '部分笔记暂不可用，请检查目录后刷新。', this.library.warnings.join('\n')); else $('#library-progress').textContent = this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表，当前结果可能不完整…' : this.indexChanged ? '索引已更新，已返回第一页。' : '';
-    const select = $('#library-topic'); select.replaceChildren();
-    for (const [value, name] of [['', '全部主题'], ['uncategorized', '未分类'], ...(this.library.records || []).map(t => [t.entityId, t.description])]) { const option = document.createElement('option'); option.value = value; option.textContent = name; select.append(option); }
-    select.value = this.topic;
-    $('#library-rename-topic').disabled = !this.library.records?.some(t => t.entityId === this.topic);
-    $('#library-location').textContent = this.directory === '*' ? '全部目录' : this.directory || '/';
-    $('#library-back').disabled = this.directory === '*';
+    this.count = `${coverage}：${result.total ?? this.offset + result.notes.length}${result.total === undefined && result.hasMore ? '+' : ''}；本页 ${result.notes.length ? this.offset + 1 : 0}–${this.offset + result.notes.length}`;
+    $('#note-count').textContent = this.count;
+    this.detail = this.library.warnings?.join('\n') || '';
+    this.progress = this.detail ? '部分笔记暂不可用，请检查目录后刷新。' : this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表，当前结果可能不完整…' : this.indexChanged ? '索引已更新，已返回第一页。' : '';
+    this.previous = this.offset > 0 && !this.library.running; this.next = result.hasMore && !this.library.running;
+    this.controls();
     const focusedPath = document.activeElement.closest('#items [data-path]')?.dataset.path;
     const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
-    const list = $('#items'); list.replaceChildren();
-    if (!this.search && this.offset === 0) {
-      const inventory = (this.library.directories || []).map(directory => ({path: directory + '/_'}));
-      if (sequence !== this.sequence || !this.isActive()) return;
-      const prefix = this.directory === '*' || this.directory === '' ? '' : this.directory + '/';
-      const directories = new Set(inventory.filter(n => n.path.startsWith(prefix)).map(n => n.path.slice(prefix.length)).filter(p => p.includes('/')).map(p => prefix + p.split('/')[0]));
-      if (this.directory === '*') { const root = button('浏览目录', () => { this.directory = ''; return this.render(); }); list.append(root); }
-      else for (const directory of [...directories].sort()) { const entry = button('目录：' + directory, () => { this.directory = directory; this.offset = 0; return this.render(); }); list.append(entry); }
-    }
-    if (!result.notes.length && !this.library.running) {
-      const empty = document.createElement('p'); empty.className = 'no-items'; empty.setAttribute('role', 'status');
-      empty.textContent = this.failed || this.library.warnings?.length ? '目录暂不可用，请检查目录后刷新。' : this.search ? '没有找到匹配的笔记。请换个关键词或清除搜索。' : this.archives !== 'include' ? '当前归档范围内没有符合条件的笔记。可切换「归档范围」或清除筛选。' : this.topic === 'uncategorized' ? '没有未分类的笔记。可切换到「全部主题」。' : this.topic ? '这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。' : this.directory !== '*' ? '此目录下没有符合条件的笔记。可返回上一级目录或清除筛选。' : this.favoritePaths() ? '还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。' : '笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。';
-      list.append(empty);
-    }
-    for (const note of result.notes) {
-      const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; this.browseListScroll = $('#items').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
-      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt || '暂无正文摘要')}</p><small>${archivedPath(note.path) ? '归档 · ' : ''}${esc(note.path)}</small><small>${Number.isFinite(note.modified) ? '文件修改：' + new Date(note.modified * 1000).toLocaleDateString() : '文件修改时间未知'}</small>`;
-      list.append(card);
-    }
+    const list = $('#items');
+    const prefix = this.directory === '*' || this.directory === '' ? '' : this.directory + '/';
+    const directories = !this.search && this.offset === 0 && this.directory !== '*' ? [...new Set((this.library.directories || []).filter(path => (path + '/_').startsWith(prefix) && (path + '/_').slice(prefix.length).includes('/')).map(path => prefix + path.slice(prefix.length).split('/')[0]))].sort() : [];
+    this.ui.rows({notes: result.notes.map(note => ({...note, archived: archivedPath(note.path)})), directories, root: !this.search && this.offset === 0 && this.directory === '*', selectedPath: this.selectedPath,
+      empty: !result.notes.length && !this.library.running ? (this.failed || this.library.warnings?.length ? '目录暂不可用，请检查目录后刷新。' : this.search ? '没有找到匹配的笔记。请换个关键词或清除搜索。' : this.archives !== 'include' ? '当前归档范围内没有符合条件的笔记。可切换「归档范围」或清除筛选。' : this.topic === 'uncategorized' ? '没有未分类的笔记。可切换到「全部主题」。' : this.topic ? '这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。' : this.directory !== '*' ? '此目录下没有符合条件的笔记。可返回上一级目录或清除筛选。' : this.favoritePaths() ? '还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。' : '笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。') : '',
+      browse: directory => { this.directory = directory; this.offset = 0; return this.render(); },
+      open: path => { this.browseScroll = $('.collection').scrollTop; this.browseListScroll = $('#items').scrollTop; return this.openNote(path); }
+    });
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
     $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
-    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0 && !this.library.running, result.hasMore && !this.library.running);
+
   }
+  controls() {
+    this.ui.controls({order: this.order, archives: this.archives, topic: this.topic, topics: this.library.records || [], directory: this.directory,
+      progress: this.progress || '', detail: this.detail, count: this.count || '', refreshing: Boolean(this.refreshing), previous: Boolean(this.previous), next: Boolean(this.next)});
+  }
+  release() { this.sequence++; this.ui.release(); }
   captureContext() {
     return {order: this.order, archives: this.archives, offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
   }

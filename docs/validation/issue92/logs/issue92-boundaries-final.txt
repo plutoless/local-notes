@@ -1,0 +1,13 @@
+✔ Library boundary retains optional totals and source text while rejecting invalid or unsafe replies (0.899417ms)
+✔ note reply rejects malformed bridge content and preserves empty and exact Unicode source (0.162708ms)
+✔ real Mac Assets resource contract serves nested MIME and fails closed on private or ambiguous URLs (944.495375ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (10.338209ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.48375ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 988.874125

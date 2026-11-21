@@ -2,7 +2,7 @@
 
 This is the authoritative presentation contract for issue #31 and downstream page work. The approved structure is direction 09's contextual workspace with direction 01's restrained native light finish, delivered by #26/#30. This contract consolidates that baseline; it does not authorize redesigning #32–#37.
 
-Open the [rendered catalogue](catalogue.html) through a repository-root HTTP server (`python3 -m http.server 8091`, then `/docs/design/catalogue.html`). It imports the real `web/style.css` and `web/presentation.js`; it is not a product route and must never enter primary navigation. English headings are maintainer guidance; Chinese controls demonstrate application copy. No native bridge or user workspace is required.
+Open the [rendered catalogue](catalogue.html) through a repository-root HTTP server (`python3 -m http.server 8091`, then `/docs/design/catalogue.html`). Run `npm ci && npm run build:web` first. It imports the real `web/style.css`, `web/presentation.js` and compiled production React components; it is not a product route and must never enter primary navigation. English headings are maintainer guidance; Chinese controls demonstrate application copy. No native bridge or user workspace is required.
 
 ## Tokens and hierarchy
 
@@ -25,7 +25,7 @@ Controls have 44px minimum hit height. Issue #45 supersedes the earlier blanket 
 
 ## Implemented primitives and state contract
 
-`presentation.js` owns DOM construction and presentation vocabulary only. It must not read records, open workspaces, save revisions, or know storage paths. Existing enum values and user content pass through unchanged.
+`presentation.js` owns legacy DOM construction and presentation vocabulary only. For issue #92 consumers, `web/react/` owns React DOM and receives typed data/callbacks. This supersedes the DOM-constructor-only implementation rule for the migrated Library and shared reader/editor; legacy consumers keep their current ownership. Both implementations consume the same CSS semantic tokens. It must not read records, open workspaces, save revisions, or know storage paths. Existing enum values and user content pass through unchanged.
 
 | Primitive | Consumer / usage | State behavior |
 | --- | --- | --- |

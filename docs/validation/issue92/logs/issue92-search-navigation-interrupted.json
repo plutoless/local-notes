@@ -1,0 +1,15 @@
+{
+  "reason": "Stalled prior-source diagnostic run after known bootstrap error; interrupted owned headless test only, not native app",
+  "owned": [
+    [
+      "46174",
+      "46107",
+      "node tests/search-navigation-ui.mjs"
+    ],
+    [
+      "46209",
+      "46174",
+      "build/storage-harness-46174 /var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/localnotes-actions-mTzXm6/Sync /var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/localnotes-actions-mTzXm6/Private"
+    ]
+  ]
+}
