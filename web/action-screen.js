@@ -1,33 +1,24 @@
+import {mountActionControls, actionRows, actionSources, actionHistory} from './assets/react-host.js';
 import {recoverTaskDraft} from './task-drafts.js';
-import {pageAvailability, requestTaskLeave, actionLabels, statusLabel, errorFeedback, progressLabel, directoryLabel, button, field, disclosure, selectionRow, feedback, drawer} from './presentation.js';
-import {ActionRepository, ACTION_STATES, isOverdue} from './actions.js';
+import {pageAvailability, requestTaskLeave, statusLabel, errorFeedback, progressLabel, directoryLabel, feedback, drawer} from './presentation.js';
+import {ActionRepository, isOverdue} from './actions.js';
 import {allRecords, sourceState, fingerprint} from './initiatives.js';
 import {native} from './bridge.js';
-import {escapeHTML as esc} from './core.js';
-const labels = actionLabels;
 const $ = selector => document.querySelector(selector);
 export class ActionScreen {
   constructor(notice) {
     this.repository = new ActionRepository(native); this.notice = notice; this.dirty = false; this.active = false;
     this.previous = null; this.retry = null; this.offset = 0; this.status = ''; this.search = ''; this.saving = null;
-    // Adopt the catalogue's form and control vocabulary without moving persistence here.
-    for (const label of document.querySelectorAll('#action-form label, #action-tools label')) {
-      const control = label.querySelector('input, textarea, select');
-      if (control) label.replaceWith(field(label.firstChild.textContent.trim(), control, {density: label.closest('#action-form') ? 'compact' : undefined}));
-    }
-    for (const control of document.querySelectorAll('#action-editor button, #action-tools button')) {
-      control.classList.add('ui-action', control.id === 'action-save' || control.id === 'action-new' ? 'primary' : 'quiet');
-    }
-    for (const details of document.querySelectorAll('#action-editor details')) details.classList.add('ui-disclosure');
+    mountActionControls($('#action-editor'), $('#action-tools'));
     this.setupDrawer();
-    $('#action-tools').append(button('恢复行动草稿', async () => {
+    this.sourcesView = actionSources($('#action-sources'), () => this.changed(), path => this.initiatives.openNote(path));
+    this.historyView = actionHistory($('#action-revisions'));
+    $('#action-recover').onclick = async () => {
       if (!await this.leaveDrawer()) return;
       const draft = recoverTaskDraft('action', this.repository.workspaceId);
       if (!draft) { this.notice('没有待恢复的行动草稿。', true); return; }
       await this.edit(draft.value.previous || null, draft);
-    }));
-    $('#action-status').innerHTML = ACTION_STATES.map(state => `<option value="${state}">${labels[state]}</option>`).join('');
-    $('#action-filter').innerHTML = '<option value="">全部状态</option>' + $('#action-status').innerHTML;
+    };
     $('#action-filter').onchange = () => { this.status = $('#action-filter').value; this.offset = 0; this.list().catch(error => notice(error.message)); };
     $('#action-initiative-filter').onchange = () => { this.initiativeFilter = $('#action-initiative-filter').value; this.offset = 0; this.list().catch(error => notice(error.message)); };
     $('#action-focus').onclick = async () => {
@@ -54,22 +45,16 @@ export class ActionScreen {
       try {
         if (!this.previous) return;
         const repository = this.repository, entityId = this.previous.entityId;
-        $('#action-revisions').textContent = '正在载入历史…';
+        const request = this.editRequest;
+        this.historyView(null);
         const records = await repository.history(entityId);
-        if (repository !== this.repository || entityId !== this.previous?.entityId) return;
-        const history = $('#action-revisions'); history.replaceChildren();
-        const ordered = records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt));
-        for (const [index, record] of ordered.entries()) {
-          const item = document.createElement('article'); item.className = 'action-revision';
-          const older = ordered[index + 1];
-          const changes = older ? ['description', 'status', 'initiativeId', 'dueDate', 'waitingOn', 'sources', 'focusPosition'].filter(key => JSON.stringify(record[key]) !== JSON.stringify(older[key])).map(key => ({description:'描述', status:'状态', initiativeId:'所属事项', dueDate:'截止日期', waitingOn:'等待条件', sources:'来源引用', focusPosition:'当前重点'})[key]) : ['创建行动'];
-          item.innerHTML = `<h3>${esc(labels[record.status])} · ${esc(new Date(record.modifiedAt).toLocaleString('zh-CN', {hour12: false}))}</h3><p>${esc(record.description)}</p><small>${esc(changes.join('、') || '保存记录')}</small><details class="ui-disclosure"><summary>完整版本与记录详情</summary><pre>${esc(JSON.stringify(record, null, 2))}</pre></details>`;
-          history.append(item);
-        }
-        if (!ordered.length) history.textContent = '暂无可用历史。';
+        if (repository !== this.repository || entityId !== this.previous?.entityId || request !== this.editRequest || !this.drawer.panel.open) return;
+        this.historyView(records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt)));
       } catch (error) { errorFeedback($('#action-save-state'), error.message); }
     };
   }
+  // Typed ActionEntry port; legacy edit(...) remains supported for sibling consumers.
+  async open(entry) { await this.edit(entry.record, null, null, entry.opener); this.returnToFocus = entry.returnToOrigin || null; }
   setupDrawer() {
     this.drawer = drawer({id: 'action-drawer', title: '新建行动', onDismiss: () => this.dismissDrawer()});
     this.drawer.panel.classList.add('ui-drawer-wide');
@@ -174,17 +159,15 @@ export class ActionScreen {
     $('#index-state').textContent = '正在载入行动…';
     let page;
     try { page = await repository.query({status: this.status, initiativeId: this.initiativeFilter || '', search: this.search, limit: 30, offset: this.offset}); }
-    catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; errorFeedback($('#items'), error.message); } return; }
+    catch (error) { if (this.active && request === this.listRequest && repository === this.repository) { $('#index-state').textContent = ''; this.release(); errorFeedback($('#items'), error.message); } return; }
     if (!this.active || request !== this.listRequest || repository !== this.repository) return;
     const scroll = $('#items').scrollTop;
     const focusedRow = document.activeElement.closest('#items [data-entity-id]')?.dataset.entityId;
-    $('#index-state').textContent = ''; $('#items').replaceChildren();
-    for (const action of page.actions) {
-      const row = selectionRow('', () => this.edit(action), {selected: action.entityId === this.previous?.entityId}); row.classList.add('card'); row.dataset.entityId = action.entityId; row.classList.toggle('selected', action.entityId === this.previous?.entityId); row.setAttribute('aria-current', action.entityId === this.previous?.entityId ? 'true' : 'false');
-      row.innerHTML = `<h3>${esc(action.description)}</h3><p>${labels[action.status]}${action.dueDate ? ` · ${esc(action.dueDate)}${isOverdue(action) ? ' · 已逾期' : ''}` : ' · 未设日期'}</p><small>${esc(this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动'))}${action.waitingOn ? ` · 等待：${esc(action.waitingOn)}` : ''}</small>`;
-      $('#items').append(row);
-    }
-    if (!page.actions.length) $('#items').innerHTML = `<div class="no-items">${this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。<br>决定要做什么后，点击「新建行动」。'}</div>`;
+    $('#index-state').textContent = '';
+    this.rowsView ||= actionRows($('#items'));
+    this.rowsView.render({rows: page.actions.map(action => ({...action, overdue: isOverdue(action), initiativeName: this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动')})), selected: this.previous?.entityId,
+      empty: this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。决定要做什么后，点击「新建行动」。',
+      open: action => this.edit(action)});
     if (focusedRow) [...$('#items').querySelectorAll('[data-entity-id]')].find(node => node.dataset.entityId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
     pageAvailability($('#action-previous'), $('#action-next'), this.offset > 0, page.hasMore);
@@ -211,7 +194,7 @@ export class ActionScreen {
   fields() {
     return {description: $('#action-description').value, status: $('#action-status').value, initiativeId: $('#action-initiative').value,
       dueDate: $('#action-due').value, waitingOn: $('#action-waiting').value,
-      sources: [...document.querySelectorAll('.action-source')].map(row => ({path: row.querySelector('.source-path').value.trim(), quote: row.querySelector('.source-quote').value, fingerprint: row.dataset.fingerprint || ''}))};
+      sources: this.sourcesView.get()};
   }
   state(message) {
     feedback($('#action-save-state'), message);
@@ -224,19 +207,8 @@ export class ActionScreen {
     if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, attempt: this.creationAttempt})); else localStorage.removeItem(this.key());
     this.state(this.dirty ? '行动草稿尚未保存' : '已保存到本地');
   }
-  addSource(source) {
-    const row = document.createElement('div'); row.className = 'action-source'; row.dataset.fingerprint = source.fingerprint;
-    const heading = document.createElement('h3'); heading.textContent = source.path?.split('/').pop() || '新来源';
-    const path = document.createElement('small'); path.textContent = source.path || '填写笔记路径并引用原文';
-    const quote = document.createElement('blockquote'); quote.textContent = source.quote || '未添加原文引用';
-    const pathInput = document.createElement('input'); pathInput.className = 'source-path'; pathInput.value = source.path;
-    const quoteInput = document.createElement('textarea'); quoteInput.className = 'source-quote'; quoteInput.rows = 2; quoteInput.value = source.quote;
-    pathInput.oninput = quoteInput.oninput = () => { row.dataset.fingerprint = ''; };
-    const remove = button('移除引用', () => { row.remove(); this.changed(); $('#action-add-source').focus(); }, {variant: 'danger', label: `移除引用：${source.path || '新来源'}`});
-    const options = disclosure('编辑来源引用', [field('笔记相对路径', pathInput, {density:'compact'}), field('引用原文', quoteInput), remove]);
-    options.open = !source.path;
-    row.append(heading, path, quote, options); $('#action-sources').append(row);
-  }
+  addSource(source) { this.sourcesView.add(source); }
+  release() { this.listRequest = (this.listRequest || 0) + 1; this.rowsView?.release(); this.rowsView = null; }
   captureContext(previous) { return {opener: document.activeElement, previous: previous || this.previous, detailKind: this.initiatives?.detailKind, selectedContext: this.initiatives?.selectedContext, classes: $('.app').className, noteHidden: $('#editor').hidden, emptyHidden: $('#empty').hidden, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop}; }
   showForm(fields, previous) {
     if (!this.drawer.panel.open) this.drawerContext = this.captureContext(previous);
@@ -250,8 +222,8 @@ export class ActionScreen {
     $('#action-description').value = fields.description || ''; $('#action-status').value = fields.status || 'todo';
     if (fields.initiativeId && ![...$('#action-initiative').options].some(o => o.value === fields.initiativeId)) $('#action-initiative').add(new Option(fields.initiativeId, fields.initiativeId));
     $('#action-initiative').value = fields.initiativeId || ''; $('#action-due').value = fields.dueDate || ''; $('#action-waiting').value = fields.waitingOn || '';
-    $('#action-sources').replaceChildren(); for (const source of fields.sources || []) this.addSource(source);
-    $('#action-revisions').replaceChildren(); $('#action-id').textContent = previous?.entityId || '新建行动'; $('#action-history').disabled = !previous;
+    this.sourcesView.set(fields.sources || []);
+    this.historyView([]); $('#action-id').textContent = previous?.entityId || '新建行动'; $('#action-history').disabled = !previous;
     $('#action-editor').hidden = false;
     this.drawer.setTitle(previous ? '编辑行动' : '新建行动');
     $('#action-save').textContent = previous ? '保存行动' : '创建行动';
@@ -302,16 +274,18 @@ export class ActionScreen {
   }
   async refreshSources(action) {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;
-    for (const row of document.querySelectorAll('.action-source')) {
-      const source = action?.sources.find(s => s.path === row.querySelector('.source-path').value);
-      if (!source?.path || !source.fingerprint) continue;
-      const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.initiatives.listReferences);
-      if (request !== this.editRequest || repository !== this.repository || !row.isConnected) return;
-      const status = document.createElement('p'); status.textContent = statusLabel(result.state); row.append(status);
-      if (result.state === 'moved') { row.querySelector('.source-path').value = result.path; row.querySelector('h3').textContent = result.path.split('/').pop(); row.querySelector('small').textContent = result.path; this.changed(); }
-      if (result.path && this.initiatives) { const open = button('打开来源', async () => { await this.initiatives.openNote(result.path); }, {label: `打开来源：${result.path}`}); row.append(open); }
+    const sources = this.sourcesView.get();
+    for (const [index, source] of sources.entries()) {
+      if (!source.path || !source.fingerprint) continue;
+      const result = await sourceState(source, path => native('read', {path, workspaceId: repository.workspaceId}), this.initiatives.listReferences);
+      if (request !== this.editRequest || repository !== this.repository) return;
+      // An advisory reply cannot replace an edited quote or newly added source.
+      if (JSON.stringify(this.sourcesView.get()[index]) !== JSON.stringify(source)) continue;
+      this.sourcesView.status(index, statusLabel(result.state), result.path, result.state === 'moved');
+      if (result.state === 'moved') this.changed();
     }
   }
+
   async save() {
     if (this.saving) return this.saving;
     if (!this.dirty && this.previous) { this.state('已保存到本地'); return true; }
