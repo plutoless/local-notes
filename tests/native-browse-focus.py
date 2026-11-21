@@ -103,6 +103,8 @@ def native(action,*args,target=None):
   else:
    payload=c('__events:'+json.dumps({'key':args[1]}));log.append({'constructorRoundtrip':payload['roundtrip']})
    assert all(e['window']==owned_window and e['resolvedWindow'] for e in payload['roundtrip']), 'Read-only native key window roundtrip failed; nothing posted'
+  if os.environ.get('LEAVE_FOCUS_ONLY'):
+   assert payload['roundtrip'] and all(e['constructorPID']==process.pid for e in payload['roundtrip']), 'Native constructor PID differs from the owned launch; nothing posted'
   if os.environ.get('CONSTRUCTOR_ONLY'):
    log.append({'constructorPayload':payload,'constructorOnly':'PASS actual owned-window and local/global coordinate roundtrip; no sender launched or OS input posted'});raise SystemExit(0)
   command=[str(sender),str(process.pid),str(owned_window),'post']
@@ -178,6 +180,8 @@ def page_key_entry(selector,name):
  assert c('const node=document.querySelector('+json.dumps(selector)+');return document.activeElement===node && !node.disabled && node.matches(":focus-visible")'), 'Native Tab must reach the requested enabled paging control with visible keyboard focus'
 try:
  process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(m.OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(m.OUT/'Private'),'REVIEW_PROBE':str(m.OUT)},stdout=open(m.OUT/'app.log','w'),stderr=subprocess.STDOUT)
+ if os.environ.get('LEAVE_FOCUS_ONLY'):
+  (m.OUT/'leave-host-ownership.json').write_text(json.dumps({'pid':process.pid,'applicationPath':str(m.APP),'executablePath':str(m.APP/'Contents/MacOS/LocalNotes'),'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'launchedAt':time.time()},indent=2))
  w("!!document.querySelector('.home-tools')");c('__focus');time.sleep(1)
  host=c('__host');owned_window=host['windowNumber'];document=c('return {focused:document.hasFocus(),visibility:document.visibilityState}')
  log.append({'preflight':host,'document':document,'pid':process.pid,'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip()})

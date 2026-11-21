@@ -46,6 +46,13 @@ try {
   assert.equal(await page.getByRole('button',{name:'关闭编辑测试',exact:true}).isDisabled(),false);
   await release();assert.equal(await page.getByRole('button',{name:'关闭编辑测试',exact:true}).evaluate(n=>n===document.activeElement),true);
   receipts.push('async disabled dismissal returns after re-enable');await close();
+  await start(false);
+  // InsertText exercises input without a preceding keydown (for example, paste).
+  await page.keyboard.insertText('新增');
+  const edited = await page.locator('#draft').evaluate(n=>[n===document.activeElement,n.selectionStart,n.selectionEnd,n.value]);
+  await release();
+  assert.deepEqual(await page.locator('#draft').evaluate(n=>[n===document.activeElement,n.selectionStart,n.selectionEnd,n.value]),edited,'newer keyless input keeps its current caret');
+  receipts.push('keyless input retains new text and caret');await close();
   for (const intent of ['Tab','pointer','focus']) {
     await start(false);
     if(intent==='Tab')await page.keyboard.press('Tab');

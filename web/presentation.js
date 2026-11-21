@@ -251,7 +251,7 @@ function taskLeaveChoice(label, failure, committed, focusOrigin) {
       // The fallback belongs to this return only. New input or focus supersedes it.
       let superseded = false;
       const supersede = () => { superseded = true; };
-      const intents = ['focusin', 'keydown', 'pointerdown'];
+      const intents = ['focusin', 'keydown', 'pointerdown', 'beforeinput', 'input'];
       for (const type of intents) document.addEventListener(type, supersede, true);
       resolve(choice);
       // An async dismissal button is re-enabled only after its leave promise

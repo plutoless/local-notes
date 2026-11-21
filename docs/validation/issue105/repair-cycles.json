@@ -30,6 +30,21 @@
         "build/issue105/ordering-control-after.log",
         "build/issue105/remaining-affected.log"
       ]
+    },
+    {
+      "cycle": 3,
+      "signature": "Held return reselects old range after text insertion without keydown",
+      "hypothesis": "Keyboard/pointer/focus events do not cover keyless text input; input events must also supersede the deferred range restore",
+      "correction": "Add beforeinput/input to temporary return fence and a keyless InsertText caret regression; add durable owned-host PID record before native activation",
+      "commands": [
+        "node build/issue105/keyless-input-probe.mjs",
+        "node tests/leave-focus-ui.mjs"
+      ],
+      "observed": "Red control retained old2..6 range instead of new4..4 caret; corrected regression now preserves text/caret and all existing return/containment cases",
+      "receipts": [
+        "build/issue105/keyless-input-red.log",
+        "build/issue105/keyless-input-green.log"
+      ]
     }
   ]
 }
