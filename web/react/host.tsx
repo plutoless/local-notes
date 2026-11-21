@@ -9,3 +9,6 @@ export {noteReply} from './library-model';
 export {focusView} from './focus';
 export {focusPosition} from './focus-model';
 export {shellView, shellUpdate} from './shell';
+
+export {noteFieldsView, classificationView, noteInformationView} from './note-forms';
+export {CollectionContexts} from './browse-context';
