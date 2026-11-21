@@ -152,6 +152,7 @@ export class InitiativeScreen {
   restoreContext() {
     $('.app').classList.remove('detail-open');
     const origin = this.contextReturn;
+    if (origin?.action || origin?.path) this.selectContext(origin.action || origin.path);
     const controls = [...$('#workspace-context').querySelectorAll('button')];
     const node = origin && controls.find(node => origin.id ? node.id === origin.id : origin.action ? node.dataset.actionId === origin.action : origin.path && node.dataset.path === origin.path);
     (node || $('#workspace-overview')).focus({preventScroll: true});
@@ -334,28 +335,35 @@ export class InitiativeScreen {
     this.decisionsView.render(initiativeEnding(actions, initiatives, record.entityId, decisions));
     this.pendingDecisions = null;
     this.ending(); this.selectContext(this.selectedContext);
-    for (const row of document.querySelectorAll('.initiative-source')) {
-      const source = record.sources.find(s => s.path === row.querySelector('input').value);
-      if (!source) continue;
+    for (const source of record.sources) {
+      const rows = [...document.querySelectorAll('.initiative-source')];
+      // A recovered private draft may already contain the uniquely repaired path.
+      // Resolve persisted context independently; never match an ambiguous edited row.
+      const exact = rows.find(row => row.querySelector('input').value === source.path);
+      const matching = rows.filter(row => source.fingerprint && row.dataset.fingerprint === source.fingerprint && row.querySelector('textarea').value === source.quote && row.querySelector('select').value === source.role);
+      const row = exact || (matching.length === 1 ? matching[0] : null);
+      const view = this.contextViews[source.role === 'reference' ? '#workspace-references' : '#workspace-notes'];
       try {
-        const result = await sourceState(source, path => native('read', {path, workspaceId: this.repository.workspaceId}), this.listReferences);
+        const result = await sourceState(source, path => native('read', {path, workspaceId: repository.workspaceId}), this.listReferences);
         if (!ownsDetails()) return;
-        row.querySelector('.source-state').textContent = result.state === 'moved' ? `来源已移至 ${result.path}，请核对后保存。` : statusLabel(result.state);
+        const message = result.state === 'moved' ? `来源已移至 ${result.path}，请核对后保存。` : statusLabel(result.state);
+        if (row) row.querySelector('.source-state').textContent = message;
         if (!['unchanged', 'available', 'valid'].includes(result.state)) {
           $('#initiative-link-details').open = true;
-          const view = this.contextViews[source.role === 'reference' ? '#workspace-references' : '#workspace-notes'];
-          view.status(source.path, row.querySelector('.source-state').textContent, result.path);
+          view.status(source.path, message, result.path);
         }
-        if (result.state === 'moved') { row.querySelector('input').value = result.path; this.nameSource(row); this.changed(); }
-        row.querySelector('.source-open').disabled = !result.path;
+        if (row && result.state === 'moved') { row.querySelector('input').value = result.path; this.nameSource(row); this.changed(); }
+        if (row) row.querySelector('.source-open').disabled = !result.path;
       } catch (error) {
         if (!ownsDetails()) return;
-        row.querySelector('.source-state').textContent = '来源暂不可用，请检查目录后重试。';
+        const message = '来源暂不可用，请检查目录后重试。';
+        if (row) row.querySelector('.source-state').textContent = message;
         $('#initiative-link-details').open = true;
-        this.contextViews[source.role === 'reference' ? '#workspace-references' : '#workspace-notes'].status(source.path, row.querySelector('.source-state').textContent);
+        view.status(source.path, message);
       }
     }
   }
+
   decisions() { return Object.fromEntries([...document.querySelectorAll('#initiative-decisions select')].map(select => [select.dataset.action, select.value])); }
   ending() {
     const ending = $('#initiative-status').value === 'ended' && this.previous?.status !== 'ended';
