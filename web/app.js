@@ -41,7 +41,7 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
   actions.closeDrawer();
   sourceOrigin = origin;
-  libraryScreen.switchCollection('notes'); focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+  focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); if (generation !== workspaceGeneration || request !== noteLoadRequest) return; await load(path, loaded, request); $('#mode').focus();
 }, id => createNote(id), async () => {
@@ -75,6 +75,7 @@ const syncScreen = new SyncScreen(() => [actions.repository, initiatives.reposit
   else await refresh();
 });
 function selectNavigation(next) {
+  libraryScreen.switchCollection(next);
   if (!['notes','favorites'].includes(next)) libraryScreen.release();
   pageGeneration++;
   if (next !== 'focus') focus.release();
@@ -84,7 +85,7 @@ let actionOrigin = null;
 let wikiHistory = [], wikiIntent = 0, readerSelection = null;
 async function navigate(next) {
   if (!await flush(true)) return false;
-  libraryScreen.switchCollection(next);
+  selectNavigation(next);
   $('.app').classList.remove('reading-continuation');
   const request = ++noteLoadRequest;
   wikiHistory = []; wikiIntent++;
@@ -97,7 +98,6 @@ async function navigate(next) {
   $('.app').classList.toggle('workspace', next === 'initiatives'); $('#workspace-context').hidden = next !== 'initiatives';
   view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
-  selectNavigation(next);
   $('.app').classList.remove('editing'); await refresh();
   if (request !== noteLoadRequest) return false;
   if (next === 'actions') { $('#view-title').tabIndex = -1; $('#view-title').focus(); }
@@ -545,7 +545,7 @@ async function createNote(initiativeId = null, captured = null) {
       if (initiatives.previous?.entityId === initiativeId) { initiatives.form(linked.record, linked.record); await initiatives.details(); }
     }
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
-    libraryScreen.switchCollection('notes'); focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+    focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
     await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; reader.set({capture:Boolean(captureOrigin)}); if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }

@@ -166,7 +166,7 @@ export class LibraryScreen {
   resetCollections() { this.collectionContexts = new CollectionContexts(); this.switchCollection('notes'); }
   release() { this.sequence++; this.ui.release(); }
   captureContext() {
-    return {order: this.order, archives: this.archives, offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
+    return {order: this.order, archives: this.archives, offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').getClientRects().length ? $('#items').scrollTop : this.browseListScroll || 0, browseScroll: $('.collection').getClientRects().length ? $('.collection').scrollTop : this.browseScroll || 0};
   }
   async restoreContext(context) {
     Object.assign(this, context); $('#search').value = this.search;

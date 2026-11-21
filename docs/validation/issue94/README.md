@@ -73,3 +73,12 @@ input, minimum macOS/WebKit, Intel and Android WebView runtime were not exercise
 Android-specific builds/tests and standalone Syncthing are user-deferred, nonblocking.
 No AI processing, private notes or model downloads were used. Package compilation
 is not native runtime acceptance. See ownership inventory and independent reviews.
+
+The second Spec review found contextual Initiative/source navigation bypassed
+collection transitions. The correction moves collection adoption/release into the
+single existing `selectNavigation` authority, including direct contextual routes.
+Snapshots use retained browse scroll when the collection is hidden by the narrow
+reader. The new actual-app classification → linked Initiative → Favorites journey
+checks restored scroll in a short window. Its first harness receiver incorrectly
+waited for the hidden metadata editor; the corrected check waits for the visible
+Initiative workspace title. Failure receipts remain under route-browser*.log.
