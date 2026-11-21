@@ -36,7 +36,7 @@ export function actionRows(container:HTMLElement) {
   const render=(props:Parameters<typeof ActionRows>[0])=>{current=props;flushSync(()=>root.render(<ActionRows {...props}/>));};
   return {render,select(selected?:string){if(current)render({...current,selected});},release(){flushSync(()=>root.unmount());}};
 }
-/** Mount once: legacy task adapter owns form properties, focus and modal placement.
+/** Mount once: legacy task adapter owns form properties and focus in existing modal slots.
  * These inert component shells never rerender over the adapter's control ports. */
 export function mountActionControls(editor:HTMLElement,tools:HTMLElement,footer:HTMLElement) {
   const a=createRoot(editor),b=createRoot(tools),c=createRoot(footer);
