@@ -52,5 +52,7 @@
     "tests/library-policy.test.js": "6ab3b0fd591d58ad6592712b91ede8d11a09c501be9a74e305673d3777f6ae58",
     "tests/library.test.js": "427d59ab914dfbfc60a7ed53ea7f8f5f3f95c0a0aa90a754aeb33b8cde04b65e"
   },
-  "nativeLaunch": false
+  "nativeLaunch": false,
+  "validatedSourceCommit": "b237d42066d010b020497648cab918958e552f25",
+  "validationCodeHeadMeaning": "Merge HEAD while the new focused tests were uncommitted; testSHA256 binds exact executed test content now committed at validatedSourceCommit."
 }
