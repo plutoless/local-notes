@@ -21,3 +21,6 @@ export {noteFieldsView, classificationView, noteInformationView} from './note-fo
 export {CollectionContexts} from './browse-context';
 export {searchView} from './search';
 export {searchRows} from './search-model';
+
+export {mountInitiativeControls, initiativeRows, initiativeLinks, initiativeActions, initiativeDecisions, mountInitiativeSource, openInitiativeAction} from './initiatives';
+export {initiativeSources, initiativeEnding} from './initiative-model';
