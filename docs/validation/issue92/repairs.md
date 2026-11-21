@@ -62,3 +62,15 @@ separate final-source coordinator grant.
   selected row and lose return focus. Removed component-owned busy state from row
   openers; existing host request/workspace fencing owns navigation. The existing
   exact paging/open/Back/focus/scroll journey is the regression retest.
+
+## Final native resource cycle and measured costs
+
+At product source 83da354, the separately granted existing `--resources-only` harness
+passed without a repair cycle. Report, executed harness/generated host and cleanup
+receipt are in `native/cycle1/`; coordinator independently confirmed process absence
+and released the lease. Production minos13.3 differs from generated minos26.0; all
+24 packaged asset hashes match. The native comparison retains the deterministic
++89.2% asset size and approximately +9.4% host-RSS increase, with bundle composition
+investigation and measurement limits in README. A prior coordinator message used
+an incorrect MiB conversion; the repository uses 93.25–93.44 MiB migrated host RSS
+versus 85.22–85.39 MiB baseline, excluding WebContent. No further GUI work is granted.
