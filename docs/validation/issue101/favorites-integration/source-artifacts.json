@@ -1,0 +1,152 @@
+{
+  "implementationHead": "b3c3b257016c79436fbd33f95f28faa8b3d3f467",
+  "continuationStartingSHA": "10b7f27715519fad010b38542b8fed7e33378c4a",
+  "originalStartingSHA": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "fetchedMain": "7042d0669734bdfc0e7d86e9437e12a790965a83",
+  "mergeHold": "Known issue94 Favorites pagination failure, owned by its original worker; not reproduced, fixed or waived here",
+  "files": {
+    "web/react/host.tsx": {
+      "sha256": "d0c90e83200fd01be32f0dbbda204a25c0653521ce8d48b7446831a505327285",
+      "bytes": 897
+    },
+    "web/react/catalogue.tsx": {
+      "sha256": "d4909a7fb0dacbfc3bd60b14fda29e569ed978f71cc33fff31ae6c66f9d5fece",
+      "bytes": 5334
+    },
+    "web/app.js": {
+      "sha256": "1a4f91303c1137de53dee577a8e0bc87d4462d7fb73a794bf3d8331ecb47a44a",
+      "bytes": 60276
+    },
+    "web/index.html": {
+      "sha256": "e9d1956cd0da31f8b387f9b7847b9e3bc1f6c6c90a26fdedc8aca610aefe180b",
+      "bytes": 10412
+    },
+    "web/library-screen.js": {
+      "sha256": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e",
+      "bytes": 17779
+    },
+    "web/react/note-forms.tsx": {
+      "sha256": "9c95589aa174b9a45453af732a6e41ee0c16f9c6e072640ce8b72273e896267f",
+      "bytes": 5010
+    },
+    "web/react/browse-context.ts": {
+      "sha256": "6ee5dec600ea0ff4deaacb1a3345e4db2f12734d8e1b7fcdd332f0e2ff4bb617",
+      "bytes": 735
+    },
+    "web/react/sync.tsx": {
+      "sha256": "1bf8373cd97ed876cc9372b9f8abb4de1997d78fbc240b2c8751c4454265ece6",
+      "bytes": 9426
+    },
+    "web/sync-screen.js": {
+      "sha256": "8cdd9e5a4dbc9318a645e305f85aec844400c1ff73954fb246cc8882e01198bb",
+      "bytes": 10921
+    },
+    "web/sync-drafts.js": {
+      "sha256": "e0602979ff3b94e6259f787fcabeff5e4f7d29d3b287dee1927183a10373e1ba",
+      "bytes": 1975
+    },
+    "web/react/reader.tsx": {
+      "sha256": "486b9e9d07d77edb87f5b1c9bfc8f30c0b96d11f54fcec08e93af9754ca2c677",
+      "bytes": 4840
+    },
+    "tests/sync-ui.mjs": {
+      "sha256": "b537cbd7aee522b80400ddae2fc87c1779c5932482241706698c4ad4499fe0d3",
+      "bytes": 32619
+    },
+    "tests/ui.mjs": {
+      "sha256": "2aaaf1a6ccfcb7054ea3c4bc56c48f99a70b1c22e79f0d0d1bcddb92456cf498",
+      "bytes": 26667
+    },
+    "tests/reader-editing-ui.mjs": {
+      "sha256": "298bbadea96fe14aaa4d73f48751537e387fc576010287a56e47bb26cf9c97e3",
+      "bytes": 10167
+    },
+    "tests/search-navigation-ui.mjs": {
+      "sha256": "cd18aaec0213ba3ae00281f216c5e4d30407a575b966333e368d3b7a060e9bfd",
+      "bytes": 19641
+    },
+    "tests/collection-context.test.js": {
+      "sha256": "c670e4b0ffe59866fcc4a519a95fc604ac42bef7197f178f4a34e1de1060e25b",
+      "bytes": 1550
+    },
+    "tests/note-context-ui.mjs": {
+      "sha256": "d6d5465639b462a537bf3627ee624780d6f676af41cf5efdb7c0a3080b15464e",
+      "bytes": 10373
+    },
+    "tests/sync-drafts.test.js": {
+      "sha256": "0c9b835549110671ea22ddb1247bab9295b685b28341f4ac11443ec991b97fec",
+      "bytes": 3098
+    },
+    "tests/synchronization.test.js": {
+      "sha256": "7f99d1ca1f7d141fc06ed6f68ecfddd668eed3e4c0660cd9ba8b13dcfee3036c",
+      "bytes": 9102
+    },
+    "tests/library.test.js": {
+      "sha256": "427d59ab914dfbfc60a7ed53ea7f8f5f3f95c0a0aa90a754aeb33b8cde04b65e",
+      "bytes": 12441
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "deb0a72e0fd188ff010afcaeb73b6633cab5c3e1a44396857551656b345453ef",
+      "bytes": 362166
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "23c81ac4c895c5cd1af1818c0669ad383c30e8a653c1f2cef9a05959585c54f3",
+      "bytes": 6172
+    },
+    "build/web/asset-manifest.json": {
+      "sha256": "907a4c3ee8ba00f3a8a9282e7346b5f4742353a0cbbee9d822a1fe8ece293cab",
+      "bytes": 924
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "0283eb0691c9747d395890355c5d3e135539330e9a6b3e0e57d84d311568210e",
+      "bytes": 471920
+    }
+  },
+  "preservation": {
+    "web/react/sync.tsx": {
+      "sameAsCleared10b7f27": true
+    },
+    "web/sync-screen.js": {
+      "sameAsCleared10b7f27": true
+    },
+    "web/sync-drafts.js": {
+      "sameAsCleared10b7f27": true
+    },
+    "web/react/reader.tsx": {
+      "sameAsCleared10b7f27": true
+    },
+    "tests/sync-ui.mjs": {
+      "sameAsCleared10b7f27": true
+    },
+    "tests/ui.mjs": {
+      "sameAsCleared10b7f27": true
+    },
+    "tests/sync-drafts.test.js": {
+      "sameAsCleared10b7f27": true
+    },
+    "web/library-screen.js": {
+      "sameAsFetchedMain": true
+    },
+    "web/react/note-forms.tsx": {
+      "sameAsFetchedMain": true
+    },
+    "web/react/browse-context.ts": {
+      "sameAsFetchedMain": true
+    },
+    "tests/collection-context.test.js": {
+      "sameAsFetchedMain": true
+    },
+    "tests/note-context-ui.mjs": {
+      "sameAsFetchedMain": true
+    }
+  },
+  "readerCopyReloadFunctionsMatchCleared10b7f27": true,
+  "packagedAssetsMatchBuild": true,
+  "environment": {
+    "node": "v25.1.0",
+    "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+    "arch": "arm64",
+    "browserExecutable": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "chromeVersion": "158.0.8127.36"
+  }
+}

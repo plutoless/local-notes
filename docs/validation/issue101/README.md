@@ -136,3 +136,13 @@ fresh targeted validation and source/package bindings in
 the earlier latest-main/head binding for the current PR while retaining failures
 and unchanged-source historical coverage. Coordinator postmerge checks are not
 presumed passed by this worker's receipts.
+
+## Favorites/capture integration continuation — merge hold retained
+
+Main subsequently advanced through PR #114 to 7042d06. The bounded issue #101 merge,
+fresh affected-layer receipts and final source/package bindings are recorded in
+[favorites-integration/README.md](favorites-integration/README.md). That continuation
+supersedes prior latest-main bindings for the current PR but preserves all historical
+failure/evidence attribution. The coordinator-reported #94 Favorites pagination
+failure remains owned by the original #94 worker; no #101 integration result lifts
+the merge hold or claims that sibling defect resolved.
