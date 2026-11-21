@@ -58,3 +58,21 @@ test('an intentional navigation handoff reports its failure only in the originat
     assert.deepEqual(notices,replaced?[]:['Controlled destination failure']);
   }
 });
+
+test('late pagination failure preserves replacement loading status and navigation context',async()=>{
+  const previous=globalThis.document;const nodes=new Map();
+  globalThis.document={activeElement:{dataset:{}},querySelector(selector){if(!nodes.has(selector))nodes.set(selector,{hidden:false,textContent:'',classList:{add(){},remove(){}}});return nodes.get(selector);}};
+  try {
+    for(const replaced of [false,true]) {
+      let reject;const pending=new Promise((_,fail)=>reject=fail);
+      const repository={query:()=>pending}, actions={repository}, notices=[];
+      const screen=new FocusScreen(actions,{repository},()=>{},message=>notices.push(message));screen.active=true;screen.focusOffset=0;
+      const result=screen.pageFocus(99);
+      if(replaced){screen.release();actions.repository={};screen.focusOffset=0;globalThis.document.querySelector('#index-state').textContent='新工作区正在载入…';}
+      reject(Error('Controlled pagination failure'));await result;
+      assert.equal(screen.focusOffset,0);
+      assert.equal(globalThis.document.querySelector('#index-state').textContent,replaced?'新工作区正在载入…':'');
+      assert.deepEqual(notices,replaced?[]:['Controlled pagination failure']);
+    }
+  }finally{globalThis.document=previous;}
+});
