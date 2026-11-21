@@ -1,0 +1,11 @@
+✔ Action entry adopts a return route only after an accepted, current drawer open (0.391ms)
+✔ focus membership remains pending for leave and a superseded result cannot replace another Action (0.28975ms)
+✔ a durable focus revision with failed repair stays a committed private recovery candidate (0.896125ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.773
