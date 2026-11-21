@@ -1,4 +1,4 @@
-import {readerView, noteReply, shellView, shellUpdate, noteFieldsView, classificationView, noteInformationView} from './assets/react-host.js';
+import {readerView, noteReply, shellView, shellUpdate, fileConflictView, noteFieldsView, classificationView, noteInformationView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
 import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
@@ -11,7 +11,7 @@ import {InitiativeScreen} from './initiative-screen.js';
 import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {FocusScreen} from './focus-screen.js';
 import {ActionScreen} from './action-screen.js';
-const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
+const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 const reader = readerView($('#editor'), $('#note-details'));
 function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=document.createElement('button');close.textContent='关闭提示';close.onclick=()=>$('#notice').hidden=true;$('#notice').append(close);}
 const shell = shellView($('#shell'), {navigate: next => navigate(next).catch(error => notice(error.message)), capture: () => openCapture(), choose: () => chooseWorkspace(), icon});
@@ -309,7 +309,7 @@ async function save() {
 }
 function visibleNote() { return Boolean(current && !$('#editor').hidden && ['notes', 'favorites', 'initiatives'].includes(view)); }
 function noteTask() {
-  return {label: '笔记', dirty: () => dirty, pending: () => saving,
+  return {label: '笔记', dirty: () => dirty, pending: () => saving || noteConflictPending,
     suspend: () => clearTimeout(timer), save,
     discard: () => {
       clearTimeout(timer); noteGeneration++; localStorage.removeItem(draftKey());
@@ -674,8 +674,39 @@ infoUI.on('rename', async () => {
       await load(path).then(refresh).catch(error => notice('笔记已移动，请重新打开：' + error.message));
     }});
 });
-$('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
-$('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
+function copyConflict() {
+  if (noteConflictPending) return noteConflictPending;
+  clearTimeout(timer);
+  const source=current, workspaceId=currentWorkspace, generation=noteGeneration;
+  const key=draftKey(), text=content(), path=source.replace(/\.md$/i,`-conflict-${Date.now()}.md`);
+  const owns=()=>source===current && workspaceId===currentWorkspace && workspaceId===rootKey && generation===noteGeneration;
+  noteConflictPending=(async()=>{
+    try {
+      await note('create',{path,text,workspaceId});
+      if(!owns())return true;
+      localStorage.removeItem(key);dirty=false;blocked=false;$('#conflict').hidden=true;
+      await validateReferences();if(!owns())return true;
+      await refresh();if(!owns())return true;
+      await load(path);return true;
+    } catch(error) {if(owns())notice(error.message);return false;}
+  })().finally(()=>{noteConflictPending=null;});
+  return noteConflictPending;
+}
+function reloadConflict() {
+  if(noteConflictPending)return noteConflictPending;
+  clearTimeout(timer);
+  const path=current, workspaceId=currentWorkspace, generation=noteGeneration, key=draftKey(), request=++noteLoadRequest;
+  noteConflictPending=(async()=>{
+    try {
+      const loaded=await note('read',{path,workspaceId});
+      if(path!==current || workspaceId!==currentWorkspace || workspaceId!==rootKey || generation!==noteGeneration || request!==noteLoadRequest)return false;
+      localStorage.removeItem(key);
+      if(!await load(path,loaded,request,false))return false;
+      await refresh();return true;
+    } catch(error) {if(generation===noteGeneration)notice(error.message);return false;}
+  })().finally(()=>{noteConflictPending=null;});
+  return noteConflictPending;
+}
 window.hasUnsavedChanges = () => { const task = activeTask(); return Boolean(task && (task.dirty() || task.pending?.())); };
 window.requestNativeLeave = token => {
   flush().then(allowed => native('leaveResult', {token, allowed}), error => {
@@ -761,4 +792,5 @@ document.addEventListener('invalid', event => {
   if (event.target.matches('input, textarea, select')) event.target.setCustomValidity('请填写有效内容后重试。');
 }, true);
 document.addEventListener('input', event => event.target.setCustomValidity?.(''));
+fileConflictView($('#conflict'), copyConflict, reloadConflict);
 bindDialog($('#conflict'));

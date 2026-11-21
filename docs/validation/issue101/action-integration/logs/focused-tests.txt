@@ -1,0 +1,35 @@
+✔ Action entry adopts a return route only after an accepted, current drawer open (0.38725ms)
+✔ focus membership remains pending for leave and a superseded result cannot replace another Action (0.284125ms)
+✔ a durable focus revision with failed repair stays a committed private recovery candidate (0.44475ms)
+✔ confirmed actions start empty despite reference checkboxes, and survive native index removal (1837.81025ms)
+✔ every state can be reopened while complete immutable history and optional fields survive restart (41.961333ms)
+✔ interrupted revision writes retain the edit and restart recovers only committed revisions (22.224ms)
+✔ interrupted current writes retain the edit and restart recovers only committed revisions (21.682958ms)
+✔ interrupted index writes retain the edit and restart recovers only committed revisions (21.469666ms)
+✔ transient current-record and index failures report recovered saves after repair (18.149292ms)
+✔ queries paginate and workspace IDs reject writes from another root (32.793125ms)
+✔ a missing live SQLite index is rebuilt before returning query results (16.08525ms)
+✔ editing after a recoverable commit extends the committed revision without branching or duplicating the action (23.821542ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (11.921541ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.477625ms)
+✔ resolution input preserves invalid raw JSON and the last full source value (0.497791ms)
+✔ private recovery candidates retain task/workspace identity, raw input and reviewed heads (0.148ms)
+✔ recovery rejects another task and verifies retained immutable bytes before retry (0.3535ms)
+✔ private-cache quota or removal failure never throws away the live resolution (0.448042ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (1519.363708ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (45.466666ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (47.979834ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (20.248125ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (17.399541ms)
+✔ an incoming current-file import failure does not block unrelated records (17.485791ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (18.639208ms)
+✔ an unavailable topic collection does not prevent action commits (21.431542ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (17.58475ms)
+ℹ tests 27
+ℹ suites 0
+ℹ pass 27
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2078.078125

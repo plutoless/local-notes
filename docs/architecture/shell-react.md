@@ -9,14 +9,15 @@ changes are introduced.
 | --- | --- | --- |
 | Sidebar navigation, capture and directory controls | `ShellContent` in `#shell` | `app.js` navigation/flush/workspace guards |
 | Directory name/path and hidden count | Shell model via `shellUpdate` | `directoryLabel` stable adapter and Library count |
-| Synchronization opener | Legacy `SyncScreen` in explicit `#shell-legacy-utilities` island | Existing synchronization/leave controller |
+| Synchronization opener | Stable `SyncScreen` entry point with React panel descendants in explicit `#shell-legacy-utilities` island | Existing synchronization/leave controller |
 | Header search and search return | Existing header adapter; React `SearchContent` dialog | Single `SearchScreen` and document shortcut listener; see `search-react.md` |
 | Current Focus sections, rows, menus and continuation | `FocusContent` in shared `#items` while home owns it | `FocusScreen`, Action/Initiative repositories and existing task drawers |
 | Reading continuation and home return | React home rows and delivered shared reader | Existing workspace-scoped `ReadingHistory`, source fingerprints, app generation fences and `sourceOrigin` |
 | Library/reader | Delivered #92 React owners | See `library-react.md` |
 | Favorites, capture, Topics, classification and note locations | Typed React note views with retained C sheet/task controllers | See `note-forms-react.md` |
-| Actions | React Action rows/editor/source/history with stable controller ports | See `actions-react.md` |
-| Initiatives, Organization, synchronization dialogs | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
+| Actions | React controls/rows via stable `ActionScreen` ports | See `actions-react.md` |
+| Synchronization dialog contents | React comparison/editor via stable `SyncScreen` | See `sync-react.md` |
+| Initiatives, Organization | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
 
 The shell renders once synchronously before legacy controllers register controls.
 Navigation selection and `aria-current` are derived from the same model, including
@@ -47,3 +48,5 @@ checks source identity, reports changed/missing content and returns to home cont
 The catalogue imports the same consumed shell and Focus components. It has no
 storage or AI callbacks. `docs/validation/issue93/` records actual browser/storage,
 packaging, source binding, failures and unrun native/minimum-version boundaries.
+
+See [synchronization ownership](sync-react.md) for #101 panel, draft and bridge boundaries.

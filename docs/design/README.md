@@ -215,6 +215,19 @@ components, including long Chinese content and reading continuation. Storage, mo
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
 
+## Synchronization React adoption (#101)
+
+The production `SyncContent` and `ConflictComparison` render complete field evidence,
+source references and diagnostics through the existing comparison/field/disclosure
+styles. The selected source uses pressed fill independently of keyboard focus. Raw
+invalid JSON retains the danger border, field focus and editable content. Other
+records become inert only while one explicit resolution is active. The live catalogue
+imports the production comparison with long Chinese content and invalid/selected
+states. The stable controller retains repository guards, committed recovery and the
+shared modal leave/focus owner; see [the ownership inventory](../architecture/sync-react.md).
+
+
+
 ## Favorites and contextual note forms React adoption (#94)
 
 Favorites consumes the shared Library/reader with independent browsing snapshots.
@@ -227,6 +240,7 @@ references and immutable history with the existing wide contextual drawer. The
 [Action ownership inventory](../architecture/actions-react.md) records the stable
 legacy control/entry ports and single lifecycle/overlay authority. The catalogue
 uses the same selected, overdue, waiting and long-Chinese Action row component.
+
 ## Global search React adoption (#97)
 
 Compact A global search consumes production `SearchContent`, `SearchPassage` and

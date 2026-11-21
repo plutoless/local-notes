@@ -1,0 +1,4 @@
+Sync initial inspection: {"elapsedMs":393,"markdownReads":0,"bridgeCommands":24}
+Focus outline: rgb(7, 95, 204) solid 3px
+Rendered contrast inputs: {"text":"rgb(32, 38, 51)","background":"rgb(255, 255, 255)"}
+PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.
