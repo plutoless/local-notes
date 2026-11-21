@@ -48,11 +48,15 @@ try {
       await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.locator('#action-new').waitFor();
       await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
       assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),savedScroll);
-      await page.locator('#items [data-path="synthetic-52.md"]').click();await page.locator('#note-info-open').click();
+      await page.locator('#items [data-path="synthetic-52.md"]').scrollIntoViewIfNeeded();
+      await page.locator('#items [data-path="synthetic-52.md"]').evaluate(n=>n.addEventListener('click',()=>{window.contextualScrollAtOpen=document.querySelector('.collection').scrollTop;},{capture:true,once:true}));
+      await page.locator('#items [data-path="synthetic-52.md"]').click();
+      const contextualScroll=await page.evaluate(()=>window.contextualScrollAtOpen);
+      await page.locator('#note-info-open').click();
       await page.getByRole('checkbox',{name:'上下文跳转合成事项',exact:true}).check();
       await page.getByRole('button',{name:'打开事项：上下文跳转合成事项',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#workspace-title').textContent==='上下文跳转合成事项');
       await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
-      assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),savedScroll);await page.setViewportSize({width:1180,height:800});
+      assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),contextualScroll);await page.setViewportSize({width:1180,height:800});
       await page.locator('#new').click();await page.locator('#capture-title').fill('真实收藏上下文捕获');await page.locator('#capture-body').fill('合成持久正文');await page.getByRole('button',{name:'创建笔记',exact:true}).click();await page.locator('#capture-return').waitFor({state:'visible'});
       const captured=await page.locator('#file-path').textContent();assert.match(await readFile(join(fixture.root,captured),'utf8'),/合成持久正文/);
       await page.locator('#capture-return').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏' && document.querySelector('#library-page').textContent.includes('51–65'));assert.equal(await page.locator('nav [aria-current=page]').getAttribute('data-view'),'favorites');assert.match(await page.locator('#library-page').textContent(),/51–65/);
