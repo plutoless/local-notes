@@ -93,7 +93,11 @@ export function icon(name) {
   return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.notes}</svg>`;
 }
 
+let renderDirectory = null;
+// Installed once by the document shell; other consumers keep this stable adapter.
+export function bindDirectoryLabel(render) { renderDirectory = render; return () => { if (renderDirectory === render) renderDirectory = null; }; }
 export function directoryLabel(root) {
+  if (renderDirectory) return renderDirectory(root);
   const label = document.querySelector('#root-label');
   label.textContent = root;
   document.querySelector('#root-name').textContent = root === 'Sample' ? '样本笔记' : root?.split(/[\\/]/).filter(Boolean).pop() || '本地笔记';

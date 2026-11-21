@@ -1,0 +1,340 @@
+{
+  "sourceHead": "6a68af5da8082abe315a99322555fc7769cbdb95",
+  "startingAndBase": "2f5a8af78ada6da3c0f6d323cdb3b654e50cb9ed",
+  "node": "v25.1.0",
+  "npm": "11.6.2",
+  "sourceSHA256": {
+    "web/library-screen.js": "11ed85f367b07aa1c05fd1d43faf43ca94af67afefc04c8044d2f2436adb296d",
+    "web/organization.js": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+    "web/index.html": "970869ed4edf7a4716f27d8c34d47f6b3acc98cf73958c84f60cc8efbac6cc83",
+    "web/core.js": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+    "web/bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "web/actions.js": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+    "web/reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+    "web/initiative-screen.js": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+    "web/library.js": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+    "web/focus-screen.js": "d6a2d7c06ea440f45225b991849a8adc1304117759db1c059489b59faea009a0",
+    "web/global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+    "web/task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+    "web/revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "web/search-screen.js": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+    "web/style.css": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+    "web/organize-screen.js": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+    "web/action-screen.js": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+    "web/presentation.js": "d2fe7ea3357da84bf38873272114a9fdfb3795879fd57b7e49fd8af18fc99d28",
+    "web/sync-screen.js": "86b01136838d9432fd7cdc9fe556882b483fa73a6c651326781c83d96ca3f029",
+    "web/app.js": "d3e5311f7bd46277f2db9ab53acb00972536c0b5b2243968412c0b5cb8b59c29",
+    "web/initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+    "web/react/shell.tsx": "27306e75ee20c6beb54e7d630557a021390d75b98c9938a0e76559063f74bd51",
+    "web/react/host.tsx": "1368bf4d228ffd19c5b445b544987bc82ab55a04aa64ee4e07ae25e5fd58796f",
+    "web/react/focus.tsx": "ca8b2f7e3b3678ff1c277d6d7ea0d48e01007436edbab358390d0c467ef52140",
+    "web/react/styles.css": "e7ab7685e448b1434d91342f16085fdf60bc2e1b7eab2c2e6de061df6730bc21",
+    "web/react/reader.tsx": "486b9e9d07d77edb87f5b1c9bfc8f30c0b96d11f54fcec08e93af9754ca2c677",
+    "web/react/library.tsx": "c3c9a9831e328493eef4184955b4571812695994744b33cbe7f57c843b5aa213",
+    "web/react/library-model.ts": "1a9056d56f96393eb0e87a900ca3c02628a0cc2460c133cc44e16c9fbc82d716",
+    "web/react/focus-model.ts": "2da816480a3c65f02cc26a01770cdf4f5ee2337d9bb1ab5cb1c1c0d57cec6624",
+    "web/react/components.tsx": "b169a6b701b0d9f58ab0dedebb879c42e732a867e0177dee6ebda63beaef919b",
+    "web/react/catalogue.tsx": "eb0e12fa861c92da74bb1e3178182d244f9c4cecfc47c6b46880d54846d8e757",
+    "package.json": "a95ab9907445232dade016d35d54e0860279d02053a51cabf66dbb03253da3d2",
+    "package-lock.json": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+    "vite.config.ts": "aa2f907a938493d2e330cff4e1be4cf0376b86cac63c4a145529a33c4203afff",
+    "scripts/build-web.mjs": "1e2684c280ba5fb85035cf44310494df9426fd973746a3ab633981b20ec602d3",
+    "scripts/build-mac.sh": "a8ed0fdd21d4b913d64aec60ea5bd96e2215d3e5eb9e014d873919414f048260"
+  },
+  "assets": {
+    "build/web/library-screen.js": {
+      "sha256": "11ed85f367b07aa1c05fd1d43faf43ca94af67afefc04c8044d2f2436adb296d",
+      "bytes": 17144
+    },
+    "build/web/organization.js": {
+      "sha256": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "bytes": 16277
+    },
+    "build/web/index.html": {
+      "sha256": "970869ed4edf7a4716f27d8c34d47f6b3acc98cf73958c84f60cc8efbac6cc83",
+      "bytes": 14058
+    },
+    "build/web/core.js": {
+      "sha256": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "bytes": 7606
+    },
+    "build/web/bridge.js": {
+      "sha256": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "bytes": 717
+    },
+    "build/web/actions.js": {
+      "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "bytes": 15874
+    },
+    "build/web/reading-history.js": {
+      "sha256": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "bytes": 1339
+    },
+    "build/web/initiative-screen.js": {
+      "sha256": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+      "bytes": 34962
+    },
+    "build/web/asset-manifest.json": {
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "bytes": 885
+    },
+    "build/web/library.js": {
+      "sha256": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "bytes": 8436
+    },
+    "build/web/focus-screen.js": {
+      "sha256": "d6a2d7c06ea440f45225b991849a8adc1304117759db1c059489b59faea009a0",
+      "bytes": 8532
+    },
+    "build/web/global-search.js": {
+      "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "bytes": 12391
+    },
+    "build/web/task-drafts.js": {
+      "sha256": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "bytes": 1016
+    },
+    "build/web/revision-graph.js": {
+      "sha256": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "bytes": 1651
+    },
+    "build/web/search-screen.js": {
+      "sha256": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+      "bytes": 14703
+    },
+    "build/web/style.css": {
+      "sha256": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+      "bytes": 35138
+    },
+    "build/web/organize-screen.js": {
+      "sha256": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+      "bytes": 23604
+    },
+    "build/web/action-screen.js": {
+      "sha256": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+      "bytes": 31905
+    },
+    "build/web/presentation.js": {
+      "sha256": "d2fe7ea3357da84bf38873272114a9fdfb3795879fd57b7e49fd8af18fc99d28",
+      "bytes": 16539
+    },
+    "build/web/sync-screen.js": {
+      "sha256": "86b01136838d9432fd7cdc9fe556882b483fa73a6c651326781c83d96ca3f029",
+      "bytes": 16907
+    },
+    "build/web/app.js": {
+      "sha256": "d3e5311f7bd46277f2db9ab53acb00972536c0b5b2243968412c0b5cb8b59c29",
+      "bytes": 59712
+    },
+    "build/web/initiatives.js": {
+      "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "bytes": 4232
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "67d633abe5bb359f2fe0e9af693bf07320e839d7455082128c2034a0ac4a5b02",
+      "bytes": 323504
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/library-screen.js": {
+      "sha256": "11ed85f367b07aa1c05fd1d43faf43ca94af67afefc04c8044d2f2436adb296d",
+      "bytes": 17144
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/organization.js": {
+      "sha256": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "bytes": 16277
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/index.html": {
+      "sha256": "970869ed4edf7a4716f27d8c34d47f6b3acc98cf73958c84f60cc8efbac6cc83",
+      "bytes": 14058
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/core.js": {
+      "sha256": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "bytes": 7606
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/bridge.js": {
+      "sha256": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "bytes": 717
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/actions.js": {
+      "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "bytes": 15874
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/reading-history.js": {
+      "sha256": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "bytes": 1339
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/initiative-screen.js": {
+      "sha256": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+      "bytes": 34962
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/asset-manifest.json": {
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "bytes": 885
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/library.js": {
+      "sha256": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "bytes": 8436
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/focus-screen.js": {
+      "sha256": "d6a2d7c06ea440f45225b991849a8adc1304117759db1c059489b59faea009a0",
+      "bytes": 8532
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/global-search.js": {
+      "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "bytes": 12391
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/task-drafts.js": {
+      "sha256": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "bytes": 1016
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/revision-graph.js": {
+      "sha256": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "bytes": 1651
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/search-screen.js": {
+      "sha256": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+      "bytes": 14703
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/style.css": {
+      "sha256": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+      "bytes": 35138
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/organize-screen.js": {
+      "sha256": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+      "bytes": 23604
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/action-screen.js": {
+      "sha256": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+      "bytes": 31905
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/presentation.js": {
+      "sha256": "d2fe7ea3357da84bf38873272114a9fdfb3795879fd57b7e49fd8af18fc99d28",
+      "bytes": 16539
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/sync-screen.js": {
+      "sha256": "86b01136838d9432fd7cdc9fe556882b483fa73a6c651326781c83d96ca3f029",
+      "bytes": 16907
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/app.js": {
+      "sha256": "d3e5311f7bd46277f2db9ab53acb00972536c0b5b2243968412c0b5cb8b59c29",
+      "bytes": 59712
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/initiatives.js": {
+      "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "bytes": 4232
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
+      "sha256": "67d633abe5bb359f2fe0e9af693bf07320e839d7455082128c2034a0ac4a5b02",
+      "bytes": 323504
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "build/issue93-baseline-source/build/web/library-screen.js": {
+      "sha256": "2cda69540cde8b60fd70ca21462c65b3cab18c678f4dd4a7a670c79ff2970f1a",
+      "bytes": 17141
+    },
+    "build/issue93-baseline-source/build/web/organization.js": {
+      "sha256": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "bytes": 16277
+    },
+    "build/issue93-baseline-source/build/web/index.html": {
+      "sha256": "7660766792c64dbc6f0876d103490c171fb795e02a65e53ff77ce1d419a7b083",
+      "bytes": 14891
+    },
+    "build/issue93-baseline-source/build/web/core.js": {
+      "sha256": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "bytes": 7606
+    },
+    "build/issue93-baseline-source/build/web/bridge.js": {
+      "sha256": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "bytes": 717
+    },
+    "build/issue93-baseline-source/build/web/actions.js": {
+      "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "bytes": 15874
+    },
+    "build/issue93-baseline-source/build/web/reading-history.js": {
+      "sha256": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "bytes": 1339
+    },
+    "build/issue93-baseline-source/build/web/initiative-screen.js": {
+      "sha256": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
+      "bytes": 34962
+    },
+    "build/issue93-baseline-source/build/web/asset-manifest.json": {
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "bytes": 885
+    },
+    "build/issue93-baseline-source/build/web/library.js": {
+      "sha256": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "bytes": 8436
+    },
+    "build/issue93-baseline-source/build/web/focus-screen.js": {
+      "sha256": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+      "bytes": 11945
+    },
+    "build/issue93-baseline-source/build/web/global-search.js": {
+      "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "bytes": 12391
+    },
+    "build/issue93-baseline-source/build/web/task-drafts.js": {
+      "sha256": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "bytes": 1016
+    },
+    "build/issue93-baseline-source/build/web/revision-graph.js": {
+      "sha256": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "bytes": 1651
+    },
+    "build/issue93-baseline-source/build/web/search-screen.js": {
+      "sha256": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+      "bytes": 14703
+    },
+    "build/issue93-baseline-source/build/web/style.css": {
+      "sha256": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858",
+      "bytes": 35138
+    },
+    "build/issue93-baseline-source/build/web/organize-screen.js": {
+      "sha256": "e551d8c8aba3bea5ae16c500f3b49b89279a9d8c2a3a9f4a3e4f15a6944c6574",
+      "bytes": 23604
+    },
+    "build/issue93-baseline-source/build/web/action-screen.js": {
+      "sha256": "4a79d93010ffd41099df5df7f9c67e8ebbf7c54202e347c13d9709599dc8dd91",
+      "bytes": 31905
+    },
+    "build/issue93-baseline-source/build/web/presentation.js": {
+      "sha256": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1",
+      "bytes": 16228
+    },
+    "build/issue93-baseline-source/build/web/sync-screen.js": {
+      "sha256": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf",
+      "bytes": 16887
+    },
+    "build/issue93-baseline-source/build/web/app.js": {
+      "sha256": "6f7856a780054ce3dae3f78b68f999d85b5d66c671be14d13fe2fc5a93d511f2",
+      "bytes": 59993
+    },
+    "build/issue93-baseline-source/build/web/initiatives.js": {
+      "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "bytes": 4232
+    },
+    "build/issue93-baseline-source/build/web/assets/react-host.js": {
+      "sha256": "68929235eec2052e70b86974f077a1f6232e7d1dc0900514621ff7227ca2510c",
+      "bytes": 311457
+    },
+    "build/issue93-baseline-source/build/web/assets/react-host.css": {
+      "sha256": "4c5495ad20100459a5f5b7e7bc4f267017a020a122098f71300deccc41c9ba97",
+      "bytes": 43882
+    }
+  },
+  "packagedAssetsMatch": true,
+  "macBinarySHA256": "7cd8a2ddf4c5ecc156fdb27875f6730268398ba06a6ef4956d3cf26a49ef0400",
+  "limitations": "Built and codesign verified, not launched; no native transport/OS/minimum OS/Intel/physical runtime evidence. Baseline git archive has different Tailwind automatic discovery context.",
+  "typeOnlyReviewCorrection": "Nullable interface correction emitted identical React assets; subsequent Focus owner and pagination error fences rebuilt/retested actual Focus and package assets; reader/history broad evidence reused for unchanged paths.",
+  "executedBroadSuiteSourceHead": "611b30190b1c35eb64d85d0cddca9b11bda9b546",
+  "finalTargetedSuiteSourceHead": "6a68af5da8082abe315a99322555fc7769cbdb95"
+}

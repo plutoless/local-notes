@@ -21,7 +21,7 @@ export class SyncScreen {
     // Keep the modal opener focusable while its asynchronous check runs.
     this.opener.onclick = () => this.refresh(true);
     this.opener.innerHTML = icon('sync') + '同步检查';
-    document.querySelector('nav').append(this.opener);
+    document.querySelector('#shell-legacy-utilities').append(this.opener);
     const refresh = () => this.refresh(false);
     window.addEventListener('focus', refresh); window.addEventListener('reference-change', refresh);
   }

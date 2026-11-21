@@ -5,3 +5,7 @@ export {libraryPage} from './library-model';
 export {readerView} from './reader';
 export {mountLibraryCatalogue} from './catalogue';
 export {noteReply} from './library-model';
+
+export {focusView} from './focus';
+export {focusPosition} from './focus-model';
+export {shellView, shellUpdate} from './shell';

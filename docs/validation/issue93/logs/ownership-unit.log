@@ -1,0 +1,10 @@
+✔ a released or replaced home cannot reclaim the visible legacy list after a delayed query (0.481708ms)
+✔ directory presentation delegates to the current shell owner and a stale disposer cannot detach its replacement (0.546167ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 43.395167
