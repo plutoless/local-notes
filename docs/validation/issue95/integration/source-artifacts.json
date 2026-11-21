@@ -1,0 +1,27 @@
+{
+  "implementationHead": "1f9c4953819a4bdff91d1f2612d0f55dd33cff59",
+  "integrationBase": "f39466dce449467620a7e08eacf3a1f9087c29b5",
+  "originalStartingSHA": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "previousApprovedActionHead": "968ebb2bffb49b558cb9d4cc106edaa7d0ef6fd8",
+  "sha256": {
+    "web/react/host.tsx": "d48c1374e54c40314133d5df11f09018eb4ce120b4a9974541142e49b967eb2d",
+    "web/react/catalogue.tsx": "63e19316dd0a965b77b6a09b778e54561b782ebb3f7b307e7e68650c1f3dc057",
+    "web/react/actions.tsx": "af2166254e5129d0226d3e9ad8b551781370669393f1215413735714dff52fb8",
+    "web/action-screen.js": "5b040820b303b7a21fc72ee70d1223c175591b5aa34b80869b14d1569d7a232c",
+    "web/app.js": "70e6ed51c6bb9a0ca57261dce6cf61ab2898deb684a3aba92c06714fe400245f",
+    "web/search-screen.js": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+    "web/react/search.tsx": "eb8806b1b644c6dd5247f5a44df41a5352cf3b7fd6351e504d538f4638c2e3aa",
+    "web/react/search-model.ts": "9cb645d50411b52f2e8c10d695ac39288765185a2cc91dea8c8f2a3b4fe9818a",
+    "tests/search-ui.mjs": "de28405050152c18afe75f3bda9c54c9ab68612e7cdac22d30e68745997d3b58",
+    "tests/search-navigation-ui.mjs": "cd18aaec0213ba3ae00281f216c5e4d30407a575b966333e368d3b7a060e9bfd",
+    "tests/actions-react-ui.mjs": "ac06129565d0fd277264dad318fec6a3c854e09dc3b9ec8f1783264735d6f6c5",
+    "tests/action-entry.test.js": "c32da3a4a9c914a8aca30c9dbff46a33153289679c10abc2bc77dfeed516ddcf",
+    "build/web/assets/react-host.js": "666a0227a6d5d8928ede14584ca4edbb7f14fc838633af43802f44d259f22485",
+    "build/web/assets/react-host.css": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+    "build/web/asset-manifest.json": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": "666a0227a6d5d8928ede14584ca4edbb7f14fc838633af43802f44d259f22485",
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+    "dist/LocalNotes.app/Contents/Resources/web/search-screen.js": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": "805a6688e2bb48707625a352aaecb7db3a9937165695c51073513a2bf69d0123"
+  }
+}

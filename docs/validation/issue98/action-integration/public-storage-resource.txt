@@ -1,0 +1,31 @@
+✔ Action entry adopts a return route only after an accepted, current drawer open (0.913166ms)
+✔ focus membership remains pending for leave and a superseded result cannot replace another Action (0.6425ms)
+✔ a durable focus revision with failed repair stays a committed private recovery candidate (1.01ms)
+✔ confirmed actions start empty despite reference checkboxes, and survive native index removal (2729.185417ms)
+✔ every state can be reopened while complete immutable history and optional fields survive restart (427.11ms)
+✔ interrupted revision writes retain the edit and restart recovers only committed revisions (86.919625ms)
+✔ interrupted current writes retain the edit and restart recovers only committed revisions (74.284ms)
+✔ interrupted index writes retain the edit and restart recovers only committed revisions (56.79725ms)
+✔ transient current-record and index failures report recovered saves after repair (43.238041ms)
+✔ queries paginate and workspace IDs reject writes from another root (84.73575ms)
+✔ a missing live SQLite index is rebuilt before returning query results (52.158708ms)
+✔ editing after a recoverable commit extends the committed revision without branching or duplicating the action (30.8925ms)
+✔ individual edited decisions, initiative separation, later state, reference, links, progress and topics (3643.984833ms)
+✔ fingerprints block changed, missing and unavailable evidence; ignore and repeated analysis persist after rebuild (66.229334ms)
+✔ committed intent survives termination before target, repeated clicks and after-target interruption without duplicates (139.045583ms)
+✔ two-device review and target disagreements retain branches through rebuild and require conflict resolution (119.177375ms)
+✔ invalid synchronized approval intents are rejected before replay (104.299959ms)
+✔ rename and repeated analysis recognize a processed candidate by content fingerprints (70.684917ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (39.361958ms)
+✔ complete traceable batches and strict evidence validation resist injected instructions (3.391292ms)
+✔ explicit selected scope, persisted candidates, restart/index recovery, partial retry and cancel (2320.086333ms)
+✔ cancel during asynchronous dedup query prevents persistence and coverage changes (0.234292ms)
+✔ candidate recovery composes with merged revision recovery without changing suggested state (46.19125ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4216.502834
