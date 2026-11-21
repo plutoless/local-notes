@@ -72,9 +72,9 @@
     {
       "variant": "baseline",
       "warmRefreshMs": [
-        72,
-        100,
-        100
+        146,
+        118,
+        134
       ],
       "readCommands": 66,
       "jsBytes": 323504,
@@ -83,12 +83,12 @@
     {
       "variant": "migrated",
       "warmRefreshMs": [
-        135,
-        99,
-        101
+        116,
+        118,
+        116
       ],
-      "readCommands": 4,
-      "jsBytes": 328816,
+      "readCommands": 6,
+      "jsBytes": 335479,
       "cssBytes": 6132
     }
   ],
