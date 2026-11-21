@@ -35,7 +35,41 @@
       "diagnosticProgress": true,
       "behavioralProgress": "original import signature resolved and build-only readiness established",
       "consecutiveSameSignatureWithoutProgress": 0
+    },
+    {
+      "cycle": 2,
+      "signature": "Browser DevTools compositionend.isTrusted is false",
+      "hypothesis": "CDP compositionend trust differs from OS composition; inspect full event receipt",
+      "correction": "Record CDP compositionend trust honestly; require complete start/update/end/value and trusted browser input behavior without claiming actual OS IME",
+      "command": "CHROME_PATH=... node tests/reader-editing-ui.mjs",
+      "observedResult": "Composition/cancel/commit/caret/selection/read-edit/search-return/save/reload assertions pass; original failure and event transcript retained",
+      "diagnosticProgress": true,
+      "consecutiveSameSignatureWithoutProgress": 0
+    },
+    {
+      "cycle": 3,
+      "signature": "Shared105 stale Continue fallback overrides newer Tab in reader",
+      "hypothesis": "Reader noteTask consumes affected shared taskLeaveChoice",
+      "correction": "No consumer-side correction; retained deterministic failure and requested delivery/integration of sole-owner PR106",
+      "command": "CHROME_PATH=... node tests/reader-editing-ui.mjs",
+      "observedResult": "Newer Tab destination note-save is overwritten by held fallback back; acceptance blocked by actual shared105 regression",
+      "diagnosticProgress": true,
+      "consecutiveSameSignatureWithoutProgress": 0
+    },
+    {
+      "cycle": 4,
+      "signature": "Shared105 stale Continue fallback overrides newer Tab in reader",
+      "hypothesis": "Delivered sole-owner105 event-intent fence preserves newer reader focus",
+      "correction": "Merged coordinator-delivered origin/main20302d140dac350e543731543d72246275ee7353, preserving reader test and exact held-callback assertion; no duplicated shared fix",
+      "commands": [
+        "CHROME_PATH=... node tests/reader-editing-ui.mjs",
+        "CHROME_PATH=... node tests/leave-focus-ui.mjs"
+      ],
+      "observedResult": "Reader newer note-save destination survives old callback; remaining discard/readback/reload completes; public-interface controlled-order DOM cases pass",
+      "diagnosticProgress": true,
+      "behavioralProgress": true,
+      "consecutiveSameSignatureWithoutProgress": 0
     }
   ],
-  "next": "No native acceptance executed; request exclusive GUI custody before actual IME; consume issue105 from sole owner when delivered."
+  "next": "Final focused exact-head browser/storage checks and package/source binding; separate independent Standards/Spec; native replay/actualOSIME deferred by maintainer policy, never passed."
 }
