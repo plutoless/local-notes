@@ -11,8 +11,9 @@ let activeFixture = fixture, alternateFixture;
 let releaseMetadata, metadataStartedResolve, delayMetadata = false;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
+let page;
 try {
-  const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
@@ -44,8 +45,8 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   const summaryCases = JSON.parse(await readFile('tests/fixtures/library-summaries.json', 'utf8'));
   for (const note of summaryCases) {
@@ -250,4 +251,4 @@ try {
   for (const id of ['library-refresh','library-create-topic','library-next','library-previous']) assert.ok((await page.locator('#'+id).boundingBox()).height>=44);
   assert.deepEqual(errors,[]);
   console.log('PASS: browse/search/favorites, topic create/rename/link/filter, Chinese reading/inert checkboxes, autosave, successful move and topic link repair, external conflict/copy, draft recovery after reload, 393px library/editor overflow, keyboard focus. Chromium + real Swift storage/SQLite adapter.');
-} catch(error) { console.log(error); throw error; } finally { await browser.close(); await fixture.close(); if (alternateFixture) await alternateFixture.close(); }
+} catch(error) { console.log(error); console.log('Library failure state', await page.evaluate(()=>({progress:document.querySelector('#library-progress')?.outerHTML,notice:document.querySelector('#notice')?.textContent,root:document.querySelector('#root-label')?.textContent}))); throw error; } finally { await browser.close(); await fixture.close(); if (alternateFixture) await alternateFixture.close(); }

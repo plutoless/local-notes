@@ -7,8 +7,11 @@ BT="$SDK/build-tools/35.0.0"
 export JAVA_HOME="$JDK"
 export PATH="$JDK/bin:$PATH"
 OUT="$PWD/build/android"
+npm run typecheck
+npm run build:web
 mkdir -p "$OUT/classes" "$OUT/dex" "$OUT/assets/web" "$OUT/assets/sample" dist
-cp web/* "$OUT/assets/web/"
+rm -rf "$OUT/assets/web"
+cp -R build/web "$OUT/assets/web"
 cp -R sample/Notes "$OUT/assets/sample/"
 "$BT/aapt2" link -o "$OUT/base.apk" --manifest android/AndroidManifest.xml -I "$SDK/platforms/android-35/android.jar" -A "$OUT/assets"
 javac --release 17 -classpath "$SDK/platforms/android-35/android.jar" -d "$OUT/classes" android/src/dev/localnotes/*.java

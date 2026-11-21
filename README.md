@@ -28,7 +28,9 @@ External editors and Syncthing do not follow the app's locking protocol. Compari
 
 ## Development
 
-There are no third-party runtime dependencies. The interface uses HTML/CSS/JS, with a Swift/WKWebView shell on Mac and a Java/WebView shell on Android. Each platform uses its own local file bridge.
+The Library and shared reader/editor use React and TypeScript with compiled Tailwind 4; unmigrated screens retain the existing JavaScript presentation helpers. The native Swift/WKWebView and Java/WebView shells and local file bridges remain. Dependencies are pinned in the lockfile and bundled locally: installed apps require no Node.js, development server, CDN or network assets. See [frontend ownership and packaging](docs/architecture/library-react.md).
+
+The maintainer-approved compatibility targets are macOS 13.3 with system WebKit 16.4-era capabilities and Android 8/API 26 with Chromium WebView provider 111 or later. The OS and engine requirements both apply; minimum-version runtime tests remain unrun unless explicitly reported in the validation evidence.
 
 ```sh
 npm run check
