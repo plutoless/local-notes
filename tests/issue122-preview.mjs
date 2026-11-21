@@ -12,7 +12,7 @@ for(const direction of ['a','b','c']){
  page.on('request',r=>{if(!r.url().startsWith('http://127.0.0.1:8122/'))external.push(r.url());});
  await page.goto(`http://127.0.0.1:8122/docs/design/issue122/?direction=${direction}`);
  await page.getByRole('button',{name:'新建行动',exact:true}).waitFor();
- const shot=async name=>page.screenshot({path:`${out}/${direction}-${name}.png`,fullPage:false});
+ const shot=async name=>{await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));return page.screenshot({animations:'disabled',path:`${out}/${direction}-${name}.png`,fullPage:false});};
  const fits=async()=>assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await fits();await shot('desktop');
  await page.locator('pre').scrollIntoViewIfNeeded();await shot('markdown-table-code');await page.evaluate(()=>scrollTo(0,0));
@@ -45,6 +45,7 @@ for(const direction of ['a','b','c']){
   else await shot('short');
   await page.getByRole('button',{name:'新建行动',exact:true}).click();
   await page.locator('#action-title').fill('');
+  assert.equal(await page.getByRole('status').innerText(),'');
   await fits();await page.getByRole('button',{name:'预览确认',exact:true}).scrollIntoViewIfNeeded();
   const box=await page.getByRole('button',{name:'预览确认',exact:true}).boundingBox();assert.ok(box.y>=0&&box.y+box.height<=viewport.height);
   await shot(viewport.width===393?'393-form':'short-form');

@@ -66,3 +66,10 @@ Environment: macOS local host, Node v25.1.0, npm 11.6.2, Google Chrome
 158.0.8127.36 headless. No new dependency or compatibility floor. This work changes
 neither the production catalogue nor production app ownership. Candidate rules
 remain proposals until the explicit maintainer decision.
+
+Spec followup preserved a prior compositor artifact in the initial A short-window
+capture and a stale preview receipt after clearing a corrected form. Regenerated
+all captures after two browser animation frames, disabled screenshot animations,
+and cleared the local receipt on any field edit. Added a DOM assertion that the
+receipt is empty after the title is cleared. Revised type, preview build, DOM and
+contrast/layout checks passed. No production change resulted.
