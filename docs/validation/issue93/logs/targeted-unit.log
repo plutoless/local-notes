@@ -1,0 +1,12 @@
+✔ a released or replaced home cannot reclaim the visible legacy list after a delayed query (0.597458ms)
+✔ focus reordering preserves neighbor positions and chooses the requested bounded slot (0.526458ms)
+✔ focus reordering rejects unavailable or unrepresentable slots before persistence (0.117292ms)
+✔ directory presentation delegates to the current shell owner and a stale disposer cannot detach its replacement (0.540083ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 71.540958
