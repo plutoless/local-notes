@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.json","include":["docs/design/issue122/*.tsx","docs/design/issue122/fixtures.ts","web/react/preview-controls","vite.preview.config.ts"]}
