@@ -222,6 +222,8 @@ export async function requestTaskLeave(task) {
 function taskLeaveChoice(label, failure, committed, focusOrigin) {
   return new Promise(resolve => {
     const origin = focusOrigin || document.activeElement;
+    const selection = typeof origin?.selectionStart === 'number'
+      ? [origin.selectionStart, origin.selectionEnd, origin.selectionDirection] : null;
     const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
     const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;
@@ -242,10 +244,24 @@ function taskLeaveChoice(label, failure, committed, focusOrigin) {
       }
     });
     function finish(choice) {
-      panel.close(); panel.remove(); origin?.focus({preventScroll:true}); resolve(choice);
+      const restoreSelection = () => {
+        if (choice === 'continue' && selection && document.activeElement === origin) origin.setSelectionRange(...selection);
+      };
+      panel.close(); panel.remove(); origin?.focus({preventScroll:true}); restoreSelection();
+      // The fallback belongs to this return only. New input or focus supersedes it.
+      let superseded = false;
+      const supersede = () => { superseded = true; };
+      const intents = ['focusin', 'keydown', 'pointerdown'];
+      for (const type of intents) document.addEventListener(type, supersede, true);
+      resolve(choice);
       // An async dismissal button is re-enabled only after its leave promise
       // settles. Restore that opener after its event handler has completed.
-      setTimeout(() => { if (!document.getElementById('task-leave-decision') && origin?.isConnected) origin.focus({preventScroll:true}); }, 0);
+      setTimeout(() => {
+        for (const type of intents) document.removeEventListener(type, supersede, true);
+        if (!superseded && !document.getElementById('task-leave-decision') && origin?.isConnected) {
+          origin.focus({preventScroll:true}); restoreSelection();
+        }
+      }, 0);
     }
     panel.showModal(); keep.focus();
   });
