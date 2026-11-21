@@ -1,5 +1,7 @@
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
+import {Input} from './ui/input';
+import {Textarea} from './ui/textarea';
 import {Button} from './components';
 
 export interface NoteField {
@@ -10,7 +12,7 @@ export function NoteFields({fields,change}:{fields:NoteField[];change?:(id:strin
   return <>{fields.map(f=>{
     const props={id:f.id,value:f.value || '',required:f.required,disabled:f.disabled,onChange:()=>{},'aria-invalid':f.invalid || undefined,'aria-describedby':[f.describedBy,f.help?f.id+'-help':null].filter(Boolean).join(' ') || undefined,
       onInput:(e:React.FormEvent<HTMLInputElement|HTMLTextAreaElement>)=>change?.(f.id,e.currentTarget.value)};
-    const input=f.multiline?<textarea {...props} rows={7}/>:<input {...props} type={f.hidden?'hidden':'text'}/>;
+    const input=f.multiline?<Textarea {...props} rows={7}/>:<Input {...props} type={f.hidden?'hidden':'text'}/>;
     return f.hidden?<span key={f.id} hidden>{input}</span>:<label key={f.id} className="ui-field"><span>{f.label}</span>{input}{f.help&&<small id={f.id+'-help'}>{f.help}</small>}</label>;
   })}</>;
 }
