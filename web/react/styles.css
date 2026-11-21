@@ -2,6 +2,10 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 @source './';
+/* Design-preparation controls never contribute to shipped utility discovery. */
+@source not './preview-controls';
+@source not '../../docs/design/issue122';
+@source not '../../docs/validation/issue122';
 @theme inline {
   --color-surface: var(--surface);
   --color-content: var(--text);
