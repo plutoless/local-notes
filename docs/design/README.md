@@ -214,3 +214,9 @@ field/invalid state remain authoritative. The live catalogue imports these actua
 components, including long Chinese content and reading continuation. Storage, modal
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
+
+Issue #95 consumes production React Action rows, static form controls, source
+references and immutable history with the existing wide contextual drawer. The
+[Action ownership inventory](../architecture/actions-react.md) records the stable
+legacy control/entry ports and single lifecycle/overlay authority. The catalogue
+uses the same selected, overdue, waiting and long-Chinese Action row component.

@@ -9,3 +9,4 @@ export {noteReply} from './library-model';
 export {focusView} from './focus';
 export {focusPosition} from './focus-model';
 export {shellView, shellUpdate} from './shell';
+export {mountActionControls, actionRows, actionSources, actionHistory} from './actions';
