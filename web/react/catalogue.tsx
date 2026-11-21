@@ -7,6 +7,10 @@ import {SearchContent} from './search';
 import {Button} from './components';
 import {CandidateReviewContent} from './candidate-review';
 import {ConflictComparison, type ConflictRecord, type SyncCallbacks} from './sync';
+import {ReferenceDesk} from './reader';
+import {LeaveContent} from './overlays';
+import {Input} from './ui/input';
+import {Textarea} from './ui/textarea';
 import {LibraryRows} from './library';
 import {ShellContent} from './shell';
 import {FocusContent, type FocusCallbacks} from './focus';
@@ -21,6 +25,9 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
   root.render(<><h2>React 笔记库组件</h2><p>实际生产按钮、列表行与语义样式；不访问笔记或保存记录。</p>
     <div className="flex flex-wrap gap-2"><Button className="primary">主要操作</Button><Button className="secondary">保存笔记</Button><Button className="quiet ui-compact">次要操作</Button><Button disabled>暂不可用</Button></div>
+    <h2>阅读来源与离开决定</h2><ReferenceDesk path="研究/同名资料/中文长路径.md" hidden={false} collapse={noop} organize={noop}/>
+    <label>笔记标题<Input aria-label="示例笔记标题" defaultValue="明确编辑与阅读"/></label><label>Markdown 正文<Textarea aria-label="示例笔记正文" defaultValue="## 保留原文"/></label>
+    <LeaveContent model={{label:'笔记',failure:'保存失败，编辑仍保留。',committed:false}} choose={noop}/>
     <LibraryRows notes={[{path:'研究/中文长路径.md',title:'这是用于检查长中文标题换行与键盘选中状态的笔记标题',excerpt:'逐字保留来源摘要；生产列表不会在组件内访问存储。',modified:1000}]} directories={[]} selectedPath="研究/中文长路径.md" empty="" root={false} open={()=>{}} browse={()=>{}}/>
     <h2>React 随手记、位置与主题归类</h2><section className="ui-drawer-body"><NoteFields fields={[{id:'catalogue-capture',label:'标题',value:'这是用于检查很长中文标题、输入位置与选择保留的真实表单组件'},{id:'catalogue-location',label:'笔记相对路径',value:'研究/很长的中文目录/资料.md',help:'以 .md 结尾，路径相对于笔记目录。'},{id:'catalogue-topic',label:'主题名称',invalid:true,help:'请填写主题名称。'}]}/><Classification kind="topic" items={[{id:'example',title:'跨目录研究资料归类与长中文内容',checked:true}]} create={noop} change={noop}/></section>
     <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>

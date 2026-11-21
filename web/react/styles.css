@@ -14,3 +14,12 @@
   --color-boundary: var(--line);
   --color-focus: var(--focus);
 }
+
+@theme inline {
+  --color-input: var(--line);
+  --color-ring: var(--focus);
+  --color-destructive: var(--danger);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #fff;
+  --color-muted-foreground: var(--muted);
+}

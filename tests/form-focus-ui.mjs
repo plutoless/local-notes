@@ -72,13 +72,18 @@ try {
       await page.setViewportSize({width,height});
       if (field) await page.locator(field).scrollIntoViewIfNeeded();
       await screenshot(join(evidence,`${name}-${width}-${height}.png`));
-      const state = await page.evaluate(() => { const n=document.activeElement,s=getComputedStyle(n); return {active:n.id,outline:s.outline,shadow:s.boxShadow,border:s.borderColor,invalid:n.getAttribute('aria-invalid'),focusVisible:n.matches(':focus-visible')}; });
+      const state = await page.evaluate(() => { const n=document.activeElement,s=getComputedStyle(n); return {active:n.id,outline:s.outline,shadow:s.boxShadow,border:s.borderColor,invalid:n.getAttribute('aria-invalid'),focusVisible:n.matches(':focus-visible'),slot:n.dataset.slot}; });
       report.push({name,width,height,...state});
       if (field) assert.equal(await page.locator(field).evaluate(n=>n===document.activeElement),true,'expected editable receiver owns focus');
       if (!process.env.FORM_BASELINE && field) {
-        assert.equal(state.outline.includes('none'),true,'editable field has one boundary, no outer outline');
-        assert.match(state.shadow,/7, 95, 204/,'active boundary uses shared focus token');
-        if (state.invalid==='true') assert.equal(state.border,'rgb(161, 38, 34)');
+        if (['input','textarea'].includes(state.slot) && state.focusVisible) {
+          assert.match(state.outline,/solid/,'official field has one solid focus outline');
+          assert.equal(state.shadow,'none','official field has no competing ring');
+        } else {
+          assert.equal(state.outline.includes('none'),true,'editable field has one boundary, no outer outline');
+          assert.match(state.shadow,/36, 92, 172/,'active boundary uses shared focus token');
+        }
+        if (state.invalid==='true') assert.equal(state.border,'rgb(161, 38, 37)');
       }
       assert.equal(await page.locator('dialog[open]').last().evaluate(n=>n.getBoundingClientRect().width<=innerWidth),true);
     }
