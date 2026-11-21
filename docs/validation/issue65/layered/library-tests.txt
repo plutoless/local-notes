@@ -1,0 +1,16 @@
+✔ archive recognition uses complete directory components only (0.639833ms)
+✔ frontmatter and prose cannot promote a current path into an archive (1.214041ms)
+{"fixture":"500 notes / 2000 actions","coldMs":809.4101659999997,"warmMs":520.4904999999999,"openingMs":0.02070800000001327,"coldReads":500,"warmReads":0,"editMoveReads":2}
+✔ 500-note incremental SQLite library with 2,000 confirmed actions (12968.301459ms)
+✔ production Mac traversal excludes protected ranges and returns only metadata (8.886333ms)
+✔ source-faithful summaries survive cached upgrade and index rebuild without source writes (40.310834ms)
+✔ summary cleanup preserves literal operators and code syntax (0.177959ms)
+✔ Library ordering and archive scope compose at the SQLite boundary with stable bounded pages (257.056542ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 13319.422875

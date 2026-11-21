@@ -14,11 +14,13 @@ final class ReferenceIndex {
         try index.execute(db, "CREATE TABLE IF NOT EXISTS notes(path TEXT PRIMARY KEY, search TEXT, topics TEXT, directory TEXT, record TEXT)")
         let command = request["cmd"] as? String ?? ""
         var values = [String](); var sql = ""
+        var total: Int?
+        let archive = "CASE WHEN instr('/'||lower(directory)||'/', '/archive/')>0 OR instr('/'||lower(directory)||'/', '/archives/')>0 OR instr('/'||lower(directory)||'/', '/archived/')>0 OR instr('/'||directory||'/', '/归档/')>0 THEN 1 ELSE 0 END"
         if command == "referencePut", let record = request["record"] as? [String: Any] {
             sql = "INSERT OR REPLACE INTO notes VALUES(?,?,COALESCE((SELECT topics FROM notes WHERE path=?),''),?,?)"
             values = [record["path"] as? String ?? "", request["search"] as? String ?? "", record["path"] as? String ?? "", record["directory"] as? String ?? "", String(data: try JSONSerialization.data(withJSONObject: record), encoding: .utf8)!]
         } else if command == "referenceRemove" { sql = "DELETE FROM notes WHERE path=?"; values = [request["path"] as? String ?? ""]
-        } else if command == "referenceTags" { sql = "UPDATE notes SET topics=? WHERE path=?"; values = [request["topics"] as? String ?? "", request["path"] as? String ?? ""]
+        } else if command == "referenceTags" { sql = "UPDATE notes SET topics=? WHERE path=? AND topics<>?"; values = [request["topics"] as? String ?? "", request["path"] as? String ?? "", request["topics"] as? String ?? ""]
         } else {
             let inventory = command == "referenceInventory"
             let global = command == "referenceSearch"
@@ -32,9 +34,25 @@ final class ReferenceIndex {
             if global { sql += " AND (instr(record, '\"searchVersion\":1,')>0 OR instr(record, '\"searchVersion\":1}')>0)" }
             if let path = request["exactPath"] as? String { sql += inventory ? " WHERE path=?" : " AND path=?"; values.append(path) }
             if let paths = request["paths"] as? [String] { sql += paths.isEmpty ? " AND 0" : " AND path IN (" + Array(repeating: "?", count: paths.count).joined(separator: ",") + ")"; values += paths }
+            if command == "referenceQuery" {
+                if request["archives"] as? String == "exclude" { sql += " AND (\(archive))=0" }
+                if request["archives"] as? String == "only" { sql += " AND (\(archive))=1" }
+                let countSQL = sql.replacingOccurrences(of: "SELECT record FROM", with: "SELECT count(*) FROM")
+                var countStatement: OpaquePointer?
+                guard sqlite3_prepare_v2(db, countSQL, -1, &countStatement, nil) == SQLITE_OK, let countStatement = countStatement else { throw failure("Cannot count references") }
+                defer { sqlite3_finalize(countStatement) }
+                for (position, value) in values.enumerated() { index.bind(countStatement, Int32(position + 1), value) }
+                guard sqlite3_step(countStatement) == SQLITE_ROW else { throw failure("Cannot count references") }
+                total = Int(sqlite3_column_int(countStatement, 0))
+            }
             if global {
                 sql += " ORDER BY CASE WHEN instr(lower(substr(search,1,instr(search,char(10))-1)),lower(?))>0 THEN 0 ELSE 1 END, path LIMIT ? OFFSET ?"
                 values.append(request["search"] as? String ?? "")
+            } else if command == "referenceQuery" {
+                let order = request["order"] as? String ?? "current"
+                let title = "lower(substr(search,1,instr(search,char(10))-1))"
+                let ordering = order == "title" ? "\(title), path" : order == "path" ? "path" : "(\(archive)), path"
+                sql += " ORDER BY \(ordering) LIMIT ? OFFSET ?"
             } else { sql += " ORDER BY path LIMIT ? OFFSET ?" }
             let limit = min(100, max(1, request["limit"] as? Int ?? 50))
             values += [String(limit + 1), String(max(0, request["offset"] as? Int ?? 0))]
@@ -56,6 +74,9 @@ final class ReferenceIndex {
         }
         guard step == SQLITE_DONE else { throw failure("Reference index operation failed") }
         let limit = min(100, max(1, request["limit"] as? Int ?? 50))
-        return ["notes": Array(rows.prefix(limit)), "hasMore": rows.count > limit]
+        var result: [String: Any] = ["notes": Array(rows.prefix(limit)), "hasMore": rows.count > limit]
+        if let total = total { result["total"] = total }
+        if command == "referenceTags" { result["changed"] = sqlite3_changes(db) > 0 }
+        return result
     }
 }

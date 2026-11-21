@@ -1,0 +1,47 @@
+{
+  "head": "649667cf9c0cd94104c8a0bbd7bdae01ec68dde8",
+  "hardware": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "cpu": "Apple M4",
+  "corpus": 500,
+  "cold": {
+    "ms": 1055,
+    "reads": 500
+  },
+  "assets": {
+    "library-screen.js": "fea511eb7c3f1a5c2e548eb88d73819e4939f7a1e118421c74f35e91f8a153af",
+    "organization.js": "1da2df7953fa1fb674584498e4180e05aa0d4fc94c19a86bbc3d624f4918e766",
+    "index.html": "281145db86cce4fed8129cf1af88826596b0bac8deb028241cf50b06fbed6b2a",
+    "core.js": "e1b033ae3a5bba3fd43fb96daa65b12b698e8e9f78e817de7e042f3c3ea547b1",
+    "bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "actions.js": "fce684f189da673d8485319fe91c88c2c9f63a095022e284153e9324f67b7b40",
+    "initiative-screen.js": "cf66708a023a4be85316c632e3da323c69e12369c5122b033e24a211b3682579",
+    "library.js": "883e76bd6b8d7880e391e377836c26df8670db1022f84702f387e18b34e2404c",
+    "focus-screen.js": "0df3e015737f1c58056309a5424fdd692d940f2ad83bd76487d759b3cb90bf9b",
+    "global-search.js": "f729e29b3baf7b6ecedc6623c3ae35b81fe6419a7a7b2a3b2e55961e64ca8281",
+    "task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+    "revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "search-screen.js": "489742d5eeccdaa2fe71bfd5da63e607e97d8b86fbba433b31b682e313b85505",
+    "style.css": "5be9b9fd21b8f244346bf0930d844aa99bb2ad290be4b8e7ad756bf4e9fdc3d5",
+    "organize-screen.js": "9817637f9dc4f3e4c288ece4ea7fcae427f6ebe2711f76b4bedc0cab36d91e32",
+    "action-screen.js": "17395a25aef48d24727958a3dcc6887d9d056a9a30e60c59b0e8c88e428eb8d4",
+    "presentation.js": "ae20d7d110c6cd25b975658d799088d01752879023c827f7e497ef91a4ad1722",
+    "sync-screen.js": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
+    "app.js": "beb956cdcfd543f9459346fff8def35c2e27c2197efed6af7c01086895a136e6",
+    "initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+  },
+  "archivePages": {
+    "count": 171,
+    "unique": 171,
+    "browseReturn": true
+  },
+  "warm": {
+    "ms": 300,
+    "reads": 0
+  },
+  "open": {
+    "ms": 100,
+    "reads": 1
+  },
+  "input": "DOM-driven Cocoa/WKWebView; no physical or OS-injected input",
+  "timingScope": "UI automation wall-clock including polling; cold waits for full indexing; warm is manual refresh; open one selected source"
+}

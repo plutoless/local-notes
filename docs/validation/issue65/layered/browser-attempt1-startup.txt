@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Current\//. Input:
+
+'reference.md'
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-65/tests/library-browse-journey.mjs:61:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'reference.md',
+  expected: /^Current\//,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.1.0

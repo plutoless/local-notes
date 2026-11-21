@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: The input did not match the regular expression /61/. Input:
+
+'已索引：122；本页 1–50'
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-65/tests/library-browse-journey.mjs:95:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: '已索引：122；本页 1–50',
+  expected: /61/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v25.1.0

@@ -40,7 +40,9 @@
           />
         </header>
         <div id="library-tools" hidden>
-          <div class="library-filter-group" role="group" aria-label="主题筛选与管理">
+          <div class="library-filter-group" role="group" aria-label="笔记筛选与管理">
+            <label class="library-browse-control">排序<select id="library-order" aria-label="排序"><option value="current">非归档优先</option><option value="path">路径</option><option value="title">标题</option></select></label>
+            <label class="library-browse-control">归档范围<select id="library-archives" aria-label="归档范围"><option value="include">包含归档</option><option value="exclude">不含归档</option><option value="only">仅归档</option></select></label>
             <select id="library-topic" aria-label="筛选主题"></select>
             <button id="library-create-topic" class="ui-action quiet ui-compact">新建主题</button>
             <button id="library-rename-topic" class="ui-action quiet ui-compact">重命名主题</button>
@@ -52,6 +54,7 @@
           </div>
           <div class="ui-pagination" aria-label="笔记分页"><button id="library-previous" class="ui-action secondary ui-compact">上一页</button>
           <button id="library-next" class="ui-action secondary ui-compact">下一页</button></div>
+          <p id="library-page" role="status"></p>
           <div id="library-progress" role="status"></div>
         </div>
         <div id="organize-tools" hidden>
