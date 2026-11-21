@@ -1,0 +1,6 @@
+{
+  "web/sync-screen.js": "03b25e90cdbb96a84f370cb843d9c7e8d5449d7cef661c2e26d693225401dddf",
+  "web/presentation.js": "465d2f3836b75098ba3893d4b4170918199da43c4ef92b21bcd1454ee492a1f1",
+  "web/style.css": "7e534ede3a39e9ff986820dde00fc070cc893b54ba98b751656477d8de4f255f",
+  "tests/sync-ui.mjs": "d6906ad0e64156b87f1ac00067deb9690880f2c060aff7b0c2f4094a7873d0ea"
+}
