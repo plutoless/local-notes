@@ -44,6 +44,12 @@
           "signature": "new evidence assertion expected attach from independent confirmation",
           "resolution": "Require exact null relationship; preserve explicit per-decision authorization; no production change",
           "receipt": "build/issue85-revision2/ui.receipt.json"
+        },
+        {
+          "head": "ab84005d03dc83efdbe95c3b484a0459ffb99580",
+          "outcome": "passed all seven checks and independent Standards/Spec reviews",
+          "receipt": "build/issue85-revision2-ab84005",
+          "integrationRequired": "origin/main advanced to de34d273392de604bb059b70635bb40b217bc50a; preserve and integrate sibling86, revalidate affected consumers"
         }
       ]
     }
