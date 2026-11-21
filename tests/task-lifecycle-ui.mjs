@@ -4,7 +4,7 @@ import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
-const evidence = 'docs/validation/issue55';
+const evidence = process.env.TASK_EVIDENCE_DIR || 'build/task-lifecycle';
 
 const fixture = await storageFixture();
 let activeFixture = fixture, alternateFixture;
@@ -53,8 +53,8 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request));if(request.cmd==='read'){window.readCompletions ||= {};window.readCompletions[request.path]=(window.readCompletions[request.path]||0)+1;}if(request.path==='slow.md')window.slowReadReturned=true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: await readFile(process.env.INITIATIVE_ASSETS_DIR ? join(process.env.INITIATIVE_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    await route.fulfill({body: await readFile(process.env.INITIATIVE_ASSETS_DIR ? join(process.env.INITIATIVE_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   const workspace = await fixture.adapter('workspace');
   const {ActionRepository} = await import('../web/actions.js');
@@ -67,6 +67,7 @@ try {
     const before=await page.evaluate(()=>window.readCompletions?.['reference.md'] || 0);
     await page.locator('#items [data-path="reference.md"]').click();
     await page.waitForFunction(before=>(window.readCompletions?.['reference.md']||0)>before,before);
+    await enterNoteEditing(page);
   };
   await page.goto('https://notes.test/');
   await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
@@ -79,7 +80,7 @@ try {
   const retained = async()=>assert.equal(await page.evaluate(key=>localStorage.getItem(key),unrelatedKey),unrelated);
   const original = await readFile(sourcePath,'utf8');
   // Cancel autosave by opening the leave decision in the same task as input.
-  await page.locator('#body').evaluate(n=>{n.value+='未提交笔记';n.dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click();});
+  await page.locator('#body').evaluate(n=>{n.value+='未提交笔记';n.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click();});
   await decision.waitFor();
   await decision.getByRole('button',{name:'继续编辑',exact:true}).focus();
   await page.keyboard.press('Shift+Tab');
@@ -94,9 +95,9 @@ try {
   assert.doesNotMatch(await page.locator('#body').inputValue(),/未提交笔记/);await retained();
   // Reverting to the input baseline is clean, with no stale private recovery.
   const initial = await page.locator('#body').inputValue();
-  await page.locator('#body').evaluate((n,initial)=>{n.value=initial+'x';n.dispatchEvent(new Event('input'));n.value=initial;n.dispatchEvent(new Event('input'));},initial);
+  await page.locator('#body').evaluate((n,initial)=>{n.value=initial+'x';n.dispatchEvent(new Event('input',{bubbles:true}));n.value=initial;n.dispatchEvent(new Event('input',{bubbles:true}));},initial);
   assert.equal(await page.evaluate(()=>window.hasUnsavedChanges()),false);
-  await page.locator('#body').evaluate(n=>{n.value+='保存并离开笔记';n.dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click();});
+  await page.locator('#body').evaluate(n=>{n.value+='保存并离开笔记';n.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click();});
   await choose('保存并离开');assert.match(await readFile(sourcePath,'utf8'),/保存并离开笔记/);await retained();
   // A submitted autosave must settle before the first leave intent proceeds.
   await page.locator('[data-view=notes]').click();await openReference();
@@ -108,13 +109,13 @@ try {
   releaseNote();await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
   assert.match(await readFile(sourcePath,'utf8'),/延迟提交的笔记/);await retained();
   await page.locator('[data-view=notes]').click();await openReference();
-  failNote=true;await page.locator('#body').evaluate(n=>{n.value='失败笔记';n.dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click();});
+  failNote=true;await page.locator('#body').evaluate(n=>{n.value='失败笔记';n.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click();});
   await choose('保存并离开');await choose('继续编辑');assert.equal(await page.locator('#body').inputValue(),'失败笔记');
   await page.locator('[data-view=focus]').click();await choose('放弃更改并离开');failNote=false;
   if(await page.locator('#notice button').isVisible()) await page.locator('#notice button').click();
   await page.locator('[data-view=notes]').click();await openReference();
   await writeFile(sourcePath,'# 外部保存版本\n\n外部内容');
-  await page.locator('#body').evaluate(n=>{n.value='冲突笔记';n.dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click();});
+  await page.locator('#body').evaluate(n=>{n.value='冲突笔记';n.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click();});
   await choose('保存并离开');await choose('放弃更改并离开');
   assert.equal(await readFile(sourcePath,'utf8'),'# 外部保存版本\n\n外部内容');await retained();
   if(await page.locator('#notice button').isVisible()) await page.locator('#notice button').click();

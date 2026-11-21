@@ -7,10 +7,11 @@ try {
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://catalogue.test/**',async route=>{
   const path=new URL(route.request().url()).pathname;
-  if(!['/docs/design/catalogue.html','/web/style.css','/web/presentation.js','/web/core.js'].includes(path)) return route.abort();
+  if(!['/docs/design/catalogue.html','/web/style.css','/web/presentation.js','/web/core.js','/build/web/assets/react-host.js','/build/web/assets/react-host.css'].includes(path)) return route.abort();
   await route.fulfill({body:await readFile(new URL('..'+path,import.meta.url)),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});
  });
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
+ await page.locator('#react-library .card').waitFor();
  await page.locator('#states [data-state=recovered]').waitFor();
  const input=page.locator('#fields input').first();
  assert.equal(await input.evaluate(n=>n.getBoundingClientRect().height),40);

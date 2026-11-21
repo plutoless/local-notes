@@ -8,6 +8,7 @@
     />
     <title>拾记 · Local Notes</title>
     <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="assets/react-host.css" />
   </head>
   <body>
     <header class="global-header"><button id="global-search-open" class="ui-action quiet ui-compact">搜索笔记 ⌘K</button></header>
@@ -39,24 +40,7 @@
             aria-label="搜索笔记"
           />
         </header>
-        <div id="library-tools" hidden>
-          <div class="library-filter-group" role="group" aria-label="笔记筛选与管理">
-            <label class="library-browse-control">排序<select id="library-order" aria-label="排序"><option value="current">非归档优先</option><option value="path">路径</option><option value="title">标题</option></select></label>
-            <label class="library-browse-control">归档范围<select id="library-archives" aria-label="归档范围"><option value="include">包含归档</option><option value="exclude">不含归档</option><option value="only">仅归档</option></select></label>
-            <select id="library-topic" aria-label="筛选主题"></select>
-            <button id="library-create-topic" class="ui-action quiet ui-compact">新建主题</button>
-            <button id="library-rename-topic" class="ui-action quiet ui-compact">重命名主题</button>
-          </div>
-          <div class="library-location-group" role="group" aria-label="目录导航">
-            <span id="library-location"></span>
-            <button id="library-back" class="ui-action quiet ui-compact">上一级目录</button>
-            <button id="library-refresh" class="ui-action secondary ui-compact">刷新</button>
-          </div>
-          <div class="ui-pagination" aria-label="笔记分页"><button id="library-previous" class="ui-action secondary ui-compact">上一页</button>
-          <button id="library-next" class="ui-action secondary ui-compact">下一页</button></div>
-          <p id="library-page" role="status"></p>
-          <div id="library-progress" role="status"></div>
-        </div>
+        <div id="library-tools" hidden></div>
         <div id="organize-tools" hidden>
           <section aria-labelledby="ai-select-title">
             <h2 id="ai-select-title">1 · 选择来源笔记</h2>
@@ -146,15 +130,6 @@
           <p>从列表选择内容，或使用「新建」开始记录。</p>
         </div>
         <div id="editor" hidden>
-          <div class="toolbar">
-            <button id="back" class="ui-action quiet">‹ 返回列表</button>
-            <button id="capture-return" class="ui-action quiet" hidden>保存并返回原任务</button><button id="note-save" class="ui-action secondary">保存笔记</button>
-            <span id="note-mode">编辑笔记</span>
-            <span id="save-state" role="status">已保存到本地</span>
-            <button id="mode" class="ui-action secondary">阅读</button>
-          </div>
-          <div class="document">
-            <input id="title" aria-label="笔记标题" placeholder="无标题" />
             <details id="note-details" class="ui-disclosure">
               <summary>笔记信息与整理</summary>
               <p>来源位置：<span id="file-path"></span></p>
@@ -166,14 +141,6 @@
               <h2>事项 · 目标与进展</h2><div id="note-initiatives"></div>
               <p>笔记中的复选框只记录原文。需要跟进时，请从「当前重点」打开「全部行动」，单独新建行动。</p>
             </details>
-            <textarea
-              id="body"
-              aria-label="笔记正文"
-              placeholder="输入笔记正文…"
-              spellcheck="false"
-            ></textarea>
-            <article id="reading" aria-label="笔记阅读内容" hidden></article>
-          </div>
         </div>
         <div id="action-editor" hidden>
           <div class="toolbar">

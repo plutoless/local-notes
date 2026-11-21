@@ -39,7 +39,7 @@ try {
     } catch (e) { return {error:e.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async text => { const r = JSON.parse(text); window.nativeReply(r.id, await window.bridge(r)); }}; });
-  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(new URL('../web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(new URL('../build/web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   const input = page.locator('#global-search-input');
   const ready = async () => page.waitForFunction(() => document.querySelector('#global-search [role=status]').textContent.startsWith('本页'));
