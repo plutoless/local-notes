@@ -97,9 +97,12 @@ export class FocusScreen {
   async pageFocus(offset) {
     const previous = this.focusOffset;
     this.focusOffset = offset;
-    const repository = this.actions.repository, request = (this.request || 0) + 1;
+    const repository = this.actions.repository, request = (this.request || 0) + 1, owner = this.ownerGeneration || 0;
     try { if (await this.show() && this.active && repository === this.actions.repository && request === this.request) $('#items .focus-row-open')?.focus({preventScroll: true}); }
-    catch (error) { this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message); }
+    catch (error) {
+      if (!this.active || repository !== this.actions.repository || request !== this.request || owner !== (this.ownerGeneration || 0)) return;
+      this.focusOffset = previous; $('#index-state').textContent = ''; this.notice(error.message);
+    }
   }
   async openAction(action) {
     const scroll = $('.collection').scrollTop, listScroll = $('#items').scrollTop;
