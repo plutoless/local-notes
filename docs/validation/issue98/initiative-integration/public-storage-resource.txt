@@ -1,0 +1,22 @@
+✔ collections preserve independent bounded browsing state across other pages (1.17225ms)
+✔ returned snapshots cannot overwrite saved context and workspace reset starts empty (0.123792ms)
+✔ source groups preserve quotes, duplicate paths, identity and supplied order (1.315ms)
+✔ ending projects each unfinished member and only eligible destinations without changing decisions (0.358958ms)
+✔ initiative assignments, multiple links, explicit ending and index/restart recovery (4240.049208ms)
+✔ source state preserves changed, missing and ambiguous references; only unique fingerprint recovers moves (0.189792ms)
+✔ initiative revision survives interrupted current write and index removal (18.680125ms)
+✔ ending preserves independently committed actions across a later failure, restart and retry (42.953417ms)
+✔ changing collection invalidates a pending query before the next route render starts (1.216042ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (18.828959ms)
+✔ complete traceable batches and strict evidence validation resist injected instructions (2.286208ms)
+✔ explicit selected scope, persisted candidates, restart/index recovery, partial retry and cancel (4766.560208ms)
+✔ cancel during asynchronous dedup query prevents persistence and coverage changes (0.231292ms)
+✔ candidate recovery composes with merged revision recovery without changing suggested state (30.837708ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4853.03475
