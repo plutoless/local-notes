@@ -8,14 +8,18 @@ for (const dir of ['current', 'archive']) {
  for (let i=0;i<55;i++) await writeFile(`${fixture.root}/${dir}/${String(i).padStart(2,'0')}.md`, `# 可辨认的重复标题 ${i}\n\n${dir} 合成正文 needle${i} - [ ] 历史计划`);
 }
 const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
+const settingsReleases=[];
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
- let failQuery = false, delay = null, reached;
+ let failQuery = false, delay = null, reached, holdSettings = false;
  const heldQuery = new Promise(resolve => reached = resolve);
  await page.exposeFunction('bridge', async request => {
   calls.push(request);
   try {
-   if(request.cmd==='aiSettings') return {address:'',model:'',configured:false};
+   if(request.cmd==='aiSettings') {
+    if(holdSettings) await new Promise(resolve=>{settingsReleases.push(resolve);});
+    return {address:'',model:'',configured:false};
+   }
    if(request.cmd==='aiConfigure') throw Error('configuration failure');
    if(request.cmd==='read') return {text:await readFile(`${fixture.root}/${request.path}`,'utf8')};
    if(request.cmd==='referenceQuery' && failQuery) {failQuery=false; throw Error('query failed');}
@@ -101,5 +105,46 @@ try {
  }
  assert.ok(calls.filter(c=>c.cmd==='referenceQuery').every(c=>c.limit===50));
  assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,0);
+ // Disabled terminal page directions retain a meaningful keyboard receiver.
+ await page.locator('#ai-notes-next').focus(); await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>document.querySelector('#ai-notes-next').disabled);
+ assert.equal(await page.locator('#ai-notes-previous').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('Enter');
+ await page.waitForFunction(()=>document.querySelector('#ai-notes-previous').disabled);
+ assert.equal(await page.locator('#ai-notes-next').evaluate(n=>n===document.activeElement),true);
+ // A delayed device-settings reply must not open a task on a newer route.
+ holdSettings=true; await page.locator('#ai-configure').click();
+ const settingsDeadline=Date.now()+5000;
+ while(!settingsReleases.length&&Date.now()<settingsDeadline) await new Promise(resolve=>setTimeout(resolve,1));
+ assert.equal(settingsReleases.length,1);
+ await page.locator('[data-view=notes]').click();
+ holdSettings=false; settingsReleases.shift()();
+ await page.waitForTimeout(100);
+ assert.equal(await page.locator('#ai-settings-drawer').isVisible(),false,'Late settings reply cannot open on Library');
+ await page.locator('[data-view=organize]').click();
+ await page.locator('#ai-selection input').first().waitFor();
+ await page.waitForFunction(()=>document.querySelector('#ai-status').textContent.startsWith('可先选择来源并预览；'));
+ // A newer modal owns focus even when Organization remains the visible route.
+ holdSettings=true; await page.locator('#ai-configure').click();
+ const modalDeadline=Date.now()+5000;
+ while(!settingsReleases.length&&Date.now()<modalDeadline) await new Promise(resolve=>setTimeout(resolve,1));
+ assert.equal(settingsReleases.length,1);
+ await page.locator('#global-search-open').click(); await page.locator('#global-search-input').waitFor();
+ holdSettings=false; settingsReleases.shift()(); await page.waitForTimeout(100);
+ assert.equal(await page.locator('#ai-settings-drawer').isVisible(),false,'Late setup cannot stack over search');
+ assert.equal(await page.locator('#global-search-input').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('Escape');
+ holdSettings=true;
+ await page.locator('#ai-configure').click(); await page.locator('#ai-configure').click();
+ const replayDeadline=Date.now()+5000;
+ while(settingsReleases.length<2&&Date.now()<replayDeadline) await new Promise(resolve=>setTimeout(resolve,1));
+ assert.equal(settingsReleases.length,2);
+ settingsReleases.pop()(); await page.locator('#ai-settings-drawer').waitFor();
+ await page.locator('#ai-address').fill('https://controlled.example/edited');
+ holdSettings=false; settingsReleases.shift()(); await page.waitForTimeout(100);
+ assert.equal(await page.locator('#ai-address').inputValue(),'https://controlled.example/edited','Older setup reply must not overwrite active settings task');
+ await page.getByRole('button',{name:'取消设置',exact:true}).click();
+ await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
  console.log('PASS organization selection: real Swift SQLite index, bounded title/body search/filter/page, stale responses, retained selections/limit, explicit preview, setup failure/cancel, empty/retry, desktop/393px, zero sends.');
-} finally {await browser.close(); await fixture.close();}
+} catch(error) { console.error('Selection failure before cleanup:',error); throw error;
+} finally {settingsReleases.splice(0).forEach(release=>release()); await browser.close(); await fixture.close();}

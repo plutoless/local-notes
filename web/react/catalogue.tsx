@@ -1,6 +1,7 @@
 import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
 import {ActionRows} from './actions';
 import {createRoot} from 'react-dom/client';
+import {OrganizationContent, OrganizationSettings, type OrganizationModel, type OrganizationCallbacks} from './organization';
 import {NoteFields,Classification} from './note-forms';
 import {SearchContent} from './search';
 import {Button} from './components';
@@ -12,6 +13,8 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const root=createRoot(container);
   const noop=()=>{};
   const callbacks:FocusCallbacks={openAction:noop,navigate:noop,createInitiative:noop,openInitiative:noop,recover:noop,remove:noop,move:noop,more:noop,page:noop,waiting:noop,resume:noop,removeReading:noop,status:()=> '待办',overdue:()=>false};
+  const organization:OrganizationModel={search:'',directory:'*',directories:['研究/长中文目录'],notes:[{path:'研究/中文长路径.md',title:'这是用于核对来源身份与长中文标题的实际生产选择行'}],selected:['研究/中文长路径.md'],inventory:'本页 1 篇。来自当前本机索引。',retry:false,previous:false,next:false,running:false,previewing:false,configured:false,covered:0,batches:[],request:'',status:'选择已更新，请重新预览后发送。',statusState:'idle',service:'尚未配置服务。',address:'',model:'',token:'',savedCredential:false,settingsPending:false,settingsError:'请填写服务地址与模型。'};
+  const organizationCallbacks:OrganizationCallbacks={search:noop,directory:noop,select:noop,page:noop,retry:noop,preview:noop,send:noop,cancel:noop,configure:noop,setting:noop,save:noop};
   const revision={revision:'catalogue-revision',description:'逐字保留需要人工核对的长中文来源与行动内容'.repeat(3),status:'todo',modifiedAt:'2026-11-20'};
   const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,{...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'}],tips:[revision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
@@ -22,6 +25,7 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
     <div className="app home"><aside><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[],hasMore:false},initiatives:{actions:[],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></section></div>
+    <h2>React 整理来源与设置</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
     <h2>React 事项上下文</h2><InitiativeRows records={[{entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(6),goal:'核对原文',progress:'进行中',status:'active',sources:[]}]} selected="catalogue-initiative" empty="" open={noop}/><InitiativeLinks sources={[{path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'}]} selected="研究/长中文参考资料.md" open={noop}/><InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
