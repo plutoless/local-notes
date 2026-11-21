@@ -1,6 +1,6 @@
 {
   "base": "4ac88ec28496c0c474042815df7e04a77884fb9e",
-  "reviewedHead": "0e127dfef9ddd88d1e393bc0c5ebbb5291349c72",
+  "reviewedHead": "679fd8a35b04c7734a67c8c3a8288c5971bf2e6a",
   "productionHead": "0e127dfef9ddd88d1e393bc0c5ebbb5291349c72",
   "sourceSHA256": {
     "mac/AIService.swift": "698f9a3a86d34f360721b4f2ca873587c17173a11e04b2c060d335cf0b1d63b0",
@@ -126,5 +126,11 @@
     "minimumOS": "unrun",
     "Intel": "unrun"
   },
-  "fullMaintainedUIHead": "47bcba8aa972d504d5e13a4b558dbff87dbfb9a1"
+  "fullMaintainedUIHead": "47bcba8aa972d504d5e13a4b558dbff87dbfb9a1",
+  "reviewReports": {
+    "standards": "standards-review.md",
+    "spec": "spec-review.md",
+    "publicationProof": "review-publication.json",
+    "successorConfirmation": "PR119 body; exact successor reviewed after documentation commit"
+  }
 }

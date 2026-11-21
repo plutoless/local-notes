@@ -146,3 +146,15 @@ the approved policy. Physical input, minimum macOS and Intel execution are
 **UNRUN**, not passed. Android-specific and standalone Syncthing checks are
 **DEFERRED** by user decision. No old native acceptance result is reused here.
 The archived baseline is new comparison evidence, not a transferred acceptance.
+
+## Evidence publication follow-up
+
+The coordinator requested durable original-reviewer provenance after publication
+of `679fd8a35b04c7734a67c8c3a8288c5971bf2e6a`. The original independent agents
+now author separate [Standards](standards-review.md) and [Spec](spec-review.md)
+reports; the implementer-authored [index](reviews.md) only links their evidence.
+This follow-up edits documentation only. `review-publication.json` verifies
+unchanged production/tests, existing artifacts and the recorded environment, and
+PR119's body records each reviewer's exact-publication-successor confirmation.
+No validation suite was rerun, no native GUI was used, and all earlier failures,
+performance limits, deferred/unrun checks and original execution heads remain.
