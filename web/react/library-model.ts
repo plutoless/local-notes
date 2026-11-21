@@ -1,3 +1,4 @@
+import {safePath} from '../core.js';
 export interface LibraryNote {path: string; title: string; excerpt?: string; modified?: number; fingerprint?: string; archived?: boolean}
 export interface LibraryPage {notes: LibraryNote[]; total?: number; hasMore: boolean}
 export function libraryPage(value: unknown): LibraryPage {
@@ -6,8 +7,7 @@ export function libraryPage(value: unknown): LibraryPage {
   if (!Array.isArray(page.notes) || typeof page.hasMore !== 'boolean' ||
       (page.total !== undefined && (!Number.isSafeInteger(page.total) || (page.total as number) < 0))) throw Error('笔记列表数据无效，请刷新重试。');
   for (const note of page.notes) {
-    if (!note || typeof note !== 'object' || typeof note.path !== 'string' || !note.path.toLowerCase().endsWith('.md') ||
-        note.path.startsWith('/') || note.path.includes('\\') || note.path.split('/').some((part: string) => !part || part.startsWith('.')) ||
+    if (!note || typeof note !== 'object' || typeof note.path !== 'string' || !safePath(note.path) ||
         typeof note.title !== 'string' || (note.excerpt !== undefined && typeof note.excerpt !== 'string') ||
         (note.modified !== undefined && !Number.isFinite(note.modified))) throw Error('笔记列表数据无效，请刷新重试。');
   }

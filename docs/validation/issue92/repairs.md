@@ -28,3 +28,26 @@ Current resource-only native harness mode reuses the existing executor and guard
 it adds generated-tree bindings and actual custom-scheme module/style/denial checks
 while an active draft remains protected. It has not been launched and requires a
 separate final-source coordinator grant.
+
+## Independent-review and final-pass corrections
+
+- Standards review at `b4e8495` identified nonbubbling change events in the retained
+  native keyboard harness's original full mode. Both events now bubble. No native
+  replay was performed to make that source correction.
+- Spec review at `b4e8495` identified empty Markdown filename-only search sources:
+  the fallback article lost its focusable source marker. The new actual-app
+  `reader-empty-source-ui.mjs` reproduced the failed focus assertion (RED), before
+  a reader-owned fallback label/tabIndex correction (GREEN pending verification).
+- Full UI final pass at `b4e8495` passed through search, Library, workspace, sync,
+  catalogue, contextual forms and drawers, then failed `remaining-forms-ui` because
+  the new generic asynchronous Button busy state disabled Back during the protected
+  Continue return. This is a product regression, not a test waiver. Busy behavior is
+  now opt-in only for originally awaited helper actions (rows, directory entries,
+  reading-to-Action controls); the original Back/Save/Mode lifecycle semantics are
+  retained. The failing exact newer-Tab regression is the targeted retest.
+- Library boundary now reuses public `core.safePath` rather than a duplicate partial
+  validator; malformed private `Credentials`/`LocalNotesData` paths are rejected.
+  Expanded public boundary tests and TypeScript checking passed.
+- The final full unit/integration run at `b4e8495` passed 75/75. It is preserved as
+  evidence for that executed source, with focused validation and a fresh final
+  suite run required after these corrections.
