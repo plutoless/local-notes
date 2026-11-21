@@ -80,6 +80,19 @@
       "diagnosticProgress": true,
       "consecutiveSameSignatureWithoutProgress": 0,
       "observedResult": "Corrected reader journey passed at7234ec0beeca5a36b73f456e436e76d7a73d666f, including exact newer-Tab equality, actual save/discard/readback and reload; instrumentation finding resolved without product/assertion weakening"
+    },
+    {
+      "cycle": 6,
+      "signature": "Evidence manifest FileNotFoundError: reader/composition-393.png",
+      "hypothesis": "Manifest used committed evidence alias rather than actual test output browser-composition-393.png",
+      "correction": "Bind exact existing output path in build/issue82-integration86/bind.py; no product/test/assertion change",
+      "command": "python3 build/issue82-integration86/bind.py",
+      "observedBefore": "Manifest generation failed; subsequent documentation add found no file; original actual-app reader test and Mac build had already passed",
+      "failureEvidence": "build/issue82-integration86/metadata-failure.txt",
+      "observedResult": "exit0; reader receipt, exact destination equality, source/readback and all source/package/environment bindings verified",
+      "diagnosticProgress": true,
+      "behavioralProgress": "metadata binding restored, no product behavior correction needed",
+      "consecutiveSameSignatureWithoutProgress": 0
     }
   ],
   "next": "Final source/artifact evidence binding and independent final-head Standards/Spec; coordinator alone decides merge and shared hold exit."
