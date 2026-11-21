@@ -222,6 +222,11 @@ Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
 classification uses `Classification`, also imported by the catalogue. The existing
 C sheet owner retains focus, protected leave decisions and repositories. See
 `docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
+Issue #95 consumes production React Action rows, static form controls, source
+references and immutable history with the existing wide contextual drawer. The
+[Action ownership inventory](../architecture/actions-react.md) records the stable
+legacy control/entry ports and single lifecycle/overlay authority. The catalogue
+uses the same selected, overdue, waiting and long-Chinese Action row component.
 ## Global search React adoption (#97)
 
 Compact A global search consumes production `SearchContent`, `SearchPassage` and
