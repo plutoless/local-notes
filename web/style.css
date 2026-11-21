@@ -499,7 +499,7 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 
 /* Selected #122 theme: shared semantic mapping, with adoption scoped to Library/reader. */
 :root {
-  --text: #292927; --muted: #555550; --canvas: #f7f7f5; --surface: #fff;
+  --text: #292927; --muted: #555550; --canvas: #f7f7f5; --surface: #ffffff;
   --sidebar: #f7f7f5; --line: #787875; --divider: #deded9;
   --focus: #245cac; --accent: #245cac; --danger: #a12625;
   --hover: #eeeee9; --selected: #e8e8e3; --selected-text: #292927;
@@ -508,6 +508,7 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 button { transition: background-color 100ms; }
 /* Official fields have a single high-contrast focus owner, never stacked rings. */
 [data-slot="input"], [data-slot="textarea"] { min-height: 44px; }
+.ui-drawer .ui-field input[data-slot="input"]:focus-visible, .ui-drawer .ui-field textarea[data-slot="textarea"]:focus-visible,
 [data-slot="input"]:focus-visible, [data-slot="textarea"]:focus-visible,
 [data-slot="button"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; box-shadow: none; }
 .library-view.editing { grid-template-columns: 196px minmax(0, 1fr); }
@@ -544,5 +545,7 @@ button { transition: background-color 100ms; }
   .reference-desk { border-left: 0; border-top: 1px solid var(--divider); margin: 0 16px 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-slot] { transition: none !important; animation: none !important; }
+  button, [data-slot] { transition: none !important; animation: none !important; }
 }
+/* Keep keyboard cues inside scrollable rows so the collection cannot clip them. */
+[data-slot="button"].ui-row:focus-visible { outline-offset: -3px; }

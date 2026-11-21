@@ -49,6 +49,7 @@ try {
   const listed=performance.now();
   await page.screenshot({path:join(evidence,'library.png')});
   const readsBefore=io.filter(c=>c.cmd==='read').length;
+  const opening=performance.now();
   await page.locator('#items [data-path="reference.md"]').click();await page.locator('#reading').waitFor({state:'visible'});
   const opened=performance.now();
   assert.equal(io.filter(c=>c.cmd==='read').length-readsBefore,1,'opening reads only the selected Markdown');
@@ -57,6 +58,9 @@ try {
   if(!before) {
     assert.equal(await page.locator('.collection').isVisible(),false,'page-first reading hides middle list');
     assert.equal(await page.locator('#note-reference').isVisible(),false);
+    await page.emulateMedia({reducedMotion:'reduce'});
+    for(const selector of ['#global-search-open','#mode']) assert.equal(await page.locator(selector).evaluate(n=>getComputedStyle(n).transitionDuration),'0s');
+    await page.emulateMedia({reducedMotion:'no-preference'});
   }
   for(const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
@@ -94,6 +98,6 @@ try {
   await page.locator('#back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();failSave=false;
   assert.equal(await readFile(sourcePath,'utf8'),saved);
   assert.deepEqual(errors,[]);
-  await writeFile(join(evidence,'measurements.json'),JSON.stringify({phase:before?'before':'after',startupAndListMs:listed-started,openMs:opened-listed,io,adapterCalls:fixture.calls,sourcePreserved:true,persistedReadback:true,failedSaveDiscard:true},null,2));
+  await writeFile(join(evidence,'measurements.json'),JSON.stringify({phase:before?'before':'after',startupAndListMs:listed-started,openMs:opened-opening,io,adapterCalls:fixture.calls,sourcePreserved:true,persistedReadback:true,failedSaveDiscard:true},null,2));
   console.log('PASS issue123 same-state Library/Markdown/reference, wiki return, stable editor receiver, real save/reload and failed-save/continue/discard');
 } finally {await browser.close();await fixture.close();}
