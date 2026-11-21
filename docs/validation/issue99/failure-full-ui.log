@@ -1,0 +1,58 @@
+
+> local-notes@0.1.0 test:ui
+> node tests/search-ui.mjs && node tests/search-navigation-ui.mjs && node tests/ui.mjs && node tests/initiatives-ui.mjs && node tests/focus-ui.mjs && node tests/organization-ui.mjs && node tests/organization-selection-ui.mjs && node tests/organization-focus-ui.mjs && node tests/library-ui.mjs && node tests/organization-review-ui.mjs && node tests/candidate-entrypoints-ui.mjs && node tests/workspace-ui.mjs && node tests/sync-ui.mjs && node tests/design-system-ui.mjs && node tests/design-catalogue-ui.mjs && node tests/leave-focus-ui.mjs && node tests/form-focus-ui.mjs && node tests/topic-drawer-ui.mjs && node tests/initiative-drawer-ui.mjs && node tests/remaining-forms-ui.mjs && node tests/task-lifecycle-ui.mjs && node tests/reader-ui.mjs && node tests/reader-focus-ui.mjs && node tests/reader-editing-ui.mjs && node tests/classification-ui.mjs && node tests/wiki-links-ui.mjs && node tests/reading-history-ui.mjs && node tests/reading-actions-ui.mjs && node tests/reader-empty-source-ui.mjs
+
+{"phase":"migrated","warmTypingMs":[15.80870799999957,16.458415999999943,16.76445799999965,16.875499999999647,15.670541000000412,17.564832999999908,16.252915999999914,16.556707999999617,17.287624999999935,16.699999999999818,16.239250000000084,17.15466699999979],"bodyReads":0,"indexedQueries":12}
+PASS: real UI/bridge/Swift SQLite search, grounding/copy, optional attribution/failure, pages, repeated shortcut, dismissal fencing, narrow focus cycle.
+PASS issue60 real UI/bridge/storage/index: all origin/destination types, desktop/393px, expansion/scroll return, dirty continue/discard/save/failure, stale and dismissed delayed reads.
+PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).
+PASS: initiatives create/edit/restart, source links, topics/create/rename/link, favorites, body search, directory enter/back, action creation/assignment, explicit ending/reopening, linked note creation/autosave/backlinks, mobile viewport (Chromium + production Mac storage, not native app or SAF).
+Contrast ratios: {
+  body: 14.619441077868746,
+  secondary: 5.650066807645137,
+  primary: 6.250978759757422,
+  border: 4.278605097267699,
+  focus: 5.969564700266222
+}
+PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; home reads no note bodies and explicit source validation reads one.
+Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, Favorites/capture cancellation/Action save and return with persisted readback/source preservation, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.
+PASS organization selection: real Swift SQLite index, bounded title/body search/filter/page, stale responses, retained selections/limit, explicit preview, setup failure/cancel, empty/retry, desktop/393px, zero sends.
+PASS issue85 after: checkbox pointer/Space/Tab, geometry, exact preview, controlled send, invalid action, source detour context, explicit individual confirmation and source preservation
+PASS: browse/search/favorites, topic create/rename/link/filter, Chinese reading/inert checkboxes, autosave, successful move and topic link repair, external conflict/copy, draft recovery after reload, 393px library/editor overflow, keyboard focus. Chromium + real Swift storage/SQLite adapter.
+Organization review UI passed: exact preview, invalidation, partial retry, edited confirmation, later, attachment, reference, ignore, pending recovery, persistence, source-change rejection, cancellation, invalid response, offline retention, 393px, keyboard focus; contrast ratios on white: [
+  15.146446697729223,
+  5.650066807645137,
+  6.250978759757422,
+  4.278605097267699,
+  5.969564700266222
+]
+PASS candidate decisions: real persisted Action/Initiative/Topic/link readback, reload and delivered entrypoints, explicit rejection, no analysis, unchanged source
+PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed saves block initiative/New-action navigation, background refresh preserves drafts, missing notes preserve narrow-screen context, source save, selection, accessible action names, and narrow-pane navigation.
+Sync initial inspection: {"elapsedMs":240,"markdownReads":0,"bridgeCommands":24}
+Focus outline: rgb(7, 95, 204) solid 3px
+Rendered contrast inputs: {"text":"rgb(32, 38, 51)","background":"rgb(255, 255, 255)"}
+PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
+  {
++   failure: undefined,
++   offset: 198
+-   failure: 'Controlled page failure',
+-   offset: 99
+  }
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-99/tests/design-system-ui.mjs:80:10 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: { offset: 198, failure: undefined },
+  expected: { offset: 99, failure: 'Controlled page failure' },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.1.0

@@ -25,3 +25,6 @@ export {searchRows} from './search-model';
 
 export {mountInitiativeControls, initiativeRows, initiativeLinks, initiativeActions, initiativeDecisions, mountInitiativeSource, openInitiativeAction} from './initiatives';
 export {initiativeSources, initiativeEnding} from './initiative-model';
+
+export {candidateReviewView} from './candidate-review';
+export {readCandidateDraft} from '../candidate-review-model.js';
