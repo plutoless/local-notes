@@ -386,7 +386,9 @@ export class ActionScreen {
           this.previous = record; if (this.drawerContext) this.drawerContext.committed = true; }
         this.dirty = Boolean(this.retry || this.creationAttempt) || JSON.stringify(this.fields()) !== this.baseline;
         if (this.dirty) localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, attempt: this.creationAttempt})); else localStorage.removeItem(this.key());
-        errorFeedback($('#action-save-state'), error.message); if (this.creationUncertain) $('#action-save-state p').textContent = '保存结果尚未确认。重试会核对同一版本；关闭不会撤销可能已保存的版本。'; if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'; return false;
+        const message = this.retry ? '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。'
+          : this.creationUncertain ? '保存结果尚未确认。重试会核对同一版本；关闭不会撤销可能已保存的版本。' : undefined;
+        this.receipt.failure(error.message, message); return false;
       } finally { this.saving = null; $('#action-save').disabled = false; $('#action-form').inert = false; if ($('#action-description').getAttribute('aria-invalid') === 'true') $('#action-description').focus(); else if (this.drawer.panel.open && focused?.isConnected) focused.focus({preventScroll: true}); }
     })();
     return this.saving;

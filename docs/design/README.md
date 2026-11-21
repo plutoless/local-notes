@@ -88,7 +88,14 @@ Downstream #32–#37 must:
 
 ## Conflict comparison rows
 
-Issue #36 uses `comparisonRow(label, value, {changed})` inside a definition list. It wraps long user evidence, marks differing fields with Chinese text, and uses semantic text/divider tokens. Rows are read-only; version selection uses secondary actions, and resolution editing uses `field()`. Blocked incomplete/cyclic histories retain readable evidence while their controls are disabled. The catalogue demonstrates both unchanged and differing rows. The synchronization panel reuses the shell/Focus `selectionRow()` for record jump navigation, the capture field pattern, and the existing feedback and dialog catalogue states; no private palette or control variant is introduced.
+The delivered `ConflictComparison` renders definition-list field rows with
+`.ui-comparison-row`, wrapping long evidence and marking differences in Chinese.
+Rows are read-only; version selection uses production `Button` controls, and the
+React conflict editor owns labeled resolution fields. Blocked incomplete/cyclic
+histories retain readable evidence with disabled controls. The production
+catalogue renders this same component. Sync record-jump navigation consumes
+`Button` with `.ui-row`; the old #36 `comparisonRow()`, `field()` and
+`selectionRow()` constructors were retired by #102.
 
 `bindDialog()` additionally returns `open()` for callers that need to capture an opener synchronously before focusing a newly visible panel. Existing hidden-attribute consumers remain supported. Closing restores that opener without replacing the underlying editor or its scroll surface.
 
@@ -120,7 +127,16 @@ Open a single modal task from the right edge of its current content surface, kee
 | Single-line field | `--field-surface: 40px`; label target reserves at least 44px |
 | Labels / shape | 8px label gap, subordinate optional marker; existing 8px radius and semantic tokens |
 
-The production `button(..., {density: 'compact'})` opts into the compact treatment; home is its first screen consumer. Its pseudo-element paints only the surface and receives no pointer events; the actual button reserves all target space in normal flow and keeps its focus outline. Wrapped labels increase both target and surface height. No negative margins or overlapping invisible hit extensions. Row openers remain full text targets, aligned with management summaries; navigation and icon actions remain at least 44px. `field(..., {density: 'compact'})` demonstrates a native 40px field in a padded, associated label click area in the catalogue. This is presentation only; constructors never own storage/index operations.
+Production `Button` and `actionControl` use `.ui-compact` for compact actions;
+home was the first screen consumer. Its pseudo-element paints only the surface
+and receives no pointer events; the actual button reserves all target space in
+normal flow and keeps its focus outline. Wrapped labels increase both target
+and surface height. No negative margins or overlapping invisible hit extensions.
+Row openers remain full text targets, aligned with management summaries;
+navigation and icon actions remain at least 44px. Production `ActionField`
+reserves the padded label target around its native 40px field. The catalogue
+consumes it directly. Presentation ports never own storage/index operations;
+the old `button()`/`field()` constructors are retired.
 
 Use vertically arranged labeled fields, not placeholder-only names. Optional metadata/source links use disclosures unless hiding them would conceal an actionable warning. Long Chinese text, paths and validation wrap without horizontal scrolling. Footer Cancel is quiet and precedes the sole primary Create/Save action; save/error feedback has a separate readable region. Destructive discard is not an equal primary beside Save.
 
