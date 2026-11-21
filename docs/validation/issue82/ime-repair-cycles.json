@@ -69,6 +69,16 @@
       "diagnosticProgress": true,
       "behavioralProgress": true,
       "consecutiveSameSignatureWithoutProgress": 0
+    },
+    {
+      "cycle": 5,
+      "signature": "ReferenceError browserKeys is not defined after app reload",
+      "hypothesis": "Receipt instrumentation is document-scoped and reload destroys the first keyboard log",
+      "correction": "Initialize browser key logger for every document with addInitScript; retain pre-reload keys in the Node test runner; preserve the exact shared105 destination equality",
+      "command": "Focused reader-editing-ui.mjs on corrected final head",
+      "observedBefore": "Committed-head final-reader.log failed before equality/discard/reload completion; failure and test source preserved under build/issue82-delivery/failures/browser-keys-reload",
+      "diagnosticProgress": true,
+      "consecutiveSameSignatureWithoutProgress": 0
     }
   ],
   "next": "Final focused exact-head browser/storage checks and package/source binding; separate independent Standards/Spec; native replay/actualOSIME deferred by maintainer policy, never passed."
