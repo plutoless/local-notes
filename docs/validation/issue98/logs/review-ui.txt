@@ -1,0 +1,1 @@
+INTERRUPTED after >2 minutes: no completion; owned Node 46461 and StorageHarness 46694 stopped, no Chrome child remained. Swift sample shows harness waiting for stdin, not executing storage; diagnostic rerun adds failure-before-cleanup logging and bounded held-read wait.

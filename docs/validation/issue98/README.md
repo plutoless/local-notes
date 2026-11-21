@@ -1,0 +1,89 @@
+# Issue #98 validation
+
+Starting/base: `8ae4622f4a23033ec149038d9a370c9985a138e8` (fetched main).
+#93/#85 native dependencies and written blockers were closed before editing; main
+contains #110/#100 and #106. A second fetch/dependency/open-PR query still matched
+that base and found no open PRs. Implementation stays on the isolated issue branch.
+Final delivery SHA and independent review receipts are reported with the PR.
+
+## Selected layers and receipts
+
+- `npm ci`: pinned dependencies installed, zero audit vulnerabilities. Initial
+  pre-install build failed with missing Vite; no product failure or dependency edit.
+- `npm test`: 84/84 passed (`logs/unit-integration.txt`). Includes real isolated Swift
+  Markdown/record/SQLite adapters, immutable revisions, restart/index rebuilding,
+  workspace rejection, Organization partial retry/dedup/cancellation. Domain service
+  and storage production code are unchanged; useful existing tests are retained.
+- `npm run typecheck`, `npm run check`, `npm run build:web`: passed, with build logs.
+- Actual application browser journeys use Chrome headless and the shipped build,
+  NotesNative contract bridged to real isolated Markdown/JSON/Swift indexes. Native
+  WebKit transport, native credential store and network adapter are not exercised;
+  service responses/settings metadata are controlled synthetic fixtures.
+- `organization-selection-ui.mjs`: baseline and migrated passed. 110 synthetic notes,
+  bounded indexed filter/directory/page, delayed stale response, cross-page selection,
+  20-note cap, exact selected-only preview, no automatic sends, settings failure and
+  Save/Discard/Continue focus/caret/modal containment. Repeated final receipt retained.
+- `organization-ui.mjs`: explicit settings save clears entered token, no mount/settings
+  send, preview/send, persisted candidates after reload, reader detour/return and
+  ordinary wheel reachability at 1180×800, 800×600 and 380×548.
+- `organization-review-ui.mjs`: partial request failure, explicit continue/retry,
+  cancellation, invalid/offline response, persisted candidates/decisions after reload,
+  pending recovery and changed source rejection. The legacy review assertions protect
+  the retained handoff rather than migrate #99. Output is `logs/review-cycle2.txt`.
+- `organization-focus-ui.mjs`: real checkbox pointer/Space/Tab, single keyboard cue,
+  exact two-fragment request, controlled send, preserved source, source detour scroll/
+  caret/selection and individual confirmation. Checks 1180×800, 393×650, 1180×480,
+  long Chinese content and >=44px targets. `focus/storage-readback.json` contains
+  actual synchronized/private-index file hashes and persisted confirmed-record readback.
+- `design-catalogue-ui.mjs`: production tokens/components, contrast minima, 393px,
+  reduced motion, dialog restoration. Catalogue screenshots retained here, without
+  overwriting historical issue31 evidence. Text/muted >=4.5; boundary/focus >=3.
+- `npm run build:mac`: passed ad-hoc signed ARM64 packaging. Final package is rebuilt
+  after the show/session correction; source/artifact hashes accompany this report.
+  No app was launched and no GUI lease, native keyboard or clipboard was acquired.
+
+These focused maintained UI suites are selected because selection, exact send,
+settings modal lifecycle and legacy candidate return cross the two renderer boundary;
+we did not run the full unrelated UI matrix. Domain order/retry/storage cases remain
+in existing lower layers rather than multiplying browser cases.
+
+## Failure history and correction
+
+Initial setup: missing Vite -> installed lockfile with npm ci -> build passed.
+Review cycle 1: composite browser script did not complete after >2 minutes; no Chrome
+child remained and its owned Swift harness was waiting for stdin (sample retained).
+Stopped only the known owned Node/harness PIDs. Diagnostic correction logs failures
+before cleanup, bounds the held-source-read wait and releases held read/AI replies on
+cleanup. Product inspection also found show's initial workspace reset could make the
+outer attempt swallow a recovery error: a dedicated show request fence now retains
+ownership across that expected reset and rejects external workspace resets. Cycle 2
+passed all composite assertions; there is no repeated completed failure cycle without
+progress. No permission/privacy/custody boundary was bypassed.
+
+## Before/after and performance observations
+
+`before-1180.png`/`before-393.png` and `after-1180.png`/`after-393.png` use the maintained
+selection test at the same state/viewport. Additional focus screenshots cover selected,
+keyboard, invalid candidate and reduced height states. Baseline/migrated selection
+both assert zero additional body reads for search/directory/page and exactly two reads
+for a two-note explicit preview; both produce zero analysis requests. Existing 50-row
+page bounds and 20-note cap remain. Keyed selection nodes avoid replacing unchanged
+checkboxes during updates; no whole-corpus body loading was added.
+
+Baseline build log was captured with the unchanged legacy UI controller/HTML and the
+new unconsumed React module exported, so its 331.13 kB JS is not the pristine base asset
+size. Migrated bundle is approximately 332.22 kB (85.45 kB gzip), CSS 6.13 kB; exact
+final bytes/hashes are in bindings. No startup/input-speed improvement is claimed.
+Cold native startup, process-memory comparison and physical input latency were not
+measured. The meaningful I/O comparison is the unchanged actual descriptor/body-read
+boundary; browser timings are not native performance evidence.
+
+## Deferred and unrun
+
+Native WebKit transport/OS input/Chinese IME/system clipboard/menu quit/close/restart
+compatibility replay is release-level deferred under maintainer revision5 because no
+host, transport, lifecycle or OS integration changed. Mac asset packaging is passed;
+this does not claim runtime custom-scheme validation. Physical input, Intel and minimum
+macOS/WebKit are unrun. Android-specific validation and standalone Syncthing tests
+remain user-deferred and nonblocking. No private note transmission, model download or
+external AI processing occurred; synthetic service fixtures never contact the network.

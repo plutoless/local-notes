@@ -214,3 +214,13 @@ field/invalid state remain authoritative. The live catalogue imports these actua
 components, including long Chinese content and reading continuation. Storage, modal
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
+
+## Organization React adoption (#98)
+
+The source selector, exact request preview and device settings use production
+`OrganizationContent` / `OrganizationSettings` with the existing Button, semantic
+styles, checkbox-label focus role and contextual drawer. Checked state is independent
+from the single keyboard label cue. Keyed fields preserve caret and native disclosure
+state during model refresh. The live catalogue imports these same components;
+candidate review retains its separate legacy island until #99. See
+`docs/architecture/organization-react.md` for bridge, service and overlay ownership.

@@ -1,4 +1,5 @@
-import {button as makeButton, errorFeedback, feedback, field, disclosure, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
+import {organizationView} from './assets/react-host.js';
+import {button as makeButton, field, disclosure, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -6,118 +7,110 @@ const $ = selector => document.querySelector(selector);
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
-    this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map();
+    this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
-    this.settingsDrawer.body.append($('#ai-settings'));
-    for (const label of $('#ai-settings').querySelectorAll('label')) label.classList.add('ui-field');
-    $('#ai-settings').querySelector('button').remove();
+    this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', retry: false,
+      request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: ''};
+    this.ui = organizationView($('#organization-react'), this.settingsDrawer.body, {
+      search: value => { this.state.search = value; this.selectionOffset = 0; this.attempt(() => this.inventory()); },
+      directory: value => { this.state.directory = value; this.selectionOffset = 0; this.attempt(() => this.inventory()); },
+      select: (path, checked) => {
+        if (checked && this.selected.size >= 20) { this.status('每次最多选择 20 篇笔记。请先取消部分选择。'); return; }
+        checked ? this.selected.add(path) : this.selected.delete(path); this.invalidate();
+      },
+      page: direction => { this.selectionOffset = Math.max(0, this.selectionOffset + direction * 50); this.attempt(() => this.inventory()); },
+      retry: () => this.attempt(() => this.inventory()),
+      configure: () => this.attempt(async () => { await this.settings(); this.state.settingsError = ''; this.controls(); this.settingsDrawer.open($('#ai-address'), $('#ai-configure')); }),
+      setting: (key, value) => { this.state[key] = value; this.controls(); },
+      save: () => this.attempt(() => this.saveSettings()),
+      preview: () => this.attempt(() => this.preview()),
+      send: () => this.attempt(async () => {
+        const generation = this.session;
+        const operation = this.organization.run(text => { if (generation === this.session) this.status(text); }); this.controls();
+        try { await operation; } finally { if (generation === this.session) { this.controls(); await this.candidates(); } }
+      }),
+      cancel: () => this.attempt(async () => { await this.organization.cancel(); this.controls(); this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`); })
+    });
     this.settingsSave = makeButton('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
     this.settingsDrawer.footer.append(makeButton('取消设置', () => this.leaveSettings()), this.settingsSave);
-    $('#ai-configure').onclick = () => this.attempt(async () => { await this.settings(); this.settingsDrawer.open($('#ai-address'), $('#ai-configure')); });
-    $('#ai-search').oninput = () => { this.selectionOffset = 0; this.attempt(() => this.inventory()); };
-    $('#ai-notes-retry').onclick = () => this.attempt(() => this.inventory());
-    for (const node of document.querySelectorAll('#organize-tools button')) node.classList.add('ui-action', node.classList.contains('primary') ? 'primary' : 'secondary');
-    for (const node of document.querySelectorAll('#organize-tools details')) node.classList.add('ui-disclosure');
-    for (const node of document.querySelectorAll('#organize-tools label')) node.classList.add('ui-field');
-    $('#ai-settings').onsubmit = event => { event.preventDefault(); this.attempt(() => this.saveSettings()); };
-    $('#ai-preview').onclick = () => this.attempt(async () => {
-      if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
-      this.previewing = true; this.controls(); this.status('正在读取所选内容…');
-      try {
-      const paths = [...this.selected];
-      const batches = await this.organization.preview(paths);
-      $('#ai-input').textContent = `服务地址：${$('#ai-address').value}\n模型：${$('#ai-model').value}\nstream: false\n\n` + '系统消息：\n' + SYSTEM_PROMPT + '\n\n用户消息（每个片段一次请求）：\n' + batches.map(batch => JSON.stringify(batch)).join('\n\n');
-      $('#ai-readable').replaceChildren();
-      for (const batch of batches) {
-        const article = document.createElement('article'), title = document.createElement('h3'), text = document.createElement('pre');
-        title.textContent = `${batch.path} · ${batch.start}–${batch.end} / ${batch.total}`; text.textContent = batch.text;
-        article.append(title, text); $('#ai-readable').append(article);
-      }
-      this.controls(); this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
-      } finally { this.previewing = false; this.controls(); }
-    });
-    $('#ai-send').onclick = () => this.attempt(async () => {
-      const operation = this.organization.run(text => this.status(text)); this.controls();
-      try { await operation; } finally { this.controls(); await this.candidates(); }
-    });
-    $('#ai-cancel').onclick = () => this.attempt(async () => { await this.organization.cancel(); this.controls(); this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`); });
-    $('#ai-directory').onchange = () => { this.selectionOffset = 0; this.attempt(() => this.inventory()); };
-    $('#ai-notes-next').onclick = () => { this.selectionOffset += 50; this.attempt(() => this.inventory()); };
-    $('#ai-notes-previous').onclick = () => { this.selectionOffset = Math.max(0, this.selectionOffset - 50); this.attempt(() => this.inventory()); };
+    this.controls();
     $('#ai-results-next').onclick = () => { this.offset += 50; this.candidates(); };
     $('#ai-results-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.candidates(); };
+  }
+  async preview() {
+    if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
+    const session = this.session;
+    this.previewing = true; this.status('正在读取所选内容…');
+    try {
+      const paths = [...this.selected], batches = await this.organization.preview(paths);
+      if (session !== this.session) return;
+      this.state.request = `服务地址：${this.savedSettings?.address || ''}\n模型：${this.savedSettings?.model || ''}\nstream: false\n\n系统消息：\n${SYSTEM_PROMPT}\n\n用户消息（每个片段一次请求）：\n` + batches.map(batch => JSON.stringify(batch)).join('\n\n');
+      this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
+    } finally { if (session === this.session) { this.previewing = false; this.controls(); } }
   }
   status(text) {
     const analyzing = text.match(/^Analyzing fragment (\d+)\/(\d+); completed (\d+)/);
     const complete = text.match(/^Complete: (\d+)\/(\d+)/);
-    $('#ai-progress').value = this.organization.covered || 0;
-    $('#ai-status').classList.add('ui-feedback');
-    $('#ai-status').dataset.state = analyzing ? 'loading' : complete ? 'saved' : 'idle';
-    $('#ai-status').textContent = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
+    this.state.statusState = analyzing ? 'loading' : complete ? 'saved' : 'idle';
+    this.state.status = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
+    this.controls();
   }
   controls() {
-    const running = this.organization.running || this.previewing, batches = this.organization.batches;
-    const ready = Boolean(batches?.length);
-    $('#ai-preview').classList.toggle('primary', !ready);
-    $('#ai-preview').classList.toggle('secondary', ready);
-    $('#ai-send').classList.toggle('primary', ready);
-    $('#ai-send').classList.toggle('secondary', !ready);
-    $('#ai-preview').disabled = running || !this.selected.size;
-    $('#ai-send').disabled = running || !this.configured || !batches?.length || this.organization.covered === batches.length;
-    $('#ai-send').textContent = this.organization.covered && this.organization.covered < batches?.length ? '继续分析剩余内容' : '发送并分析';
-    $('#ai-cancel').disabled = !this.organization.running;
-    $('#ai-progress').hidden = !this.organization.running;
-    $('#ai-progress').max = batches?.length || 1; $('#ai-progress').value = this.organization.covered || 0;
-    $('#ai-selection').inert = running; $('#ai-directory').disabled = running; $('#ai-search').disabled = running; $('#ai-configure').disabled = running;
-    pageAvailability($('#ai-notes-previous'), $('#ai-notes-next'), !running && Boolean(this.selectionOffset), !running && Boolean(this.selectionHasMore));
-    $('#ai-settings').inert = running || Boolean(this.settingsPending);
+    this.ui.render({...this.state, selected: [...this.selected], previous: Boolean(this.selectionOffset), next: Boolean(this.selectionHasMore),
+      running: Boolean(this.organization.running), previewing: Boolean(this.previewing), configured: Boolean(this.configured),
+      covered: this.organization.covered || 0, batches: this.organization.batches || [], settingsPending: Boolean(this.settingsPending)});
   }
   invalidate() {
-    this.organization.batches = null; this.organization.covered = 0;
-    $('#ai-readable').replaceChildren(); $('#ai-input').textContent = '';
-    $('#ai-selection-state').textContent = `已选择 ${this.selected.size} / 20 篇笔记（跨搜索、目录和分页保留）`;
-    this.controls(); this.status('选择已更新，请重新预览后发送。');
+    this.organization.batches = null; this.organization.covered = 0; this.state.request = '';
+    this.status('选择已更新，请重新预览后发送。');
   }
   async settings(force = false) {
     if (this.settingsDrawer.panel.open && !force) return;
-    const settings = await native('aiSettings'); this.configured = Boolean(settings.configured && settings.address && settings.model);
-    $('#ai-address').value = settings.address; $('#ai-model').value = settings.model;
-    $('#ai-token').placeholder = settings.configured ? '已保存在此设备，留空则保留' : '输入服务凭证';
-    $('#ai-service-state').textContent = this.configured ? '服务已配置。核对预览后可主动发送。' : '尚未配置服务。可先选择并预览；发送前请设置 AI 服务。';
-    this.savedSettings = {address: settings.address, model: settings.model};
+    const session = this.session, settings = await native('aiSettings');
+    if (session !== this.session) return;
+    this.configured = Boolean(settings.configured && settings.address && settings.model);
+    this.state.address = settings.address; this.state.model = settings.model; this.state.savedCredential = Boolean(settings.configured);
+    this.state.service = this.configured ? '服务已配置。核对预览后可主动发送。' : '尚未配置服务。可先选择并预览；发送前请设置 AI 服务。';
+    if (this.savedSettings && (this.savedSettings.address !== settings.address || this.savedSettings.model !== settings.model)) this.invalidate();
+    this.savedSettings = {address: settings.address, model: settings.model}; this.controls();
   }
   settingsTask() {
-    return {label: 'AI 服务设置', dirty: () => Boolean($('#ai-token').value || $('#ai-address').value !== (this.savedSettings?.address || '') || $('#ai-model').value !== (this.savedSettings?.model || '')),
+    return {label: 'AI 服务设置', dirty: () => Boolean(this.state.token || this.state.address !== (this.savedSettings?.address || '') || this.state.model !== (this.savedSettings?.model || '')),
       pending: () => this.settingsPending?.catch(() => {}),
       save: async () => { await this.saveSettings(); return true; },
-      discard: () => { $('#ai-token').value = ''; $('#ai-address').value = this.savedSettings?.address || ''; $('#ai-model').value = this.savedSettings?.model || ''; },
+      discard: () => { this.state.token = ''; this.state.address = this.savedSettings?.address || ''; this.state.model = this.savedSettings?.model || ''; this.controls(); },
       close: () => this.closeSettings()};
   }
   leaveSettings() { return requestTaskLeave(this.settingsTask()); }
   saveSettings() {
     if (this.settingsPending) return this.settingsPending;
     if (!$('#ai-settings').reportValidity()) return Promise.reject(Error('Invalid configuration fields'));
-    this.settingsSave.disabled = true; $('#ai-settings').inert = true;
+    this.settingsSave.disabled = true;
+    const session = this.session;
     const operation = (async () => {
-      await native('aiConfigure', {address: $('#ai-address').value, model: $('#ai-model').value, token: $('#ai-token').value});
-      $('#ai-token').value = ''; await this.settings(true); this.closeSettings(); this.invalidate();
+      await native('aiConfigure', {address: this.state.address, model: this.state.model, token: this.state.token});
+      if (session !== this.session) return;
+      this.state.token = ''; await this.settings(true); this.closeSettings(); this.invalidate();
       this.status('设置已保存在此设备。请重新预览请求后主动发送。');
-    })().finally(() => { this.settingsPending = null; this.settingsSave.disabled = false; $('#ai-settings').inert = false; });
-    this.settingsPending = operation; return operation;
+    })().finally(() => { this.settingsPending = null; this.settingsSave.disabled = false; this.controls(); });
+    this.settingsPending = operation; this.controls(); return operation;
   }
   closeSettings() {
-    $('#ai-token').value = '';
-    $('#ai-address').value = this.savedSettings?.address || '';
-    $('#ai-model').value = this.savedSettings?.model || '';
-    this.settingsDrawer.hide();
+    this.state.token = '';
+    this.state.address = this.savedSettings?.address || '';
+    this.state.model = this.savedSettings?.model || '';
+    this.controls(); this.settingsDrawer.hide();
   }
-  resetSelection() {
-    this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    $('#ai-search').value = ''; $('#ai-directory').value = '*'; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
+  resetSelection(fromShow = false) {
+    if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
+    this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
   }
-  async attempt(operation) {
-    const owner = document.activeElement;
+  async attempt(operation, owns) {
+    const owner = document.activeElement, session = this.session;
+    const current = owns || (() => session === this.session);
     try { await operation(); } catch (error) {
+      if (!current()) return;
       const diagnostic = error.message;
       let message = '操作未完成。请重试，已保存的建议和未保存的编辑仍保留。';
       if (/canceled|cancelled/i.test(diagnostic)) message = '已取消分析，已保存的建议仍保留。';
@@ -129,58 +122,51 @@ export class OrganizeScreen {
       else if (/source.*changed|evidence|source unavailable/i.test(diagnostic)) message = '来源已变化或无法核验。请打开来源核对，再重新分析；本次未新增确认。';
       else if (/Choose an existing initiative/i.test(diagnostic)) message = '请先选择一个已有事项，再保存这个决定。';
       else if (/suggestion needs text/i.test(diagnostic)) message = '建议内容不能为空，请填写后再确认。';
-      else if (/conflict|changed|workspace/i.test(diagnostic)) { errorFeedback($('#ai-status'), diagnostic); return; }
-      if (this.settingsDrawer.panel.open) feedback($('#ai-settings-error'), message, diagnostic);
-      feedback($('#ai-status'), message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), diagnostic);
+      else if (/conflict|changed|workspace/i.test(diagnostic)) message = '工作目录或内容已变化，请重新打开并核对。';
+      if (this.settingsDrawer.panel.open) this.state.settingsError = message;
+      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''));
     } finally {
       this.controls();
-      if (document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
+      if (current() && document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
     }
   }
   async show(library) {
+    const request = this.showRequest = (this.showRequest || 0) + 1;
+    const current = () => request === this.showRequest;
     $('#organize-tools').hidden = false; $('#view-title').textContent = '整理'; $('#items').replaceChildren(); $('#filters').hidden = true;
     await this.attempt(async () => {
       const previousWorkspace = this.repository.workspaceId;
-      await this.repository.open(); await this.review.open();
-      if (previousWorkspace !== this.repository.workspaceId) { this.resetSelection(); }
+      await this.repository.open(); if (!current()) return;
+      await this.review.open(); if (!current()) return;
+      if (previousWorkspace !== this.repository.workspaceId) { this.resetSelection(true); }
       this.status('正在载入已保存的建议…');
       let recoveryError;
       try { await this.review.recover(); } catch (error) { recoveryError = error; }
-      try { await this.settings(); } catch { this.configured = false; $('#ai-service-state').textContent = '服务状态暂不可用。可继续选择来源或核对已保存的建议，设置时重试。'; }
-      this.library = library; await library.open(); await library.sync();
-      const directory = $('#ai-directory').options.length ? $('#ai-directory').value : '*'; $('#ai-directory').replaceChildren();
-      for (const path of ['*', '', ...(library.directories || [])]) { const option = document.createElement('option'); option.value = path; option.textContent = path === '*' ? '全部目录（逐篇选择笔记）' : path || '/'; $('#ai-directory').append(option); }
-      if ([...$('#ai-directory').options].some(option => option.value === directory)) $('#ai-directory').value = directory;
-      await this.inventory(); await this.candidates(); this.controls(); if (recoveryError) throw recoveryError; this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '可先选择来源并预览；发送前请设置 AI 服务，已有建议仍可核对。');
-    });
-    $('#index-state').textContent = '';
+      if (!current()) return;
+      try { await this.settings(); } catch { this.configured = false; this.state.service = '服务状态暂不可用。可继续选择来源或核对已保存的建议，设置时重试。'; }
+      if (!current()) return;
+      this.library = library; await library.open(); if (!current()) return;
+      await library.sync(); if (!current()) return;
+      this.state.directories = library.directories || [];
+      if (!['*', '', ...this.state.directories].includes(this.state.directory)) this.state.directory = '*';
+      await this.inventory(); if (!current()) return;
+      await this.candidates(); if (!current()) return; this.controls(); if (recoveryError) throw recoveryError; this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '可先选择来源并预览；发送前请设置 AI 服务，已有建议仍可核对。');
+    }, current);
+    if (current()) $('#index-state').textContent = '';
   }
   async inventory() {
     const request = ++this.inventoryRequest, workspace = this.library.workspaceId;
     const current = () => request === this.inventoryRequest && workspace === this.library.workspaceId;
-    $('#ai-inventory-state').textContent = '正在查找本机索引…'; $('#ai-notes-retry').hidden = true;
+    this.state.inventory = '正在查找本机索引…'; this.state.retry = false; this.controls();
     try {
-      const result = await this.library.query({search: $('#ai-search').value.slice(0, 200), directory: $('#ai-directory').value, offset: this.selectionOffset, limit: 50});
+      const result = await this.library.query({search: this.state.search.slice(0, 200), directory: this.state.directory, offset: this.selectionOffset, limit: 50});
       if (!current()) return;
-      $('#ai-selection').replaceChildren();
-      for (const note of result.notes) {
-        const label = document.createElement('label'), input = document.createElement('input'), context = document.createElement('span'), title = document.createElement('strong'), path = document.createElement('small');
-        input.type = 'checkbox'; input.value = note.path; input.checked = this.selected.has(note.path);
-        input.onchange = () => {
-          if (input.checked && this.selected.size >= 20) { input.checked = false; this.status('每次最多选择 20 篇笔记。请先取消部分选择。'); return; }
-          input.checked ? this.selected.add(note.path) : this.selected.delete(note.path); this.invalidate();
-        };
-        title.textContent = note.title || note.path; path.textContent = note.path;
-        context.append(title, document.createElement('br'), path); label.className = 'ui-selection'; label.append(input, context); $('#ai-selection').append(label);
-      }
-      this.selectionHasMore = result.hasMore;
-      $('#ai-selection-state').textContent = `已选择 ${this.selected.size} / 20 篇笔记（跨搜索、目录和分页保留）`;
-      $('#ai-inventory-state').textContent = `本页 ${result.notes.length} 篇${result.hasMore ? '，还有下一页' : ''}。` + (this.library.running || this.library.warnings?.length ? '索引尚未完整，结果可能不全。' : '来自当前本机索引。');
-      if (!result.notes.length) $('#ai-selection').textContent = '没有匹配的笔记。请更改搜索或目录。';
+      this.state.notes = result.notes; this.selectionHasMore = result.hasMore;
+      this.state.inventory = `本页 ${result.notes.length} 篇${result.hasMore ? '，还有下一页' : ''}。` + (this.library.running || this.library.warnings?.length ? '索引尚未完整，结果可能不全。' : '来自当前本机索引。');
     } catch (error) {
       if (!current()) return;
-      this.selectionHasMore = false; $('#ai-selection').replaceChildren();
-      $('#ai-inventory-state').textContent = '查找未完成，已选笔记仍保留。'; $('#ai-notes-retry').hidden = false;
+      this.selectionHasMore = false; this.state.notes = [];
+      this.state.inventory = '查找未完成，已选笔记仍保留。'; this.state.retry = true;
       throw error;
     } finally { if (current()) this.controls(); }
   }
@@ -196,6 +182,7 @@ export class OrganizeScreen {
   }
   async candidates(returnFocus) {
     if (this.reviewing) return;
+    const session = this.session, request = this.candidateRequest = (this.candidateRequest || 0) + 1;
     this.captureCandidates();
     const owner = returnFocus?.owner || document.activeElement;
     const focused = owner.closest('[data-candidate]');
@@ -203,6 +190,7 @@ export class OrganizeScreen {
     const scroll = $('#organize-tools').scrollTop;
     const destinations = await allRecords(this.review.targets.initiative);
     const page = await this.repository.query({offset: this.offset, limit: 50});
+    if (session !== this.session || request !== this.candidateRequest) return;
     const restoreFocus = document.activeElement === owner || document.activeElement === document.body;
     $('#ai-results').replaceChildren();
     for (const record of page.actions) {

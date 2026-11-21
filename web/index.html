@@ -25,38 +25,7 @@
         </header>
         <div id="library-tools" hidden></div>
         <div id="organize-tools" hidden>
-          <section aria-labelledby="ai-select-title">
-            <h2 id="ai-select-title">1 · 选择来源笔记</h2>
-            <p>每次选择 1–20 篇。只有点击「发送并分析」才会发送预览内容。</p>
-            <label class="ui-field">来源目录<select id="ai-directory" aria-label="选择分析目录"></select></label>
-            <label class="ui-field">搜索标题或正文<input id="ai-search" type="search" maxlength="200" /></label>
-            <p id="ai-inventory-state" role="status"></p>
-            <button id="ai-notes-retry" hidden>重试查找</button>
-            <div id="ai-selection"></div>
-            <div class="organization-actions ui-pagination"><button id="ai-notes-previous">上一页笔记</button><button id="ai-notes-next">下一页笔记</button></div>
-            <p id="ai-selection-state" role="status"></p>
-            <button id="ai-preview" class="primary">预览所选内容</button>
-          </section>
-          <section aria-labelledby="ai-preview-title">
-            <h2 id="ai-preview-title">2 · 核对并发送</h2>
-            <p id="ai-help">先选择笔记并预览，才能开始分析。离线时仍可核对已保存的建议。</p>
-            <p id="ai-service-state" role="status">正在载入服务状态…</p>
-            <button id="ai-configure">设置 AI 服务</button>
-            <div id="ai-configuration" hidden>
-            <form id="ai-settings">
-              <p>设置仅保存在此设备。使用 OpenAI 兼容服务；服务地址需支持 HTTPS（本机测试可用 127.0.0.1）。</p>
-              <label>完整服务地址<input id="ai-address" type="url" required placeholder="https://service.example/v1/chat/completions" /></label>
-              <label>模型<input id="ai-model" required /></label>
-              <label>凭证<input id="ai-token" type="password" autocomplete="off" /></label>
-              <div id="ai-settings-error" role="status"></div>
-              <button>保存设备设置</button>
-            </form>
-            </div>
-            <div id="ai-readable"></div>
-            <details id="ai-request-details"><summary>查看完整请求详情</summary><pre id="ai-input"></pre></details>
-            <div class="organization-actions"><button id="ai-send" class="primary" aria-describedby="ai-help" disabled>发送并分析</button><button id="ai-cancel" disabled>取消分析</button></div>
-            <progress id="ai-progress" aria-label="已完成的分析片段" hidden></progress><div id="ai-status" role="status"></div>
-          </section>
+          <div id="organization-react"></div>
           <section aria-labelledby="ai-review-title">
             <h2 id="ai-review-title">3 · 核对已保存的建议</h2>
             <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
