@@ -108,3 +108,8 @@ noise and do not establish a reproducible slowdown or a framework speedup.
 Combined search-navigation and production catalogue/contrast checks passed, including
 all origin/destination types, dirty leave choices and stale/dismissed reads. The
 integrated model tests passed 4/4. No additional full UI matrix was required.
+
+
+Latest continuation: [merged Actions95 integration](actions-integration/README.md)
+records the new base, source/artifact bindings, selected validation and independent
+reviews. Historical claims above retain their original source/head attribution.
