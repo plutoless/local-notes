@@ -9,6 +9,7 @@ export {noteReply} from './library-model';
 export {focusView} from './focus';
 export {focusPosition} from './focus-model';
 export {shellView, shellUpdate} from './shell';
+export {mountActionControls, actionRows, actionSources, actionHistory, actionOptions} from './actions';
 
 export {noteFieldsView, classificationView, noteInformationView} from './note-forms';
 export {CollectionContexts} from './browse-context';
