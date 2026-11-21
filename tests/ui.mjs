@@ -9,6 +9,8 @@ import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 const otherFixture = await storageFixture();
 let activeFixture = fixture;
+let holdConflictCopy=false, releaseConflictCopy, leaveReceiptResolve;
+const leaveReceipts=[];
 let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
@@ -21,6 +23,8 @@ try {
   await page.exposeFunction('bridge', async request => {
     try {
       bridgeCalls.push(request.cmd);
+      if(request.cmd==='leaveResult'){leaveReceipts.push(request);leaveReceiptResolve?.(request);return {};}
+      if(request.cmd==='create'&&holdConflictCopy&&request.path.includes('-conflict-'))await new Promise(resolve=>{releaseConflictCopy=resolve;});
       if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
@@ -192,7 +196,17 @@ try {
   await page.locator('#conflict').waitFor({state: 'visible'});
   assert.equal(await page.locator('#body').inputValue(), 'Unsaved local edit');
   assert.equal(await readFile(sourcePath, 'utf8'), '# Synthetic reference material\n\nExternal edit');
-  await page.locator('#copy').click(); await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
+  holdConflictCopy=true;
+  await page.locator('#copy').click();
+  await page.waitForFunction(()=>window.hasUnsavedChanges());
+  const left=new Promise(resolve=>{leaveReceiptResolve=resolve;});
+  await page.evaluate(()=>window.requestNativeLeave('issue101-delayed-copy'));
+  await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+  assert.equal(leaveReceipts.length,0,'leave must await the submitted copy');
+  assert.ok(releaseConflictCopy,'copy submission reached the isolated bridge');
+  holdConflictCopy=false;releaseConflictCopy();
+  assert.equal((await left).allowed,true);
+  await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('');
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});

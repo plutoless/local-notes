@@ -9,7 +9,7 @@ export interface ConflictRecord {
   hasDraft?:boolean; incomplete:boolean; cyclic:boolean; selected:string; value:Revision; json:string;
   invalid:boolean; committed:boolean; message:string; detail:string; saving:boolean;
 }
-export interface SyncModel {records:ConflictRecord[]; warnings:string[]; running:boolean; checked:boolean; active:string; message:string; detail:string}
+export interface SyncModel {cacheWarning?:string;records:ConflictRecord[]; warnings:string[]; running:boolean; checked:boolean; active:string; message:string; detail:string}
 export interface SyncCallbacks {close:()=>unknown; refresh:()=>unknown; jump:(key:string)=>unknown; choose:(key:string,revision:string)=>unknown; edit:(key:string,field:string,value:string)=>unknown; discard:(key:string)=>unknown; save:(key:string)=>unknown; recover:(key:string)=>unknown}
 export const syncFields:Record<string,string>={description:'内容',title:'名称',status:'状态',goal:'目标',progress:'当前进展',dueDate:'截止日期',waitingOn:'等待对象或条件',initiativeId:'所属事项标识',focusPosition:'重点排序',placement:'建议归属',reasoning:'建议理由',relevance:'当前相关性',deleted:'删除状态',sources:'来源引用',review:'已保存的审核决定',candidateType:'建议类型'};
 const labels:Record<string,string>={todo:'待办',doing:'进行中',waiting:'等待中',done:'已完成',canceled:'已取消',active:'进行中',later:'以后再做',ended:'已结束',suggested:'待审核',action:'行动',initiative:'事项',progress:'进展',relationship:'关联'};
@@ -47,6 +47,7 @@ export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:Co
 export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:SyncCallbacks}) {return <>
   <h2 className="ui-heading">同步检查</h2><p>这里只检查本地版本；无法确认其他设备是否收到。</p><Button className="secondary" onClick={c.close}>关闭检查</Button><Button data-sync-refresh disabled={m.running} onClick={c.refresh}>重新检查</Button>
   <div role="status" className="ui-feedback" data-sync-status><Feedback message={m.message} detail={m.detail}/></div>
+  {m.cacheWarning&&<p role="status" className="ui-feedback">{m.cacheWarning}</p>}
   {m.warnings.length>0&&<div className="ui-feedback"><Feedback message="部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。" detail={m.warnings.join('\n')}/></div>}
   <nav aria-label="冲突记录">{m.records.map(r=><Button key={r.key} className="quiet ui-row" onClick={()=>c.jump(r.key)}>{r.name}</Button>)}</nav>
   {m.records.map(r=><ConflictComparison key={r.key} record={r} callbacks={c} inert={m.running||Boolean(m.active&&m.active!==r.key)}/>)}

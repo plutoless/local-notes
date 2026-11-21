@@ -108,7 +108,10 @@ try {
     assert.equal(await panel.locator('h3').first().evaluate(el=>el===document.activeElement),true);
   }
   const firstVersion = panel.getByRole('button', {name: /选择版本 /}).first();
+  if(process.env.ISSUE101)await page.evaluate(()=>{window.restoreSyncCache=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('sync-draft:'))throw Error('Injected quota failure');return window.restoreSyncCache.call(this,key,value);};});
   await firstVersion.click();
+  if(process.env.ISSUE101){await panel.getByText('本机草稿暂不能保留。当前编辑仍在，请保存到本地或保持窗口打开后重试。').waitFor();assert.equal(await firstVersion.getAttribute('aria-pressed'),'true');await page.evaluate(()=>{Storage.prototype.setItem=window.restoreSyncCache;});}
+
   await capture('pointer-selected');
   if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
     await panel.getByRole('button',{name:'放弃编辑',exact:true}).click();
@@ -382,6 +385,7 @@ try {
     assert.equal(await readFile(sourcePath,'utf8'),original);
 
   }
+  if(process.env.ISSUE101){const {createHash}=await import('node:crypto');await writeFile(`${evidenceDir}/storage-receipt.json`,JSON.stringify({originalSourceSHA256:createHash('sha256').update(original).digest('hex'),sourceSHA256:createHash('sha256').update(await readFile(sourcePath)).digest('hex'),resolvedEntity:base.entityId,retainedRevisions:(await repo.history(base.entityId)).length,explicitMultiParentResolution:true,reloadReadback:true,invalidDraftReload:true,cacheQuotaVisibleEditing:true,bridge:'browser shim -> real isolated Swift storage/index; native transport not exercised'},null,2));}
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
 } catch (error) { console.error(error); throw error; } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
