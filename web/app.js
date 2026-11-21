@@ -1,4 +1,4 @@
-import {readerView, noteReply, shellView, shellUpdate} from './assets/react-host.js';
+import {readerView, noteReply, shellView, shellUpdate, noteFieldsView, classificationView, noteInformationView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
 import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
@@ -41,7 +41,7 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
   actions.closeDrawer();
   sourceOrigin = origin;
-  focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+  libraryScreen.switchCollection('notes'); focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
   $('#action-tools').hidden = true; $('#action-editor').hidden = true;
   await refresh(); if (generation !== workspaceGeneration || request !== noteLoadRequest) return; await load(path, loaded, request); $('#mode').focus();
 }, id => createNote(id), async () => {
@@ -84,6 +84,7 @@ let actionOrigin = null;
 let wikiHistory = [], wikiIntent = 0, readerSelection = null;
 async function navigate(next) {
   if (!await flush(true)) return false;
+  libraryScreen.switchCollection(next);
   $('.app').classList.remove('reading-continuation');
   const request = ++noteLoadRequest;
   wikiHistory = []; wikiIntent++;
@@ -94,7 +95,7 @@ async function navigate(next) {
   $('#organize-tools').hidden = next !== 'organize';
   if (next === 'initiatives') initiatives.detailKind = 'overview';
   $('.app').classList.toggle('workspace', next === 'initiatives'); $('#workspace-context').hidden = next !== 'initiatives';
-  view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; libraryScreen.offset = 0; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
+  view = next; $('.app').classList.toggle('home', next === 'focus'); $('#index-state').textContent = '正在载入…'; $('#library-tools').hidden = !['notes', 'favorites'].includes(next); focus.active = next === 'focus'; actions.active = next === 'actions'; initiatives.active = next === 'initiatives';
   hideInitiatives(); $('#action-editor').hidden = true; $('#action-tools').hidden = !actions.active; $('#search').hidden = focus.active; $('#search').setAttribute('aria-label', {notes:'搜索笔记', favorites:'搜索收藏', actions:'搜索行动', initiatives:'搜索事项', organize:'搜索笔记'}[next] || '搜索内容');
   selectNavigation(next);
   $('.app').classList.remove('editing'); await refresh();
@@ -544,7 +545,7 @@ async function createNote(initiativeId = null, captured = null) {
       if (initiatives.previous?.entityId === initiativeId) { initiatives.form(linked.record, linked.record); await initiatives.details(); }
     }
     if (initiativeId && $('.app').classList.contains('workspace')) { await openContextNote(path, false); $('#title').focus(); $('#title').select(); return; }
-    focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+    libraryScreen.switchCollection('notes'); focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
     await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; reader.set({capture:Boolean(captureOrigin)}); if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
   } catch (error) { notice(error.message); }
@@ -554,6 +555,7 @@ let shortTask = null, shortSaving = false;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
 shortDrawer.panel.classList.add('ui-drawer-wide');
 const shortForm = document.createElement('form'); shortForm.id = 'note-task-form'; shortForm.className = 'document'; shortForm.noValidate = true;
+const shortFields = noteFieldsView(shortForm);
 const shortStatus = document.createElement('div'); shortStatus.id = 'note-task-status'; shortStatus.setAttribute('role', 'status');
 shortDrawer.body.append(shortForm, shortStatus);
 const shortSubmit = document.createElement('button'); shortSubmit.type = 'submit'; shortSubmit.setAttribute('form', shortForm.id); shortSubmit.className = 'ui-action primary ui-compact';
@@ -575,7 +577,7 @@ function shortTaskAdapter() {
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
 function openShortTask({title, controls, key, values, save, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
-  shortForm.replaceChildren(...controls);
+  shortFields.show(controls);
   for (const control of shortForm.querySelectorAll('input:not([type=hidden]),textarea')) control.setAttribute('aria-describedby', [control.getAttribute('aria-describedby'), 'note-task-status'].filter(Boolean).join(' '));
   shortStatus.replaceChildren();
   shortTask = {key, values, save}; shortTask.initial = shortInput();
@@ -613,36 +615,30 @@ function saveShortTask(openSaved) {
   })();
   return shortSaving;
 }
-function taskInput(id, value = '', multiline = false) {
-  const input = document.createElement(multiline ? 'textarea' : 'input'); input.id = id; input.value = value;
-  input.setAttribute('aria-describedby', 'note-task-status'); input.addEventListener('input', () => input.setAttribute('aria-invalid', 'false'));
-  if (multiline) input.rows = 7;
-  return input;
-}
 async function openCapture() {
   if (!await flush()) return;
-  const title = taskInput('capture-title'), body = taskInput('capture-body', '', true);
-  const workspaceId = rootKey, path = taskInput('capture-path', `Notes/note-${Date.now()}.md`); path.type = 'hidden';
-  openShortTask({title: '随手记', key: `capture-draft:${workspaceId}`, controls: [path, field('标题', title, {density: 'compact'}), field('正文', body)],
-    values: () => ({'capture-title': title.value, 'capture-body': body.value, 'capture-path': path.value}), submit: '创建笔记', save: async () => {
-      if (!title.value.trim() && !body.value.trim()) { title.setAttribute('aria-invalid', 'true'); throw Error('请填写标题或正文。'); }
+  const workspaceId = rootKey;
+  const title = () => $('#capture-title'), body = () => $('#capture-body'), path = () => $('#capture-path');
+  openShortTask({title: '随手记', key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',describedBy:'note-task-status'},{id:'capture-body',label:'正文',multiline:true,describedBy:'note-task-status'}],
+    values: () => ({'capture-title': title().value, 'capture-body': body().value, 'capture-path': path().value}), submit: '创建笔记', save: async () => {
+      if (!title().value.trim() && !body().value.trim()) { title().setAttribute('aria-invalid', 'true'); throw Error('请填写标题或正文。'); }
       if (workspaceId !== rootKey) throw Error('Workspace changed');
       // Create only after explicit submission; failed writes retain all input.
-      if (!safePath(path.value)) throw Error('请使用有效的相对 Markdown 路径');
-      const text = `# ${title.value.trim() || '无标题'}\n\n${body.value}`;
-      try { await note('create', {path: path.value, text, workspaceId}); }
+      if (!safePath(path().value)) throw Error('请使用有效的相对 Markdown 路径');
+      const text = `# ${title().value.trim() || '无标题'}\n\n${body().value}`;
+      try { await note('create', {path: path().value, text, workspaceId}); }
       catch (error) {
-        let existing; try { existing = await note('read', {path: path.value, workspaceId}); } catch { throw error; }
+        let existing; try { existing = await note('read', {path: path().value, workspaceId}); } catch { throw error; }
         if (existing.text !== text) throw error;
       }
-      return () => createNote(null, {path: path.value, text, persisted: true});
+      return () => createNote(null, {path: path().value, text, persisted: true});
     }});
 }
 const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => flush()});
 noteInfo.panel.classList.add('ui-drawer-wide');
 const details = $('#note-details');
 const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); }); infoOpen.id = 'note-info-open';
-for (const child of [...details.children].filter(node => node.tagName !== 'SUMMARY')) noteInfo.body.append(child);
+noteInformationView(noteInfo.body);
 details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
@@ -655,18 +651,18 @@ libraryScreen.returnToNoteInfo = async (note, committed) => {
 
 
 
-async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;libraryScreen.resetCollections();organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 $('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
 reader.on('back', async()=>{if(wikiHistory.length){await returnWiki();return;}wikiIntent++;if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.view === 'focus' ? [...document.querySelectorAll('[data-reading-path]')].find(node=>node.dataset.readingPath===current) || $('.home-tools .primary') : origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}});
 reader.on('mode', ()=>{setNoteMode(!readMode); if (!readMode) $('#body').focus();});
 $('#rename').onclick = async () => {
   if (!await flush()) return;
   const original = current, expected = base, workspaceId = currentWorkspace;
-  const pathInput = taskInput('note-location', current);
-  openShortTask({title: '移动 / 改名', controls: [field('笔记相对路径', pathInput, {help: '以 .md 结尾，路径相对于笔记目录。', density: 'compact'})],
-    key: `location-draft:${workspaceId}:${original}`, values: () => ({'note-location': pathInput.value}), save: async () => {
-      const path = pathInput.value.trim();
-      if (!safePath(path)) { pathInput.setAttribute('aria-invalid', 'true'); throw Error('请使用有效的相对 Markdown 路径'); }
+  const pathInput = () => $('#note-location');
+  openShortTask({title: '移动 / 改名', controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
+    key: `location-draft:${workspaceId}:${original}`, values: () => ({'note-location': pathInput().value}), save: async () => {
+      const path = pathInput().value.trim();
+      if (!safePath(path)) { pathInput().setAttribute('aria-invalid', 'true'); throw Error('请使用有效的相对 Markdown 路径'); }
       if (path === original) return;
       await repairMovedLinks();
       await note('move', {path: original, target: path, expected, workspaceId});
@@ -697,7 +693,7 @@ window.addEventListener('focus',validateReferences);
 if(window.webkit?.messageHandlers?.notes)setInterval(validateReferences,30000);
 refresh().catch(e=>notice(e.message));
 
-let noteInitiativePending = null;
+let noteInitiativePending = null, initiativeClassification = null;
 async function noteInitiatives(path, focusId = null) {
   $('#repair-links').hidden = !localStorage.getItem('pending-note-move:'+rootKey);
   const workspaceId = rootKey;
@@ -707,14 +703,15 @@ async function noteInitiatives(path, focusId = null) {
   const owns = () => current === path && rootKey === workspaceId;
   if (!owns()) return;
   if (initiatives.previous) initiatives.previous = records.find(record => record.entityId === initiatives.previous.entityId) || initiatives.previous;
-  const container = $('#note-initiatives'); container.replaceChildren();
-  if (!records.length) { const empty = document.createElement('p'); empty.textContent = '尚无事项。可先保存笔记，稍后关联已有事项。'; container.append(empty); }
+  const container = $('#note-initiatives');
+  initiativeClassification ||= classificationView(container);
+  const changes = {};
+  initiativeClassification.show({kind:'initiative',items:records.map(record=>({id:record.entityId,title:record.title,checked:record.sources.some(source=>source.path===path),open:async()=>{
+    if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; selectNavigation('initiatives'); await initiatives.show(); await initiatives.edit(record); }
+  }})),change:id=>changes[id]?.()});
   for (const record of records) {
-    const label = document.createElement('label'), checkbox = document.createElement('input');
-    label.className = 'ui-selection'; checkbox.type = 'checkbox';
-    checkbox.checked = record.sources.some(source => source.path === path); checkbox.dataset.initiativeId = record.entityId;
-    label.append(checkbox, document.createTextNode(record.title)); container.append(label);
-    checkbox.onchange = () => {
+    const checkbox = [...container.querySelectorAll('input')].find(input=>input.dataset.initiativeId===record.entityId);
+    changes[record.entityId] = () => {
       if (noteInitiativePending) return;
       const linked = checkbox.checked;
       noteInitiativePending = (async () => {
@@ -726,7 +723,7 @@ async function noteInitiatives(path, focusId = null) {
           if (owns()) await noteInitiatives(path, record.entityId);
         } catch (error) {
           if (!owns()) return;
-          const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); container.append(failure);
+          const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); initiativeClassification.receipts.append(failure);
           checkbox.checked = !linked;
           // Reload the owner after either a stale base or a recoverable commit. Never repeat the old write.
           for (const input of container.querySelectorAll('input')) input.disabled = true;
@@ -742,9 +739,7 @@ async function noteInitiatives(path, focusId = null) {
       })().finally(() => { noteInitiativePending = null; });
       return noteInitiativePending;
     };
-    if (checkbox.checked) container.append(button(`打开事项：${record.title}`, async () => {
-      if (await flush()) { focus.active = false; $('#search').hidden = false; view = 'initiatives'; actions.active = false; selectNavigation('initiatives'); await initiatives.show(); await initiatives.edit(record); }
-    }, {variant: 'quiet'}));
+
   }
   container.inert = false;
   if (focusId) [...container.querySelectorAll('input')].find(input => input.dataset.initiativeId === focusId)?.focus({preventScroll: true});

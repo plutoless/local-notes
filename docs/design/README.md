@@ -214,3 +214,11 @@ field/invalid state remain authoritative. The live catalogue imports these actua
 components, including long Chinese content and reading continuation. Storage, modal
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
+
+## Favorites and contextual note forms React adoption (#94)
+
+Favorites consumes the shared Library/reader with independent browsing snapshots.
+Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
+classification uses `Classification`, also imported by the catalogue. The existing
+C sheet owner retains focus, protected leave decisions and repositories. See
+`docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
