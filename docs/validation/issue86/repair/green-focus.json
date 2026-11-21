@@ -1,0 +1,23 @@
+[
+  {
+    "key": "Shift+Tab",
+    "contained": true,
+    "text": "查看技术详情",
+    "visible": true,
+    "outline": "rgb(7, 95, 204) solid 3px"
+  },
+  {
+    "key": "Tab",
+    "contained": true,
+    "text": "关闭检查",
+    "visible": true,
+    "outline": "rgb(7, 95, 204) solid 3px"
+  },
+  {
+    "state": "non-focusing-pointer-open-escape-return",
+    "correct": true,
+    "tag": "BUTTON",
+    "visible": true,
+    "outline": "rgb(7, 95, 204) solid 3px"
+  }
+]

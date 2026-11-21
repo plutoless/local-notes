@@ -65,11 +65,15 @@ try {
  await card(3).getByRole('button', {name:/^作为参考资料：/}).click(); await status('请先选择一个已有事项');
  await card(3).getByLabel('已有事项', {exact:true}).selectOption(initiative.entityId); await card(3).getByRole('button', {name:/^作为参考资料：/}).click(); await card(3).getByText('处理决定：作为参考，已保存').waitFor();
  await card(4).getByRole('button', {name:/^忽略：/}).click(); await card(4).getByText('处理决定：忽略，已保存').waitFor();
- failTarget = true; await card(5).getByRole('button', {name:/^确认此建议：/}).click(); await card(5).getByRole('button', {name:'恢复已确认的决定'}).waitFor();
+ failTarget = true; await card(5).getByRole('button', {name:/^确认此建议：/}).click(); await card(5).getByRole('button', {name:/^恢复已确认的决定/}).waitFor();
  await writeFile(fixture.root + '/reference.md', '来源已被外部修改');
  await page.reload(); await organize(); await status('来源已变化');
+ await card(5).getByRole('button', {name:/^恢复已确认的决定/}).focus(); await page.keyboard.press('Enter'); await status('来源已变化');
+ await page.waitForFunction(() => document.activeElement.getAttribute('aria-label')?.startsWith('恢复已确认的决定'));
  await writeFile(fixture.root + '/reference.md', text);
- await card(5).getByRole('button', {name:'恢复已确认的决定'}).click(); await card(5).getByText('处理决定：确认，已保存').waitFor();
+ await card(5).getByRole('button', {name:/^恢复已确认的决定/}).focus(); await page.keyboard.press('Enter'); await card(5).getByText('处理决定：确认，已保存').waitFor();
+ await page.waitForFunction(() => document.activeElement.matches('.suggestion-card'));
+ assert.equal(await card(5).evaluate(node => node === document.activeElement), true);
  await page.reload(); await organize(); await card(0).getByText('保存的建议：已编辑的合成建议').waitFor();
  const actions = await fixture.adapter('actionQuery', {workspaceId:initiative.workspaceId, entityType:'action'}); assert.equal(actions.actions.length, 3); assert.equal(actions.actions.filter(a => a.initiativeId === initiative.entityId).length, 1);
  await writeFile(fixture.root + '/reference.md', '来源已被外部修改');
