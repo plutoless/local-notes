@@ -7,7 +7,7 @@ that starting main commit. No open pull requests existed at the initial overlap 
 | Surface/contract | Owner | Compatibility boundary |
 | --- | --- | --- |
 | Action browse rows in shared `#items` | React `ActionRows` | ActionScreen supplies bounded repository results and callbacks; `release()` unmounts before another screen writes the shared container |
-| Action control structure | React `ActionEditor` and `ActionTools`, mounted once | Stable uncontrolled control ports retain IDs, values, select options, handlers and modal placement needed by existing app/Initiative consumers; no subsequent React render overwrites those ports |
+| Action control structure | React `ActionEditor` and `ActionTools`, mounted once | Stable uncontrolled control ports retain IDs, values and handlers needed by existing app/Initiative consumers; no subsequent React render overwrites those ports |
 | Source references | React source view | Typed `ActionSource`; controller supplies availability and open callback; source replies compare request, repository and exact original source before adoption |
 | Immutable history | React history view | Existing repository history, sorted by modification time for display only; record/revision identity and request guard protect late replies |
 | Drawer/leave overlay and focus | Existing `drawer` / `requestTaskLeave` | Exactly one overlay and active-task authority; no React effects register traps or native exit handlers |
@@ -20,8 +20,9 @@ that starting main commit. No open pull requests existed at the initial overlap 
 proposal, opener)`, `task()`, `fields()` and `returnToFocus` remain stable for
 Initiative, search, reader and Current Focus callers. There is one Action editor.
 The static control shell is an explicit coexistence adapter, not a second state
-or persistence authority. Select-option children and feedback slots are reserved
-for the controller; dynamic sources, history and rows have only React renderers.
+or persistence authority. Feedback slots are reserved for the controller; select-option children, dynamic
+sources, history and rows have only React renderers. The form and footer mount
+directly in existing drawer slots without structural reparenting or removal.
 
 React uses existing semantic CSS tokens and compiled Tailwind utility classes;
 no alternate palette, package or runtime dependency was introduced. Chinese copy,
