@@ -13,5 +13,8 @@ export {syncView, fileConflictView} from './sync';
 export {syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft} from '../sync-drafts.js';
 
 
+export {mountActionControls, actionRows, actionSources, actionHistory, actionOptions} from './actions';
+
+
 export {searchView} from './search';
 export {searchRows} from './search-model';

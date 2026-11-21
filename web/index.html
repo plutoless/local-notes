@@ -68,23 +68,7 @@
           <button data-filter="recent" class="active">最近编辑</button
           ><button data-filter="folder">按目录</button>
         </div>
-        <div id="action-tools" hidden>
-          <button id="action-new" class="primary">＋ 新建行动</button
-          ><label
-            >状态
-            <select id="action-filter"></select></label
-          ><label
-            >事项
-            <select id="action-initiative-filter">
-              <option value="">全部事项</option>
-            </select></label
-          >
-          <div class="action-pagination ui-pagination">
-            <button id="action-previous">上一页</button
-            ><span id="action-page"></span
-            ><button id="action-next">下一页</button>
-          </div>
-        </div>
+        <div id="action-tools" hidden></div>
         <div id="initiative-tools" hidden>
           <button class="ui-action primary" id="initiative-new">新建事项</button
           ><button class="ui-action quiet" id="initiative-previous">上一页</button
@@ -125,56 +109,7 @@
               <p>笔记中的复选框只记录原文。需要跟进时，请从「当前重点」打开「全部行动」，单独新建行动。</p>
             </details>
         </div>
-        <div id="action-editor" hidden>
-          <div class="toolbar">
-            <button id="action-back">‹ 行动</button>
-            <details>
-              <summary>记录详情</summary>
-              <span id="action-id"></span>
-            </details>
-          </div>
-          <form id="action-form" class="document" novalidate>
-            <h2>行动详情</h2>
-            <label
-              >行动描述<textarea
-                id="action-description"
-                required
-                rows="3"
-              ></textarea></label
-            ><label>状态<select id="action-status"></select></label
-            ><details id="action-options"><summary>事项、日期与等待条件（可选）</summary><label
-              >事项<select id="action-initiative">
-                <option value="">独立行动</option>
-              </select></label
-            ><p id="action-initiative-help">选择事项后可打开。</p><button type="button" id="action-open-initiative" aria-describedby="action-initiative-help">打开事项</button
-            ><label>截止日期（可选）<input id="action-due" type="date" /></label
-            ><label>等待的人或条件（可选）<input id="action-waiting" /></label>
-            </details><details id="action-source-options"><summary>来源引用（可选）</summary>
-            <div id="action-sources"></div>
-            <button id="action-add-source" type="button">添加来源引用</button>
-            </details><div id="action-save-state" role="status" aria-live="polite"></div><div class="action-save-controls">
-            <button id="action-save" type="submit" class="primary">
-              保存行动</button
-            >
-            </div><section class="action-utilities" aria-label="行动管理"><details class="ui-disclosure"><summary>当前重点与历史</summary><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p>
-            <button
-              aria-describedby="focus-help"
-              id="action-focus"
-              type="button"
-            >
-              加入当前重点
-            </button>
-            <p id="history-help">保存行动后可查看版本历史。</p>
-            <button
-              aria-describedby="history-help"
-              id="action-history"
-              type="button"
-            >
-              查看历史
-            </button>
-            <div id="action-revisions" aria-live="polite"></div></details><details class="ui-disclosure"><summary>放弃编辑</summary><button id="action-discard" type="button" class="ui-action danger">放弃未保存的草稿</button></details></section>
-          </form>
-        </div>
+        <div id="action-editor" hidden></div>
         <div id="initiative-editor" hidden>
           <div class="toolbar">
             <button class="ui-action quiet" id="initiative-back">‹ 事项</button>
