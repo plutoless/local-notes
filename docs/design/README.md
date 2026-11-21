@@ -222,7 +222,7 @@ The source selector, exact request preview and device settings use production
 styles, checkbox-label focus role and contextual drawer. Checked state is independent
 from the single keyboard label cue. Keyed fields preserve caret and native disclosure
 state during model refresh. The live catalogue imports these same components;
-candidate review retains its separate legacy island until #99. See
+candidate review uses the typed `CandidateReviewContent` production component after #99. See
 `docs/architecture/organization-react.md` for bridge, service and overlay ownership.
 ## Synchronization React adoption (#101)
 
