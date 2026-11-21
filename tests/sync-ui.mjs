@@ -53,7 +53,7 @@ try {
     if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', (process.env.ISSUE86 ? 'a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3' : 'e8a869b') + ':web/' + name]) : await readFile(new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
-  const evidenceDir = process.env.ISSUE86 ? 'docs/validation/issue86' : 'docs/validation/issue36';
+  const evidenceDir = process.env.ISSUE86_EVIDENCE_DIR || (process.env.ISSUE86 ? 'docs/validation/issue86' : 'docs/validation/issue36');
   await mkdir(evidenceDir, {recursive:true});
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
@@ -323,7 +323,41 @@ try {
     await page.locator('#sync-first-open-probe').click();
     await page.waitForFunction(()=>firstOpenProbe.panel.getAttribute('aria-busy')==='false');
     assert.equal(await page.evaluate(()=>firstOpenProbe.panel.contains(document.activeElement)),true);
-    await page.evaluate(()=>firstOpenProbe.close());
+    const probePanel=page.locator('.sync-panel').last();
+    const closeProbe=probePanel.getByRole('button',{name:'关闭检查',exact:true});
+    const receipt=[];
+    // Start from a real pointer interaction; keyboard entry must establish the cue.
+    await probePanel.getByRole('button',{name:'重新检查',exact:true}).click();
+    await page.waitForFunction(()=>firstOpenProbe.panel.getAttribute('aria-busy')==='false');
+    await page.keyboard.press('Shift+Tab');
+    assert.equal(await closeProbe.evaluate(el=>el===document.activeElement),true);
+    for(const key of ['Shift+Tab','Tab']) {
+      await page.keyboard.press(key);
+      const position=await probePanel.evaluate(el=>{const n=document.activeElement;return {contained:el.contains(n),text:n.textContent,visible:n.matches(':focus-visible'),outline:getComputedStyle(n).outline};});
+      assert.equal(position.contained,true); assert.equal(position.visible,true); assert.match(position.outline,/solid/);
+      receipt.push({key,...position});
+    }
+    assert.equal(await closeProbe.evaluate(el=>el===document.activeElement),true);
+    await page.screenshot({path:`${evidenceDir}/repair-keyboard-wrap.png`});
+    await page.keyboard.press('Escape');
+    await probePanel.waitFor({state:'hidden'});
+    assert.equal(await page.locator('#sync-first-open-probe').evaluate(el=>el===document.activeElement && el.matches(':focus-visible')),true);
+    // Simulate the non-focusing pointer default observed in WKWebView. The
+    // actual click still runs the production consumer; only default focus is held.
+    await page.locator('#sync-first-open-probe').evaluate(el=>{el.addEventListener('mousedown',e=>e.preventDefault());el.blur();});
+    assert.equal(await page.evaluate(()=>document.activeElement===document.body),true);
+    await page.locator('#sync-first-open-probe').click();
+    await page.waitForFunction(()=>firstOpenProbe.panel.getAttribute('aria-busy')==='false');
+    await page.keyboard.press('Escape');
+    await probePanel.waitFor({state:'hidden'});
+    const returned=await page.locator('#sync-first-open-probe').evaluate(el=>({correct:el===document.activeElement,tag:document.activeElement.tagName,visible:el.matches(':focus-visible'),outline:getComputedStyle(el).outline}));
+    receipt.push({state:'non-focusing-pointer-open-escape-return',...returned});
+    await writeFile(`${evidenceDir}/repair-focus.json`,JSON.stringify(receipt,null,2));
+    assert.equal(returned.correct,true,'Escape must restore the sync opener even when pointer default did not focus it');
+    assert.equal(returned.visible,true); assert.match(returned.outline,/solid/);
+    await page.screenshot({path:`${evidenceDir}/repair-opener-return.png`});
+    assert.equal(await readFile(sourcePath,'utf8'),original);
+
   }
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
