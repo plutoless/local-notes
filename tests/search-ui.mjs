@@ -10,6 +10,7 @@ import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {})});
+let bodyReads = 0, indexedQueries = 0; const queryMs = [];
 let clipboard = '', deny = false, delay = null, failQuery = false, workspaceDelay = null, saves = 0;
 try {
   await mkdir(join(fixture.root, 'Archive'));
@@ -27,13 +28,15 @@ try {
       if (r.cmd === 'workspace' && workspaceDelay) await workspaceDelay;
       if (r.cmd === 'save') { saves++; throw Error('Controlled failed save'); }
       if (r.cmd === 'clipboardWrite') { if (deny) throw Error('denied'); clipboard = r.text; return {}; }
+      if (r.cmd === 'read') bodyReads++;
+      if (r.cmd === 'referenceSearch' || (r.cmd === 'actionQuery' && r.globalSearch)) indexedQueries++;
       if (r.cmd === 'read') return {text: await readFile(join(fixture.root, r.path), 'utf8')};
       if (r.cmd === 'referenceSearch') { if (delay) await delay; if (failQuery) throw Error('query unavailable'); }
       return await fixture.adapter(r.cmd, r);
     } catch (e) { return {error:e.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async text => { const r = JSON.parse(text); window.nativeReply(r.id, await window.bridge(r)); }}; });
-  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: process.env.SEARCH_FOCUS_PHASE === 'before' && ['style.css','search-screen.js'].includes(name) ? execFileSync('git',['show','a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3:web/'+name]) : await readFile(new URL('../build/web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: process.env.SEARCH_REACT_BASELINE && name === 'search-screen.js' ? execFileSync('git',['show','8ae4622f4a23033ec149038d9a370c9985a138e8:web/search-screen.js']) : process.env.SEARCH_FOCUS_PHASE === 'before' && ['style.css','search-screen.js'].includes(name) ? execFileSync('git',['show','a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3:web/'+name]) : await readFile(new URL('../build/web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   let releaseWorkspace; workspaceDelay = new Promise(resolve=>releaseWorkspace=resolve);
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
@@ -41,6 +44,21 @@ try {
   await page.locator('[data-scope=note]').click();
   const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
+  // A settled warm index must serve typing from bounded queries, with no body reads.
+  const readsBeforeTyping = bodyReads, queriesBeforeTyping = indexedQueries;
+  for (const text of Array.from({length:3},()=>['alpha','latency','alpha','latency']).flat()) {
+    const started = performance.now(); await input.fill(text);
+    await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent.startsWith('本页'));
+    queryMs.push(performance.now()-started);
+  }
+  assert.equal(bodyReads, readsBeforeTyping, 'Warm typing must not read Markdown bodies');
+  console.log(JSON.stringify({phase:process.env.SEARCH_REACT_BASELINE?'baseline':'migrated',warmTypingMs:queryMs,bodyReads:bodyReads-readsBeforeTyping,indexedQueries:indexedQueries-queriesBeforeTyping}));
+  // Ordinary result updates preserve the same input, caret and selection.
+  await input.evaluate(n=>{window.searchInputIdentity=n; n.setSelectionRange(1,4);});
+  await input.dispatchEvent('input');
+  await page.waitForFunction(()=>document.querySelector('#global-search [role=status]').textContent.startsWith('本页'));
+  assert.equal(await input.evaluate(n=>n===window.searchInputIdentity),true);
+  assert.deepEqual(await input.evaluate(n=>[n.selectionStart,n.selectionEnd]),[1,4]);
   await searchFocusJourney(page);
   if (process.env.SEARCH_FOCUS_PHASE !== 'before') {
     await page.locator('.search-result').first().getByRole('button',{name:'复制片段',exact:true}).focus();
