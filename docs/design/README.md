@@ -222,3 +222,14 @@ Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
 classification uses `Classification`, also imported by the catalogue. The existing
 C sheet owner retains focus, protected leave decisions and repositories. See
 `docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
+## Global search React adoption (#97)
+
+Compact A global search consumes production `SearchContent`, `SearchPassage` and
+`Button` through the typed view in `web/react/search.tsx`. The catalogue imports the
+same component with a long Chinese selected note and grounded highlighted excerpt.
+Existing semantic tokens and `.search-*` focus/selection/attribution rules remain
+authoritative. Scope selection, keyboard focus and pointer treatment are distinct;
+there is one existing native-dialog/Tab owner. Presentation never reads the index,
+copies through the bridge or navigates independently. See
+[search ownership](../architecture/search-react.md) and issue97 validation for the
+actual-app source/return, selection, narrow/short, reduced-motion and contrast checks.
