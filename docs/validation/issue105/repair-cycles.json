@@ -45,6 +45,45 @@
         "build/issue105/keyless-input-red.log",
         "build/issue105/keyless-input-green.log"
       ]
+    },
+    {
+      "cycle": 4,
+      "signature": "Native build-only fixture copied prior Mac package while final Mac build ran in parallel",
+      "hypothesis": "Fixture copies dist; compile success does not prove packaged web identity",
+      "correction": "Sequential fixture rebuild after completed final-head Mac build; native wrapper now refuses any stale dist web before baseline or app launch; later browser-first policy superseded executor construction and the tracked executor changes were removed, with original source preserved in ignored artifacts",
+      "command": "NATIVE_BUILD_ONLY=1 LEAVE_FOCUS_ONLY=1 FORMS_ONLY=1 EXTERNAL_INPUT=1 PHASE=issue105 python3 tests/native-browse-focus.py",
+      "observed": "Sequential compile exits0 and all21 packaged assets equal final source; no native launch/input occurred",
+      "receipt": "build/issue105/native-build-only-synchronized.log"
+    },
+    {
+      "cycle": 5,
+      "signature": "New browser control assumed premature capture reopen is blocked during saved-note reveal",
+      "hypothesis": "Verify real readiness predicate rather than introduce an additional product guarantee",
+      "correction": "Replace only the newly added speculative reopen assertion with explicit false readiness while real metadata/reveal is held; retain every original issue acceptance assertion",
+      "commands": [
+        "node tests/remaining-forms-ui.mjs"
+      ],
+      "observed": "Failed control preserved in browser-policy-reader-probe.log; existing requestTaskLeave(null) can return before the busy guard when no task is active, so no blocking guarantee is claimed or implemented; held pending/reveal readiness assertions pass in next attempt"
+    },
+    {
+      "cycle": 6,
+      "signature": "Reader extension after reload lost test-only captureLeavePending accessor",
+      "hypothesis": "The page reload resets window setup, not the application module state contract",
+      "correction": "Import the existing accessor again after reload before synchronous polling; no product change",
+      "commands": [
+        "node tests/remaining-forms-ui.mjs"
+      ],
+      "observed": "browser-policy-settled-probe.log preserves the setup TypeError; next attempt reaches reader after explicit setup rebind"
+    },
+    {
+      "cycle": 7,
+      "signature": "New reader pointer extension targets title obscured by sticky toolbar after reduced-height form screenshots",
+      "hypothesis": "Use the actual editable body as the newer pointer receiver and restore desktop setup for reader controls",
+      "correction": "Set explicit reader viewport and click the body with real browser pointer; do not force-click or alter product geometry",
+      "commands": [
+        "node tests/remaining-forms-ui.mjs"
+      ],
+      "observed": "browser-policy-final-probe.log preserves intercepted title click; reader Tab control already reached note-save and survived held callback; new target uses actual accessible editing surface; browser-policy-desktop-probe.log exits0 including real reader Tab/pointer, capture reveal/readiness, persistence/reload/recovery and original form assertions"
     }
   ]
 }
