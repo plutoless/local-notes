@@ -84,6 +84,12 @@ try {
   await page.locator('#action-history').click();
   await page.waitForFunction(()=>document.querySelectorAll('.action-revision').length===2);
   assert.match(await page.locator('#action-revisions').textContent(),new RegExp(revision));
+  await page.locator('#action-status').selectOption('todo');
+  await page.locator('#action-save').click();
+  await page.waitForFunction(()=>document.querySelector('#action-save-state').dataset.state==='saved');
+  await page.locator('#action-focus').click();
+  await page.waitForFunction(()=>document.querySelector('#action-focus').textContent==='移出当前重点');
+  assert.ok((await fixture.adapter('actionQuery',{workspaceId:workspace,limit:30})).actions[0].focusPosition!==null);
   await page.locator('#action-description').focus();
   await page.locator('#action-description').evaluate(n=>n.setSelectionRange(2,5));
   await page.keyboard.type('中文');

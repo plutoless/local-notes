@@ -65,7 +65,13 @@ export class ActionScreen {
         this.showForm(result.record, result.record); this.state('已保存到本地');
         return true;
       } catch (error) { if (owns()) errorFeedback($('#action-save-state'), error.message); return false; }
-      finally { this.saving = null; if (repository === this.repository && owner === this.owner?.()) $('#action-form').inert = false; }
+      finally {
+        this.saving = null;
+        if (repository === this.repository && owner === this.owner?.() && current.entityId === this.previous?.entityId) {
+          $('#action-form').inert = false;
+          $('#action-focus').disabled = this.dirty || !['todo', 'in-progress'].includes(this.previous.status);
+        }
+      }
     })();
     return this.saving;
   }
