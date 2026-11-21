@@ -204,3 +204,13 @@ Contextual drawers reuse the shared focus token for a single 2px active editable
 Tab containment excludes controls inside closed disclosures, even when the browser reports layout rectangles for those descendants. Opening a disclosure makes its controls reachable in document order. First meaningful focus, task ownership, recovery, submitted-write waiting and native close/quit decisions remain with existing consumers. The catalogue topic drawer demonstrates normal and invalid fields using the same production styles.
 
 The drawer declares its requested first receiver with native `autofocus` while open, in addition to synchronous focus. This prevents WKWebView keyboard reopening from choosing the header Close button after a previous Tab cycle. Closing removes only an autofocus attribute introduced by the drawer; pre-existing attributes remain intact.
+
+## Shell and Current Focus React adoption (#93)
+
+`ShellContent` and `FocusContent` consume the delivered Button and semantic token
+system, with compiled Tailwind utilities and no preflight. Existing compact actions,
+keyboard-only browse outlines, inward row focus, selected navigation and independent
+field/invalid state remain authoritative. The live catalogue imports these actual
+components, including long Chinese content and reading continuation. Storage, modal
+focus/leave decisions, search and capture remain with their existing controllers;
+see `docs/architecture/shell-react.md` for the explicit ownership inventory.
