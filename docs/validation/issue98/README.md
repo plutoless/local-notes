@@ -118,3 +118,12 @@ passes all assertions. No product request is suppressed to satisfy the test.
 is available at `build/issue98-delivery-bindings.json` (exact delivered SHA, SHA-256 of
 sources, every built/packaged resource pair and executable). Final independent reports
 are attached to the PR/coordinator receipt rather than self-certified here.
+
+Final presentation preservation: errors retain `data-state=failed` in the React
+feedback model (including device-settings errors), with selection and composite
+failure/retry suites passing in `feedback-selection.txt` / `feedback-review.txt`.
+The Spec review's minor candidate-pagination visual delta was corrected by restoring
+its original `ui-action secondary` classes statically on the legacy-owned buttons.
+No minor visual deviation was silently accepted. Final Mac package and focused
+checkbox/source-return regression receipts are `delivery-package.txt` /
+`delivery-focus.txt`; packaging includes the restored static entrypoint classes.
