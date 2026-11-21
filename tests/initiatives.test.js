@@ -68,3 +68,31 @@ test('initiative revision survives interrupted current write and index removal',
     assert.equal((await repo.history(result.record.entityId)).length, 1);
   } finally { await fixture.close(); }
 });
+test('ending preserves independently committed actions across a later failure, restart and retry', async () => {
+  const fixture = await storageFixture();
+  try {
+    const actions = new ActionRepository(fixture.adapter), initiatives = new InitiativeRepository(fixture.adapter);
+    await actions.open(); await initiatives.open();
+    const initiative = (await initiatives.save({title:'Partial ending',status:'active',goal:'',progress:'Keep progress',sources:[]})).record;
+    const first = (await actions.save({description:'First',initiativeId:initiative.entityId})).record;
+    const second = (await actions.save({description:'Second',initiativeId:initiative.entityId})).record;
+    // Fail a revision write only after one action has really committed; ordering is supplied by the real index.
+    const ordered = (await allRecords(actions)).filter(item=>item.initiativeId===initiative.entityId);
+    const survivor = ordered[0], failing = ordered[1];
+    fixture.fail((cmd,args)=>cmd==='actionWrite' && args.path.startsWith(`revisions/${failing.entityId}/`));
+    const choices = {[first.entityId]:{kind:'completed'},[second.entityId]:{kind:'independent'}};
+    await assert.rejects(endInitiative(initiatives,actions,initiative,choices), /Not saved/);
+    const history = await actions.history(survivor.entityId);
+    assert.equal(history.length,2);
+    const committedRevision = (await allRecords(actions)).find(item=>item.entityId===survivor.entityId).revision;
+    await fixture.removeIndex();
+    const reopenedActions = new ActionRepository(fixture.adapter), reopenedInitiatives = new InitiativeRepository(fixture.adapter);
+    await reopenedActions.open(); await reopenedInitiatives.open();
+    assert.equal((await allRecords(reopenedInitiatives))[0].status,'active');
+    assert.equal((await allRecords(reopenedActions)).find(item=>item.entityId===survivor.entityId).revision,committedRevision);
+    await endInitiative(reopenedInitiatives,reopenedActions,initiative,choices);
+    assert.equal((await allRecords(reopenedInitiatives))[0].status,'ended');
+    assert.equal((await reopenedActions.history(survivor.entityId)).length,2,'Retry must not revise an already handled action');
+    assert.equal((await allRecords(reopenedInitiatives))[0].progress,'Keep progress');
+  } finally { await fixture.close(); }
+});
