@@ -31,5 +31,14 @@
       "failedReceipt": "build/issue84-repair/navigation-attempt1.log",
       "observed": "Reached browser Copy, bridge receipt, source-return, dirty Continue/selection/Tab, Save and all retained races before the new readback precondition failed; no product defect inferred; corrected run navigation-attempt2.log reached PASS (exit receipt recorded separately)"
     }
+  ],
+  "integrationStages": [
+    {
+      "startingSha": "aba47e9acf8e3d3fbc2d591854ab8eb35998692d",
+      "integratedMain": "2e0dfeac0eb2edf603481d163a56e5d5c250baf7",
+      "impact": "Merged reviewed Organization and sync slices without conflict or new issue84 production edits; see latest-main-integration.md",
+      "correctionCycle": false,
+      "validation": "Fresh affected unit/integration, both search browser journeys and Mac packaging; unchanged unit/leave evidence reuse requires explicit source and behavior bindings; results recorded separately at final head"
+    }
   ]
 }

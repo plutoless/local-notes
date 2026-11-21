@@ -25,3 +25,7 @@ The earlier README's native-gate disposition documents the original failed deliv
 ## Final evidence
 
 Exact-head commands, separate complete independent Standards/Spec reports, runtime source/package bindings and artifact hashes are supplied in `build/issue84-repair/`. The committed cumulative repair ledger preserves historical phases and new completed cycles; repeated idle scans are not cycles. Final evidence must identify the executed/reviewed head and distinguish any reused byte-identical artifacts. The coordinator alone owns merge, issue closure and triage; publishing evidence does not remove the global merge hold.
+
+## Subsequent main integration
+
+See [latest-main integration](latest-main-integration.md) for the bounded continuation from reviewed `aba47e9` onto main `2e0dfea`, its runtime impact and selected fresh/reused validation. The earlier receipts retain their original heads; they are not overwritten or relabeled as new-head execution.
