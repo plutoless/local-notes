@@ -2,6 +2,15 @@
 /build/
 /dist/
 /node_modules/
+
+# Validation output (including per-run Markdown reports)
+/docs/validation/
+/validation/
+/test-results/
+/playwright-report/
+/blob-report/
+/coverage/
+
 *.keystore
 *.jks
 *.p12

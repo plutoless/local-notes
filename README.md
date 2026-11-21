@@ -44,21 +44,19 @@ npm run build:android
 
 Mac requires the Xcode toolchain. The Android script supports ANDROID_HOME/JAVA_HOME and defaults to Homebrew Android SDK 35, Build Tools 35.0.0, and OpenJDK 21. It does not require Gradle or a network connection. The development signing key is stored in build/; retain it to allow future installation updates.
 
-## Recorded validation
+## Validation
 
-See [Issue #2 implementation and validation](docs/validation/issue-2.md) for initiative tests, recovery behavior and the current validation decision.
-
-
-See [Issue #1 implementation and validation](docs/validation/issue-1.md) for persistence details, automated checks, and recorded validation limits. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
+Follow the [project validation policy](docs/agents/validation.md): behavior-focused unit tests first, focused real-adapter integration tests, and only justified browser or affected native checks. `npm test` requires the macOS Swift toolchain for integration with the production file/SQLite adapter.
 
 The browser interaction suite requires Playwright and a Chromium installation:
 
 ```sh
-npm install --no-save --package-lock=false playwright
+npm ci
+npm run build:web
 CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm run test:ui
 ```
 
-The Mac and Android builds pass. Automated shared-UI and Mac storage integration checks pass, and the issue #2 follow-up verified native Mac creation, editing, linked-note autosave, restart/index recovery and explicit handling of unfinished actions before ending. Sequential Syncthing transfer passed between two isolated instances on one Mac in both directions. Under the [project validation policy](docs/agents/validation.md), standalone Syncthing tests and Android-specific tests are deferred until the user requests them and do not block merging. Unexecuted physical-device and divergent-edit/conflict checks remain unverified. See the validation notes for the exact scope and evidence.
+Keep run-specific evidence in ignored local output or CI artifacts, and publish concise results in PR descriptions or issue comments. Historical validation artifacts are not part of the current source tree. Existing harnesses may write to the ignored `docs/validation/` directory; those files must not be added to Git. Android-specific and standalone Syncthing checks remain deferred until requested, never reported as passed.
 
 ## AI suggestions (issue 6)
 
@@ -68,4 +66,4 @@ Select 1–20 notes from a directory page, preview the exact system and user mes
 
 Evidence-backed initiative, topic, relationship, progress and action suggestions are saved in `LocalNotesData/candidates/` with immutable revisions and a rebuildable private SQLite index. Quotes must occur in the fragment sent. Suggested placement and relevance are model claims, not confirmed facts. Open evidence to read the original note; confirmation and review decisions belong to a later issue. Existing notes and confirmed records are unchanged by generation.
 
-Credentials and service settings stay in app-private device storage (Mac Application Support with owner-only settings-file permissions; Android private preferences with backup disabled), outside synchronized JSON, notes and model messages. Saved credentials are never returned to the WebView; password entry is cleared after saving. These files are not an encrypted secret vault. Service response bodies and credentials are not logged. Manual features remain available without configuration or connectivity. See [issue 6 validation](docs/validation/issue-6.md) for executed checks and deferred checks.
+Credentials and service settings stay in app-private device storage (Mac Application Support with owner-only settings-file permissions; Android private preferences with backup disabled), outside synchronized JSON, notes and model messages. Saved credentials are never returned to the WebView; password entry is cleared after saving. These files are not an encrypted secret vault. Service response bodies and credentials are not logged. Manual features remain available without configuration or connectivity. See [issue #6](https://github.com/plutoless/local-notes/issues/6) for the delivery discussion and [the validation policy](docs/agents/validation.md) for current check and evidence requirements.
