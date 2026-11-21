@@ -264,3 +264,12 @@ there is one existing native-dialog/Tab owner. Presentation never reads the inde
 copies through the bridge or navigates independently. See
 [search ownership](../architecture/search-react.md) and issue97 validation for the
 actual-app source/return, selection, narrow/short, reduced-motion and contrast checks.
+
+## Initiative React adoption (#96)
+
+Production `InitiativeRows`, `InitiativeLinks` and `InitiativeDecisions` also render
+in the live catalogue with long Chinese/selected context and explicit ending
+choices. The mount-once metadata/source control ports preserve existing contextual
+field focus, invalid receipts and source quote editing. The existing wide drawer
+retains one leave/focus owner and the shared Action editor remains authoritative.
+See [Initiative ownership](../architecture/initiatives-react.md).
