@@ -70,12 +70,19 @@ export class FocusScreen {
     $('#view-title').textContent = '当前重点'; $('#search').hidden = true;
     $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = true;
     $('#editor').hidden = true; $('#action-editor').hidden = true; $('#initiative-editor').hidden = true; $('#empty').hidden = true;
-    const [focused, waiting, initiatives] = await Promise.all([
-      repository.query({focus: true, offset: this.focusOffset || 0, limit: this.limit + 1}),
-      repository.query({status: 'waiting', limit: this.waitingLimit}),
-      this.initiatives.repository.query({status: 'active', limit: this.initiativeLimit})
-    ]);
-    if (!this.active || repository !== this.actions.repository || request !== this.request) return;
+    const owns = () => this.active && repository === this.actions.repository && request === this.request;
+    let focused, waiting, initiatives;
+    try {
+      [focused, waiting, initiatives] = await Promise.all([
+        repository.query({focus: true, offset: this.focusOffset || 0, limit: this.limit + 1}),
+        repository.query({status: 'waiting', limit: this.waitingLimit}),
+        this.initiatives.repository.query({status: 'active', limit: this.initiativeLimit})
+      ]);
+    } catch (error) {
+      if (!owns()) return;
+      throw error;
+    }
+    if (!owns()) return;
     $('#index-state').textContent = ''; const list = $('#items');
     const active = document.activeElement;
     const focusedAction = list.contains(active) ? active.dataset.entityId : null;
