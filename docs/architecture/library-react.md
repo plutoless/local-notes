@@ -42,7 +42,7 @@ builds for the current machine's architecture; it is not a universal binary.
 | Note information entry | Explicit legacy opener island inside reader | Existing C drawer authority |
 | Note metadata, classification, capture/location/Topic fields | React typed views; explicit sibling legacy receipt islands | See `note-forms-react.md` (#94) |
 | Search | React `SearchContent`; existing controller/typed navigation adapter | See `search-react.md` |
-| Action, Initiative, Organization, synchronization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
+| Initiative, Organization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
 | Tokens | `web/style.css` semantic variables | Tailwind maps those variables; no second semantic palette |
 
 `LibraryScreen.release()` synchronously unmounts rows before navigation hands the
@@ -93,3 +93,7 @@ The pre-change baseline lease was released. Minimum OS/engine runtime tests, And
 execution, standalone Syncthing and ordinary native IME/clipboard replay are not
 inferred from browser results. Preserve failed cycles and source/artifact bindings
 in `docs/validation/issue92/`.
+
+Synchronization and reader file-conflict ownership migrated in #101; see [the explicit inventory](sync-react.md).
+
+Actions use the delivered #95 React controls/rows and stable controller ports; see [Action ownership](actions-react.md).

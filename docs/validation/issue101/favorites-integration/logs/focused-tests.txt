@@ -1,0 +1,31 @@
+✔ collections preserve independent bounded browsing state across other pages (0.606583ms)
+✔ returned snapshots cannot overwrite saved context and workspace reset starts empty (0.064083ms)
+{"fixture":"500 notes / 2000 actions","coldMs":721.7367920000006,"warmMs":486.5578750000004,"openingMs":0.015791000001627253,"coldReads":500,"warmReads":0,"editMoveReads":2}
+✔ 500-note incremental SQLite library with 2,000 confirmed actions (10873.218583ms)
+✔ production Mac traversal excludes protected ranges and returns only metadata (9.409459ms)
+✔ source-faithful summaries survive cached upgrade and index rebuild without source writes (37.8535ms)
+✔ summary cleanup preserves literal operators and code syntax (0.149ms)
+✔ Library ordering and archive scope compose at the SQLite boundary with stable bounded pages (277.106834ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (12.982125ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.493375ms)
+✔ resolution input preserves invalid raw JSON and the last full source value (0.476917ms)
+✔ private recovery candidates retain task/workspace identity, raw input and reviewed heads (0.137417ms)
+✔ recovery rejects another task and verifies retained immutable bytes before retry (0.331291ms)
+✔ private-cache quota or removal failure never throws away the live resolution (0.435791ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (2122.453917ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (43.682583ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (43.260917ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (19.094625ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (16.855ms)
+✔ an incoming current-file import failure does not block unrelated records (17.507083ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (19.491417ms)
+✔ an unavailable topic collection does not prevent action commits (20.030875ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (18.554292ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11248.867625

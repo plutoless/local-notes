@@ -1,0 +1,29 @@
+✔ collections preserve independent bounded browsing state across other pages (0.619416ms)
+✔ returned snapshots cannot overwrite saved context and workspace reset starts empty (0.065667ms)
+✔ changing collection invalidates a pending query before the next route render starts (0.987709ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (20.158291ms)
+✔ complete traceable batches and strict evidence validation resist injected instructions (2.567209ms)
+✔ explicit selected scope, persisted candidates, restart/index recovery, partial retry and cancel (3163.99775ms)
+✔ cancel during asynchronous dedup query prevents persistence and coverage changes (0.244791ms)
+✔ candidate recovery composes with merged revision recovery without changing suggested state (41.156208ms)
+✔ resolution input preserves invalid raw JSON and the last full source value (1.052667ms)
+✔ private recovery candidates retain task/workspace identity, raw input and reviewed heads (0.2985ms)
+✔ recovery rejects another task and verifies retained immutable bytes before retry (0.541125ms)
+✔ private-cache quota or removal failure never throws away the live resolution (0.895834ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (2666.424958ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (216.824708ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (183.241208ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (47.435167ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (32.534709ms)
+✔ an incoming current-file import failure does not block unrelated records (20.100833ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (25.32175ms)
+✔ an unavailable topic collection does not prevent action commits (26.322792ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (38.308125ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3322.779833

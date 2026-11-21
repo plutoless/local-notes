@@ -1,0 +1,29 @@
+{"fixture":"500 notes / 2000 actions","coldMs":788.6027910000003,"warmMs":484.96200000000044,"openingMs":0.012666999999055406,"coldReads":500,"warmReads":0,"editMoveReads":2}
+✔ 500-note incremental SQLite library with 2,000 confirmed actions (12053.1195ms)
+✔ production Mac traversal excludes protected ranges and returns only metadata (8.406291ms)
+✔ source-faithful summaries survive cached upgrade and index rebuild without source writes (46.596875ms)
+✔ summary cleanup preserves literal operators and code syntax (0.188542ms)
+✔ Library ordering and archive scope compose at the SQLite boundary with stable bounded pages (333.950625ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (10.70275ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.500625ms)
+✔ resolution input preserves invalid raw JSON and the last full source value (0.5ms)
+✔ private recovery candidates retain task/workspace identity, raw input and reviewed heads (0.140708ms)
+✔ recovery rejects another task and verifies retained immutable bytes before retry (0.344208ms)
+✔ private-cache quota or removal failure never throws away the live resolution (0.348708ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (3255.889459ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (44.070417ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (44.580458ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (19.23825ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (16.440833ms)
+✔ an incoming current-file import failure does not block unrelated records (17.476208ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (19.801333ms)
+✔ an unavailable topic collection does not prevent action commits (20.748792ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (17.398792ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 12490.936333

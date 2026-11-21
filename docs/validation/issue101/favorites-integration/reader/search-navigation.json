@@ -1,0 +1,38 @@
+{
+  "head": "b3c3b257016c79436fbd33f95f28faa8b3d3f467",
+  "checks": [
+    {
+      "journey": "search expand, browser selection/Copy and bridge Copy",
+      "browserCopy": [
+        {
+          "trusted": true,
+          "selection": "# 重复标题\n\n- latency 延迟 alpha\n| 指标 | 数值 |\n| p99 | 20 |\n[链接](https://example.com)",
+          "defaultPrevented": true
+        }
+      ],
+      "bridgeTextSHA256": "7d72499c74e8e298d4802086c905427c75493174065a7a2e25b27487c9fec7c3",
+      "sourceSHA256": "7d72499c74e8e298d4802086c905427c75493174065a7a2e25b27487c9fec7c3"
+    },
+    {
+      "journey": "dirty-source Continue, newer input selection and Tab",
+      "sourceSHA256": "7d72499c74e8e298d4802086c905427c75493174065a7a2e25b27487c9fec7c3",
+      "dirtySelection": [
+        2,
+        8,
+        "backward"
+      ],
+      "nextFocus": "关闭搜索"
+    },
+    {
+      "journey": "explicit Save and source-return",
+      "savedSourceSHA256": "861969aee6802e0066c413b57febe834c21c0a34d8cbcd06a3781a513feae350",
+      "untouchedSourceSHA256": "7d72499c74e8e298d4802086c905427c75493174065a7a2e25b27487c9fec7c3"
+    },
+    {
+      "journey": "reload and real UI persisted readback",
+      "savedSourceSHA256": "861969aee6802e0066c413b57febe834c21c0a34d8cbcd06a3781a513feae350",
+      "untouchedSourceSHA256": "7d72499c74e8e298d4802086c905427c75493174065a7a2e25b27487c9fec7c3"
+    }
+  ],
+  "clipboardBoundary": "Trusted browser Copy event with default prevented, plus controlled clipboardWrite bridge receipt; no OS clipboard readback or native integration claim."
+}

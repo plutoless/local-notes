@@ -1,0 +1,362 @@
+
+> local-notes@0.1.0 test
+> node --test tests/*.test.js
+
+✔ confirmed actions start empty despite reference checkboxes, and survive native index removal (3181.790417ms)
+✔ every state can be reopened while complete immutable history and optional fields survive restart (74.341583ms)
+✔ interrupted revision writes retain the edit and restart recovers only committed revisions (44.370125ms)
+✔ interrupted current writes retain the edit and restart recovers only committed revisions (50.370333ms)
+✔ interrupted index writes retain the edit and restart recovers only committed revisions (52.607417ms)
+✔ transient current-record and index failures report recovered saves after repair (41.60375ms)
+✔ queries paginate and workspace IDs reject writes from another root (71.978084ms)
+✔ a missing live SQLite index is rebuilt before returning query results (43.221709ms)
+✔ editing after a recoverable commit extends the committed revision without branching or duplicating the action (70.556625ms)
+✔ Mac URLSession controlled service: scope, auth isolation, invalid response, failure, redirect, cancellation, recovery (47025.764875ms)
+✔ individual edited decisions, initiative separation, later state, reference, links, progress and topics (3213.765542ms)
+✔ fingerprints block changed, missing and unavailable evidence; ignore and repeated analysis persist after rebuild (80.643084ms)
+✔ committed intent survives termination before target, repeated clicks and after-target interruption without duplicates (210.625833ms)
+✔ two-device review and target disagreements retain branches through rebuild and require conflict resolution (171.490875ms)
+✔ invalid synchronized approval intents are rejected before replay (91.261334ms)
+✔ rename and repeated analysis recognize a processed candidate by content fingerprints (61.874541ms)
+✔ task writeback preserves CRLF, nesting, and surrounding text (2.182916ms)
+✔ code examples must never become live tasks (0.432666ms)
+✔ paths exclude traversal, hidden folders and credentials (1.444458ms)
+✔ reading view escapes HTML and attribute injection (1.58825ms)
+✔ title update preserves dollar signs literally (0.265083ms)
+✔ Chinese reading renders semantic lists, quotations and named checkboxes without changing source lines (0.875958ms)
+✔ ordered lists preserve the author start number (0.215666ms)
+✔ tables require delimiter cells and protect escaped pipes, inline code and fences (0.978042ms)
+✔ reader links and table cells never execute markup or unsafe protocols (0.36325ms)
+✔ table bodies stop before following Markdown blocks containing pipes (0.31575ms)
+✔ search source anchors retain authored offsets across tables (0.359792ms)
+✔ a released or replaced home cannot reclaim the visible legacy list after a delayed query (1.251709ms)
+✔ a rejected submitted home operation settles without notifying its replacement owner (0.858833ms)
+✔ a home refresh cannot authorize focus after release while its query is pending (0.298917ms)
+✔ an intentional navigation handoff reports its failure only in the originating workspace (0.242125ms)
+✔ late pagination failure preserves replacement loading status and navigation context (0.236542ms)
+✔ superseded home reads do not propagate stale errors, while current reads remain retryable failures (0.320333ms)
+✔ focus reordering preserves neighbor positions and chooses the requested bounded slot (1.173291ms)
+✔ focus reordering rejects unavailable or unrepresentable slots before persistence (0.162125ms)
+✔ focus uses the same actions, preserves explicit order and rebuilds; retirement clears selection (3707.485084ms)
+✔ failed cached recovery prevents stale revision writes and remains retryable (38.173666ms)
+✔ Mac index upgrades legacy and partially migrated query columns from confirmed JSON (45.066083ms)
+✔ initiative assignments, multiple links, explicit ending and index/restart recovery (4578.414584ms)
+✔ source state preserves changed, missing and ambiguous references; only unique fingerprint recovers moves (0.234834ms)
+✔ initiative revision survives interrupted current write and index removal (33.406125ms)
+✔ Library boundary retains optional totals and source text while rejecting invalid or unsafe replies (1.376541ms)
+✔ note reply rejects malformed bridge content and preserves empty and exact Unicode source (0.177625ms)
+✔ archive recognition uses complete directory components only (2.129083ms)
+✔ frontmatter and prose cannot promote a current path into an archive (2.41ms)
+{"fixture":"500 notes / 2000 actions","coldMs":1267.357333,"warmMs":721.0937919999997,"openingMs":0.02200000000084401,"coldReads":500,"warmReads":0,"editMoveReads":2}
+✔ 500-note incremental SQLite library with 2,000 confirmed actions (20683.23ms)
+✔ production Mac traversal excludes protected ranges and returns only metadata (8.689416ms)
+✔ source-faithful summaries survive cached upgrade and index rebuild without source writes (39.805333ms)
+✔ summary cleanup preserves literal operators and code syntax (0.159792ms)
+✔ Library ordering and archive scope compose at the SQLite boundary with stable bounded pages (269.182334ms)
+✔ real Mac Assets resource contract serves nested MIME and fails closed on private or ambiguous URLs (1392.833833ms)
+✖ generated resource manifest exactly inventories shipped modules and nested compiled assets (239.693875ms)
+✔ native reader IME helper resolves outside the repository working directory without starting a journey (359.4345ms)
+✔ complete traceable batches and strict evidence validation resist injected instructions (2.824833ms)
+✔ explicit selected scope, persisted candidates, restart/index recovery, partial retry and cancel (4151.176209ms)
+✔ cancel during asynchronous dedup query prevents persistence and coverage changes (0.59175ms)
+✔ candidate recovery composes with merged revision recovery without changing suggested state (115.901ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.523875ms)
+✔ private reading hints are bounded, ordered by reading, isolated and index independent (1.566333ms)
+✔ invalid private hints recover without treating them as records (0.098667ms)
+✔ real isolated search index: bilingual grounding, boundaries, incremental reads, stale context (3931.466167ms)
+✔ scoped real formal indexes: stored fields, typed identities, bounded pages and read-only refresh (330.551625ms)
+✔ bounded prefix merge uses native ordering across more than fifty mixed-case note paths (521.927ms)
+✔ distant note passages stay independently selectable and formal title expansion includes stored context (42.796125ms)
+✔ cached summary upgrade keeps typed passage offsets and expanded context aligned (71.9045ms)
+✔ directory presentation delegates to the current shell owner and a stale disposer cannot detach its replacement (1.472834ms)
+✔ resolution input preserves invalid raw JSON and the last full source value (1.082625ms)
+✔ private recovery candidates retain task/workspace identity, raw input and reviewed heads (0.32675ms)
+✔ ActionRepository: forks, conflict copies, delayed parents, tombstones and rebuild (3869.716917ms)
+✔ InitiativeRepository: forks, conflict copies, delayed parents, tombstones and rebuild (80.251625ms)
+✔ TopicRepository: forks, conflict copies, delayed parents, tombstones and rebuild (71.027583ms)
+✔ reviewed heads cannot silently resolve a newly arrived branch; focused conflicts remain visible (35.705208ms)
+✔ corrupt Mac SQLite is rebuilt from synchronized revisions (29.880959ms)
+✔ an incoming current-file import failure does not block unrelated records (34.89525ms)
+✔ a transient incoming read failure retries even when file metadata is unchanged (43.084292ms)
+✔ an unavailable topic collection does not prevent action commits (34.314542ms)
+✔ unsupported current types are reported without overwriting source JSON; renamed copies deduplicate by ID (30.175042ms)
+✔ legacy draft migrates into its workspace and record identity (0.454834ms)
+✔ different legacy and task drafts both survive migration (0.071875ms)
+✔ a corrupt task draft cannot erase a valid legacy recovery candidate (0.05825ms)
+✔ other workspaces and malformed private drafts remain untouched (0.065791ms)
+✔ topic list failure after commit retries the same revision without duplicate topics (2628.6055ms)
+✔ contextual topic creation commits its source with the topic and rejects duplicate names (32.582959ms)
+✔ contextual topic index failure retries the same linked immutable revision (31.294541ms)
+✔ wiki rendering escapes aliases and targets and preserves code (0.820542ms)
+✔ resolution uses relative then workspace exact paths, never basename guessing (0.330958ms)
+ℹ tests 86
+ℹ suites 0
+ℹ pass 85
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47113.084291
+
+✖ failing tests:
+
+test at tests/native-assets.test.js:6:1
+✖ generated resource manifest exactly inventories shipped modules and nested compiled assets (239.693875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  ... Skipped lines
+  
+  + Buffer(10301) [Uint8Array] [
+  - Buffer(10351) [Uint8Array] [
+      105,
+      109,
+      112,
+      111,
+      114,
+  ...
+      119,
+  -   44,
+  -   32,
+  -   97,
+  -   102,
+  -   116,
+  -   101,
+  -   114,
+  -   83,
+  -   97,
+  -   118,
+  -   101,
+  -   61,
+  -   102,
+  -   97,
+  -   108,
+  -   115,
+  -   101,
+      41,
+      123,
+      10,
+      32,
+      32,
+  ...
+      124,
+  -   40,
+      116,
+      104,
+      105,
+      115,
+      46,
+  ...
+      103,
+  -   38,
+  -   38,
+  -   33,
+  -   97,
+  -   102,
+  -   116,
+  -   101,
+  -   114,
+  -   83,
+  -   97,
+  -   118,
+  -   101,
+      41,
+  -   41,
+      114,
+      101,
+      116,
+      117,
+      114,
+  ...
+      46,
+  +   102,
+  +   105,
+  +   110,
+  +   97,
+  +   108,
+  +   108,
+  +   121,
+  +   40,
+  +   40,
+  +   41,
+  +   61,
+  +   62,
+  +   123,
+      116,
+      104,
+  +   105,
+  +   115,
+  +   46,
+  +   115,
+  +   97,
+  +   118,
+      101,
+  +   80,
+  +   101,
+      110,
+  +   100,
+  +   105,
+  +   110,
+  +   103,
+  +   61,
+  +   110,
+  +   117,
+  +   108,
+  +   108,
+  +   59,
+  +   125,
+  +   41,
+  +   59,
+  +   10,
+  +   32,
+  +   32,
+  +   32,
+  +   32,
+  +   114,
+  +   101,
+  +   116,
+  +   117,
+  +   114,
+  +   110,
+  +   32,
+  +   116,
+  +   104,
+  +   105,
+  +   115,
+  +   46,
+  +   115,
+  +   97,
+  +   118,
+  +   101,
+  +   80,
+  +   101,
+  +   110,
+  +   100,
+  +   105,
+  +   110,
+  +   103,
+  +   46,
+  +   116,
+  +   104,
+  +   101,
+  +   110,
+      40,
+      97,
+      115,
+      121,
+      110,
+  ...
+      40,
+  -   33,
+      116,
+  -   104,
+  -   105,
+  -   115,
+  -   46,
+  -   112,
+  -   97,
+  -   110,
+  -   101,
+  -   108,
+  -   46,
+  -   104,
+  -   105,
+  -   100,
+  -   100,
+  -   101,
+  -   110,
+  -   44,
+  -   116,
+      114,
+      117,
+      101,
+      41,
+      59,
+  ...
+      41,
+  -   46,
+  -   102,
+  -   105,
+  -   110,
+  -   97,
+  -   108,
+  -   108,
+  -   121,
+  -   40,
+  -   40,
+  -   41,
+  -   61,
+  -   62,
+  -   123,
+  -   116,
+  -   104,
+  -   105,
+  -   115,
+  -   46,
+  -   115,
+  -   97,
+  -   118,
+  -   101,
+  -   80,
+  -   101,
+  -   110,
+  -   100,
+  -   105,
+  -   110,
+  -   103,
+  -   61,
+  -   110,
+  -   117,
+  -   108,
+  -   108,
+      59,
+  -   125,
+  -   41,
+  -   59,
+      10,
+      32,
+      32,
+  -   32,
+  -   32,
+  -   114,
+  -   101,
+  -   116,
+  -   117,
+  -   114,
+  -   110,
+  -   32,
+  -   116,
+  -   104,
+  -   105,
+  -   115,
+  -   46,
+  -   115,
+  -   97,
+  -   118,
+  -   101,
+  -   80,
+  -   101,
+  -   110,
+  -   100,
+  -   105,
+  -   110,
+  -   103,
+  -   59,
+  -   10,
+  -   32,
+  -   32,
+      125,
+      10,
+      125,
+      10
+    ]
+  
+      at TestContext.<anonymous> (file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-101/tests/native-assets.test.js:10:12)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: <Buffer 69 6d 70 6f 72 74 20 7b 72 65 71 75 65 73 74 54 61 73 6b 4c 65 61 76 65 2c 20 62 69 6e 64 44 69 61 6c 6f 67 2c 20 62 75 74 74 6f 6e 2c 20 69 63 6f 6e ... 10251 more bytes>,
+    expected: <Buffer 69 6d 70 6f 72 74 20 7b 72 65 71 75 65 73 74 54 61 73 6b 4c 65 61 76 65 2c 20 62 69 6e 64 44 69 61 6c 6f 67 2c 20 62 75 74 74 6f 6e 2c 20 69 63 6f 6e ... 10301 more bytes>,
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
