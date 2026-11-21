@@ -11,3 +11,7 @@ export {focusPosition} from './focus-model';
 export {shellView, shellUpdate} from './shell';
 export {syncView, fileConflictView} from './sync';
 export {syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft} from '../sync-drafts.js';
+
+
+export {searchView} from './search';
+export {searchRows} from './search-model';

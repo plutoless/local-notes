@@ -1,0 +1,57 @@
+{
+  "base": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "files": {
+    "web/search-screen.js": {
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+      "bytes": 12141
+    },
+    "web/react/search.tsx": {
+      "sha256": "eb8806b1b644c6dd5247f5a44df41a5352cf3b7fd6351e504d538f4638c2e3aa",
+      "bytes": 3536
+    },
+    "web/react/search-model.ts": {
+      "sha256": "9cb645d50411b52f2e8c10d695ac39288765185a2cc91dea8c8f2a3b4fe9818a",
+      "bytes": 1472
+    },
+    "web/react/host.tsx": {
+      "sha256": "ae2902cc4150b64081d241f16854403579c5cb3df010ff08a66c591f28382ac4",
+      "bytes": 485
+    },
+    "web/react/catalogue.tsx": {
+      "sha256": "b5bc06e0ba710d13d119817bb43e4ec129ce9631945272edec7d58f8eee9d028",
+      "bytes": 3143
+    },
+    "tests/search-ui.mjs": {
+      "sha256": "de28405050152c18afe75f3bda9c54c9ab68612e7cdac22d30e68745997d3b58",
+      "bytes": 14163
+    },
+    "tests/search-model.test.js": {
+      "sha256": "4cb5dc9a2266ae8c0189ba544ebe98aab7e624d6735f22f3139148340bf151f1",
+      "bytes": 1704
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "d34d10fd3c78d67251864dd7999150a8d1d66c6959306da126c928ad1b4133e7",
+      "bytes": 329094
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "build/web/search-screen.js": {
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+      "bytes": 12141
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
+      "sha256": "d34d10fd3c78d67251864dd7999150a8d1d66c6959306da126c928ad1b4133e7",
+      "bytes": 329094
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "640256114b78e436174f1b7c4b1f93ea8d485b308ad7b13780cbbda79701ec19",
+      "bytes": 471920
+    }
+  }
+}
