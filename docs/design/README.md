@@ -189,6 +189,9 @@ Scrollable `.ui-row` controls draw the shared 3px outline inward so the scrollpo
 
 Real consumers are Current Focus row openers and management disclosures, shell sidebar, Library/Favorites rows, Initiative/Action rows and their existing pagination. Rerender restoration uses stable record identity and never takes focus from another active surface. Preserve both collection and row-list scrolling on return. Drawer lifecycle, drafts, source selection and storage remain owned by existing consumers. Catalogue examples demonstrate role states; native OS input evidence is separate from browser/DOM setup. Other feature journeys (#82–#86) are outside this slice.
 
+## Search focus adoption (issue #84)
+
+The compact A search dialog reuses issue #81's native `:focus-visible` treatment for scopes, result openers and child actions. Result selection (`aria-current` and selected fill), pressed scope (`aria-pressed`) and keyboard focus remain independent. Focusing Copy or Open source does not outline the containing result; these scrollport child actions use the shared inward offset so the cue cannot be clipped. Attribution reuses `.ui-selection` for one keyboard outline on its checkbox label and independent checked fill, retaining its existing 44px target and spacing. Arrow selection keeps the search input/caret available; repeated Command+K refocuses that input. A delayed refresh restores a result control only when its previous focus was displaced by the inert results, never over a newly chosen input/control. Source return retains the actual Open source control before the shared action disables it, then restores that control or the search input if it no longer exists. Search has no invalid-field state; unavailable sources and copy failures use the existing status/retry receipts.
 
 ## Reader focus adoption (issue #82)
 

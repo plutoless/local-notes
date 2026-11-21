@@ -1,0 +1,51 @@
+{
+  "issue": 84,
+  "originalStartingSha": "a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3",
+  "continuationStartingSha": "1134458021b75a109ef15193bdea89cf0c8321ff",
+  "integratedMain": "20302d140dac350e543731543d72246275ee7353",
+  "originalOutcome": "failed; retained unchanged",
+  "historicalPhases": [
+    {
+      "phase": "Original search implementation and independent review",
+      "record": "README.md#initial-review-resolution",
+      "progress": "Refresh-focus red/green regression, child outline and composite checkbox corrections; final full non-GUI checks passed at original head"
+    },
+    {
+      "phase": "Nine original native attempts",
+      "records": [
+        "native-cleanup.json",
+        "native-attempt9.json",
+        "native-release2.json"
+      ],
+      "outcome": "All failed acceptance; cleanup/source preservation verified; final combined guard subcondition unknown; actual WeType unrun"
+    }
+  ],
+  "consecutiveCompletedIdenticalSignatureCyclesWithoutProgress": 0,
+  "continuationCycles": [
+    {
+      "cycle": 1,
+      "signature": "New reload/readback assertion encounters intentional competing-read private draft",
+      "hypothesis": "The preceding retained race test deliberately leaves newer competing draft; reload correctly recovers it",
+      "correction": "Explicitly discard that draft through existing application controls before persisted-source reload/readback; retain every original assertion",
+      "command": "CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node tests/search-navigation-ui.mjs",
+      "failedReceipt": "build/issue84-repair/navigation-attempt1.log",
+      "observed": "Reached browser Copy, bridge receipt, source-return, dirty Continue/selection/Tab, Save and all retained races before the new readback precondition failed; no product defect inferred; corrected run navigation-attempt2.log reached PASS (exit receipt recorded separately)"
+    }
+  ],
+  "integrationStages": [
+    {
+      "startingSha": "aba47e9acf8e3d3fbc2d591854ab8eb35998692d",
+      "integratedMain": "2e0dfeac0eb2edf603481d163a56e5d5c250baf7",
+      "impact": "Merged reviewed Organization and sync slices without conflict or new issue84 production edits; see latest-main-integration.md",
+      "correctionCycle": false,
+      "validation": "Fresh affected unit/integration, both search browser journeys and Mac packaging; unchanged unit/leave evidence reuse requires explicit source and behavior bindings; results recorded separately at final head"
+    },
+    {
+      "startingSha": "21b453e8c635b29c751512f7336b058ba35cc90a",
+      "integratedMain": "c87ac6f523e6273339c254d2e99ab28c0660b9ae",
+      "impact": "Final fetch discovered merged reader focus; preserve sibling native/browser tests and both design sections; assert real highlighted source receiver in existing search navigation journey",
+      "correctionCycle": false,
+      "validation": "Repeat affected fast tests (including inherited import-only unit), search browser journeys and Mac packaging; bind unchanged historical 67-unit and leave evidence separately; prior-stage five passes preserved"
+    }
+  ]
+}

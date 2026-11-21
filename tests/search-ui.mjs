@@ -1,3 +1,5 @@
+import {searchFocusJourney} from './search-focus-journey.js';
+import {execFileSync} from 'node:child_process';
 import {enterNoteEditing} from './form-journeys.js';
 import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -31,7 +33,7 @@ try {
     } catch (e) { return {error:e.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async text => { const r = JSON.parse(text); window.nativeReply(r.id, await window.bridge(r)); }}; });
-  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(new URL('../web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: process.env.SEARCH_FOCUS_PHASE === 'before' && ['style.css','search-screen.js'].includes(name) ? execFileSync('git',['show','a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3:web/'+name]) : await readFile(new URL('../web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   let releaseWorkspace; workspaceDelay = new Promise(resolve=>releaseWorkspace=resolve);
   await page.locator('#global-search-open').focus(); await page.keyboard.press('Meta+k');
@@ -39,6 +41,16 @@ try {
   await page.locator('[data-scope=note]').click();
   const input = page.locator('#global-search-input'); await input.fill('latency'); await page.keyboard.press('Escape'); await page.keyboard.press('Meta+k'); releaseWorkspace(); workspaceDelay = null;
   await page.waitForFunction(() => document.querySelectorAll('.search-result').length === 2 && !document.querySelector('#global-search [role=status]').textContent.includes('更新'));
+  await searchFocusJourney(page);
+  if (process.env.SEARCH_FOCUS_PHASE !== 'before') {
+    await page.locator('.search-result').first().getByRole('button',{name:'复制片段',exact:true}).focus();
+    let releaseFocus; delay = new Promise(resolve=>releaseFocus=resolve);
+    await input.dispatchEvent('input');
+    await page.waitForFunction(()=>document.querySelector('.search-results').inert);
+    await input.click(); releaseFocus(); delay = null;
+    await page.waitForFunction(()=>!document.querySelector('.search-results').inert);
+    assert.equal(await input.evaluate(n=>n===document.activeElement),true,'Refresh must not steal focus from search input');
+  }
   // Deterministic event-order regression; actual IME evidence is native-search-ime.py.
   for (const route of ['keyboard', 'cancel']) {
     assert.equal(await page.evaluate(route => {

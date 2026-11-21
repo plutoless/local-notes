@@ -1,0 +1,1314 @@
+[
+  {
+    "width": 1180,
+    "height": 800,
+    "mode": "pointer",
+    "active": "ui-action quiet ui-row search-select selected",
+    "focusVisible": false,
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 768,
+      "top": 16,
+      "right": 900,
+      "bottom": 784,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 800,
+    "mode": "keyboard",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 768,
+      "top": 16,
+      "right": 900,
+      "bottom": 784,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 800,
+    "mode": "selected-child",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 768,
+      "top": 16,
+      "right": 900,
+      "bottom": 784,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 800,
+    "mode": "checked",
+    "active": "",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 768,
+      "top": 16,
+      "right": 900,
+      "bottom": 784,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 760,
+    "mode": "pointer",
+    "active": "ui-action quiet ui-row search-select selected",
+    "focusVisible": false,
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 728,
+      "top": 16,
+      "right": 376,
+      "bottom": 744,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 760,
+    "mode": "keyboard",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 728,
+      "top": 16,
+      "right": 376,
+      "bottom": 744,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 760,
+    "mode": "selected-child",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 728,
+      "top": 16,
+      "right": 376,
+      "bottom": 744,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 760,
+    "mode": "checked",
+    "active": "",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 728,
+      "top": 16,
+      "right": 376,
+      "bottom": 744,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 480,
+    "mode": "pointer",
+    "active": "ui-action quiet ui-row search-select selected",
+    "focusVisible": false,
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 448,
+      "top": 16,
+      "right": 900,
+      "bottom": 464,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 480,
+    "mode": "keyboard",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 448,
+      "top": 16,
+      "right": 900,
+      "bottom": 464,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 480,
+    "mode": "selected-child",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 448,
+      "top": 16,
+      "right": 900,
+      "bottom": 464,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 1180,
+    "height": 480,
+    "mode": "checked",
+    "active": "",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 280,
+      "y": 16,
+      "width": 620,
+      "height": 448,
+      "top": 16,
+      "right": 900,
+      "bottom": 464,
+      "left": 280
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 83
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 480,
+    "mode": "pointer",
+    "active": "ui-action quiet ui-row search-select selected",
+    "focusVisible": false,
+    "outline": "rgb(32, 78, 159) none 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 448,
+      "top": 16,
+      "right": 376,
+      "bottom": 464,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 480,
+    "mode": "keyboard",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 448,
+      "top": 16,
+      "right": 376,
+      "bottom": 464,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 480,
+    "mode": "selected-child",
+    "active": "ui-action quiet",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 448,
+      "top": 16,
+      "right": 376,
+      "bottom": 464,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  },
+  {
+    "width": 393,
+    "height": 480,
+    "mode": "checked",
+    "active": "",
+    "focusVisible": true,
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "ancestors": [],
+    "panel": {
+      "x": 17,
+      "y": 16,
+      "width": 359,
+      "height": 448,
+      "top": 16,
+      "right": 376,
+      "bottom": 464,
+      "left": 17
+    },
+    "overflow": false,
+    "targets": [
+      {
+        "text": "关闭搜索",
+        "height": 44
+      },
+      {
+        "text": "全部内容",
+        "height": 44
+      },
+      {
+        "text": "笔记",
+        "height": 44
+      },
+      {
+        "text": "事项",
+        "height": 44
+      },
+      {
+        "text": "行动",
+        "height": 44
+      },
+      {
+        "text": "核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排核对长期事项与资料来源的完整中文标题以及下一步行动安排",
+        "height": 104
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "重复标题",
+        "height": 44
+      },
+      {
+        "text": "复制片段",
+        "height": 44
+      },
+      {
+        "text": "打开原文",
+        "height": 44
+      },
+      {
+        "text": "上一页",
+        "height": 44
+      },
+      {
+        "text": "下一页",
+        "height": 44
+      },
+      {
+        "text": "附带来源",
+        "height": 44
+      },
+      {
+        "text": "刷新索引",
+        "height": 44
+      }
+    ]
+  }
+]
