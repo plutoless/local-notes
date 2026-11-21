@@ -1,1 +1,0 @@
-{"command":"osascript System Events: set LocalNotes process frontmost; key code 40 using command down","observed":{"documentHasFocus":false,"activeElement":"global-search-open","keyEvents":[],"searchOpen":false},"result":"Failed: no native key delivery; not acceptance evidence"}

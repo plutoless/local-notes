@@ -1,1 +1,0 @@
-AXImage, AXStaticText, AXStaticText, AXTextField, AXButton, AXButton, missing value, 输入相对于笔记目录的路径（以 .md 结尾）, missing value, missing value, 取消, 确定, missing value, 输入相对于笔记目录的路径（以 .md 结尾）, , reference.md, missing value, missing value

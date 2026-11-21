@@ -1,9 +1,0 @@
-<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
-<checkout>/build/native-issue69/ReadingAction69.app: replacing existing signature
-Traceback (most recent call last):
-  File "<checkout>/tests/native-reading-actions.py", line 69, in <module>
-    w("document.querySelector('#action-drawer').open && document.activeElement.id==='action-description'")
-    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "<checkout>/tests/native-candidate-review.py", line 43, in wait
-    raise AssertionError('Native UI timed out: '+expression)
-AssertionError: Native UI timed out: document.querySelector('#action-drawer').open && document.activeElement.id==='action-description'

@@ -1,1 +1,0 @@
-PASS issue85 after: checkbox pointer/Space/Tab, geometry, exact preview, controlled send, invalid action, source detour context, explicit individual confirmation and source preservation

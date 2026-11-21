@@ -1,9 +1,0 @@
-{
-  "state": "操作未完成。请检查目录是否可用，然后重试；未保存的编辑仍保留。查看技术详情Revision saved; recovery pending: You don’t have permission to save the file “ae01fcb9-387d-4e37-ab75-51f6178c6f62.json” in the folder “actions”.; recovery pending: You don’t have permission to save the file “ae01fcb9-387d-4e37-ab75-51f6178c6f62.json” in the folder “actions”.",
-  "initiative": "e2b6b6dc-80f5-4614-a88e-29fa92cf75cc",
-  "drafts": [
-    "action-draft:ad543e08-fb0d-488b-9410-9056e5bdabee"
-  ],
-  "description": "合并后失败保留并重试",
-  "visible": true
-}

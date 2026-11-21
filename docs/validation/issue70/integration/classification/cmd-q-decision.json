@@ -1,5 +1,0 @@
-{
-  "route": "cmd-q",
-  "treeText": "App=dev.localnotes.validation.issue70 (pid 17576)\nWindow: \"拾记 · Local Notes\", App: LocalNotes.\n\n0 standard window 拾记 · Local Notes\n\t1 scroll area\n\t\t2 HTML content 拾记 · Local Notes\n\t\t\t43 container 离开主题\n\t\t\t\t44 heading 离开主题\n\t\t\t\t45 text 当前编辑尚未保存。请选择保存并离开、放弃更改并离开，或继续编辑。\n\t\t\t\t46 button 继续编辑\n\t\t\t\t47 button 放弃更改并离开\n\t\t\t\t48 button 保存并离开\n\t9 close button\n\t10 full screen button, Secondary Actions: zoom the window\n\t11 minimize button\n\t12 text 拾记 · Local Notes\n\nThe focused UI element is 46 button 继续编辑.",
-  "observedDecision": true
-}

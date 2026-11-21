@@ -1,9 +1,0 @@
-{
-  "passed": true,
-  "contentLoss": "injected native delegate callback",
-  "staleBridgeRepliesIgnored": 2,
-  "acceptedLeaveTokens": 3,
-  "terminationReplies": 2,
-  "draftRecoveredAfterReload": true,
-  "exitCode": 0
-}

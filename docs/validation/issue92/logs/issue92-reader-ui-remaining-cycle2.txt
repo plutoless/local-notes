@@ -1,1 +1,0 @@
-PASS issue66 reading/table/source preservation, explicit edit persistence, recovered-draft discard

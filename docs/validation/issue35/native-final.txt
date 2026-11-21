@@ -1,3 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-35/build/native-issue35-after/Organization35.app: replacing existing signature
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-35/build/native-issue35-after/Organization35.app: replacing existing signature
-PASS actual Cocoa/WKWebView: settings, select/preview without transmission, loopback send, edit/confirm, restart/readback; phase=after

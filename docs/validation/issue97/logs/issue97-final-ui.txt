@@ -1,2 +1,0 @@
-{"phase":"migrated","warmTypingMs":[88.50962499999969,24.77349999999933,46.55629100000078,19.730750000000626],"bodyReads":0,"indexedQueries":4}
-PASS: real UI/bridge/Swift SQLite search, grounding/copy, optional attribution/failure, pages, repeated shortcut, dismissal fencing, narrow focus cycle.

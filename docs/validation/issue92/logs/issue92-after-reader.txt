@@ -1,1 +1,0 @@
-PASS reader focus, navigation, selection, source preservation, explicit save, continue and discard

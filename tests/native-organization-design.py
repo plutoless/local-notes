@@ -2,6 +2,7 @@
 """Issue 35 actual WKWebView, isolated storage, loopback-only synthetic service."""
 import importlib.util, inspect, json, os, shutil, subprocess, threading
 from pathlib import Path
+Path('docs/validation/issue35').mkdir(parents=True, exist_ok=True)
 from http.server import HTTPServer
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
