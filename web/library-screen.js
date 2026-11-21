@@ -27,30 +27,30 @@ export class LibraryScreen {
   setupTopicDrawer() {
     this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
     const form = document.createElement('form'); form.id = 'topic-form'; form.noValidate = true;
-    noteFieldsView(form).show([{id:'topic-name',label:'主题名称',required:true,describedBy:'topic-error topic-status'}]);
+    this.topicFields = noteFieldsView(form);
+    this.topicFields.show([{id:'topic-name',label:'主题名称',required:true,describedBy:'topic-error topic-status'}]);
     const input = form.querySelector('#topic-name');
     const status = document.createElement('div'); status.id = 'topic-status'; status.setAttribute('role', 'status');
     const error = document.createElement('div'); error.id = 'topic-error'; error.setAttribute('role', 'alert'); error.tabIndex = -1;
-    input.setAttribute('aria-describedby', 'topic-error topic-status');
     const receipts = document.createElement('div'); receipts.append(status,error);
     this.topicDrawer.body.append(receipts);
     this.topicDrawer.body.append(form);
     const cancel = button('取消', () => this.leaveTopic(), {density: 'compact'}); cancel.id = 'topic-cancel';
     const submit = document.createElement('button'); submit.type = 'submit'; submit.setAttribute('form', form.id); submit.className = 'ui-action primary ui-compact';
     this.topicDrawer.footer.append(cancel, submit);
-    input.oninput = () => {
-      input.setAttribute('aria-invalid', 'false'); error.replaceChildren();
+    this.topicFields.onInput(() => {
+      error.replaceChildren();
       status.textContent = input.value === (this.editingTopic?.description || '') ? '' : '主题名称尚未保存。';
       try { localStorage.setItem(this.topicDraftKey, JSON.stringify({name: input.value, previous: this.editingTopic})); }
       catch { status.textContent = '草稿暂时无法在关闭后恢复，请保持窗口打开并保存。'; }
-    };
+    });
     form.onsubmit = event => { event.preventDefault(); this.saveTopicTask(); };
     this.saveTopicTask = () => {
       if (this.topicPending) return this.topicPending;
       this.topicPending = (async () => {
       await Promise.resolve();
-      if (!input.value.trim()) { input.setAttribute('aria-invalid', 'true'); error.textContent = '请填写主题名称。'; input.focus(); return false; }
-      this.topicSaving = true; submit.disabled = true; input.disabled = true;
+      if (!input.value.trim()) { this.topicFields.set('topic-name',{invalid:true}); error.textContent = '请填写主题名称。'; input.focus(); return false; }
+      this.topicSaving = true; submit.disabled = true; this.topicFields.set('topic-name',{disabled:true});
       status.textContent = '正在保存…'; error.replaceChildren();
       try {
         await this.library.saveTopic(input.value, this.editingTopic, this.topicRetry, this.topicNote);
@@ -67,7 +67,7 @@ export class LibraryScreen {
         } else { status.textContent = ''; errorFeedback(error, failure.message); }
         error.focus(); submit.textContent = this.topicRetry ? '重试恢复' : '重试保存'; return false;
       }
-      finally { this.topicSaving = false; submit.disabled = false; input.disabled = Boolean(this.topicRetry); }
+      finally { this.topicSaving = false; submit.disabled = false; this.topicFields.set('topic-name',{disabled:Boolean(this.topicRetry)}); }
       })();
       return this.topicPending.finally(() => { this.topicPending = null; });
     };
@@ -77,18 +77,18 @@ export class LibraryScreen {
   editTopic(topic, note = null, origin = document.activeElement) {
     if (this.topicDrawer.panel.open) { this.leaveTopic(); return; }
     this.topicBrowseScroll = $('.collection').scrollTop;
-    this.topicNote = note; this.editingTopic = topic; this.topicRetry = null; this.topicInput.disabled = false;
+    this.topicNote = note; this.editingTopic = topic; this.topicRetry = null; this.topicFields.set('topic-name',{disabled:false});
     this.topicDraftKey = `topic-draft:${this.library.workspaceId}:${topic?.entityId || (note ? 'note:' + note.path : 'new')}`;
     let draft;
     try { draft = JSON.parse(localStorage.getItem(this.topicDraftKey)); } catch { /* Invalid private drafts do not replace saved records. */ }
-    this.topicInput.value = draft?.name ?? topic?.description ?? '';
-    this.topicRetry = draft?.retry || null; this.topicInput.disabled = Boolean(this.topicRetry);
+    this.topicFields.set('topic-name',{value:draft?.name ?? topic?.description ?? ''});
+    this.topicRetry = draft?.retry || null; this.topicFields.set('topic-name',{disabled:Boolean(this.topicRetry)});
     // Keep the original revision as the save base so recovered edits cannot overwrite a newer revision.
     if (draft?.previous) this.editingTopic = draft.previous;
     this.topicDrawer.setTitle(topic ? '重命名主题' : '新建主题');
     this.topicSubmit.textContent = this.topicRetry ? '重试恢复' : topic ? '保存' : '创建';
     this.topicStatus.textContent = this.topicRetry ? '主题版本已保存，恢复尚未完成。名称暂时锁定，请重试恢复。' : draft ? '已恢复未保存的主题名称，请核对后保存。' : '';
-    this.topicError.replaceChildren(); this.topicInput.setAttribute('aria-invalid', 'false');
+    this.topicError.replaceChildren(); this.topicFields.set('topic-name',{invalid:false});
     this.topicDrawer.open(this.topicRetry ? this.topicSubmit : this.topicInput, origin);
   }
   async closeTopic(committed = false) {
@@ -194,13 +194,13 @@ export class LibraryScreen {
       const checkbox = [...container.querySelectorAll('input')].find(input=>input.dataset.topicId===topic.entityId);
       changes[topic.entityId] = () => {
         this.noteTopicPending = (async () => {
-        this.noteTopicSaving = true; container.inert = true; checkbox.disabled = true;
+        this.noteTopicSaving = true; container.inert = true; this.topicClassification.set(topic.entityId,{disabled:true});
         try { await this.library.link(topic, note, checkbox.checked); if (ownsNote()) await this.noteTopics(path, topic.entityId); }
         catch (error) {
           if (!ownsNote()) return;
           const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); this.topicClassification.receipts.append(failure);
           if (error.associationSaved) {
-            for (const input of container.querySelectorAll('input')) input.disabled = true;
+            this.topicClassification.set(null,{disabled:true});
             feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', error.message);
             const retry = button('重试更新关联', async () => {
               this.noteTopicPending = (async () => {
@@ -211,7 +211,7 @@ export class LibraryScreen {
               })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
             });
             failure.append(retry);
-          } else { errorFeedback(failure, error.message); checkbox.checked = !checkbox.checked; checkbox.disabled = false; }
+          } else { errorFeedback(failure, error.message); this.topicClassification.set(topic.entityId,{checked:!checkbox.checked,disabled:false}); }
         } finally { this.noteTopicSaving = false; container.inert = false; }
         })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
       };
