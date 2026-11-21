@@ -26,6 +26,16 @@ try {
  await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../build/web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('https://notes.test/');await page.locator('[data-view=organize]').click();
  const card=name=>page.locator('[data-candidate]').filter({has:page.getByRole('heading',{name,exact:true})});
+ const first=card('行动：确认的行动');
+ await first.getByText('确认前编辑建议',{exact:true}).click();await first.getByLabel('编辑建议',{exact:true}).fill('本机草稿');
+ const other=card('行动：明确拒绝的行动');await other.getByText('确认前编辑建议',{exact:true}).click();await other.getByLabel('编辑建议',{exact:true}).fill('另一个私有草稿');
+ await first.getByLabel('编辑建议',{exact:true}).focus();await page.locator('[data-view=notes]').click();await page.getByRole('button',{name:'继续编辑',exact:true}).click();
+ assert.equal(await first.getByLabel('编辑建议',{exact:true}).inputValue(),'本机草稿');
+ await page.locator('[data-view=notes]').click();await page.getByRole('button',{name:'保存并离开',exact:true}).click();await page.locator('#library-topic').waitFor();
+ await page.reload();await page.locator('[data-view=organize]').click();await first.getByText('已恢复本机编辑草稿，尚未确认。',{exact:true}).waitFor();
+ assert.equal(await first.getByLabel('编辑建议',{exact:true}).inputValue(),'本机草稿');
+ await first.getByLabel('编辑建议',{exact:true}).focus();await page.locator('[data-view=notes]').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();await page.locator('#library-topic').waitFor();
+ await page.locator('[data-view=organize]').click();assert.equal(await first.getByLabel('编辑建议',{exact:true}).inputValue(),'确认的行动');
  for(const name of ['行动：确认的行动','事项：确认的事项','主题：确认的主题']){
   await card(name).getByRole('button',{name:/^确认此建议：/}).click();await card(name).getByText('处理决定：确认，已保存',{exact:true}).waitFor();
  }
@@ -33,11 +43,11 @@ try {
  await card('关联：确认的来源关联').getByLabel('已有事项',{exact:true}).selectOption(initiatives.actions[0].entityId);
  await card('关联：确认的来源关联').getByRole('button',{name:/^确认此建议：/}).click();await card('关联：确认的来源关联').getByText('处理决定：确认，已保存',{exact:true}).waitFor();
  await card('行动：明确拒绝的行动').getByRole('button',{name:/^忽略：/}).click();await card('行动：明确拒绝的行动').getByText('处理决定：忽略，已保存',{exact:true}).waitFor();
- await page.reload();await page.locator('[data-view=actions]').click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的行动',exact:true})}).click();assert.equal(await page.locator('#action-description').inputValue(),'确认的行动');
- await page.locator('#action-drawer header button').click();
+ await page.reload();await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的行动',exact:true})}).click();await page.waitForFunction(()=>document.querySelector('#action-description').value==='确认的行动');
+ await page.locator('#action-drawer').getByRole('button',{name:/^关闭/}).click();
  await page.locator('[data-view=initiatives]').click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的事项',exact:true})}).click();
  await page.getByRole('button',{name:/source.md/}).first().waitFor();
- await page.locator('[data-view=notes]').click();await page.locator('#library-topic').selectOption({label:'确认的主题'});await page.getByText('这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。',{exact:true}).waitFor();
+ await page.locator('[data-view=notes]').click();await page.locator('#library-topic').selectOption({label:'确认的主题'});await page.getByRole('button').filter({has:page.getByRole('heading',{name:'合成来源',exact:true})}).click();await page.locator('#reading').getByText('历史计划，需要逐条确认。',{exact:false}).waitFor();
  const records={};for(const entityType of ['action','initiative','topic','candidate'])records[entityType]=(await fixture.adapter('actionQuery',{workspaceId:repo.workspaceId,entityType})).actions;
  assert.equal(records.action.length,1);assert.equal(records.topic.length,1);assert.equal(records.initiative[0].sources[0].path,'source.md');assert.equal(records.candidate.filter(r=>r.review?.state==='done').length,5);
  assert.equal(await readFile(fixture.root+'/source.md','utf8'),text);assert.deepEqual(errors,[]);
