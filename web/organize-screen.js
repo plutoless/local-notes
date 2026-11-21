@@ -1,4 +1,4 @@
-import {button as makeButton, errorFeedback, feedback, field, disclosure, drawer, requestTaskLeave} from './presentation.js';
+import {button as makeButton, errorFeedback, feedback, field, disclosure, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -6,7 +6,7 @@ const $ = selector => document.querySelector(selector);
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
-    this.selectionOffset = 0; this.inventoryRequest = 0;
+    this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
     this.settingsDrawer.body.append($('#ai-settings'));
     for (const label of $('#ai-settings').querySelectorAll('label')) label.classList.add('ui-field');
@@ -69,8 +69,7 @@ export class OrganizeScreen {
     $('#ai-progress').hidden = !this.organization.running;
     $('#ai-progress').max = batches?.length || 1; $('#ai-progress').value = this.organization.covered || 0;
     $('#ai-selection').inert = running; $('#ai-directory').disabled = running; $('#ai-search').disabled = running; $('#ai-configure').disabled = running;
-    $('#ai-notes-next').disabled = running || !this.selectionHasMore;
-    $('#ai-notes-previous').disabled = running || !this.selectionOffset;
+    pageAvailability($('#ai-notes-previous'), $('#ai-notes-next'), !running && Boolean(this.selectionOffset), !running && Boolean(this.selectionHasMore));
     $('#ai-settings').inert = running || Boolean(this.settingsPending);
   }
   invalidate() {
@@ -114,9 +113,10 @@ export class OrganizeScreen {
   }
   resetSelection() {
     this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    $('#ai-search').value = ''; $('#ai-directory').value = '*'; this.drafts.clear(); this.offset = 0; this.invalidate();
+    $('#ai-search').value = ''; $('#ai-directory').value = '*'; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
   }
   async attempt(operation) {
+    const owner = document.activeElement;
     try { await operation(); } catch (error) {
       const diagnostic = error.message;
       let message = '操作未完成。请重试，已保存的建议和未保存的编辑仍保留。';
@@ -132,7 +132,10 @@ export class OrganizeScreen {
       else if (/conflict|changed|workspace/i.test(diagnostic)) { errorFeedback($('#ai-status'), diagnostic); return; }
       if (this.settingsDrawer.panel.open) feedback($('#ai-settings-error'), message, diagnostic);
       feedback($('#ai-status'), message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), diagnostic);
-    } finally { this.controls(); }
+    } finally {
+      this.controls();
+      if (document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
+    }
   }
   async show(library) {
     $('#organize-tools').hidden = false; $('#view-title').textContent = '整理'; $('#items').replaceChildren(); $('#filters').hidden = true;
@@ -181,17 +184,32 @@ export class OrganizeScreen {
       throw error;
     } finally { if (current()) this.controls(); }
   }
-  async candidates() {
+  captureCandidates() {
+    for (const card of $('#ai-results').querySelectorAll('[data-candidate]')) {
+      if (card.dataset.workspace !== this.repository.workspaceId) continue;
+      const edit = card.querySelector('textarea'), target = card.querySelector('select');
+      this.candidateContext.set(card.dataset.candidate, {
+        target: target?.value, range: edit ? [edit.selectionStart, edit.selectionEnd, edit.selectionDirection] : null,
+        disclosures: Object.fromEntries([...card.querySelectorAll('details')].map(node => [node.querySelector('summary').textContent, node.open]))
+      });
+    }
+  }
+  async candidates(returnFocus) {
     if (this.reviewing) return;
-    const focused = document.activeElement.closest('[data-candidate]');
-    const focusId = focused?.dataset.candidate, focusName = document.activeElement.getAttribute('aria-label');
+    this.captureCandidates();
+    const owner = returnFocus?.owner || document.activeElement;
+    const focused = owner.closest('[data-candidate]');
+    const focusId = focused?.dataset.candidate, focusName = owner.getAttribute('aria-label');
     const scroll = $('#organize-tools').scrollTop;
     const destinations = await allRecords(this.review.targets.initiative);
-    const page = await this.repository.query({offset: this.offset, limit: 50}); $('#ai-results').replaceChildren();
+    const page = await this.repository.query({offset: this.offset, limit: 50});
+    const restoreFocus = document.activeElement === owner || document.activeElement === document.body;
+    $('#ai-results').replaceChildren();
     for (const record of page.actions) {
-      const card = document.createElement('article'); card.className = 'card suggestion-card'; card.dataset.candidate = record.entityId; card.tabIndex = -1; card.setAttribute('aria-label', `建议：${record.description}`);
+      const context = this.candidateContext.get(record.entityId);
+      const card = document.createElement('article'); card.className = 'card suggestion-card'; card.dataset.candidate = record.entityId; card.dataset.workspace = this.repository.workspaceId; card.tabIndex = -1; card.setAttribute('aria-label', `建议：${record.description}`);
       for (const text of [`${{initiative:'事项', action:'行动', topic:'主题', relationship:'关联', progress:'进展'}[record.candidateType] || '建议'}：${record.description}`, `建议归属：${record.placement}`, `理由：${record.reasoning}`, `当前适用性：${record.relevance}`]) { const p = document.createElement(text.startsWith('建议归属') || text.startsWith('理由') || text.startsWith('当前适用性') ? 'p' : 'h3'); p.textContent = text; card.append(p); }
-      for (const source of record.sources) { const quote = document.createElement('blockquote'); quote.textContent = source.quote; const button = makeButton(`${source.path} [${source.start}–${source.end}]`, () => this.openNote(source.path), {label: `打开来源：${source.path}，建议：${record.description}`}); card.append(quote, button); }
+      for (const source of record.sources) { const quote = document.createElement('blockquote'); quote.textContent = source.quote; const button = makeButton(`${source.path} [${source.start}–${source.end}]`, () => this.openNote(source.path, button), {label: `打开来源：${source.path}，建议：${record.description}`}); card.append(quote, button); }
       const state = document.createElement('p');
       state.textContent = record.syncState ? '存在同步冲突，请打开「同步检查」。' : record.review ? `处理决定：${{confirm:'确认',ignore:'忽略',later:'留待以后',reference:'作为参考',attach:'关联事项'}[record.review.decision] || '待核对'}，${record.review.state === 'done' ? '已保存' : '待恢复'}` : '等待你确认';
       state.className = 'ui-feedback'; state.setAttribute('role', 'status'); card.append(state);
@@ -203,28 +221,32 @@ export class OrganizeScreen {
         const target = document.createElement('select'); target.setAttribute('aria-label', '已有事项');
         target.append(Object.assign(document.createElement('option'), {value: '', textContent: '选择要关联的已有事项'}));
         for (const initiative of destinations.filter(r => !r.syncState)) target.append(Object.assign(document.createElement('option'), {value: initiative.entityId, textContent: initiative.title}));
+        if (context?.target && [...target.options].some(option => option.value === context.target)) target.value = context.target;
+        if (context?.range) edit.setSelectionRange(...context.range);
         card.append(field('归入已有事项', target, {help: '关联、参考或进展建议时选择。'}));
         const decisions = document.createElement('div'); decisions.className = 'organization-actions'; card.append(decisions);
         for (const [decision, label] of [['confirm', '确认此建议'], ['attach', '关联到事项'], ['reference', '作为参考资料'], ['later', '留待以后'], ['ignore', '忽略']]) {
           const button = makeButton(label, () => this.attempt(async () => {
+            const owner = button;
             this.reviewing = true; state.textContent = '正在保存决定…'; const buttons = [...card.querySelectorAll('button')]; buttons.forEach(b => b.disabled = true);
             try { await this.review.decide(record, decision, {description: edit.value, targetId: target.value}); this.drafts.delete(record.entityId); this.status('决定已保存到本地。每条建议都需要单独确认。'); }
-            finally { this.reviewing = false; buttons.forEach(b => b.disabled = false); await this.candidates(); }
+            finally { this.reviewing = false; buttons.forEach(b => b.disabled = false); await this.candidates({owner}); }
           }), {variant: decision === 'confirm' ? 'primary' : 'quiet', label: `${label}：${record.description}`}); decisions.append(button);
         }
       } else if (record.review?.state === 'pending' && !record.syncState) {
-        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { await this.review.recover(); await this.candidates(); }), {variant: 'secondary'}); card.append(retry);
+        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { try { await this.review.recover(); } finally { await this.candidates({owner: retry}); } }), {variant: 'secondary', label: `恢复已确认的决定：${record.description}`}); card.append(retry);
       }
       const raw = document.createElement('pre');
       raw.textContent = JSON.stringify({entityId: record.entityId, revision: record.revision, review: record.review || null}, null, 2); card.append(disclosure('建议记录详情', [raw]));
+      if (context) [...card.querySelectorAll('details')].forEach(node => { node.open = context.disclosures[node.querySelector('summary').textContent] ?? node.open; });
       $('#ai-results').append(card);
     }
     if (!page.actions.length) $('#ai-results').textContent = '还没有保存的建议。选择笔记并分析后，在这里逐条核对。';
-    if (focusId) {
+    if (focusId && restoreFocus) {
       const card = [...$('#ai-results').children].find(node => node.dataset.candidate === focusId);
       const control = [...(card?.querySelectorAll('[aria-label]') || [])].find(node => node.getAttribute('aria-label') === focusName);
       (control || card)?.focus({preventScroll: true}); $('#organize-tools').scrollTop = scroll;
     }
-    $('#ai-results-previous').disabled = this.offset === 0; $('#ai-results-next').disabled = !page.hasMore;
+    pageAvailability($('#ai-results-previous'), $('#ai-results-next'), this.offset > 0, page.hasMore);
   }
 }
