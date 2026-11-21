@@ -1,0 +1,20 @@
+Focus outline: rgb(7, 95, 204) solid 3px
+Rendered contrast inputs: {"text":"rgb(32, 38, 51)","background":"rgb(255, 255, 255)"}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Escape must restore the sync opener even when pointer default did not focus it
+
+false !== true
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-86/tests/sync-ui.mjs:356:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.1.0
