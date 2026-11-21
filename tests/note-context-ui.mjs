@@ -4,6 +4,7 @@ import {readFile,writeFile,mkdir,readdir,rename} from 'node:fs/promises';
 import {join,resolve,dirname} from 'node:path';
 import {createHash} from 'node:crypto';
 import {chromium} from 'playwright';
+import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture=await storageFixture();
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH});
@@ -13,6 +14,7 @@ try {
   const paths=[];
   for(let i=0;i<65;i++){const path=`synthetic-${String(i).padStart(2,'0')}.md`;paths.push(path);await writeFile(join(fixture.root,path),`# 合成资料 ${i}\n\n保留中文原文与只读任务 - [ ] 待确认\n`);}
   const hashes={};for(const name of await readdir(fixture.root))if(name.endsWith('.md'))hashes[name]=hash(await readFile(join(fixture.root,name)));
+  const initiatives=new InitiativeRepository(fixture.adapter);await initiatives.open();await initiatives.save({title:'上下文跳转合成事项',goal:'合成目标',progress:'',status:'active',sources:[]});
   for(const [variant,assets] of [['baseline','build/issue94-baseline'],['migrated','build/web']]) {
     const context=await browser.newContext({viewport:{width:1180,height:800},reducedMotion:'reduce'});const page=await context.newPage();const errors=[];page.on('pageerror',e=>errors.push(e.message));let calls=[];
     await page.exposeFunction('bridge',async request=>{calls.push(request.cmd);try {
@@ -44,6 +46,11 @@ try {
       const savedScroll=await page.locator('.collection').evaluate(n=>n.scrollTop);assert.ok(savedScroll>0);
       await page.locator('[data-view=focus]').click();await page.getByRole('heading',{name:'优先处理',exact:true}).waitFor();
       await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.locator('#action-new').waitFor();
+      await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
+      assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),savedScroll);
+      await page.locator('#items [data-path="synthetic-52.md"]').click();await page.locator('#note-info-open').click();
+      await page.getByRole('checkbox',{name:'上下文跳转合成事项',exact:true}).check();
+      await page.getByRole('button',{name:'打开事项：上下文跳转合成事项',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#workspace-title').textContent==='上下文跳转合成事项');
       await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
       assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),savedScroll);await page.setViewportSize({width:1180,height:800});
       await page.locator('#new').click();await page.locator('#capture-title').fill('真实收藏上下文捕获');await page.locator('#capture-body').fill('合成持久正文');await page.getByRole('button',{name:'创建笔记',exact:true}).click();await page.locator('#capture-return').waitFor({state:'visible'});
