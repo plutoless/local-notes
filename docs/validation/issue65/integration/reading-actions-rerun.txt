@@ -1,4 +1,0 @@
-PASS confirmation, source fidelity and changed/moved guards
-PASS failed writes and lost-reply restart identity
-PASS nested return and action management
-PASS issue69 note/list/table confirmation, cancel, double submission, validation/source-change retry and nested return through isolated storage

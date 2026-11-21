@@ -94,7 +94,7 @@ Mac packaged custom-scheme/resource checks require an exclusive coordinator gran
 The pre-change baseline lease was released. Minimum OS/engine runtime tests, Android
 execution, standalone Syncthing and ordinary native IME/clipboard replay are not
 inferred from browser results. Preserve failed cycles and source/artifact bindings
-in `docs/validation/issue92/`.
+outside Git in ignored local output or CI artifacts, with concise results in the PR. See [the validation policy](../agents/validation.md).
 
 Synchronization and reader file-conflict ownership migrated in #101; see [the explicit inventory](sync-react.md).
 

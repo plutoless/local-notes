@@ -1,9 +1,0 @@
-{
-  "passed": true,
-  "phase": "before",
-  "engine": "Cocoa/WKWebView",
-  "productionTermination": "separate uninstrumented test",
-  "input": "Native AX/pointer naming prompt; controlled DOM baseline entry and snapshots",
-  "reducedHeight": "test-only minimum window size override; production minimum remains unchanged",
-  "screenshotCount": 7
-}

@@ -1,2 +1,0 @@
-{"phase":"baseline","warmTypingMs":[15.293916999999965,16.664833999999928,16.766416000000163,16.692999999999984,16.674749999999904,16.791167000000087,16.62241700000004,16.87237499999992,16.44958399999996,16.496000000000095,16.88866700000017,16.75237500000003],"bodyReads":0,"indexedQueries":12}
-PASS: real UI/bridge/Swift SQLite search, grounding/copy, optional attribution/failure, pages, repeated shortcut, dismissal fencing, narrow focus cycle.

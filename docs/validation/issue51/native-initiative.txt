@@ -1,3 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-51/build/native-issue32-integration/Actions32Integration.app: replacing existing signature
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-51/build/native-issue32-integration/Actions32Integration.app: replacing existing signature
-PASS: source/capture paths included when phase is library-integration; combined-resource actual WKWebView assigned-action save, protected-file failed Back and retained draft, retry, context focus, process restart/readback and existing-action return; isolated sample/private storage and exact web-resource hashes

@@ -1,1 +1,0 @@
-PASS: browse/search/favorites, topic create/rename/link/filter, Chinese reading/inert checkboxes, autosave, successful move and topic link repair, external conflict/copy, draft recovery after reload, 393px library/editor overflow, keyboard focus. Chromium + real Swift storage/SQLite adapter.

@@ -1,4 +1,0 @@
-<issue70-worktree>/build/native-issue67/Wiki67.app: replacing existing signature
-<issue70-worktree>/build/native-issue67/Wiki67.app: replacing existing signature
-PASS native wiki nested keyboard/focus returns and unchanged source hashes
-status=0 selected=com.tencent.inputmethod.wetype.pinyin

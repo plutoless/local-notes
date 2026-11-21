@@ -1,6 +1,0 @@
-
-> local-notes@0.1.0 build:mac
-> bash scripts/build-mac.sh
-
-<issue70-worktree>/dist/LocalNotes.app: replacing existing signature
-<issue70-worktree>/dist/LocalNotes.app

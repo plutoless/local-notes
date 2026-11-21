@@ -1,3 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/make-unsaved-change-handling-page-scoped-and-all/build/issue55-native-forms-final/Forms48.app: replacing existing signature
-/Users/zhangqianze/orca/workspaces/local-notes/make-unsaved-change-handling-page-scoped-and-all/build/issue55-native-forms-final/Forms48.app: replacing existing signature
-PASS native after remaining-form journeys and settled captures

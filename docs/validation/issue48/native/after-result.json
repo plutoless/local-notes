@@ -1,9 +1,0 @@
-{
-  "passed": true,
-  "phase": "after",
-  "engine": "Cocoa/WKWebView",
-  "productionTermination": "separate uninstrumented test",
-  "input": "Orca AX capture open; native OS Escape/Tab/Shift+Tab; controlled DOM for remaining fixture entry and assertions",
-  "reducedHeight": "test-only minimum window size override; production minimum remains unchanged",
-  "screenshotCount": 14
-}

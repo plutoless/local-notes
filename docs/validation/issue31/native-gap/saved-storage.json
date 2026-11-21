@@ -1,6 +1,0 @@
-{
-  "priorUnchanged": true,
-  "priorSHA256": "db85446d53232d1e7062342db20940185b8d286f29a0a462c87b7e6a6b1e56f7",
-  "captureSHA256": "c60537ee7adbfba087e28aa7d1997379fa85aa5cf0ab23a8cec4960beee8c8a1",
-  "captureText": "# 原生失败重试与重启验证\n\n原生失败草稿：保存失败时保留这一段；恢复后重试，返回原阅读任务。"
-}

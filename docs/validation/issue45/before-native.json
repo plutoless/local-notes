@@ -1,9 +1,0 @@
-{
-  "engine": "Cocoa/WKWebView",
-  "createPersistedActions": true,
-  "reorder": true,
-  "remove": true,
-  "open": true,
-  "narrow": 393,
-  "pid": 2604
-}

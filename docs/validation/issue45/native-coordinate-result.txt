@@ -1,9 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/build/native-issue45-after/Home45.app: replacing existing signature
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/build/native-issue45-after/Home45.app: replacing existing signature
-Traceback (most recent call last):
-  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/tests/native-home-density.py", line 41, in <module>
-    w("document.querySelector('.row-menu').open")
-    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-45/tests/native-candidate-review.py", line 43, in wait
-    raise AssertionError('Native UI timed out: '+expression)
-AssertionError: Native UI timed out: document.querySelector('.row-menu').open

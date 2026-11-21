@@ -1,2 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/make-unsaved-change-handling-page-scoped-and-all/build/issue55-native-production-final-head/Task55Production.app: replacing existing signature
-PASS production native close, menu quit, Cmd+Q, reentrant close, save/discard/continue and restart

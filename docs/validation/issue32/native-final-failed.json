@@ -1,6 +1,0 @@
-{
-  "state": "操作未完成。请检查目录是否可用，然后重试；未保存的编辑仍保留。查看技术详情Revision saved; recovery pending: You don’t have permission to save the file “95ed68a3-5cd4-4ec9-afe1-c4077a2a1d06.json” in the folder “actions”.; recovery pending: You don’t have permission to save the file “95ed68a3-5cd4-4ec9-afe1-c4077a2a1d06.json” in the folder “actions”.",
-  "description": "最终版本原生失败重试验证",
-  "semanticState": "failed",
-  "visible": true
-}

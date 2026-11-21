@@ -1,3 +1,0 @@
-
-> local-notes@0.1.0 check
-> node --check web/presentation.js && node --check web/organization.js && node --check web/organize-screen.js && node --check web/library.js && node --check web/library-screen.js && node --check web/app.js && node --check web/actions.js && node --check web/action-screen.js && node --check web/bridge.js && node --check web/core.js && node --check web/initiatives.js && node --check web/initiative-screen.js && node --check web/focus-screen.js

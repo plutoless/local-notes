@@ -6,6 +6,7 @@ out = Path('build/issue55-baseline-native').resolve()
 if out.exists(): shutil.rmtree(out)
 out.mkdir(exist_ok=True)
 evidence = Path('docs/validation/issue55')
+evidence.mkdir(parents=True, exist_ok=True)
 app = out / 'Issue55Baseline.app'
 shutil.copytree('dist/LocalNotes.app', app, dirs_exist_ok=True)
 subprocess.run(['/usr/libexec/PlistBuddy', '-c', 'Set :CFBundleIdentifier dev.localnotes.validation.issue55baseline', str(app/'Contents/Info.plist')], check=True)

@@ -1,6 +1,0 @@
-App=dev.localnotes.validation.issue17 (pid 83340)
-Window: "拾记 · Local Notes", App: LocalNotes.
-
-No change in the accessibility tree since the previous snapshot.
-
-The focused UI element is 61 pop up button 状态, Value: 待办.
