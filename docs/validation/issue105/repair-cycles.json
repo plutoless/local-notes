@@ -1,0 +1,35 @@
+{
+  "issue": 105,
+  "startingSha": "13cc92c65cf6877586cf5364211a2df570b80032",
+  "consecutiveCompletedCyclesWithoutProgress": 0,
+  "cycles": [
+    {
+      "cycle": 1,
+      "signature": "Controlled Continue return collapsed selection; initial fixture also omitted UTF-8 charset",
+      "hypothesis": "Separate fixture encoding/focus setup from actual return selection behavior",
+      "correction": "Declare UTF-8 and explicitly position the fixture receiver; trace confirmed original selection2..6 becomes0..0 during Continue; capture/restore selection under the return fence",
+      "commands": [
+        "node tests/leave-focus-ui.mjs",
+        "node build/issue105/caret-diagnosis.mjs"
+      ],
+      "observed": "Encoding corrected; original selection loss confirmed; delivered focused regression now passes normal selection and disabled return; diagnostic/behavioral progress made"
+    },
+    {
+      "cycle": 2,
+      "signature": "Original main87/88 delayed return overrides newer Tab; original114 starts recovery before prior leave/reveal completes",
+      "hypothesis": "Fence deferred fallback after immediate return; wait synchronously for completed leave plus capture reveal",
+      "correction": "Temporary focusin/keydown/pointerdown fence and range retention; capture harness imports accessor once, polls synchronous settled state",
+      "commands": [
+        "HOLD_RESTORE=1 node build/issue105/held-return-reproducer.mjs",
+        "HOLD_RESTORE=1 DRAIN_BEFORE=1 node build/issue105/held-return-reproducer.mjs",
+        "node tests/remaining-forms-ui.mjs"
+      ],
+      "observed": "Both retained real-app held-return and ordering controls exit0; remaining capture persistence/failure/retry/pending/Escape/recovery/no-duplicate journey exits0; original failed evidence preserved",
+      "receipts": [
+        "build/issue105/held-return-after.log",
+        "build/issue105/ordering-control-after.log",
+        "build/issue105/remaining-affected.log"
+      ]
+    }
+  ]
+}

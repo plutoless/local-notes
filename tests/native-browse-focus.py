@@ -14,6 +14,8 @@ spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('na
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 if os.environ.get('FORMS_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
  raise SystemExit('Form-only mode requires the external OS input sender')
+if os.environ.get('LEAVE_FOCUS_ONLY') and not os.environ.get('FORMS_ONLY'):
+ raise SystemExit('Leave-focus mode requires FORMS_ONLY and its external sender guard')
 phase=os.environ.get('PHASE','after')
 m.OUT=Path('build/issue81-native-'+phase).resolve();m.APP=m.OUT/'Browse81.app'
 m.OUT.mkdir(parents=True,exist_ok=True)
@@ -187,12 +189,15 @@ try:
 
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,targetText:e.target.closest('button,summary,input')?.textContent?.slice(0,120),composedPath:e.composedPath().filter(n=>n instanceof Element).slice(0,8).map(n=>({tag:n.tagName,id:n.id,classes:n.className,text:n.matches('button,summary')?n.textContent.slice(0,120):undefined})),view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
  if os.environ.get('FORMS_ONLY'):
-  from native_forms_journey import run
+  if os.environ.get('LEAVE_FOCUS_ONLY'):
+   from native_leave_focus_journey import run
+  else:
+   from native_forms_journey import run
   source_before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
   run(c,w,click,key,state,log)
   assert source_before=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
   log.append({'syntheticSourcesPreserved':source_before})
-  print('PASS native contextual forms: owned-window OS pointer/keyboard, complete cycles, invalid, leave/selection and return')
+  print('PASS native issue105: owned-window Continue/selection, subsequent Tab, held stale return and pointer, async dismissal and opener' if os.environ.get('LEAVE_FOCUS_ONLY') else 'PASS native contextual forms: owned-window OS pointer/keyboard, complete cycles, invalid, leave/selection and return')
   raise SystemExit(0)
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
@@ -331,4 +336,10 @@ finally:
  log.append({'provenance':{'head':subprocess.check_output(['git','rev-parse','HEAD']).decode().strip(),'applicationPath':str(m.APP),'bundleIdentifier':subprocess.check_output(['/usr/libexec/PlistBuddy','-c','Print :CFBundleIdentifier',str(m.APP/'Contents/Info.plist')],text=True).strip(),'executableSHA256':hashlib.sha256((m.APP/'Contents/MacOS/LocalNotes').read_bytes()).hexdigest(),'probeSHA256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),'hostSHA256':hashlib.sha256((m.OUT/'main.swift').read_bytes()).hexdigest(),'sourcePackage':{p.name:{'source':hashlib.sha256(p.read_bytes()).hexdigest(),'package':hashlib.sha256((m.APP/'Contents/Resources/web'/p.name).read_bytes()).hexdigest()} for p in Path('web').glob('*') if p.is_file()},'clipboard':'untouched','inputSource':'untouched'}})
  if process:process.terminate();process.wait(timeout=10)
  log.append({'ownedHostExited':process.returncode if process else None})
+ if process and os.environ.get('LEAVE_FOCUS_ONLY'):
+  try:os.kill(process.pid,0);absent=False
+  except ProcessLookupError:absent=True
+  log.append({'ownedLeaveHostCleanup':{'pid':process.pid,'waitResult':process.returncode,'absent':absent}})
  (out/'transcript.json').write_text(json.dumps(log,ensure_ascii=False,indent=2))
+ if process and os.environ.get('LEAVE_FOCUS_ONLY'):
+  assert absent, 'Owned leave-focus host must be absent after wait'

@@ -52,6 +52,7 @@ try {
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
+  await page.evaluate(async () => { const {taskLeavePending} = await import('/presentation.js'); window.captureLeavePending = taskLeavePending; });
   await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
   await page.locator('[data-view=notes]').click();
   await page.locator('#items .card').first().waitFor();
@@ -106,6 +107,9 @@ try {
   assert.equal(await page.evaluate(()=>window.hasUnsavedChanges()),true);
   assert.equal(createCalls,callsBefore+1); releaseCreate();
   await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+  // Hidden precedes the saved-note reveal and the pending Escape leave completion.
+  // Poll synchronously: an async predicate is not a settled-state check here.
+  await page.waitForFunction(() => !window.captureLeavePending() && !document.querySelector('#capture-return').hidden);
   const files = await readdir(join(fixture.root,'Notes'));
   assert.equal(files.length,1);
   assert.match(await readFile(join(fixture.root,'Notes',files[0]),'utf8'), /短表单真实存储/);
