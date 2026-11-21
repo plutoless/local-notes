@@ -35,3 +35,34 @@ No production behavior, parser, repository/index, native bridge/host, packaged a
 ## Durable review paths
 
 Open `../../design/issue122/index.html` through the documented Vite command in the comparison guide. Representative files: `a-desktop.png`, `b-desktop.png`, `c-desktop.png`; full comparable set is checked in here. Source/artifact hashes are recorded separately in `bindings.sha256`; generated build output is reproducible and ignored. Browser Chromium was local Google Chrome, headless; screenshots prove preview layout/DOM states only.
+
+## Review repair and shipped-output isolation
+
+Standards reviewer `/root/standards` found that recursive Tailwind scanning picked
+up official preview utilities even without runtime imports (candidate production
+CSS 8.48 kB vs baseline 6.15 kB). Corrected `web/react/styles.css` discovery with
+explicit exclusions for preview controls, preview docs and evidence. These are
+build-source exclusions only; no production selector or token changed. A first
+exclusion of controls alone left `.rounded` / `.underline` from preview prose;
+this narrowed the remaining cause, and explicit preview-document exclusions
+removed it. Final `npm run build:web` compared with a clean `git archive` export
+of starting main at `/tmp/local-notes-122-baseline`, same locked installed packages
+and build command: `diff -rq /tmp/local-notes-122-baseline/build/web build/web`
+returned 0 (all shipped files byte-identical). A symlinked dependency directory
+first produced only a scheduler source-path comment difference in JS; copying
+the same installed dependency bytes into the export removed that environment
+artifact. No product package replay is needed for byte-identical shipped files.
+
+Spec reviewer `/root/spec` identified the topic-only search scope mismatch.
+Corrected synthetic global examples to 全部内容 / 笔记 / 事项 / 行动, with explicit
+pressed passage selection and exact example source-note opening. Added matching
+393px, short and reduced-motion search captures. The first revised DOM run failed
+because the title locator matched both Library and search; scoped it to the
+search stage without weakening assertions, and reran successfully. This is a
+harness targeting correction, not a product search failure. Current scripts
+check each scope count, passage selection, no-match and source-independent form.
+
+Environment: macOS local host, Node v25.1.0, npm 11.6.2, Google Chrome
+158.0.8127.36 headless. No new dependency or compatibility floor. This work changes
+neither the production catalogue nor production app ownership. Candidate rules
+remain proposals until the explicit maintainer decision.

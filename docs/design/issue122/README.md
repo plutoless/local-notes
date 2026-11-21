@@ -15,7 +15,7 @@ Live #102 is CLOSED; main is the #120 renderer-convergence merge. The resulting 
 | Scoped global search | Query, scope, populated results, no matches, selected passage | SearchContent / searchView; no index or bridge calls; retain compact search starting point |
 | Responsive / input | 1280×900, 393×852, 1280×480, keyboard focus/return, reduced motion | Shared component boundary; avoid double rings, moving targets and clipped final actions |
 
-Out of preview implementation: Current Focus, Favorites-specific behavior, editor/save recovery, Actions/Initiatives lifecycle, Organization requests/candidates, sync/conflicts, workspace and native shell. These retain their owners listed in [renderer convergence](../../architecture/renderer-convergence.md); later production slices must inventory their states. No production stylesheet, entry, routes, bridge or storage imports will change.
+Out of preview implementation: Current Focus, Favorites-specific behavior, editor/save recovery, Actions/Initiatives lifecycle, Organization requests/candidates, sync/conflicts, workspace and native shell. These retain their owners listed in [renderer convergence](../../architecture/renderer-convergence.md); later production slices must inventory their states. No production selectors, tokens, entry, routes, bridge or storage imports change; Tailwind source exclusions keep preview utilities outside shipped assets.
 
 ## Authorized design and execution plan
 
