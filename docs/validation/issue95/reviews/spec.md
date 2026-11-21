@@ -14,3 +14,10 @@ are an explicit compatibility boundary, not a second structural renderer. Native
 OS replay deferral follows the supplied layered validation policy. Final refreshed
 review is requested against the delivered head; source review does not establish
 execution of validation commands.
+
+At `5a982a242a50eb606fec63bfe919f3e7e151f876`, the reviewer held one further
+material finding: focus membership did not preserve `revisionSaved` recovery.
+Correction `e2bbeda` retains the durable record, private retry candidate and
+truthful saved/recovery-pending receipt. The final controller and real-storage UI
+checks cover partial-commit retention and same-revision repair without duplicate
+history. A final refreshed review follows these corrections.

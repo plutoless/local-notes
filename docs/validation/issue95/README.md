@@ -13,8 +13,8 @@ binding is recorded separately in `artifact-bindings.txt`; no native app launch 
 
 | Behavior | Command / layer | Result and limitation |
 | --- | --- | --- |
-| Domain, storage, revisions, indexes, ordering, drafts and ownership | `npm test` | Full maintained unit/integration suite; real isolated Swift file/SQLite fixtures where applicable; see final unit receipt |
-| Accepted/canceled/stale Action return and pending/stale focus membership | `node --test tests/action-entry.test.js` | Two public-controller behavior tests, controlled ordering |
+| Domain, storage, revisions, indexes, ordering, drafts and ownership | `npm test` | Full maintained 86-test unit/integration suite plus the latest three focused controller tests; real isolated Swift file/SQLite fixtures where applicable; see final unit receipt |
+| Accepted/canceled/stale Action return and pending/stale focus membership | `node --test tests/action-entry.test.js` | Three public-controller behavior tests, controlled ordering |
 | Action create/status/filter/reopen/history/reload/focus membership/caret/source bytes | `node tests/actions-react-ui.mjs` | Actual bundled app and real storage/SQLite adapter, persisted readback after reload |
 | Note/list/table passage evidence, changed/missing sources, duplicate submission, retry, lost receipt identity/reload, nested return | `node tests/reading-actions-ui.mjs` | Maintained real-app / real-storage journey passed |
 | Active Save/Discard/Continue, invalid/failed/delayed save, private recovery, containment/restoration and browser selection | `node tests/task-lifecycle-ui.mjs`, `node tests/remaining-forms-ui.mjs` | Maintained focused journeys passed; existing synthetic failures retained in harness |
@@ -46,7 +46,7 @@ queries and zero Markdown body reads on both baseline and migrated assets.
 Observed screenshot-heavy run times were 1138ms baseline and 2078ms then 699ms
 migrated; this variation is not a controlled benchmark or evidence of a regression
 or speedup. The expanded final journey additionally tests focus membership and
-makes 26 queries (three added operations), still zero note-body reads. Source bytes
+makes 27 queries (including added focus and failed-repair checks), still zero note-body reads. Source bytes
 remain equal before/after. No whole-corpus rereads were introduced.
 
 Baseline bundle JS was 323.51kB / 83.39kB gzip; final build receipt records about
@@ -64,7 +64,7 @@ claimed. The production build still contains only local bundled assets.
   progress, no repeated same-signature failure.
 - New Node entry test initially imported the browser bridge without `window`
   (`failed-entry-harness.log`). Initialized a temporary import-only window port;
-  two controller ordering/ownership checks pass. Separate setup signature, one
+  controller ordering/ownership checks pass. Separate setup signature, one
   correction cycle. No product assertion was removed.
 - Initial independent Standards review held return callback and React row
   ownership; Spec additionally held history rejection fencing and structural
@@ -74,7 +74,9 @@ claimed. The production build still contains only local bundled assets.
 - Review also identified inherited focus-membership writes outside active pending
   work. They now settle through `this.saving`, capture original repository/task,
   fence stale UI results and restore retry availability. Unit and real persisted
-  browser checks cover the correction.
+  browser checks cover the correction, including a durable revision/current-record
+  repair failure: the explicit Save retry repairs the same fourth revision without
+  adding another history entry. The final focused receipt confirms this behavior.
 
 Separate review reports are under `reviews/`; final-head acknowledgments are also
 reported to the coordinator. No acceptance requirement was waived to hide a known
@@ -82,3 +84,8 @@ product failure. Uncontrolled native control values/handlers and legacy feedback
 slots remain explicit compatibility ports, documented in the Action ownership
 inventory. Initiative/search/reader callers retain the same shared editor; no
 sibling implementation or competing overlay authority was introduced.
+
+The last full suite passed 86 tests before the additional partial-commit test;
+the final focused controller run passed all three tests. The full suite was not
+rerun solely to duplicate unchanged domain/storage evidence. Final-source focused
+UI, typecheck, syntax/build and Mac package checks passed after the recovery fix.
