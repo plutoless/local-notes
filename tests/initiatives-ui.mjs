@@ -289,7 +289,7 @@ try {
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
   assert.equal(await page.locator('#initiative-goal').evaluate(el => el === document.activeElement), true);
-  assert.deepEqual(await page.locator('#initiative-goal').evaluate(el => { const style = getComputedStyle(el); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(7, 95, 204)', 'rgb(7, 95, 204) 0px 0px 0px 1px inset']);
+  assert.deepEqual(await page.locator('#initiative-goal').evaluate(el => { const style = getComputedStyle(el); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(36, 92, 172)', 'rgb(36, 92, 172) 0px 0px 0px 1px inset']);
   await page.screenshot({path: 'docs/validation/issue33/after-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   // Hold real adapter calls to observe loading/saving rather than assuming transient states.
