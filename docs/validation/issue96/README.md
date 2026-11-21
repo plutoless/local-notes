@@ -103,6 +103,14 @@ irreversible scope or coordinator decision was required.
 
 ## Independent reviews
 
+Durable reviewer-authored reports, including independent runtime identity and
+quoted original findings/conclusions, are [Standards](standards-review.md) and
+[Spec](spec-review.md). These reuse the actual review transcripts from the original
+implementation session. The report-publication successor changes no production
+or test files; exact resulting-head independent delta confirmations are recorded
+in the existing PR118 body. The original reviewed head below is retained rather
+than relabeled as a new executed validation run.
+
 Standards and Spec reviewed `514a5138...f1662ab` independently. Standards found no
 material issue and one minor unused-harness setup observation (removed). Spec
 found the moved-reference selection P2 above (fixed).
