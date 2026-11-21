@@ -1,0 +1,1 @@
+PASS issue60 real UI/bridge/storage/index: all origin/destination types, desktop/393px, expansion/scroll return, dirty continue/discard/save/failure, stale and dismissed delayed reads.

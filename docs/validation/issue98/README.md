@@ -127,3 +127,31 @@ its original `ui-action secondary` classes statically on the legacy-owned button
 No minor visual deviation was silently accepted. Final Mac package and focused
 checkbox/source-return regression receipts are `delivery-package.txt` /
 `delivery-focus.txt`; packaging includes the restored static entrypoint classes.
+
+## Integration with concurrent main
+
+Main advanced during branch publication to `f39466dce449467620a7e08eacf3a1f9087c29b5`
+(#97, PR111). Merged that fetched main in this isolated branch without rewriting
+history. The three conflicts were additive host exports, catalogue examples and
+design sections: both search and Organization registrations/examples are retained;
+search implementation is consumed verbatim from main. Integration typecheck,
+production/Mac package, selection regression, search source-navigation/return and
+production catalogue checks pass (integration logs). Catalogue screenshots here
+include both real production consumers.
+
+Integration `npm test` ran 86 cases: 85 passed and the generated-resource comparison
+failed while the production build was concurrently replacing copied search-screen.js.
+This was a harness/build scheduling mistake: the test compares live source with
+mutable build output and read two build generations. Preserved integration-unit.txt;
+no production edit was made to mask it. After build completion, the focused real
+resource-manifest test passed (`integration-resource-recheck.txt`) and current
+source/build search-screen.js bytes match. The other 85 passing results are reused;
+this is not reported as an all-green 86-case single run.
+
+Integration inspection also protects the newer modal boundary: a delayed settings
+reply may not open over global search while Organization remains visible. The opener
+checks for an already open dialog; the controlled delayed-reply browser regression
+asserts settings remains closed and the search input retains focus. This does not
+change search or create another overlay authority. The final packaging and selection
+receipts for that guard are integration-modal-package/selection.txt. Native OS/IME
+replay remains deferred; the new proof is actual browser DOM focus, not native input.

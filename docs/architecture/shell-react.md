@@ -10,11 +10,11 @@ changes are introduced.
 | Sidebar navigation, capture and directory controls | `ShellContent` in `#shell` | `app.js` navigation/flush/workspace guards |
 | Directory name/path and hidden count | Shell model via `shellUpdate` | `directoryLabel` stable adapter and Library count |
 | Synchronization opener | Legacy `SyncScreen` in explicit `#shell-legacy-utilities` island | Existing synchronization/leave controller |
-| Header search and search return | Existing legacy header adapter | Single `SearchScreen` and document shortcut listener |
+| Header search and search return | Existing header adapter; React `SearchContent` dialog | Single `SearchScreen` and document shortcut listener; see `search-react.md` |
 | Current Focus sections, rows, menus and continuation | `FocusContent` in shared `#items` while home owns it | `FocusScreen`, Action/Initiative repositories and existing task drawers |
 | Reading continuation and home return | React home rows and delivered shared reader | Existing workspace-scoped `ReadingHistory`, source fingerprints, app generation fences and `sourceOrigin` |
 | Library/reader | Delivered #92 React owners | See `library-react.md` |
-| Favorites data, search, capture, Actions, Initiatives, Topics, Organization, synchronization dialogs | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
+| Favorites data, capture, Actions, Initiatives, Topics, Organization, synchronization dialogs | Existing legacy controllers/explicit islands | Their unchanged repositories, task guards and drafts |
 
 The shell renders once synchronously before legacy controllers register controls.
 Navigation selection and `aria-current` are derived from the same model, including

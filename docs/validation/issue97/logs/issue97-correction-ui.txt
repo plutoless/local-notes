@@ -1,0 +1,15 @@
+{"phase":"migrated","warmTypingMs":[15.768958000000111,16.520790999999917,16.83112499999993,16.574249999999893,16.777707999999848,19.119957999999997,14.585708000000068,16.248708999999963,16.462124999999787,16.69812500000012,16.985000000000127,16.397292000000107],"bodyReads":0,"indexedQueries":12}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Error: strict mode violation: getByRole('button', { name: '下一页', exact: true }) resolved to 2 elements:
+    1) <button disabled id="action-next" class="ui-action quiet">下一页</button> aka locator('#action-next')
+    2) <button type="button" class="ui-action quiet">下一页</button> aka getByLabel('搜索内容').getByRole('button', { name: '下一页' })
+
+Call log:
+[2m  - waiting for getByRole('button', { name: '下一页', exact: true })[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-97/tests/search-ui.mjs:128:75
+
+Node.js v25.1.0

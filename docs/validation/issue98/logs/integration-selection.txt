@@ -1,0 +1,1 @@
+PASS organization selection: real Swift SQLite index, bounded title/body search/filter/page, stale responses, retained selections/limit, explicit preview, setup failure/cancel, empty/retry, desktop/393px, zero sends.

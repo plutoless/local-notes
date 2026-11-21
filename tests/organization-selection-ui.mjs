@@ -124,6 +124,16 @@ try {
  await page.locator('[data-view=organize]').click();
  await page.locator('#ai-selection input').first().waitFor();
  await page.waitForFunction(()=>document.querySelector('#ai-status').textContent.startsWith('可先选择来源并预览；'));
+ // A newer modal owns focus even when Organization remains the visible route.
+ holdSettings=true; await page.locator('#ai-configure').click();
+ const modalDeadline=Date.now()+5000;
+ while(!settingsReleases.length&&Date.now()<modalDeadline) await new Promise(resolve=>setTimeout(resolve,1));
+ assert.equal(settingsReleases.length,1);
+ await page.locator('#global-search-open').click(); await page.locator('#global-search-input').waitFor();
+ holdSettings=false; settingsReleases.shift()(); await page.waitForTimeout(100);
+ assert.equal(await page.locator('#ai-settings-drawer').isVisible(),false,'Late setup cannot stack over search');
+ assert.equal(await page.locator('#global-search-input').evaluate(n=>n===document.activeElement),true);
+ await page.keyboard.press('Escape');
  holdSettings=true;
  await page.locator('#ai-configure').click(); await page.locator('#ai-configure').click();
  const replayDeadline=Date.now()+5000;
