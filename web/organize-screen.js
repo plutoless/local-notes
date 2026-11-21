@@ -7,7 +7,7 @@ const $ = selector => document.querySelector(selector);
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
-    this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map(); this.recoveredDrafts = new Set();
+    this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map(); this.recoveredDrafts = new Set(); this.draftRevisions = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
     this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', retry: false,
       request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: ''};
@@ -33,12 +33,13 @@ export class OrganizeScreen {
     });
     this.candidateUI = candidateReviewView($('#ai-results'), {
       activate: id => { this.activeCandidate = id; },
-      edit: (id, value) => { this.activeCandidate = id; this.recoveredDrafts.delete(id); this.drafts.set(id, value); const record = this.candidateRecords.find(r => r.entityId === id); localStorage.setItem(this.candidateDraftKey(id), JSON.stringify({revision: record.revision, description: value})); this.renderCandidates(); },
+      edit: (id, value) => { this.activeCandidate = id; this.recoveredDrafts.delete(id); this.drafts.set(id, value); const record = this.candidateRecords.find(r => r.entityId === id); this.draftRevisions.set(id, record.revision); localStorage.setItem(this.candidateDraftKey(id), JSON.stringify({revision: record.revision, description: value})); this.renderCandidates(); },
       target: (id, value) => { const context = this.candidateContext.get(id) || {}; context.target = value; this.candidateContext.set(id, context); this.renderCandidates(); },
       disclosure: (id, label, open) => { const context = this.candidateContext.get(id) || {}; context.disclosures = {...context.disclosures, [label]: open}; this.candidateContext.set(id, context); },
       source: (path, opener) => this.openNote(path, opener),
       decide: (record, decision, owner) => this.attempt(async () => {
         if (this.reviewing) return;
+        if (this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision) throw Error('Candidate changed; review again');
         const session = this.session;
         this.reviewing = true; this.renderCandidates();
         try {
@@ -133,7 +134,7 @@ export class OrganizeScreen {
   resetSelection(fromShow = false) {
     if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
     this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.renderCandidates(); this.invalidate();
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.renderCandidates(); this.invalidate();
   }
   async attempt(operation, owns) {
     const owner = document.activeElement, session = this.session;
@@ -206,14 +207,14 @@ export class OrganizeScreen {
     const record = this.candidateRecords?.find(r => r.entityId === this.activeCandidate);
     if (!record || !this.drafts.has(record.entityId) || $('#organize-tools').hidden || this.sourceDetour) return null;
     return {kind: 'candidate', label: '建议编辑', dirty: () => this.activeCandidate === record.entityId && this.drafts.has(record.entityId), pending: () => this.review.queue,
-      save: () => { localStorage.setItem(this.candidateDraftKey(record.entityId), JSON.stringify({revision: record.revision, description: this.drafts.get(record.entityId)})); this.activeCandidate = null; return true; },
+      save: () => { localStorage.setItem(this.candidateDraftKey(record.entityId), JSON.stringify({revision: this.draftRevisions.get(record.entityId), description: this.drafts.get(record.entityId)})); this.activeCandidate = null; return true; },
       discard: () => { this.drafts.delete(record.entityId); this.clearCandidateDraft(record.entityId); this.activeCandidate = null; this.renderCandidates(); }};
   }
   renderCandidates() {
     if (!this.candidateUI) return;
     this.candidateUI.render({cards: (this.candidateRecords || []).map(record => ({record,
       description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description,
-      dirty: this.drafts.has(record.entityId), recovered: this.recoveredDrafts.has(record.entityId), target: this.candidateContext.get(record.entityId)?.target || '', disclosures: this.candidateContext.get(record.entityId)?.disclosures || {}})),
+      dirty: this.drafts.has(record.entityId), recovered: this.recoveredDrafts.has(record.entityId), stale: this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision, target: this.candidateContext.get(record.entityId)?.target || '', disclosures: this.candidateContext.get(record.entityId)?.disclosures || {}})),
       destinations: this.destinations || [], busy: Boolean(this.reviewing)});
   }
   captureCandidates() {
@@ -241,7 +242,7 @@ export class OrganizeScreen {
     this.candidateRecords = page.actions; this.destinations = destinations.filter(r => !r.syncState);
     for (const record of page.actions) {
       if (!this.drafts.has(record.entityId)) {
-        const draft = readCandidateDraft(localStorage.getItem(this.candidateDraftKey(record.entityId)), record.revision); if (draft !== null) { this.drafts.set(record.entityId, draft); this.recoveredDrafts.add(record.entityId); }
+        const draft = readCandidateDraft(localStorage.getItem(this.candidateDraftKey(record.entityId)), record.revision); if (draft !== null) { this.drafts.set(record.entityId, draft); this.recoveredDrafts.add(record.entityId); this.draftRevisions.set(record.entityId, record.revision); }
       }
     }
     this.renderCandidates();
