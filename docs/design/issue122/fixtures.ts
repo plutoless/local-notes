@@ -12,3 +12,8 @@ export const paragraphs = [
  '这是一组虚构的阅读样本。长标题、重复名称和多层路径用来观察界面如何承载真实的信息密度。内容本身不会写入任何工作区，也不会被发送到外部服务。'
 ];
 export const code = 'const context = {\n  source: "示例资料/阅读与整理/方法.md",\n  decision: "保留原文，稍后复用"\n};\nconsole.log(context.source);';
+export const searchEntries = [
+ ...notes.map((note,index)=>({...note,kind:'note' as const,sourceIndex:index})),
+ {id:'demo-initiative',title:'建立可复用的阅读资料',path:'示例事项/阅读资料',tag:'事项',date:'11月18日',excerpt:'为研究保留原始出处和判断依据。',kind:'initiative' as const,sourceIndex:0},
+ {id:'demo-action',title:'整理阅读提纲',path:'示例行动/阅读提纲',tag:'行动',date:'11月18日',excerpt:'从阅读笔记中选出需要再次核对的证据。',kind:'action' as const,sourceIndex:0}
+];

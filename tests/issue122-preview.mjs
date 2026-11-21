@@ -28,9 +28,15 @@ for(const direction of ['a','b','c']){
  await page.keyboard.press('Escape');
  assert.equal(await page.getByRole('button',{name:'新建行动',exact:true}).evaluate(n=>n===document.activeElement),true);
  await page.getByRole('button',{name:'搜索',exact:true}).click();
- await page.locator('#scope').selectOption('topic');
+ await page.locator('#scope').selectOption('note');
  assert.match(await page.getByRole('status').innerText(),/2 条结果/);
- await shot('search');await page.locator('#query').fill('不存在的示例');
+ await page.locator('.stage').getByRole('button',{name:/离线阅读：表格/}).click();
+ assert.equal(await page.locator('.stage').getByRole('button',{name:/离线阅读：表格/}).getAttribute('aria-pressed'),'true');
+ await shot('search');
+ await page.locator('#scope').selectOption('initiative');assert.match(await page.getByRole('status').innerText(),/1 条结果/);
+ await page.locator('#scope').selectOption('action');assert.match(await page.getByRole('status').innerText(),/1 条结果/);
+ await page.locator('#scope').selectOption('all');assert.match(await page.getByRole('status').innerText(),/4 条结果/);
+ await page.locator('#query').fill('不存在的示例');
  assert.match(await page.getByRole('status').innerText(),/0 条结果/);
  await page.keyboard.press('Escape');
  for(const viewport of [{width:393,height:852},{width:1280,height:480}]){
@@ -43,12 +49,13 @@ for(const direction of ['a','b','c']){
   const box=await page.getByRole('button',{name:'预览确认',exact:true}).boundingBox();assert.ok(box.y>=0&&box.y+box.height<=viewport.height);
   await shot(viewport.width===393?'393-form':'short-form');
   await page.keyboard.press('Escape');
+  await page.getByRole('button',{name:'搜索',exact:true}).click();await page.locator('#query').fill('阅读');await page.locator('#scope').selectOption('note');await fits();await shot(viewport.width===393?'393-search':'short-search');await page.keyboard.press('Escape');
  }
  await page.setViewportSize({width:1280,height:900});
  await page.getByRole('button',{name:'搜索',exact:true}).focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
  const focus=await page.getByRole('button',{name:'搜索',exact:true}).evaluate(n=>({outline:getComputedStyle(n).outlineStyle,color:getComputedStyle(n).outlineColor}));assert.equal(focus.outline,'solid');
  await shot('keyboard');await page.emulateMedia({reducedMotion:'reduce'});
- assert.equal(await page.locator('.ui-action').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');await shot('reduced-motion');
+ assert.equal(await page.locator('.ui-action').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');await shot('reduced-motion');await page.getByRole('button',{name:'搜索',exact:true}).click();await shot('reduced-motion-search');await page.keyboard.press('Escape');
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
  receipts.push({direction,viewports:['1280x900','393x852','1280x480'],focus,errors,external,checked:['form-invalid-correction-retention','scope-query-empty','opener-return','narrow-list-reader-back','reachable-footer','horizontal-fit','keyboard-focus','reduced-motion']});
  await page.close();
