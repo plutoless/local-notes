@@ -15,3 +15,21 @@ test('private recovery candidates retain task/workspace identity, raw input and 
   assert.equal(readSyncDraft(storage,key).json,'{未完成');assert.equal(readSyncDraft(storage,syncDraftKey('workspace-B','action','record')),null);
   for(const invalid of ['{bad','null',JSON.stringify({json:4,selected:'left',tips:[]}),JSON.stringify({json:'{}',selected:'left',tips:[1]})]){data.set(key,invalid);assert.equal(readSyncDraft(storage,key),null);}
 });
+test('recovery rejects another task and verifies retained immutable bytes before retry',async()=>{
+  const {verifiedSyncRetry}=await import('../web/sync-drafts.js');
+  const identity={workspaceId:'A',entityType:'action',entityId:'one'};
+  const record={...identity,revision:'saved',description:'已保存'};
+  const repository={history:async()=>[record]};
+  assert.deepEqual(await verifiedSyncRetry(repository,structuredClone(record),identity),record);
+  await assert.rejects(verifiedSyncRetry(repository,{...record,entityId:'two'},identity),/belong/);
+  await assert.rejects(verifiedSyncRetry(repository,{...record,description:'替换内容'},identity),/changed/);
+  const storage={getItem:()=>JSON.stringify({json:'{}',selected:'left',tips:[],retryRecord:{...record,entityId:'two'}})};
+  assert.equal(readSyncDraft(storage,'key',identity),null);
+});
+test('private-cache quota or removal failure never throws away the live resolution',async()=>{
+  const {updateSyncDraft}=await import('../web/sync-drafts.js');
+  const live={json:'{未完成',selected:'left',tips:['left','right']};
+  const storage={setItem(){throw Error('Quota exceeded');},removeItem(){throw Error('Unavailable');}};
+  assert.equal(updateSyncDraft(storage,'key',live),false);assert.equal(live.json,'{未完成');
+  assert.equal(updateSyncDraft(storage,'key',null),false);
+});
