@@ -16,18 +16,18 @@ and leave decisions. No second overlay, Action editor or bridge implementation.
 Constraints: English project material, Simplified Chinese app copy, existing tokens,
 no schemas, storage consent, AI or sibling migration. Execute inline as dispatched.
 
-- [ ] Add typed Initiative presentation ports; replace legacy DOM construction and
+- [x] Add typed Initiative presentation ports; replace legacy DOM construction and
   register export/ownership release without disturbing sibling registrations.
-- [ ] Preserve context snapshots as view data, not React-owned detached nodes;
+- [x] Preserve context snapshots as view data, not React-owned detached nodes;
   use shared Action entry port for Initiative action create/open.
-- [ ] Extend actual production catalogue with Initiative selected/long-content state.
-- [ ] Verify existing public source/lifecycle rules and real adapter persistence;
+- [x] Extend actual production catalogue with Initiative selected/long-content state.
+- [x] Verify existing public source/lifecycle rules and real adapter persistence;
   add focused immutable ending partial-failure/restart checks where missing.
-- [ ] Run essential actual-app browser save/reload, Action/note return and ending
+- [x] Run essential actual-app browser save/reload, Action/note return and ending
   recovery journeys; inspect desktop/393px/short/reduced-motion and focus states.
   Compare identical synthetic states against saved baseline build. Record I/O/time.
-- [ ] Run typecheck, JS check, affected tests, full unit suite once and Mac packaging
+- [x] Run typecheck, JS check, affected tests, full unit suite once and Mac packaging
   for changed shipped assets. Ordinary native OS compatibility, Android and
   standalone Syncthing remain deferred; no GUI custody requested.
-- [ ] Independent Standards/Spec final-head reviews, repair material findings,
+- [x] Independent Standards/Spec final-head reviews, repair material findings,
   commit/push and open one PR; coordinator alone merges/closes.
