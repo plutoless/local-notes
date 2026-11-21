@@ -2,36 +2,33 @@
   "records": {
     "action": [
       {
-        "description": "汇合行动",
-        "waitingOn": null,
+        "focusPosition": null,
+        "modifiedAt": "2026-11-21T06:53:35.875Z",
         "sources": [
           {
-            "path": "Notes/note-1795243349181.md",
+            "path": "Notes/note-1795244015292.md",
             "quote": "",
             "fingerprint": "fnv1a32:403237c9"
           }
         ],
-        "status": "todo",
-        "initiativeId": null,
-        "entityType": "action",
-        "dueDate": null,
-        "revision": "8a586d19-7cbc-4873-b611-7c954acccac4",
-        "modifiedAt": "2026-11-21T06:42:29.748Z",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "parents": [],
-        "focusPosition": null,
         "formatVersion": 1,
-        "entityId": "0b87b428-e6f1-4fe3-94cb-13e0437dcf37"
+        "waitingOn": null,
+        "entityId": "69acec4e-2d88-4485-98c5-2583d3b4ba79",
+        "initiativeId": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "description": "汇合行动",
+        "dueDate": null,
+        "entityType": "action",
+        "status": "todo",
+        "revision": "871b22cf-3f6e-43e1-b268-d9c2c39283b2",
+        "parents": []
       },
       {
-        "entityType": "action",
-        "formatVersion": 1,
-        "description": "确认的行动",
-        "focusPosition": null,
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "dueDate": null,
-        "status": "todo",
         "parents": [],
+        "description": "确认的行动",
+        "waitingOn": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "initiativeId": null,
         "sources": [
           {
             "end": 47,
@@ -43,47 +40,20 @@
             "quote": "历史计划，需要逐条确认。"
           }
         ],
-        "waitingOn": null,
-        "entityId": "fcfac23e-f078-4c00-9032-1a823dfc045e",
-        "initiativeId": null,
-        "revision": "6d589e23-1d66-43fb-a74a-6e4143af2087",
-        "modifiedAt": "2026-11-21T06:42:30.668Z"
+        "formatVersion": 1,
+        "revision": "885651ba-a270-4926-aacf-02abdcd09e98",
+        "modifiedAt": "2026-11-21T06:53:36.813Z",
+        "entityType": "action",
+        "focusPosition": null,
+        "dueDate": null,
+        "entityId": "69ee8f5b-0395-4881-85c2-1ad54eabfcef",
+        "status": "todo"
       }
     ],
     "initiative": [
       {
-        "description": "汇合事项",
-        "waitingOn": null,
-        "title": "汇合事项",
-        "sources": [],
-        "progress": "",
-        "status": "active",
-        "initiativeId": null,
-        "entityType": "initiative",
-        "dueDate": null,
-        "goal": "核对跨页来源与明确决定",
-        "revision": "e6c49f60-aec9-4f8f-b709-8fe1f50605d0",
-        "modifiedAt": "2026-11-21T06:42:29.866Z",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "parents": [],
         "focusPosition": null,
-        "formatVersion": 1,
-        "entityId": "370803b8-e094-4469-8990-3e2dd3db6ee6"
-      },
-      {
-        "goal": "",
-        "entityType": "initiative",
-        "formatVersion": 1,
-        "description": "确认的事项",
-        "focusPosition": null,
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "parents": [
-          "5a03b765-bb80-458d-8f02-906c665857f7"
-        ],
-        "status": "active",
-        "dueDate": null,
-        "progress": "",
-        "title": "确认的事项",
+        "modifiedAt": "2026-11-21T06:53:37.117Z",
         "sources": [
           {
             "end": 47,
@@ -95,23 +65,69 @@
             "quote": "历史计划，需要逐条确认。"
           }
         ],
+        "goal": "",
+        "formatVersion": 1,
         "waitingOn": null,
-        "entityId": "8a8aa59e-4c09-4b9f-bc67-36599d42a31e",
-        "revision": "59d89a76-fc7c-4051-a383-34692e5d05e0",
+        "entityId": "21bf8f0c-3c06-446f-8f80-87c4a0b2035d",
         "initiativeId": null,
-        "modifiedAt": "2026-11-21T06:42:30.990Z"
+        "progress": "",
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "description": "确认的事项",
+        "dueDate": null,
+        "entityType": "initiative",
+        "title": "确认的事项",
+        "status": "active",
+        "revision": "4c038849-0118-4fea-aadc-ae5c33c61cc1",
+        "parents": [
+          "5eb7a288-c500-44dd-a495-9629d446d22d"
+        ]
+      },
+      {
+        "parents": [],
+        "description": "汇合事项",
+        "waitingOn": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "initiativeId": null,
+        "sources": [],
+        "title": "汇合事项",
+        "formatVersion": 1,
+        "goal": "核对跨页来源与明确决定",
+        "revision": "09be77d5-3a31-4ce3-9ab9-c708c9e947ac",
+        "modifiedAt": "2026-11-21T06:53:35.995Z",
+        "entityType": "initiative",
+        "focusPosition": null,
+        "dueDate": null,
+        "progress": "",
+        "entityId": "96ed2134-2e17-4b63-a6cc-06a5208c291a",
+        "status": "active"
       }
     ],
     "topic": [
       {
-        "entityType": "topic",
-        "formatVersion": 1,
-        "description": "确认的主题",
-        "focusPosition": null,
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "dueDate": null,
-        "status": "todo",
         "parents": [],
+        "description": "汇合分类",
+        "waitingOn": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "initiativeId": null,
+        "sources": [
+          {
+            "path": "Notes/note-1795244015292.md",
+            "quote": "",
+            "fingerprint": "fnv1a32:403237c9"
+          }
+        ],
+        "formatVersion": 1,
+        "revision": "153aae41-2cda-4b26-b2dd-08fddc520b12",
+        "modifiedAt": "2026-11-21T06:53:35.521Z",
+        "entityType": "topic",
+        "focusPosition": null,
+        "dueDate": null,
+        "entityId": "256bdde5-6883-4914-b75c-ef02beaf90e2",
+        "status": "todo"
+      },
+      {
+        "focusPosition": null,
+        "modifiedAt": "2026-11-21T06:53:37.013Z",
         "sources": [
           {
             "end": 47,
@@ -123,55 +139,234 @@
             "quote": "历史计划，需要逐条确认。"
           }
         ],
-        "waitingOn": null,
-        "entityId": "7c75d426-3a09-4659-b204-12e58646c26c",
-        "initiativeId": null,
-        "revision": "7cb2238b-75c4-431b-82bf-8083e1b1e321",
-        "modifiedAt": "2026-11-21T06:42:30.869Z"
-      },
-      {
-        "description": "汇合分类",
-        "waitingOn": null,
-        "sources": [
-          {
-            "path": "Notes/note-1795243349181.md",
-            "quote": "",
-            "fingerprint": "fnv1a32:403237c9"
-          }
-        ],
-        "status": "todo",
-        "initiativeId": null,
-        "entityType": "topic",
-        "dueDate": null,
-        "revision": "7297e2ce-da14-4dac-9ba8-c1a57f62bba4",
-        "modifiedAt": "2026-11-21T06:42:29.409Z",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "parents": [],
-        "focusPosition": null,
         "formatVersion": 1,
-        "entityId": "d9921470-f786-4f26-9a40-2684fd35ae6b"
+        "waitingOn": null,
+        "entityId": "eae876d5-9a30-4599-b590-c359c64e430d",
+        "initiativeId": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "description": "确认的主题",
+        "dueDate": null,
+        "entityType": "topic",
+        "status": "todo",
+        "revision": "8e04f5ea-5dde-4fca-9f7b-afca07708547",
+        "parents": []
       }
     ],
     "candidate": [
       {
-        "entityType": "candidate",
-        "formatVersion": 1,
-        "description": "确认的事项",
+        "revision": "d5ea55b7-825d-4835-a50a-5bbb23521148",
         "focusPosition": null,
+        "parents": [
+          "c6d52b50-b794-4ae0-8199-0920594c30c1"
+        ],
+        "sources": [
+          {
+            "path": "source.md",
+            "fragmentId": "source.md:0:47",
+            "end": 47,
+            "fingerprint": "fnv1a32:be350695",
+            "quote": "历史计划，需要逐条确认。",
+            "start": 0
+          }
+        ],
+        "modifiedAt": "2026-11-21T06:53:37.223Z",
+        "candidateType": "action",
+        "formatVersion": 1,
+        "waitingOn": null,
+        "relevance": "当前适用性待确认",
+        "reasoning": "逐字证据",
+        "entityId": "0b991a08-86d2-4c44-9b62-b6c4929d7d9d",
+        "initiativeId": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "description": "明确拒绝的行动",
+        "dueDate": null,
+        "entityType": "candidate",
+        "placement": "由用户决定",
+        "status": "suggested",
+        "review": {
+          "candidateType": "action",
+          "target": null,
+          "approvedFingerprint": "fnv1a32:3045de0d",
+          "decision": "ignore",
+          "targetFingerprint": "fnv1a32:5e95e63e",
+          "sourceFingerprints": [
+            {
+              "path": "source.md",
+              "fingerprint": "fnv1a32:be350695",
+              "quote": "历史计划，需要逐条确认。"
+            }
+          ],
+          "state": "done",
+          "suggestion": "另一个私有草稿"
+        },
+        "inputFingerprint": "fnv1a32:be350695"
+      },
+      {
+        "entityType": "candidate",
+        "focusPosition": null,
+        "waitingOn": null,
+        "revision": "73d686da-8f00-44b0-b8fb-22e09686355e",
+        "status": "suggested",
+        "candidateType": "topic",
+        "relevance": "当前适用性待确认",
+        "inputFingerprint": "fnv1a32:be350695",
+        "review": {
+          "candidateType": "topic",
+          "target": {
+            "description": "确认的主题",
+            "formatVersion": 1,
+            "entityType": "topic",
+            "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+            "parents": [],
+            "entityId": "eae876d5-9a30-4599-b590-c359c64e430d",
+            "dueDate": null,
+            "sources": [
+              {
+                "end": 47,
+                "start": 0,
+                "role": "reference",
+                "fingerprint": "fnv1a32:be350695",
+                "path": "source.md",
+                "fragmentId": "source.md:0:47",
+                "quote": "历史计划，需要逐条确认。"
+              }
+            ],
+            "revision": "8e04f5ea-5dde-4fca-9f7b-afca07708547",
+            "modifiedAt": "2026-11-21T06:53:37.013Z",
+            "initiativeId": null,
+            "focusPosition": null,
+            "waitingOn": null,
+            "status": "todo"
+          },
+          "approvedFingerprint": "fnv1a32:cb4aaaac",
+          "decision": "confirm",
+          "targetFingerprint": "fnv1a32:11cc9780",
+          "sourceFingerprints": [
+            {
+              "path": "source.md",
+              "fingerprint": "fnv1a32:be350695",
+              "quote": "历史计划，需要逐条确认。"
+            }
+          ],
+          "state": "done",
+          "suggestion": "确认的主题"
+        },
+        "sources": [
+          {
+            "path": "source.md",
+            "fragmentId": "source.md:0:47",
+            "end": 47,
+            "fingerprint": "fnv1a32:be350695",
+            "quote": "历史计划，需要逐条确认。",
+            "start": 0
+          }
+        ],
+        "parents": [
+          "cf6aae32-f8af-42d8-986b-85f69c09f08e"
+        ],
+        "dueDate": null,
+        "reasoning": "逐字证据",
+        "placement": "由用户决定",
+        "formatVersion": 1,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "initiativeId": null,
+        "description": "确认的主题",
+        "modifiedAt": "2026-11-21T06:53:37.040Z",
+        "entityId": "6ae876d5-9a30-4599-b590-c359c64e430d"
+      },
+      {
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "reasoning": "逐字证据",
+        "placement": "由用户决定",
+        "inputFingerprint": "fnv1a32:be350695",
+        "dueDate": null,
+        "entityType": "candidate",
+        "relevance": "当前适用性待确认",
+        "sources": [
+          {
+            "path": "source.md",
+            "fragmentId": "source.md:0:47",
+            "end": 47,
+            "fingerprint": "fnv1a32:be350695",
+            "quote": "历史计划，需要逐条确认。",
+            "start": 0
+          }
+        ],
+        "waitingOn": null,
+        "entityId": "9a21ad04-615f-4f14-80b9-3f0ac3633b29",
+        "revision": "e142fe31-26e0-4742-93cf-239ac674affe",
+        "status": "suggested",
+        "focusPosition": null,
+        "initiativeId": null,
+        "parents": [
+          "5dfb7b38-fe38-40dc-81f8-9832755215d5"
+        ],
+        "description": "确认的来源关联",
+        "formatVersion": 1,
+        "review": {
+          "candidateType": "relationship",
+          "target": {
+            "formatVersion": 1,
+            "goal": "",
+            "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+            "description": "确认的事项",
+            "dueDate": null,
+            "entityId": "21bf8f0c-3c06-446f-8f80-87c4a0b2035d",
+            "entityType": "initiative",
+            "sources": [
+              {
+                "end": 47,
+                "start": 0,
+                "role": "reference",
+                "fingerprint": "fnv1a32:be350695",
+                "path": "source.md",
+                "fragmentId": "source.md:0:47",
+                "quote": "历史计划，需要逐条确认。"
+              }
+            ],
+            "modifiedAt": "2026-11-21T06:53:37.117Z",
+            "revision": "4c038849-0118-4fea-aadc-ae5c33c61cc1",
+            "parents": [
+              "5eb7a288-c500-44dd-a495-9629d446d22d"
+            ],
+            "progress": "",
+            "title": "确认的事项",
+            "initiativeId": null,
+            "focusPosition": null,
+            "waitingOn": null,
+            "status": "active"
+          },
+          "approvedFingerprint": "fnv1a32:bb433bfb",
+          "decision": "confirm",
+          "targetFingerprint": "fnv1a32:df370812",
+          "sourceFingerprints": [
+            {
+              "path": "source.md",
+              "fingerprint": "fnv1a32:be350695",
+              "quote": "历史计划，需要逐条确认。"
+            }
+          ],
+          "state": "done",
+          "suggestion": "确认的来源关联"
+        },
+        "candidateType": "relationship",
+        "modifiedAt": "2026-11-21T06:53:37.143Z"
+      },
+      {
         "review": {
           "candidateType": "initiative",
           "target": {
             "formatVersion": 1,
             "goal": "",
             "entityType": "initiative",
-            "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
+            "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
             "parents": [],
-            "entityId": "8a8aa59e-4c09-4b9f-bc67-36599d42a31e",
+            "entityId": "21bf8f0c-3c06-446f-8f80-87c4a0b2035d",
             "description": "确认的事项",
             "sources": [],
-            "revision": "5a03b765-bb80-458d-8f02-906c665857f7",
+            "revision": "5eb7a288-c500-44dd-a495-9629d446d22d",
             "dueDate": null,
-            "modifiedAt": "2026-11-21T06:42:30.768Z",
+            "modifiedAt": "2026-11-21T06:53:36.913Z",
             "title": "确认的事项",
             "progress": "",
             "initiativeId": null,
@@ -192,100 +387,21 @@
           "state": "done",
           "suggestion": "确认的事项"
         },
+        "modifiedAt": "2026-11-21T06:53:36.938Z",
+        "initiativeId": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
         "placement": "由用户决定",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "status": "suggested",
+        "waitingOn": null,
+        "reasoning": "逐字证据",
+        "entityType": "candidate",
         "dueDate": null,
-        "sources": [
-          {
-            "path": "source.md",
-            "fragmentId": "source.md:0:47",
-            "end": 47,
-            "fingerprint": "fnv1a32:be350695",
-            "quote": "历史计划，需要逐条确认。",
-            "start": 0
-          }
-        ],
+        "relevance": "当前适用性待确认",
         "candidateType": "initiative",
         "parents": [
-          "3e760087-aaba-4710-8ac2-b5bbd1937b6d"
+          "87933fc4-0648-4fb9-b226-bb91c4bfd6c3"
         ],
-        "reasoning": "逐字证据",
-        "waitingOn": null,
-        "inputFingerprint": "fnv1a32:be350695",
-        "entityId": "0a8aa59e-4c09-4b9f-bc67-36599d42a31e",
-        "initiativeId": null,
-        "revision": "ea3a8f96-9db7-4a55-81a4-28ae5206e349",
-        "relevance": "当前适用性待确认",
-        "modifiedAt": "2026-11-21T06:42:30.791Z"
-      },
-      {
-        "reasoning": "逐字证据",
-        "candidateType": "relationship",
-        "status": "suggested",
-        "description": "确认的来源关联",
-        "revision": "fed860e0-d269-4a06-a94c-e476b6de5589",
         "focusPosition": null,
-        "initiativeId": null,
-        "inputFingerprint": "fnv1a32:be350695",
-        "waitingOn": null,
-        "review": {
-          "candidateType": "relationship",
-          "target": {
-            "formatVersion": 1,
-            "goal": "",
-            "entityType": "initiative",
-            "description": "确认的事项",
-            "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-            "parents": [
-              "5a03b765-bb80-458d-8f02-906c665857f7"
-            ],
-            "dueDate": null,
-            "sources": [
-              {
-                "end": 47,
-                "start": 0,
-                "role": "reference",
-                "fingerprint": "fnv1a32:be350695",
-                "path": "source.md",
-                "fragmentId": "source.md:0:47",
-                "quote": "历史计划，需要逐条确认。"
-              }
-            ],
-            "entityId": "8a8aa59e-4c09-4b9f-bc67-36599d42a31e",
-            "revision": "59d89a76-fc7c-4051-a383-34692e5d05e0",
-            "modifiedAt": "2026-11-21T06:42:30.990Z",
-            "progress": "",
-            "title": "确认的事项",
-            "initiativeId": null,
-            "focusPosition": null,
-            "waitingOn": null,
-            "status": "active"
-          },
-          "approvedFingerprint": "fnv1a32:07657ec9",
-          "decision": "confirm",
-          "targetFingerprint": "fnv1a32:df370812",
-          "sourceFingerprints": [
-            {
-              "path": "source.md",
-              "fingerprint": "fnv1a32:be350695",
-              "quote": "历史计划，需要逐条确认。"
-            }
-          ],
-          "state": "done",
-          "suggestion": "确认的来源关联"
-        },
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "relevance": "当前适用性待确认",
-        "modifiedAt": "2026-11-21T06:42:31.016Z",
-        "formatVersion": 1,
-        "placement": "由用户决定",
-        "dueDate": null,
-        "parents": [
-          "80d02681-ac27-4a07-9dc4-a814c4582c28"
-        ],
-        "entityType": "candidate",
-        "entityId": "11e64e46-4da9-4030-adaf-973db843ed8b",
+        "revision": "661d8872-d565-4d0d-b7db-1266e3249655",
         "sources": [
           {
             "path": "source.md",
@@ -295,70 +411,50 @@
             "quote": "历史计划，需要逐条确认。",
             "start": 0
           }
-        ]
+        ],
+        "status": "suggested",
+        "description": "确认的事项",
+        "formatVersion": 1,
+        "entityId": "a1bf8f0c-3c06-446f-8f80-87c4a0b2035d",
+        "inputFingerprint": "fnv1a32:be350695"
       },
       {
-        "description": "明确拒绝的行动",
-        "reasoning": "逐字证据",
-        "waitingOn": null,
-        "relevance": "当前适用性待确认",
+        "formatVersion": 1,
+        "entityType": "candidate",
+        "dueDate": null,
+        "initiativeId": null,
+        "sources": [
+          {
+            "path": "source.md",
+            "fragmentId": "source.md:0:47",
+            "end": 47,
+            "fingerprint": "fnv1a32:be350695",
+            "quote": "历史计划，需要逐条确认。",
+            "start": 0
+          }
+        ],
+        "modifiedAt": "2026-11-21T06:53:36.836Z",
+        "inputFingerprint": "fnv1a32:be350695",
         "candidateType": "action",
-        "sources": [
-          {
-            "path": "source.md",
-            "fragmentId": "source.md:0:47",
-            "end": 47,
-            "fingerprint": "fnv1a32:be350695",
-            "quote": "历史计划，需要逐条确认。",
-            "start": 0
-          }
-        ],
-        "status": "suggested",
-        "initiativeId": null,
-        "entityType": "candidate",
-        "dueDate": null,
         "placement": "由用户决定",
-        "modifiedAt": "2026-11-21T06:42:31.095Z",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "review": {
-          "candidateType": "action",
-          "target": null,
-          "approvedFingerprint": "fnv1a32:3045de0d",
-          "decision": "ignore",
-          "targetFingerprint": "fnv1a32:5e95e63e",
-          "sourceFingerprints": [
-            {
-              "path": "source.md",
-              "fingerprint": "fnv1a32:be350695",
-              "quote": "历史计划，需要逐条确认。"
-            }
-          ],
-          "state": "done",
-          "suggestion": "另一个私有草稿"
-        },
-        "inputFingerprint": "fnv1a32:be350695",
-        "revision": "dbed7880-7d1b-49c2-92c3-7c90fb9a0ab1",
-        "parents": [
-          "87c14983-2954-484b-873b-521b41413315"
-        ],
+        "status": "suggested",
+        "entityId": "e9ee8f5b-0395-4881-85c2-1ad54eabfcef",
         "focusPosition": null,
-        "formatVersion": 1,
-        "entityId": "720890e5-9a87-472d-ad25-a9dd544167e0"
-      },
-      {
-        "modifiedAt": "2026-11-21T06:42:30.693Z",
-        "inputFingerprint": "fnv1a32:be350695",
-        "dueDate": null,
+        "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+        "description": "确认的行动",
+        "reasoning": "逐字证据",
         "relevance": "当前适用性待确认",
+        "revision": "a1450d6d-fa33-47a2-8482-96a57098d2c9",
+        "waitingOn": null,
         "review": {
           "candidateType": "action",
           "target": {
             "description": "确认的行动",
             "formatVersion": 1,
             "entityType": "action",
-            "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
+            "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
             "parents": [],
-            "entityId": "fcfac23e-f078-4c00-9032-1a823dfc045e",
+            "entityId": "69ee8f5b-0395-4881-85c2-1ad54eabfcef",
             "dueDate": null,
             "sources": [
               {
@@ -371,8 +467,8 @@
                 "quote": "历史计划，需要逐条确认。"
               }
             ],
-            "revision": "6d589e23-1d66-43fb-a74a-6e4143af2087",
-            "modifiedAt": "2026-11-21T06:42:30.668Z",
+            "revision": "885651ba-a270-4926-aacf-02abdcd09e98",
+            "modifiedAt": "2026-11-21T06:53:36.813Z",
             "initiativeId": null,
             "focusPosition": null,
             "waitingOn": null,
@@ -391,138 +487,42 @@
           "state": "done",
           "suggestion": "确认的行动"
         },
-        "description": "确认的行动",
-        "placement": "由用户决定",
-        "revision": "11b7c27e-5a34-4ed9-96a4-8f221e69a271",
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "reasoning": "逐字证据",
-        "entityType": "candidate",
         "parents": [
-          "74f67653-6408-46d1-b33d-f5cb7e3fef5b"
-        ],
-        "status": "suggested",
-        "candidateType": "action",
-        "entityId": "7cfac23e-f078-4c00-9032-1a823dfc045e",
-        "waitingOn": null,
-        "initiativeId": null,
-        "formatVersion": 1,
-        "sources": [
-          {
-            "path": "source.md",
-            "fragmentId": "source.md:0:47",
-            "end": 47,
-            "fingerprint": "fnv1a32:be350695",
-            "quote": "历史计划，需要逐条确认。",
-            "start": 0
-          }
-        ],
-        "focusPosition": null
-      },
-      {
-        "focusPosition": null,
-        "relevance": "当前适用性待确认",
-        "status": "suggested",
-        "placement": "由用户决定",
-        "reasoning": "逐字证据",
-        "entityType": "candidate",
-        "dueDate": null,
-        "sources": [
-          {
-            "path": "source.md",
-            "fragmentId": "source.md:0:47",
-            "end": 47,
-            "fingerprint": "fnv1a32:be350695",
-            "quote": "历史计划，需要逐条确认。",
-            "start": 0
-          }
-        ],
-        "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-        "initiativeId": null,
-        "parents": [
-          "3a124e0e-71a3-4766-a093-eb3f46ba40c6"
-        ],
-        "review": {
-          "candidateType": "topic",
-          "target": {
-            "description": "确认的主题",
-            "formatVersion": 1,
-            "entityType": "topic",
-            "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-            "parents": [],
-            "entityId": "7c75d426-3a09-4659-b204-12e58646c26c",
-            "dueDate": null,
-            "sources": [
-              {
-                "end": 47,
-                "start": 0,
-                "role": "reference",
-                "fingerprint": "fnv1a32:be350695",
-                "path": "source.md",
-                "fragmentId": "source.md:0:47",
-                "quote": "历史计划，需要逐条确认。"
-              }
-            ],
-            "revision": "7cb2238b-75c4-431b-82bf-8083e1b1e321",
-            "modifiedAt": "2026-11-21T06:42:30.869Z",
-            "initiativeId": null,
-            "focusPosition": null,
-            "waitingOn": null,
-            "status": "todo"
-          },
-          "approvedFingerprint": "fnv1a32:cb4aaaac",
-          "decision": "confirm",
-          "targetFingerprint": "fnv1a32:11cc9780",
-          "sourceFingerprints": [
-            {
-              "path": "source.md",
-              "fingerprint": "fnv1a32:be350695",
-              "quote": "历史计划，需要逐条确认。"
-            }
-          ],
-          "state": "done",
-          "suggestion": "确认的主题"
-        },
-        "entityId": "fc75d426-3a09-4659-b204-12e58646c26c",
-        "modifiedAt": "2026-11-21T06:42:30.896Z",
-        "description": "确认的主题",
-        "formatVersion": 1,
-        "inputFingerprint": "fnv1a32:be350695",
-        "candidateType": "topic",
-        "revision": "6ccbf3a6-4b1b-4465-aa68-735b4ea561c1",
-        "waitingOn": null
+          "01f504fe-4360-47f1-93fd-c2b748056757"
+        ]
       }
     ]
   },
   "resolved": {
-    "description": "汇合行动人工解决",
-    "waitingOn": null,
+    "focusPosition": null,
+    "modifiedAt": "2026-11-21T06:53:37.829Z",
     "sources": [
       {
-        "path": "Notes/note-1795243349181.md",
+        "path": "Notes/note-1795244015292.md",
         "quote": "",
         "fingerprint": "fnv1a32:403237c9"
       }
     ],
-    "status": "todo",
-    "initiativeId": null,
-    "entityType": "action",
-    "dueDate": null,
-    "revision": "590240ae-2624-4862-aceb-90ccaad1d1f5",
-    "modifiedAt": "2026-11-21T06:42:31.700Z",
-    "workspaceId": "f84620a5-aaf8-4ce8-95c8-a0647859d174",
-    "parents": [
-      "cb0653ff-d7a8-4d06-bc19-ee180e9b1f4d",
-      "bf41ea6b-f41d-46f2-9286-520b3257a284"
-    ],
-    "focusPosition": null,
     "formatVersion": 1,
-    "entityId": "0b87b428-e6f1-4fe3-94cb-13e0437dcf37"
+    "waitingOn": null,
+    "entityId": "69acec4e-2d88-4485-98c5-2583d3b4ba79",
+    "initiativeId": null,
+    "workspaceId": "392cbb49-d636-4ed8-b5bb-83cef832d732",
+    "description": "汇合行动人工解决",
+    "dueDate": null,
+    "entityType": "action",
+    "status": "todo",
+    "revision": "c7f791be-f1ba-48f5-9561-ccc85dba38bb",
+    "parents": [
+      "dbc083fd-1e6a-42a7-abe1-749eed161a7d",
+      "8ab6c2b1-ae76-437e-ba8d-a1993b6db7a3"
+    ]
   },
-  "capturedPath": "Notes/note-1795243349181.md",
+  "capturedPath": "Notes/note-1795244015292.md",
   "capturedSHA256": "5c6ece5878c7e1e23b61b77e0f3bc2ac99c26ef25cda8f99df7b7598c02f6d28",
   "sourceSHA256": "d1f4ae0a95e5eb1d8c83e7bc14afed5d14f03eb0758422bd6173e2d78790ad4f",
   "sourceUnchanged": true,
-  "elapsedMs": 2650.274125,
+  "elapsedMs": 2731.0908339999996,
   "calls": [
     "workspace",
     "actionFiles",
@@ -666,11 +666,11 @@
     "actionQuery",
     "actionQuery",
     "metadata",
+    "actionFiles",
     "referenceSearch",
     "actionQuery",
     "actionQuery",
     "actionFiles",
-    "actionFiles",
     "actionIndex",
     "actionIndex",
     "referenceSearch",
@@ -798,10 +798,10 @@
     "actionFiles",
     "actionQuery",
     "workspace",
-    "actionFiles",
     "referenceInventory",
-    "actionQuery",
+    "actionFiles",
     "metadata",
+    "actionQuery",
     "actionFiles",
     "actionFiles",
     "actionQuery",
@@ -917,47 +917,6 @@
     "actionFiles",
     "actionIndex",
     "actionQuery",
-    "referenceQuery",
-    "referenceInventory",
-    "metadata",
-    "actionFiles",
-    "actionQuery",
-    "referenceTags",
-    "referenceQuery",
-    "referenceQuery",
-    "referenceTags",
-    "referenceTags",
-    "referenceQuery",
-    "referenceQuery",
-    "referenceQuery",
-    "referenceQuery",
-    "actionFiles",
-    "actionQuery",
-    "actionQuery",
-    "actionQuery",
-    "actionQuery",
-    "workspace",
-    "actionFiles",
-    "actionIndex",
-    "actionIndex",
-    "actionQuery",
-    "actionFiles",
-    "workspace",
-    "actionWrite",
-    "referenceQuery",
-    "actionWrite",
-    "actionIndex",
-    "actionWrite",
-    "actionFiles",
-    "actionIndex",
-    "actionFiles",
-    "actionFiles",
-    "workspace",
-    "actionFiles",
-    "actionIndex",
-    "actionFiles",
-    "workspace",
-    "workspace",
     "referenceQuery",
     "referenceInventory",
     "metadata",
@@ -970,24 +929,74 @@
     "referenceQuery",
     "referenceQuery",
     "referenceQuery",
-    "actionFiles",
-    "actionWrite",
-    "actionFiles",
-    "actionWrite",
-    "actionWrite",
-    "actionIndex",
-    "actionFiles",
-    "actionFiles",
-    "actionFiles",
-    "actionFiles",
-    "workspace",
-    "workspace",
-    "actionFiles",
     "referenceQuery",
+    "referenceQuery",
+    "actionFiles",
+    "actionQuery",
+    "actionQuery",
+    "actionQuery",
+    "actionQuery",
+    "workspace",
+    "actionFiles",
+    "actionIndex",
     "actionIndex",
     "actionQuery",
+    "actionFiles",
+    "workspace",
+    "actionWrite",
+    "referenceQuery",
+    "actionWrite",
+    "actionIndex",
+    "actionWrite",
+    "actionFiles",
+    "actionIndex",
+    "actionFiles",
+    "actionFiles",
+    "workspace",
+    "actionFiles",
+    "actionIndex",
+    "actionFiles",
+    "workspace",
+    "workspace",
+    "referenceQuery",
     "referenceInventory",
     "metadata",
+    "actionFiles",
+    "actionQuery",
+    "referenceTags",
+    "referenceQuery",
+    "referenceTags",
+    "referenceTags",
+    "referenceQuery",
+    "referenceQuery",
+    "referenceQuery",
+    "actionFiles",
+    "actionWrite",
+    "actionFiles",
+    "actionWrite",
+    "actionWrite",
+    "actionIndex",
+    "actionFiles",
+    "actionFiles",
+    "actionFiles",
+    "actionFiles",
+    "workspace",
+    "workspace",
+    "referenceQuery",
+    "referenceInventory",
+    "metadata",
+    "actionFiles",
+    "actionQuery",
+    "referenceTags",
+    "referenceQuery",
+    "referenceTags",
+    "referenceTags",
+    "referenceQuery",
+    "referenceQuery",
+    "referenceQuery",
+    "actionFiles",
+    "actionIndex",
+    "actionQuery",
     "workspace",
     "actionQuery",
     "workspace",

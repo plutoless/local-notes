@@ -1,8 +1,8 @@
 {
   "base": "2f7f55513f077a88201ee3fadb6b6b540d7514a6",
-  "sourceTreeSha256": "ec01a740ce56e92e4cb6aca46d16add421471d3c8d6d089301dc2807bbfc5dfc",
+  "sourceTreeSha256": "c08a9e1da56ef369f6e34d1cfa6edcf65c36e200c0a2d160c481c8e17a80901d",
   "sources": {
-    "web/action-screen.js": "3486887040142ffbdef24c5ffb91ed4ae7cb9189fadfba06fb26e5c801a27d58",
+    "web/action-screen.js": "847072a80a6f110869c70d2387af2930ed09e8877e3edf1de36dc4f1ed08210c",
     "web/actions.js": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
     "web/app.js": "72f7c5d077aa1532337ba4d7a54b1925d5b0949b95932d80b548f0c53c86c06d",
     "web/bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
@@ -12,7 +12,7 @@
     "web/focus-screen.js": "a9c70a383925ce42905115bd68c8b8f2fcab004268d4cb357c543fb96448151e",
     "web/global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
     "web/index.html": "7634553c401b9abf4a0d19a8b89fa33eae70914d21fa22cc2ff28d03dd8fda43",
-    "web/initiative-screen.js": "6628a944732401139c76f7a231446198d60ea9c515261d2a2f9293c2215cb9df",
+    "web/initiative-screen.js": "46b6c2c052ad34810a4024f8aafbccde9806e831ad3e54ea96616b61d7f0cfde",
     "web/initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
     "web/library-screen.js": "651414b790d9cd47f70334733f9bb95d3c28f3736de35c61e83ddad5ea878024",
     "web/library.js": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
@@ -60,8 +60,8 @@
   },
   "artifacts": {
     "build/web/action-screen.js": {
-      "sha256": "3486887040142ffbdef24c5ffb91ed4ae7cb9189fadfba06fb26e5c801a27d58",
-      "bytes": 28238
+      "sha256": "847072a80a6f110869c70d2387af2930ed09e8877e3edf1de36dc4f1ed08210c",
+      "bytes": 28190
     },
     "build/web/actions.js": {
       "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
@@ -112,8 +112,8 @@
       "bytes": 456
     },
     "build/web/initiative-screen.js": {
-      "sha256": "6628a944732401139c76f7a231446198d60ea9c515261d2a2f9293c2215cb9df",
-      "bytes": 32778
+      "sha256": "46b6c2c052ad34810a4024f8aafbccde9806e831ad3e54ea96616b61d7f0cfde",
+      "bytes": 32767
     },
     "build/web/initiatives.js": {
       "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
@@ -176,7 +176,7 @@
       "bytes": 1064
     },
     "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
-      "sha256": "7a2977d760e3db45cb5c453b6cd1ea50a93d1c3989245a7d2fdaf9b3ee7287c3",
+      "sha256": "4c925c87f061a1e379cd0d249e469efede3eded2b015e6e01ef188073b3a3c37",
       "bytes": 471920
     }
   },
@@ -216,7 +216,7 @@
   },
   "assetTotals": {
     "baseline": 719091,
-    "current": 728350,
+    "current": 728291,
     "baselineJS": 392237,
     "currentJS": 410625
   },

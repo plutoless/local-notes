@@ -8,9 +8,9 @@ issue102 isolated worktree/dispatch; no other worktree or scheduler state change
 
 See [final ownership](../../architecture/renderer-convergence.md),
 [all 48 stories](story-coverage.md), [failure history](repairs.md) and
-[source/artifact/environment bindings](source-artifacts.json). Checks ran against
-the recorded source bytes in this isolated working tree; publication commits do
-not change those behaviors. Independent final-head review identities and deltas
+[source/artifact/environment bindings](source-artifacts.json). Delivered production/build bytes are bound in source-artifacts.json. Per-check
+executed and reused boundaries below distinguish the original broad run from
+current related checks after independent-review corrections. Independent final-head review identities and deltas
 are recorded separately in `reviews/` and the PR body.
 
 ## Validation layers and results
@@ -28,9 +28,9 @@ updates add shipped vocabulary modules and await actual reader readiness.
 | Check | Observable result | Command / receipt |
 | --- | --- | --- |
 | Reproducible install | Completed; lockfile unchanged | `npm ci` (initial tool output; build prerequisites available) |
-| Unit + real-adapter integration | 101/101 pass | `npm test`, `logs/unit-integration-final.txt` |
+| Unit + real-adapter integration | 101/101 pass at original source stage; unchanged domain coverage reused after bounded receipt correction | `npm test`, `logs/unit-integration-final.txt` |
 | Final affected controller/resource tests | Pass; committed focus recovery, released/stale ownership and real Assets contract | `node --test tests/action-entry.test.js tests/focus-ownership.test.js tests/library-ownership.test.js tests/shell-directory.test.js tests/mac-assets.test.js tests/native-assets.test.js`, `logs/affected-final.txt` |
-| Maintained actual-app UI | Complete suite exit 0 | `CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' CATALOGUE_EVIDENCE=build/issue102 FORM_EVIDENCE=build/issue102/forms npm run test:ui`, `logs/ui-acceptance.txt` |
+| Maintained actual-app UI | Complete suite exit 0 at original source stage; related current checks below cover receipt adoption corrections | `CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' CATALOGUE_EVIDENCE=build/issue102 FORM_EVIDENCE=build/issue102/forms npm run test:ui`, `logs/ui-acceptance.txt` |
 | Preserved Action regression | Create/status/filter/history/reload/caret and committed focus repair pass | `node tests/actions-react-ui.mjs`, `logs/action-regression.txt` |
 | Preserved Initiative regression | Real storage reload/source return/shared Action/immutable ending partial retry pass | `node tests/initiative-react-ui.mjs`, `logs/initiative-regression.txt` |
 | Preserved Library ordering/focus regression | Ordering/archive/paging, disabled-page handoff, focus/scroll/source preservation pass | `node tests/library-browse-journey.mjs`, `logs/library-browse-regression.txt` |
@@ -39,6 +39,11 @@ updates add shipped vocabulary modules and await actual reader readiness.
 | Syntax/type/build | Pass | `npm run check`, `npm run typecheck`, `npm run build:web`; `logs/check-final.txt`, `logs/typecheck.txt`, `logs/build-final.txt` |
 | Mac package/resources | Build and strict ad-hoc signature verification pass; packaged manifest and every declared asset byte equal built output | `npm run build:mac`; `codesign --verify --deep --strict dist/LocalNotes.app`; `logs/mac-package-bound.txt`, `logs/codesign-bound.txt`, `source-artifacts.json` |
 | Final bounded resource/ownership check | Pass | `node --test tests/library-ownership.test.js tests/mac-assets.test.js tests/native-assets.test.js`, `logs/resource-bound.txt` |
+| Current review-fix unit/integration/resource | 11/11 pass, including immutable Initiative ending and current native Assets/manifest | `node --test tests/action-entry.test.js tests/initiative-model.test.js tests/initiatives.test.js tests/mac-assets.test.js tests/native-assets.test.js`, `logs/affected-review-final.txt` |
+| Action receipt correction | Actual Action create/history/reload, failed/lost-reply write identity and source-return pass; Action code unchanged during subsequent Initiative correction | `logs/action-review-fix.txt`, `logs/reading-actions-review-fix.txt`, `logs/task-review-fix.txt` |
+| Current Initiative receipt correction | Shared Action return, immutable partial ending retry and complete drawer/failure/recovery pass | `node tests/initiative-react-ui.mjs`; `node tests/initiative-drawer-ui.mjs`; `logs/initiative-review-final.txt`, `logs/initiative-drawer-review-final.txt` |
+| Current coherent journey | Named cross-page storage/source/conflict/reload journey passes after both receipt corrections | `node tests/convergence-ui.mjs`, `logs/convergence-review-final.txt`, `convergence-readback.json` |
+| Current Mac package/resource binding | Typecheck, web/Mac build, strict signature and all declared packaged asset bytes pass after both corrections | `logs/mac-review-final.txt`, `logs/codesign-review-final.txt`, `source-artifacts.json` |
 
 Browser commands use the same `CHROME_PATH` above. Fixtures use actual production
 Swift Markdown/JSON/SQLite adapters behind a browser NotesNative shim. They do not
@@ -47,11 +52,19 @@ Candidate input is synthetic/controlled; the coherent bridge refuses AI requests
 Source readback SHA256 and explicit source-unchanged assertions are in the JSON
 receipt. Existing submitted-write/stale workspace/private draft tests remain intact.
 
-The final whitespace cleanup removed trailing spaces from two controller lines.
+Before the original source commit, whitespace cleanup removed trailing spaces from two controller lines.
 The broad UI and 101-test results are reused for identical behavior; final
 packaging, manifest/Assets/Library ownership and presentation-port checks execute
 the delivered bytes. No unrelated matrix replay is attributed to that formatting.
 Shared Button/modal production corrections received the full UI run above.
+Independent reviews then found three remaining controller receipt publication
+branches. Their correction changes the ownership seam, preserving chosen message
+text, ending precedence and all data/task rules. The related current checks above
+cover those exact consumers; the complete suite is explicitly reused rather than
+reported as rerun. `source-artifacts-24ee1c6.json` preserves the original broad-stage
+bindings; `source-artifacts.json` binds the corrected delivered source/package.
+Layout/catalogue captures are reused because neither their component/style bytes
+nor their displayed states changed in the receipt-only corrections.
 
 ## Catalogue and matching states
 
@@ -77,21 +90,23 @@ is restored byte-for-byte. New evidence is confined to this directory.
 `tests/convergence-benchmark.mjs` runs the actual shared home against 500 synthetic
 notes and 2,000 immutable Actions using the production Swift adapter. The same
 fixture recipe, Chrome/Mac and unchanged native services are used before/current.
-`benchmark-before.json` and `benchmark-delivery.json` retain four observations
+`benchmark-before.json` and current `benchmark-reviewed.json` retain four observations
 (one cold, three warm), delayed background work, bridge note-body reads,
 record-recovery scans and Chrome JS heap. They are not WKWebView startup or total
 native process memory measurements.
 
 Baseline home interactive/populated: cold 102/2938 ms; warm 57–87/58–89 ms.
-Current: cold 109/2953 ms; warm 57–63/58–65 ms. All runs read zero note bodies on
+Corrected current source: cold 113/2991 ms; warm 62–134/64–135 ms. All runs read zero note bodies on
 home; both have two cold / one warm record-recovery scans including delayed work.
-Warm JS heap varies approximately 16–28 MB in both samples, without controlled GC.
-CPU contention, file caches, request scheduling and GC make this a small noisy
-sample. The overlapping warm ranges and equal work do not establish an improvement,
-a native startup result or a memory-regression finding. The existing real
-integration separately covers initial 500-note indexing, zero warm rereads and
-2,000-action persistence/rebuild; search logs record bounded warm queries and
-zero source-body reads while typing.
+Warm Chrome JS heap ranges 16041300–27873825 bytes before and
+20486158–31971889 current, without controlled GC. CPU contention,
+file caches, request scheduling and GC make this a small noisy sample. Overlapping
+warm timing and equal I/O do not establish an improvement, a native startup result
+or an allocation/regression finding. The existing real integration separately
+covers initial 500-note indexing, zero warm rereads and 2,000-action persistence/
+rebuild; search logs record bounded warm queries and zero source-body reads while
+typing. `benchmark-delivery.json` retains the earlier current sample; the reviewed
+sample is refreshed after the final controller receipt changes.
 
 The initial archive baseline is REJECTED for comparison: without repository
 metadata Tailwind's automatic discovery emitted 43,903 CSS bytes instead of the
@@ -104,7 +119,7 @@ contaminated observation; it is not used for a performance or asset conclusion.
 
 Asset totals and exact hashes are in source-artifacts.json. The host JS grew from
 392,237 to 410,625 bytes as document/forms/shared presentation and the production
-catalogue moved into React. Total inventoried resources are 719,091 bytes baseline and 728,350 current; no startup/render-performance gain is inferred from
+catalogue moved into React. Total inventoried resources are 719,091 bytes baseline and 728,291 current; no startup/render-performance gain is inferred from
 file sizes or screenshots.
 
 ## Deferred, reused and unrun boundaries

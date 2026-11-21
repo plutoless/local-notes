@@ -1,0 +1,46 @@
+2026-11-20 22:54:06.314 system_profiler[92479:2527359] hw.cpufamily: 0x6f5129ac
+{
+  "device": [
+    "Model Name: MacBook Pro",
+    "Model Identifier: Mac16,1",
+    "Chip: Apple M4",
+    "Memory: 16 GB"
+  ],
+  "runtime": "Headless Chrome shared home UI + production Swift filesystem/SQLite adapter, not native WKWebView startup",
+  "notes": 500,
+  "actions": 2000,
+  "times": [
+    {
+      "mode": "cold",
+      "interactiveMs": 113,
+      "populatedMs": 2991,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 2,
+      "jsHeapBytes": 23395915
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 134,
+      "populatedMs": 135,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 20486158
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 63,
+      "populatedMs": 65,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 31971889
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 62,
+      "populatedMs": 64,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 22685942
+    }
+  ]
+}

@@ -26,3 +26,24 @@ was launched or killed, and no coordinator/scheduler state was edited. Source
 changes use focused checks plus the broad maintained UI run justified by shared
 renderer/field/modal ownership; evidence-only publication reuses source-bound
 results without unrelated replay.
+
+## Independent review corrections
+
+At source commit `24ee1c672418204cb6ef3d908aaa43928a827826`, Standards and Spec
+independently requested completing receipt ownership. The original findings are
+retained in their authored reports. The remaining Action save-error and Initiative
+linked-Action/committed-save/unfinished-ending catches called React feedback and
+then mutated its paragraph. They now publish the same complete message through
+`receipt.failure`; ending-required message precedence and disclosure opening,
+private recovery, immutable retry and uncertain-write identities remain unchanged.
+Standards also identified two stale design API paragraphs; they now name the
+production React components/ports instead of removed constructors.
+
+This is one bounded ownership repair with additional real consumers found by the
+independent full-scope review, not a waived failure. Relevant checks include
+current Action failure/lost-reply/source-return, task lifecycle, Initiative
+immutable partial-ending/drawer recovery, coherent real-storage readback, focused
+unit/integration/resource checks and Mac packaging. Source-stable full-suite and
+layout evidence is reused explicitly rather than relabelled as a new broad run.
+Exact corrected-head full-scope reviews and the evidence-only publication delta
+are recorded in the separate reports/PR body.

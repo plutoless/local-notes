@@ -1,0 +1,19 @@
+✔ Action entry adopts a return route only after an accepted, current drawer open (0.4215ms)
+✔ focus membership remains pending for leave and a superseded result cannot replace another Action (0.3405ms)
+✔ a durable focus revision with failed repair stays a committed private recovery candidate (0.313209ms)
+✔ source groups preserve quotes, duplicate paths, identity and supplied order (0.586208ms)
+✔ ending projects each unfinished member and only eligible destinations without changing decisions (0.152666ms)
+✔ initiative assignments, multiple links, explicit ending and index/restart recovery (4198.724583ms)
+✔ source state preserves changed, missing and ambiguous references; only unique fingerprint recovers moves (0.180459ms)
+✔ initiative revision survives interrupted current write and index removal (17.1045ms)
+✔ ending preserves independently committed actions across a later failure, restart and retry (41.897166ms)
+✔ real Mac Assets resource contract serves nested MIME and fails closed on private or ambiguous URLs (783.40875ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (11.685833ms)
+ℹ tests 11
+ℹ suites 0
+ℹ pass 11
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4301.350041
