@@ -1,0 +1,11 @@
+✔ real Mac Assets resource contract serves nested MIME and fails closed on private or ambiguous URLs (824.941834ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (8.956792ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.489167ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 861.890709

@@ -1,0 +1,14 @@
+{"surface":"migrated","readyMs":187,"bridgeCommands":23,"reads":4,"queries":16}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.getAttribute: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#workspace-references [data-path="moved-reference.md"]')[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-96/tests/initiative-react-ui.mjs:106:30 {
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

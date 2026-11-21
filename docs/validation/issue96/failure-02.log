@@ -1,0 +1,14 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Error: strict mode violation: locator('#react-library [data-path]') resolved to 2 elements:
+    1) <button type="button" aria-current="true" data-path="研究/中文长路径.md" class="ui-action quiet ui-row card w-full text-left selected">…</button> aka getByRole('button', { name: '这是用于检查长中文标题换行与键盘选中状态的笔记标题 逐字保留来源摘要；生产列表不会在组件内访问存储。 研究/中文长路径.md 文件修改：12/31/' })
+    2) <button type="button" aria-current="true" data-path="研究/长中文参考资料.md" aria-label="打开参考资料：研究/长中文参考资料.md" class="ui-action quiet ui-row selected">…</button> aka getByRole('button', { name: '打开参考资料：研究/长中文参考资料.md' })
+
+Call log:
+[2m  - waiting for locator('#react-library [data-path]') to be visible[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-96/tests/design-catalogue-ui.mjs:14:51
+
+Node.js v25.1.0

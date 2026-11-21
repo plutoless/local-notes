@@ -1,0 +1,15 @@
+{"surface":"migrated","readyMs":192,"bridgeCommands":23,"reads":4,"queries":16}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#workspace-progress').filter({ hasText: '已保存的进展' }) to be visible[22m
+[2m    64 × locator resolved to hidden <span id="workspace-progress">已保存的进展</span>[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-96/tests/initiative-react-ui.mjs:92:74 {
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

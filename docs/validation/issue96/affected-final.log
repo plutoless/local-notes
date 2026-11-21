@@ -1,0 +1,17 @@
+✔ source groups preserve quotes, duplicate paths, identity and supplied order (0.567625ms)
+✔ ending projects each unfinished member and only eligible destinations without changing decisions (0.148042ms)
+✔ initiative assignments, multiple links, explicit ending and index/restart recovery (1375.855084ms)
+✔ source state preserves changed, missing and ambiguous references; only unique fingerprint recovers moves (0.170834ms)
+✔ initiative revision survives interrupted current write and index removal (17.125708ms)
+✔ ending preserves independently committed actions across a later failure, restart and retry (40.040208ms)
+✔ real Mac Assets resource contract serves nested MIME and fails closed on private or ambiguous URLs (494.362916ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (7.253333ms)
+✔ packaged resource policy preserves nested assets and rejects ambiguous or private paths (0.511875ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1473.357542

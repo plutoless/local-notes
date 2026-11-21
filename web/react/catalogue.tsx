@@ -1,3 +1,4 @@
+import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
 import {ActionRows} from './actions';
 import {createRoot} from 'react-dom/client';
 import {NoteFields,Classification} from './note-forms';
@@ -23,6 +24,7 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <div className="app home"><aside><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[],hasMore:false},initiatives:{actions:[],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></section></div>
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
+    <h2>React 事项上下文</h2><InitiativeRows records={[{entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(6),goal:'核对原文',progress:'进行中',status:'active',sources:[]}]} selected="catalogue-initiative" empty="" open={noop}/><InitiativeLinks sources={[{path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'}]} selected="研究/长中文参考资料.md" open={noop}/><InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
     <h2>React 全局搜索</h2><section className="search-dialog ui-panel" aria-label="搜索组件示例"><SearchContent model={{scope:'note',selected:'catalogue-search',status:'本页 1 条结果',previous:false,next:false,rows:[{note:{identity:'catalogue-search',workspaceId:'synthetic',type:'note',path:'研究/中文长路径.md',passageStart:1,fingerprint:'synthetic',entityId:'研究/中文长路径.md',title:'核对长期事项与资料来源的完整中文标题以及下一步行动安排'.repeat(3),contextLabel:'研究/中文长路径.md · 1',passage:'保留来源片段与只读任务标记 - [ ] 核对资料',locator:'研究/中文长路径.md'},query:'来源',text:'保留来源片段与只读任务标记 - [ ] 核对资料'}]}} callbacks={{scope:noop,close:noop,page:noop,refresh:noop,expand:noop,copy:noop,open:noop}}/></section>
   </>);
   return ()=>root.unmount();
