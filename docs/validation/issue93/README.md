@@ -145,3 +145,21 @@ Final pagination-corrected source `98ec918da5fb978b02102f7f0cca6f08c94bceab`:
 83/83 tests pass (exit 0), including all controlled ownership cases; Focus browser,
 Mac package/signature and generated/package byte comparison pass. No production
 source changes follow this source head; the following commit adds receipts only.
+
+An additional controlled read-rejection audit found another facet of the same
+ownership signature: show() checked request ownership only after successful
+Promise.all. At e19ffb9, held query -> release -> reject still propagated `old query
+failed`; the brief earlier Spec approval was explicitly held (see retained
+`reviews/spec-read-failure-e19ffb9.md`). The query boundary now suppresses rejected
+results from released/replaced/superseded owners while preserving current errors.
+A controlled unit verifies older same-home rejection, current error propagation
+and released rejection. This third ownership correction cycle also made diagnostic
+and behavioral progress; none of the completed cycles were consecutive no-progress
+cycles. Type/syntax/build, ownership/manifest tests, real Focus browser, Mac package
+and full-test receipts are `logs/read-fence-*.log`. No acceptance waiver is applied.
+
+Latest corrected source `6a68af5da8082abe315a99322555fc7769cbdb95`:
+84/84 full tests pass (exit 0); current/stale read failures are included. Focus
+browser, Mac package/signature and complete generated/package asset binding pass.
+All earlier source heads and receipts above remain historical evidence; this is the
+latest executed source, followed only by its receipts commit and independent review.

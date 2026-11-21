@@ -1,0 +1,15 @@
+✔ a released or replaced home cannot reclaim the visible legacy list after a delayed query (0.523167ms)
+✔ a rejected submitted home operation settles without notifying its replacement owner (0.374875ms)
+✔ a home refresh cannot authorize focus after release while its query is pending (0.121ms)
+✔ an intentional navigation handoff reports its failure only in the originating workspace (0.083875ms)
+✔ late pagination failure preserves replacement loading status and navigation context (0.185209ms)
+✔ superseded home reads do not propagate stale errors, while current reads remain retryable failures (0.265333ms)
+✔ generated resource manifest exactly inventories shipped modules and nested compiled assets (7.1995ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.95925
