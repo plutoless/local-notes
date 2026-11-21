@@ -30,5 +30,9 @@ See docs/agents/domain.md.
 
 ### Validation
 
-Syncthing standalone tests and Android-specific tests are deferred until explicitly requested by the user and do not block merging.
+Use browser-first acceptance for shared UI behavior with real isolated storage
+adapters. Run affected native checks for host, bridge, resource, lifecycle, or OS
+integration changes. Ordinary UI native compatibility replay is deferred to
+release-level checks. Syncthing standalone tests and Android-specific tests remain
+deferred and do not block merging.
 See docs/agents/validation.md.
