@@ -1,1 +1,0 @@
-PASS: single home title, collapsed row utilities, context-preserving action/note edits, failed saves block initiative/New-action navigation, background refresh preserves drafts, missing notes preserve narrow-screen context, source save, selection, accessible action names, and narrow-pane navigation.

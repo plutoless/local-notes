@@ -1,1 +1,0 @@
-Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.

@@ -1,9 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-47/build/native-issue47-after/Initiative47.app: replacing existing signature
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-47/build/native-issue47-after/Initiative47.app: replacing existing signature
-Traceback (most recent call last):
-  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-47/tests/native-initiative-drawer.py", line 54, in <module>
-    w("!document.querySelector('#initiative-drawer .draft-guard').hidden")
-    ~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-47/tests/native-candidate-review.py", line 43, in wait
-    raise AssertionError('Native UI timed out: '+expression)
-AssertionError: Native UI timed out: !document.querySelector('#initiative-drawer .draft-guard').hidden

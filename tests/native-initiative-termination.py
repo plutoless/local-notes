@@ -6,6 +6,7 @@ out = Path('build/issue47-production-final').resolve()
 if out.exists(): shutil.rmtree(out)
 out.mkdir(exist_ok=True)
 evidence = Path('docs/validation/issue47')
+evidence.mkdir(parents=True, exist_ok=True)
 app = out / 'Initiative47Production.app'
 shutil.copytree('dist/LocalNotes.app', app, dirs_exist_ok=True)
 subprocess.run(['/usr/libexec/PlistBuddy', '-c', 'Set :CFBundleIdentifier dev.localnotes.validation.issue47productionfinal', str(app/'Contents/Info.plist')], check=True)

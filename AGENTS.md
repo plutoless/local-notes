@@ -36,4 +36,9 @@ browser validation when UI verification is needed. Run affected native checks fo
 host, bridge, resource, lifecycle, or OS integration changes. Ordinary UI native compatibility replay is deferred to
 release-level checks. Syncthing standalone tests and Android-specific tests remain
 deferred and do not block merging.
+Do not commit validation artifacts, including screenshots, logs, traces, result
+dumps, manifests, or per-run validation/review reports, even when written in
+Markdown. Keep them in ignored local output directories or CI artifacts and put
+concise validation results in the PR description or issue comments. Maintained
+test code, reusable fixtures, and project validation policy remain versioned.
 See docs/agents/validation.md.

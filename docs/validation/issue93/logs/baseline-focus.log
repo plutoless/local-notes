@@ -1,8 +1,0 @@
-Contrast ratios: {
-  body: 14.619441077868746,
-  secondary: 5.650066807645137,
-  primary: 6.250978759757422,
-  border: 4.278605097267699,
-  focus: 5.969564700266222
-}
-PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; home reads no note bodies and explicit source validation reads one.

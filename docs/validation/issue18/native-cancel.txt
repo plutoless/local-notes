@@ -1,8 +1,0 @@
-App=dev.localnotes.validation.issue18 (pid 80772)
-Window: "拾记 · Local Notes", App: LocalNotes.
-
-Changes since the previous snapshot (~ changed, - removed). Unchanged elements are omitted and keep their indexes.
-~ 						58 pop up button 状态, Value: 进行中
-- 64-69, 71-72, 81-88, 90-92
-
-The focused UI element is 2 HTML content 拾记 · Local Notes.

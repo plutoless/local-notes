@@ -1,2 +1,0 @@
-/Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-65/build/issue65-keyboard/Library65Keyboard.app: replacing existing signature
-PASS build-only; no app launched, activated, or input posted

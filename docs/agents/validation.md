@@ -1,5 +1,17 @@
 # Validation policy
 
+## Validation artifacts stay out of Git (maintainer-approved, 2026-11-21)
+
+- Do not add or commit run-specific validation artifacts to the repository. This includes screenshots, recordings, logs, traces, DOM/accessibility dumps, test-result JSON, timing measurements, source/artifact hash manifests, and generated or handwritten per-run validation and review reports. Markdown format does not make a validation artifact project documentation.
+- Existing harnesses may continue writing to the ignored `docs/validation/` directory. They must create their output directories on a fresh checkout rather than depending on tracked evidence.
+- Store local evidence under ignored output such as `build/validation/<issue>/<head>/`, or retain it as CI artifacts. Preserve failed attempts and relevant source/head bindings there; keeping evidence out of Git does not authorize deleting failures or weakening validation.
+- Put a concise validation summary in the PR description or issue comments: the relevant source revision, checks performed, results, known failures, and deferred/unrun boundaries. Link to retained artifacts when available and state retention/access limitations honestly. Do not copy raw output into versioned documentation.
+- Continue to version maintained test code, reusable synthetic fixtures, intentional test baselines, validation policy, and durable design/architecture documentation. Do not use a blanket filename rule that would exclude source or tests merely because their name contains `validation`.
+- Before committing, inspect the staged file list and exclude validation output. Do not force-add ignored artifacts. Remove validation artifacts introduced by an active PR from that PR's tracked changes while retaining the local evidence and updating affected links and summaries.
+- Ignore rules do not untrack files already in Git. Do not rewrite published history or perform an unrelated bulk deletion as part of an issue delivery. Existing tracked artifact cleanup should preserve any necessary local evidence and remain an explicitly scoped change.
+
+This policy supersedes older requirements to commit validation evidence or reviewer reports under `docs/validation/` or elsewhere. It changes evidence storage and publication, not the checks or reviews required for acceptance.
+
 The user confirmed the following project policy on 2026-11-16:
 
 - Do not run standalone Syncthing synchronization tests unless the user explicitly requests them.
