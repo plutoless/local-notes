@@ -1,6 +1,6 @@
 # Issue 122 — design preparation
 
-Status: preview preparation authorized; maintainer selection pending. This is not a production redesign or completion claim.
+Status: the maintainer selected round-2 **01 Page-first workspace + optional 08 Reference desk right context panel, collapsed by default**. See [selected rules](SELECTED.md). This is design preparation only; no production rollout.
 
 ## Starting boundary (recorded before preview implementation)
 
@@ -17,7 +17,7 @@ Live #102 is CLOSED; main is the #120 renderer-convergence merge. The resulting 
 
 Out of preview implementation: Current Focus, Favorites-specific behavior, editor/save recovery, Actions/Initiatives lifecycle, Organization requests/candidates, sync/conflicts, workspace and native shell. These retain their owners listed in [renderer convergence](../../architecture/renderer-convergence.md); later production slices must inventory their states. No production selectors, tokens, entry, routes, bridge or storage imports change; Tailwind source exclusions keep preview utilities outside shipped assets.
 
-## Authorized design and execution plan
+## Original exploration plan (historical; A/B/C rejected)
 
 1. Inspect official references, source/dependencies/license; retain provenance and concrete used/rejected examples.
 2. Build a separate Vite documentation entry. Reuse the existing shared Button and adapt official Input/Textarea in the shared React boundary, imported only by preview. No second modal runtime: show contextual form/search in a nonmodal comparison stage; browser-native document focus and ordinary controls only.
@@ -26,3 +26,7 @@ Out of preview implementation: Current Focus, Favorites-specific behavior, edito
 5. Commit reviewable previews, obtain independent Standards/Spec reviews, then ask coordinator for explicit A/B/C maintainer choice with durable artifacts. Do not select by silence. Only after selection publish semantic rules and reconciliation, then final reviews/PR completion; no sibling rollout.
 
 No dependencies or engine-floor changes are planned. No remote assets, fonts, analytics, model/private processing or real storage. Form receipts explicitly describe preview-only behavior.
+
+## Selected continuation
+
+The selected default entry uses the same private-safe content and official controls. It reuses the actual presentation.js drawer and shared React overlays via a docs-only source alias, with one modal lifetime for form/search. An optional nonmodal right context panel is collapsed initially; it has no task/focus trap. Full Library remains reachable, Notes/Actions/Initiatives stay independent, and top-right search/Command+K and local source return are demonstrated. Selected rules and the old-rule reconciliation are durable in SELECTED.md. Per-run artifacts and reviewer reports are local ignored output; PR132 contains concise exact-head conclusions. No production acceptance, storage or native result is implied.

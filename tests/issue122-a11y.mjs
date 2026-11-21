@@ -1,10 +1,13 @@
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
-import {writeFile} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'}),results=[];
+const out=process.env.PREVIEW_EVIDENCE || 'build/validation/122/current/round1';
+await mkdir(out,{recursive:true});
 try{for(const direction of ['a','b','c'])for(const width of [1280,393]){
  const page=await browser.newPage({viewport:{width,height:852}});
  await page.goto(`http://127.0.0.1:8122/docs/design/issue122/?direction=${direction}`);
+ await page.locator('.row').first().waitFor();
  for(const stage of ['reading','form','search']){
   if(stage==='form')await page.getByRole('button',{name:'新建行动',exact:true}).click();
   if(stage==='search'){await page.keyboard.press('Escape');await page.getByRole('button',{name:'搜索',exact:true}).click();}
@@ -25,4 +28,4 @@ try{for(const direction of ['a','b','c'])for(const width of [1280,393]){
   results.push({direction,width,stage,...audit});
  }
  await page.close();
-}await writeFile('docs/validation/issue122/a11y-results.json',JSON.stringify(results,null,2));console.log('Computed text/focus contrast, nonoverlapping targets, minimum height passed.');}finally{await browser.close();}
+}await writeFile(`${out}/a11y-results.json`,JSON.stringify(results,null,2));console.log('Computed text/focus contrast, nonoverlapping targets, minimum height passed.');}finally{await browser.close();}
