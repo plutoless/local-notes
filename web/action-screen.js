@@ -1,4 +1,4 @@
-import {mountActionControls, actionRows, actionSources, actionHistory, actionOptions} from './assets/react-host.js';
+import {mountActionControls, actionRows, actionSources, actionHistory, actionOptions, receiptView} from './assets/react-host.js';
 import {recoverTaskDraft} from './task-drafts.js';
 import {pageAvailability, requestTaskLeave, statusLabel, errorFeedback, progressLabel, directoryLabel, feedback, drawer} from './presentation.js';
 import {ActionRepository, isOverdue} from './actions.js';
@@ -9,6 +9,7 @@ export class ActionScreen {
   constructor(notice) {
     this.repository = new ActionRepository(native); this.notice = notice; this.dirty = false; this.active = false;
     this.previous = null; this.retry = null; this.offset = 0; this.status = ''; this.search = ''; this.saving = null;
+    this.receipt=receiptView(()=>$('#action-save-state'));
     this.setupDrawer();
     mountActionControls(this.drawer.body, $('#action-tools'), this.drawer.footer);
     this.drawer.body.addEventListener('focusin', event => {
@@ -72,8 +73,7 @@ export class ActionScreen {
             if (this.drawerContext) this.drawerContext.committed = true;
             localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry}));
           }
-          errorFeedback($('#action-save-state'), error.message);
-          if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。';
+          this.receipt.failure(error.message, this.retry ? '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。' : undefined);
         }
         return false;
       }
@@ -166,7 +166,7 @@ export class ActionScreen {
       const latest = (await allRecords(this.repository)).find(record => record.entityId === this.previous.entityId);
       if (latest) this.previous = latest;
     }
-    $('#action-tools').hidden = false; $('#filters').hidden = true; $('#view-title').textContent = '行动';
+    $('#action-tools').hidden = false; $('#view-title').textContent = '行动';
     $('#search').placeholder = '搜索行动…';
     $('#editor').hidden = true;
     $('#action-editor').hidden = !this.dirty && !this.previous;

@@ -9,19 +9,20 @@ try {
   const page = await browser.newPage();
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1);
-    if (['presentation.js','core.js','style.css'].includes(name)) return route.fulfill({body:await readFile(new URL('../web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':'text/css'});
+    if (['presentation-labels.js', 'directory-label.js', 'presentation.js','core.js','style.css','assets/react-host.js','assets/react-host.css'].includes(name)) return route.fulfill({body:await readFile(new URL('../build/web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':'text/css'});
     return route.fulfill({contentType:'text/html',body:`<meta charset="utf-8"><link rel="stylesheet" href="/style.css"><button id="open">编辑</button><script type="module">
-      import {drawer,field,button,requestTaskLeave,taskLeavePending} from '/presentation.js';
+      import {drawer,requestTaskLeave,taskLeavePending} from '/presentation.js';
+      import {noteFieldsView,actionControl} from '/assets/react-host.js';
       window.returnCallbacks=[];
       const timeout=window.setTimeout;
       window.setTimeout=(run,delay,...args)=>{
         if(run.toString().includes('origin.focus')&&run.toString().includes('task-leave-decision')){returnCallbacks.push(()=>run(...args));return 0;}
         return timeout(run,delay,...args);
       };
-      const input=document.createElement('textarea');input.id='draft';input.value='保留原文与选择范围';
-      const other=document.createElement('input');other.id='other';
       const editor=drawer({id:'editor',title:'编辑测试',onDismiss:()=>requestTaskLeave({label:'编辑测试',dirty:()=>true,focusOrigin:()=>editor.close.disabled?editor.close:document.activeElement})});
-      editor.body.append(field('正文',input),field('其他输入',other));editor.footer.append(button('下一步',()=>{}));
+      const fields=noteFieldsView(editor.body); fields.show([{id:'draft',multiline:true,value:'保留原文与选择范围',label:'正文'},{id:'other',label:'其他输入'}]);
+      const input=editor.body.querySelector('#draft');
+      editor.footer.append(actionControl('下一步',()=>{}).host);
       document.querySelector('#open').onclick=()=>editor.open(input);
       window.fixture={editor,pending:taskLeavePending};
     </script>`});

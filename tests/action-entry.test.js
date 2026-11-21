@@ -53,11 +53,13 @@ test('a durable focus revision with failed repair stays a committed private reco
     const record={entityId:'action',status:'todo',revision:'committed',focusPosition:1};
     screen.previous={...record,revision:'before',focusPosition:null};screen.editRequest=1;screen.save=async()=>true;
     screen.repository={query:async()=>({actions:[]}),save:async()=>{throw Object.assign(Error('repair unavailable'),{revisionSaved:true,record});}};
+    const failures=[];screen.receipt={failure:(diagnostic,message)=>failures.push({diagnostic,message})};
     screen.showForm=value=>{screen.previous=value;};screen.key=()=> 'private-action';screen.fields=()=>({description:'unchanged',sources:[]});
     assert.equal(await screen.changeFocus(),false);
     assert.equal(screen.task().committed(),true);
     assert.equal(screen.retry,record);assert.equal(screen.previous.revision,'committed');
     assert.equal(JSON.parse(drafts.get('private-action')).retry.revision,'committed');
-    assert.match(nodes.get('#action-save-state p').textContent,/版本已保存/);
+    assert.equal(failures[0].diagnostic,'repair unavailable');
+    assert.match(failures[0].message,/版本已保存/);
   }finally{globalThis.document=previousDocument;globalThis.localStorage=previousStorage;}
 });

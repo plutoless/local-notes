@@ -1,0 +1,613 @@
+[
+  {
+    "name": "capture-pointer",
+    "width": 1180,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "capture-pointer",
+    "width": 393,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "capture-pointer",
+    "width": 393,
+    "height": 340,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#note-task-drawer",
+    "cycle": [
+      "关闭",
+      "capture-title",
+      "capture-body",
+      "取消",
+      "创建笔记"
+    ]
+  },
+  {
+    "name": "capture-invalid",
+    "width": 1180,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "capture-invalid",
+    "width": 393,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "capture-invalid",
+    "width": 393,
+    "height": 340,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "panel": "#task-leave-decision",
+    "cycle": [
+      "继续编辑",
+      "放弃更改并离开",
+      "保存并离开"
+    ]
+  },
+  {
+    "name": "leave-keyboard",
+    "width": 1180,
+    "height": 800,
+    "active": "",
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "shadow": "none",
+    "border": "rgba(0, 0, 0, 0)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "leave-keyboard",
+    "width": 393,
+    "height": 800,
+    "active": "",
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "shadow": "none",
+    "border": "rgba(0, 0, 0, 0)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "leave-keyboard",
+    "width": 393,
+    "height": 340,
+    "active": "",
+    "outline": "rgb(7, 95, 204) solid 3px",
+    "shadow": "none",
+    "border": "rgba(0, 0, 0, 0)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "capture-recovered",
+    "width": 1180,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "capture-recovered",
+    "width": 393,
+    "height": 800,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "capture-recovered",
+    "width": 393,
+    "height": 340,
+    "active": "capture-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#note-task-drawer",
+    "cycle": [
+      "关闭",
+      "取消"
+    ]
+  },
+  {
+    "name": "topic-pointer",
+    "width": 1180,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "topic-pointer",
+    "width": 393,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "topic-pointer",
+    "width": 393,
+    "height": 340,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#topic-drawer",
+    "cycle": [
+      "关闭",
+      "topic-name",
+      "topic-cancel",
+      "创建"
+    ]
+  },
+  {
+    "name": "topic-invalid",
+    "width": 1180,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "topic-invalid",
+    "width": 393,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "topic-invalid",
+    "width": 393,
+    "height": 340,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "topic-recovered",
+    "width": 1180,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "topic-recovered",
+    "width": 393,
+    "height": 800,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "topic-recovered",
+    "width": 393,
+    "height": 340,
+    "active": "topic-name",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-pointer",
+    "width": 1180,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-pointer",
+    "width": 393,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-pointer",
+    "width": 393,
+    "height": 340,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#initiative-drawer",
+    "cycle": [
+      "关闭",
+      "initiative-title",
+      "initiative-goal",
+      "initiative-progress",
+      "initiative-status",
+      "结束与重新开启",
+      "管理笔记关联与来源引用",
+      "initiative-discard",
+      "initiative-save"
+    ]
+  },
+  {
+    "name": "initiative-invalid",
+    "width": 1180,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-invalid",
+    "width": 393,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-invalid",
+    "width": 393,
+    "height": 340,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-recovered",
+    "width": 1180,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-recovered",
+    "width": 393,
+    "height": 800,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "initiative-recovered",
+    "width": 393,
+    "height": 340,
+    "active": "initiative-title",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "action-pointer",
+    "width": 1180,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "action-pointer",
+    "width": 393,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "action-pointer",
+    "width": 393,
+    "height": 340,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#action-drawer",
+    "cycle": [
+      "关闭",
+      "记录详情",
+      "action-description",
+      "action-status",
+      "事项、日期与等待条件（可选）",
+      "来源引用（可选）",
+      "当前重点与历史",
+      "放弃编辑",
+      "action-back",
+      "action-save"
+    ]
+  },
+  {
+    "name": "action-invalid",
+    "width": 1180,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "action-invalid",
+    "width": 393,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "action-invalid",
+    "width": 393,
+    "height": 340,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "action-recovered",
+    "width": 1180,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "action-recovered",
+    "width": 393,
+    "height": 800,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "action-recovered",
+    "width": 393,
+    "height": 340,
+    "active": "action-description",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#note-info-drawer",
+    "cycle": [
+      "关闭",
+      "star",
+      "rename",
+      "note-create-topic",
+      "",
+      "完成"
+    ]
+  },
+  {
+    "name": "metadata-selected-focused",
+    "width": 1180,
+    "height": 800,
+    "active": "",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "none",
+    "border": "rgb(32, 38, 51)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "metadata-selected-focused",
+    "width": 393,
+    "height": 800,
+    "active": "",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "none",
+    "border": "rgb(32, 38, 51)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "metadata-selected-focused",
+    "width": 393,
+    "height": 340,
+    "active": "",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "none",
+    "border": "rgb(32, 38, 51)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "location-pointer",
+    "width": 1180,
+    "height": 800,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "location-pointer",
+    "width": 393,
+    "height": 800,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "name": "location-pointer",
+    "width": 393,
+    "height": 340,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(7, 95, 204)",
+    "invalid": null,
+    "focusVisible": true
+  },
+  {
+    "panel": "#note-task-drawer",
+    "cycle": [
+      "关闭",
+      "note-location",
+      "取消",
+      "保存"
+    ]
+  },
+  {
+    "name": "location-invalid",
+    "width": 1180,
+    "height": 800,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "location-invalid",
+    "width": 393,
+    "height": 800,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  },
+  {
+    "name": "location-invalid",
+    "width": 393,
+    "height": 340,
+    "active": "note-location",
+    "outline": "rgb(32, 38, 51) none 3px",
+    "shadow": "rgb(7, 95, 204) 0px 0px 0px 1px inset",
+    "border": "rgb(161, 38, 34)",
+    "invalid": "true",
+    "focusVisible": true
+  }
+]

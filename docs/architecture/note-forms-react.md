@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Favorites and contextual note forms ownership (#94)
 
 Consumes #92 reader/Library, #93 shell, existing semantic tokens and pinned

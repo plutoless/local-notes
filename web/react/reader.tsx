@@ -1,18 +1,12 @@
-import {useLayoutEffect, useRef} from 'react';
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Button} from './components';
 interface ReaderModel {title:string; body:string; reading:boolean; html:string; status:string; statusKind:string; statusDetail:string; saveHidden:boolean; statusHidden:boolean; capture:boolean; searchFallback:boolean}
-type ReaderAction = 'back'|'capture'|'save'|'mode'|'noteAction'|'passageAction'|'changed'|'remember';
-export function readerView(container:HTMLElement, info:HTMLElement) {
+type ReaderAction = 'back'|'capture'|'save'|'mode'|'noteAction'|'passageAction'|'changed'|'remember'|'info';
+export function readerView(container:HTMLElement) {
   const callbacks:Partial<Record<ReaderAction,()=>void>>={};
   let wiki:(target:string, opener:HTMLElement)=>void=()=>{};
   let model:ReaderModel={title:'',body:'',reading:false,html:'',status:'已保存到本地',statusKind:'saved',statusDetail:'',saveHidden:false,statusHidden:false,capture:false,searchFallback:false};
-  function InfoIsland() {
-    const ref=useRef<HTMLDivElement>(null);
-    useLayoutEffect(()=>{ref.current!.append(info);},[]);
-    return <div ref={ref} data-legacy-owner="note-information"/>;
-  }
   function Reader() {
     const invoke=(action:ReaderAction)=>()=>callbacks[action]?.();
     const input=(key:'title'|'body', value:string)=>{model={...model,[key]:value}; render(); callbacks.changed?.();};
@@ -27,7 +21,7 @@ export function readerView(container:HTMLElement, info:HTMLElement) {
       <Button busyOnAction id="passage-create-action" onClick={invoke('passageAction')}>从选段创建行动</Button>
     </div><div className="document text-content bg-surface">
       <input id="title" aria-label="笔记标题" placeholder="无标题" readOnly={model.reading} value={model.title} onInput={e=>input('title',e.currentTarget.value)} onChange={()=>{}}/>
-      <InfoIsland/>
+      <Button busyOnAction id="note-info-open" onClick={invoke('info')}>笔记信息与整理</Button>
       <textarea id="body" aria-label="笔记正文" placeholder="输入笔记正文…" spellCheck={false} hidden={model.reading} value={model.body} onInput={e=>input('body',e.currentTarget.value)} onChange={()=>{}}/>
       <article id="reading" tabIndex={model.searchFallback?-1:undefined} aria-label={model.searchFallback?'搜索匹配原文':'笔记阅读内容'} hidden={!model.reading} dangerouslySetInnerHTML={{__html:model.html}} onScroll={invoke('remember')} onClick={e=>{
         const node=(e.target as Element).closest<HTMLElement>('[data-wiki-target]');

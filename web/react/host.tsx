@@ -28,3 +28,10 @@ export {initiativeSources, initiativeEnding} from './initiative-model';
 
 export {candidateReviewView} from './candidate-review';
 export {readCandidateDraft} from '../candidate-review-model.js';
+
+export {drawerContent, leaveContent} from './overlays';
+export {actionControl, feedbackContent} from './presentation';
+export {mountDocument} from './document';
+export {taskFormView} from './note-forms';
+export {mountFoundationCatalogue} from './foundation-catalogue';
+export {receiptView} from './presentation';

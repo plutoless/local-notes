@@ -1,0 +1,45 @@
+{
+  "device": [
+    "Model Name: MacBook Pro",
+    "Model Identifier: Mac16,1",
+    "Chip: Apple M4",
+    "Memory: 16 GB"
+  ],
+  "runtime": "Headless Chrome shared home UI + production Swift filesystem/SQLite adapter, not native WKWebView startup",
+  "notes": 500,
+  "actions": 2000,
+  "times": [
+    {
+      "mode": "cold",
+      "interactiveMs": 102,
+      "populatedMs": 3021,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 2,
+      "jsHeapBytes": 24348067
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 84,
+      "populatedMs": 86,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 16200880
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 58,
+      "populatedMs": 59,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 27946992
+    },
+    {
+      "mode": "warm",
+      "interactiveMs": 61,
+      "populatedMs": 62,
+      "noteBodyReadsIncludingBackground": 0,
+      "jsonRecoveryScans": 1,
+      "jsHeapBytes": 16178708
+    }
+  ]
+}

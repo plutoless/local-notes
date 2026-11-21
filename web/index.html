@@ -11,74 +11,7 @@
     <link rel="stylesheet" href="assets/react-host.css" />
   </head>
   <body>
-    <header class="global-header"><button id="global-search-open" class="ui-action quiet ui-compact">搜索笔记 ⌘K</button></header>
-    <div class="app home">
-      <aside id="shell"></aside>
-      <section class="collection">
-        <header>
-          <h1 id="view-title">当前重点</h1>
-          <input
-            id="search"
-            placeholder="搜索标题与正文…"
-            aria-label="搜索笔记"
-          />
-        </header>
-        <div id="library-tools" hidden></div>
-        <div id="organize-tools" hidden>
-          <div id="organization-react"></div>
-          <section aria-labelledby="ai-review-title">
-            <h2 id="ai-review-title">3 · 核对已保存的建议</h2>
-            <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
-            <div id="ai-results"></div>
-            <div class="organization-actions ui-pagination"><button id="ai-results-previous" class="ui-action secondary">上一页建议</button><button id="ai-results-next" class="ui-action secondary">下一页建议</button></div>
-          </section>
-        </div>
-        <div id="filters">
-          <button data-filter="recent" class="active">最近编辑</button
-          ><button data-filter="folder">按目录</button>
-        </div>
-        <div id="action-tools" hidden></div>
-        <div id="initiative-tools" hidden></div>
-        <p id="index-state" role="status">正在打开目录…</p>
-        <div id="items"></div>
-      </section>
-      <main>
-        <section id="workspace-context" aria-label="事项上下文" hidden></section>
-        <div id="workspace-detail">
-        <div id="empty" class="empty">
-          <h2>尚未打开内容</h2>
-          <p>从列表选择内容，或使用「新建」开始记录。</p>
-        </div>
-        <div id="editor" hidden>
-            <details id="note-details" class="ui-disclosure">
-              <summary>笔记信息与整理</summary>
-              <p>来源位置：<span id="file-path"></span></p>
-              <button id="star" class="ui-action icon-action" aria-label="收藏笔记" aria-pressed="false">☆ 收藏</button>
-              <button id="rename" class="ui-action quiet">移动 / 改名</button>
-              <button id="repair-links" class="ui-action quiet" hidden>重试更新关联</button>
-              <p>来源位置是文件目录；主题用于跨目录归类；事项用于跟踪目标与进展。关联不会移动或改写笔记。</p>
-              <h2>主题归类</h2><div id="note-topics"></div>
-              <h2>事项 · 目标与进展</h2><div id="note-initiatives"></div>
-              <p>笔记中的复选框只记录原文。需要跟进时，请从「当前重点」打开「全部行动」，单独新建行动。</p>
-            </details>
-        </div>
-        <div id="action-editor" hidden></div>
-        <div id="initiative-editor" hidden>
-          <div class="toolbar"><button class="ui-action quiet" id="initiative-back">‹ 行动与资料</button></div>
-
-        </div>
-        </div>
-      </main>
-    </div>
-    <div id="notice" role="status" hidden></div>
-    <div
-      id="conflict"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="conflict-heading"
-      hidden
-    >
-    </div>
+    <div id="application-root"></div>
     <script type="module" src="app.js"></script>
   </body>
 </html>
