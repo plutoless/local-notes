@@ -1,5 +1,5 @@
 {
-  "sourceHead": "611b30190b1c35eb64d85d0cddca9b11bda9b546",
+  "sourceHead": "50376af7cb6d564ff4f13e5e911d520586aabc9e",
   "startingAndBase": "2f5a8af78ada6da3c0f6d323cdb3b654e50cb9ed",
   "node": "v25.1.0",
   "npm": "11.6.2",
@@ -13,7 +13,7 @@
     "web/reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
     "web/initiative-screen.js": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e",
     "web/library.js": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
-    "web/focus-screen.js": "f04b6dda8d52112ca406b1fcd733c16d7cf2821b8f6cfd7773c73a919dd47602",
+    "web/focus-screen.js": "c45b2587660ee3093df957f5cc3445d95c9a630827656594796cc1e23e51c48e",
     "web/global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
     "web/task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
     "web/revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
@@ -83,8 +83,8 @@
       "bytes": 8436
     },
     "build/web/focus-screen.js": {
-      "sha256": "f04b6dda8d52112ca406b1fcd733c16d7cf2821b8f6cfd7773c73a919dd47602",
-      "bytes": 7619
+      "sha256": "c45b2587660ee3093df957f5cc3445d95c9a630827656594796cc1e23e51c48e",
+      "bytes": 8186
     },
     "build/web/global-search.js": {
       "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
@@ -179,8 +179,8 @@
       "bytes": 8436
     },
     "dist/LocalNotes.app/Contents/Resources/web/focus-screen.js": {
-      "sha256": "f04b6dda8d52112ca406b1fcd733c16d7cf2821b8f6cfd7773c73a919dd47602",
-      "bytes": 7619
+      "sha256": "c45b2587660ee3093df957f5cc3445d95c9a630827656594796cc1e23e51c48e",
+      "bytes": 8186
     },
     "dist/LocalNotes.app/Contents/Resources/web/global-search.js": {
       "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
@@ -332,7 +332,9 @@
     }
   },
   "packagedAssetsMatch": true,
-  "macBinarySHA256": "8451f1c167c38736f09a5fd1b348ba1f92c37d20d5d73dd08d1c01ad45d20c3a",
+  "macBinarySHA256": "2760ef8ceb2dcec595f804605036cfb5d3ec436d13f869cc813e15e438bb9378",
   "limitations": "Built and codesign verified, not launched; no native transport/OS/minimum OS/Intel/physical runtime evidence. Baseline git archive has different Tailwind automatic discovery context.",
-  "typeOnlyReviewCorrection": "FocusAction includes domain nullable focusPosition/dueDate/waitingOn; rebuilt asset hashes are identical to executed implementation611b301 and packaged bytes."
+  "typeOnlyReviewCorrection": "Nullable TS interface correction emitted identical React assets; subsequent controller fencing correction rebuilt/retested actual Focus/history and package assets.",
+  "executedBroadSuiteSourceHead": "611b30190b1c35eb64d85d0cddca9b11bda9b546",
+  "finalTargetedSuiteSourceHead": "50376af7cb6d564ff4f13e5e911d520586aabc9e"
 }
