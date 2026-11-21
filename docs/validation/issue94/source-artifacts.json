@@ -1,0 +1,57 @@
+{
+  "implementationHead": "f5c3dd72cafdda838a46f351deb3e1c1d732197c",
+  "startingBase": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "fetchedMain": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "node": "v25.1.0",
+  "files": {
+    "web/app.js": {
+      "sha256": "576193c9ef7fccb7ae45338b662cd48737f91a9e469ddc1132202bdc2c77ddd4",
+      "bytes": 59395
+    },
+    "web/library-screen.js": {
+      "sha256": "d9508f1ace86271e334afe879da88c8ed001f08454664fccbff121ed5738497e",
+      "bytes": 17559
+    },
+    "web/react/note-forms.tsx": {
+      "sha256": "375135c30b6a2d6c9235750c158d5b367ca451c4321a683d89b280036db86489",
+      "bytes": 3653
+    },
+    "web/react/browse-context.ts": {
+      "sha256": "66e2c8436893924a2fb7c6016c0a6d4cdfa9800f0f3cf2ef1cbfdabcc8e9ba0b",
+      "bytes": 716
+    },
+    "web/react/catalogue.tsx": {
+      "sha256": "6a81b5469c76860a73603db8777a0da6d1bd93bb79cd8c1b8355f770fba022d4",
+      "bytes": 2961
+    },
+    "web/react/host.tsx": {
+      "sha256": "48d946786c79996cd4e18d3514e2e31228f2bd53abf439952ca2ba032a4ea754",
+      "bytes": 544
+    },
+    "package-lock.json": {
+      "sha256": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+      "bytes": 49204
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "0d2e9466cdcd58ae24b55773648e9e99246188c69260ec966701b6117ed69b54",
+      "bytes": 328816
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "build/web/asset-manifest.json": {
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "bytes": 885
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "d23d978e54db3f309f633498bedae995af355d0562d6293d979189839141d9dd",
+      "bytes": 471920
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
+      "sha256": "0d2e9466cdcd58ae24b55773648e9e99246188c69260ec966701b6117ed69b54",
+      "bytes": 328816
+    }
+  }
+}
