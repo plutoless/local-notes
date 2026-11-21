@@ -1,0 +1,35 @@
+{
+  "issue": 84,
+  "originalStartingSha": "a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3",
+  "continuationStartingSha": "1134458021b75a109ef15193bdea89cf0c8321ff",
+  "integratedMain": "20302d140dac350e543731543d72246275ee7353",
+  "originalOutcome": "failed; retained unchanged",
+  "historicalPhases": [
+    {
+      "phase": "Original search implementation and independent review",
+      "record": "README.md#initial-review-resolution",
+      "progress": "Refresh-focus red/green regression, child outline and composite checkbox corrections; final full non-GUI checks passed at original head"
+    },
+    {
+      "phase": "Nine original native attempts",
+      "records": [
+        "native-cleanup.json",
+        "native-attempt9.json",
+        "native-release2.json"
+      ],
+      "outcome": "All failed acceptance; cleanup/source preservation verified; final combined guard subcondition unknown; actual WeType unrun"
+    }
+  ],
+  "consecutiveCompletedIdenticalSignatureCyclesWithoutProgress": 0,
+  "continuationCycles": [
+    {
+      "cycle": 1,
+      "signature": "New reload/readback assertion encounters intentional competing-read private draft",
+      "hypothesis": "The preceding retained race test deliberately leaves newer competing draft; reload correctly recovers it",
+      "correction": "Explicitly discard that draft through existing application controls before persisted-source reload/readback; retain every original assertion",
+      "command": "CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' node tests/search-navigation-ui.mjs",
+      "failedReceipt": "build/issue84-repair/navigation-attempt1.log",
+      "observed": "Reached browser Copy, bridge receipt, source-return, dirty Continue/selection/Tab, Save and all retained races before the new readback precondition failed; no product defect inferred; corrected run navigation-attempt2.log reached PASS (exit receipt recorded separately)"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Issue #84 validation
 
+**Historical original-delivery record.** The original failed outcome and native receipts below remain preserved. See [browser-first continuation](browser-first-repair.md) for the later approved policy, shared #105 integration and current browser/storage acceptance evidence; historical native-gate language below is not a new runtime claim.
+
 Starting/base SHA: `a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3`.
 The live native dependency and written blocker both identify #81, closed with merged PR #88 already in this base. Initial open PR inspection found no overlapping focus slice. Only issue #84 is implemented.
 
