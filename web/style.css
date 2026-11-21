@@ -475,6 +475,12 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 
 /* Inline local navigation uses the reader's text rhythm and shared focus tokens. */
 .wiki-link { color: var(--accent); background: none; border: 0; text-decoration: underline; font: inherit; padding: 0 4px; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; cursor: pointer; }
+/* Source locations receive navigation focus, not a control-sized frame. */
+#reading[tabindex="-1"]:focus-visible,
+#reading [tabindex="-1"]:focus-visible { outline: none; }
+/* A wide table is keyboard-scrollable; keep its cue inside the scrollport. */
+#reading .markdown-table:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+
 
 /* A Home continuation opens one document without loading the Library corpus. */
 .app.reading-continuation { grid-template-columns: 196px minmax(0, 1fr); }
