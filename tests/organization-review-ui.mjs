@@ -1,8 +1,9 @@
-import {readFile, writeFile} from 'node:fs/promises';
+import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {storageFixture} from './action-adapter.js';
 import {InitiativeRepository} from '../web/initiatives.js';
+await mkdir('build/issue98-review', {recursive:true});
 const fixture = await storageFixture();
 const text = '历史计划需要确认。核对来源证据。'.repeat(450);
 await writeFile(fixture.root + '/reference.md', text);
@@ -45,7 +46,10 @@ try {
  assert.equal(await page.locator('#ai-directory').isDisabled(), true);
  assert.equal(await page.locator('#ai-cancel').isDisabled(), true);
  assert.equal(await page.locator('#ai-preview').isDisabled(), true);
- while (!releaseRead) await new Promise(resolve => setTimeout(resolve, 1)); delayRead = false; releaseRead();
+ const deadline = Date.now() + 5000;
+ while (!releaseRead && Date.now() < deadline) await new Promise(resolve => setTimeout(resolve, 1));
+ assert.equal(typeof releaseRead, 'function', 'Explicit preview must reach its held source read');
+ delayRead = false; releaseRead();
  await page.waitForFunction(() => !document.querySelector('#ai-send').disabled); assert.equal(requests, 0);
  assert.equal(await page.locator('#ai-readable pre').allTextContents().then(x => x.join('')), text);
  await page.locator('#ai-selection input').uncheck(); assert.equal(await page.locator('#ai-send').isDisabled(), true);
@@ -91,17 +95,18 @@ try {
  const focus = await page.evaluate(() => ({tag:document.activeElement.tagName, outline:getComputedStyle(document.activeElement).outlineWidth, name:document.activeElement.textContent}));
  assert.equal(focus.tag, 'BUTTON'); assert.equal(focus.outline, '3px'); assert.match(focus.name, /设置 AI 服务/);
  await page.keyboard.press('Tab'); assert.equal(await page.evaluate(()=>document.activeElement.tagName),'SUMMARY');
- await page.screenshot({path:'docs/validation/issue35/after-web-393px.png'});
+ await page.screenshot({path:'build/issue98-review/after-web-393px.png'});
  const primaryTargets = await page.locator('#organize-tools button.primary').evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().height));
  assert.ok(primaryTargets.every(height => height >= 44));
  await page.locator('#ai-results').scrollIntoViewIfNeeded();
- await page.screenshot({path:'docs/validation/issue35/after-candidates-393px.png'});
+ await page.screenshot({path:'build/issue98-review/after-candidates-393px.png'});
  await page.setViewportSize({width:1180,height:800});
  await page.locator('#organize-tools').evaluate(n => n.scrollTop = 0);
- await page.screenshot({path:'docs/validation/issue35/after-desktop.png'});
+ await page.screenshot({path:'build/issue98-review/after-desktop.png'});
  const colors = await page.evaluate(() => ['--text','--muted','--green','--line','--focus'].map(n => getComputedStyle(document.documentElement).getPropertyValue(n).trim()));
  const lum = hex => { const rgb = hex.match(/[\da-f]{2}/gi).map(v => parseInt(v,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4); return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722; };
  const ratios = colors.map(c => (1.05)/(lum(c)+.05)); assert.ok(ratios[0]>=4.5 && ratios[1]>=4.5 && ratios[2]>=4.5 && ratios[3]>=3 && ratios[4]>=3);
  assert.deepEqual(errors, []);
  console.log('Organization review UI passed: exact preview, invalidation, partial retry, edited confirmation, later, attachment, reference, ignore, pending recovery, persistence, source-change rejection, cancellation, invalid response, offline retention, 393px, keyboard focus; contrast ratios on white:', ratios);
-} finally { await browser.close(); await fixture.close(); }
+} catch (error) { console.error('Organization review failure before cleanup:', error); throw error;
+} finally { delayRead = false; releaseRead?.(); pending?.({error:'Canceled'}); await browser.close(); await fixture.close(); }
