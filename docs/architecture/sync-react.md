@@ -12,7 +12,7 @@ Support remains macOS 13.3/WebKit 16.4 and Android API26/WebView111+.
 | Private unsubmitted resolution candidates | `sync-drafts.js` + controller | Workspace/type/entity-scoped localStorage; explicit recovery only |
 | Reader file-conflict descendants | `fileConflictView` | Existing note expected-source guard, save-as-copy and reload callbacks in `app.js` |
 | File-conflict visibility and focus containment | Existing boundary in `app.js` / `bindDialog` | Existing note task and central leave lifecycle |
-| Unmigrated Action/Initiative/Organization/etc. | Existing stable consumers | Their own controllers; no ownership acquired by #101 |
+| Unmigrated Initiative/Organization/etc. | Existing stable consumers | Their own controllers; no ownership acquired by #101 |
 
 React presentation does not call repositories or initiate AI. The controller no
 longer constructs, mutates or binds events on panel descendants. Queries for focus,
@@ -35,3 +35,5 @@ its static example has no persistence callback and does not own a production ove
 
 Search now has its delivered React owner; see [search ownership](search-react.md).
 Private retry candidates are task-bound and compared with validated immutable history before submission. Cache failures show separate recovery warnings without interrupting live editing or committed-state feedback. Reader copy/reload exposes its captured operation through the existing note-task pending boundary; disk reload retains the candidate until reading succeeds.
+
+Action browsing and editing now use the delivered #95 React owner and stable entry ports; see [Action ownership](actions-react.md). Synchronization keeps its own comparison root and existing shared leave authority.

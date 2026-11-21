@@ -41,7 +41,7 @@ builds for the current machine's architecture; it is not a universal binary.
 | Shared reader toolbar, title/body, Markdown and search highlight | React `readerView` | Existing note generation/draft/save/leave/wiki/history logic in `app.js` |
 | Note information button/associations | Explicit legacy island inside reader document; contextual drawer outside root | Existing topic/initiative adapters and drawer |
 | Search | React `SearchContent`; existing controller/typed navigation adapter | See `search-react.md` |
-| Topic, Action, Initiative, Organization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
+| Topic, Initiative, Organization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
 | Tokens | `web/style.css` semantic variables | Tailwind maps those variables; no second semantic palette |
 
 `LibraryScreen.release()` synchronously unmounts rows before navigation hands the
@@ -94,3 +94,5 @@ inferred from browser results. Preserve failed cycles and source/artifact bindin
 in `docs/validation/issue92/`.
 
 Synchronization and reader file-conflict ownership migrated in #101; see [the explicit inventory](sync-react.md).
+
+Actions use the delivered #95 React controls/rows and stable controller ports; see [Action ownership](actions-react.md).
