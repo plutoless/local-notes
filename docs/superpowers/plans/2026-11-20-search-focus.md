@@ -10,3 +10,7 @@
 2. Reproduce refresh stealing focus from a newly chosen search input. Limit restoration to the original focus owner or the inertness fallback. Adopt the shared checkbox label treatment for attribution while retaining its existing geometry.
 3. Run shared syntax/tests, all maintained UI journeys and platform builds. Request an exclusive GUI lease; run isolated Cocoa/WKWebView OS input, clipboard and actual IME/return coverage with original clipboard/input source restoration and source/resource hashes.
 4. Commit and obtain independent Standards and Spec reviews against the starting SHA. Resolve findings, validate/review the final head, push the feature branch and open one PR. Coordinator owns merging.
+
+## Bounded browser-first continuation
+
+Start from original PR #104 head `1134458021b75a109ef15193bdea89cf0c8321ff`; preserve its failed Task and artifacts. Integrate delivered main `20302d140dac350e543731543d72246275ee7353` without copying #105. Under the revised layered policy, retain public search tests, verify the affected real UI/bridge/isolated storage journeys and shared leave regression, and build/bind the Mac package. Extend only meaningful search consumer checks for browser Copy events, dirty-source Continue, selection/next focus and persisted reload/readback. Do not replay native input or modify the native executor. Review both axes against the original base and continuation start, resolve findings, push the existing branch and update only PR #104.
