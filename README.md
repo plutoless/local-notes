@@ -33,6 +33,9 @@ The Library and shared reader/editor use React and TypeScript with compiled Tail
 The maintainer-approved compatibility targets are macOS 13.3 with system WebKit 16.4-era capabilities and Android 8/API 26 with Chromium WebView provider 111 or later. The OS and engine requirements both apply; minimum-version runtime tests remain unrun unless explicitly reported in the validation evidence.
 
 ```sh
+npm ci
+npm run typecheck
+npm run build:web
 npm run check
 npm test
 npm run build:mac

@@ -133,7 +133,7 @@ try:
             navigation=(time.monotonic()-begin)*1000
             indexed_reads=c('__reads')-reads
             begin=time.monotonic()
-            c("document.querySelector('#search').value='Synthetic source 499';document.querySelector('#search').dispatchEvent(new Event('input'))")
+            c("document.querySelector('#search').value='Synthetic source 499';document.querySelector('#search').dispatchEvent(new Event('input',{bubbles:true}))")
             w("document.querySelectorAll('#items .card').length===1")
             search_ms=(time.monotonic()-begin)*1000
             # Three guarded native events exercise the actual input route without an optional UI matrix.
@@ -143,7 +143,7 @@ try:
             memory=subprocess.check_output(['ps','-o','rss=','-p',str(process.pid)],text=True).strip()
             report['baseline']['runs'].append({'iteration':iteration,'navigationMs':navigation,'indexBodyReads':indexed_reads,'searchMs':search_ms,'openMs':open_ms,'totalBodyReads':c('__reads'),'hostRssKiB':int(memory)})
             enter('#back'); w("document.activeElement.dataset.path==='Current/499.md'")
-            c("document.querySelector('#search').value='';document.querySelector('#search').dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click()")
+            c("document.querySelector('#search').value='';document.querySelector('#search').dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click()")
             w("!!document.querySelector('.home-tools')")
         if resources_only:
             exports=c("return Object.keys(await import('./assets/react-host.js'))")
@@ -176,7 +176,7 @@ try:
         w("document.querySelectorAll('#items .card').length===50 && !document.querySelector('#library-progress').textContent")
         assert c("return [...document.querySelectorAll('#items .card')].every(n=>n.dataset.path.startsWith('Current/'))")
         # Control values are fixture setup; native Tab/Shift+Tab establish keyboard focus.
-        c("document.querySelector('#library-order').value='title';document.querySelector('#library-order').dispatchEvent(new Event('change'));document.querySelector('#library-archives').value='only';document.querySelector('#library-archives').dispatchEvent(new Event('change'))")
+        c("document.querySelector('#library-order').value='title';document.querySelector('#library-order').dispatchEvent(new Event('change',{bubbles:true}));document.querySelector('#library-archives').value='only';document.querySelector('#library-archives').dispatchEvent(new Event('change',{bubbles:true}))")
         w("document.querySelector('#library-page').textContent.includes('61') && document.querySelectorAll('#items .card').length===50")
         c("document.querySelector('#library-archives').focus()"); key('Tab'); key('Shift+Tab')
         assert state('archive-control')['active']=='library-archives'
