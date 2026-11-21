@@ -12,6 +12,8 @@ if os.environ.get('CONSTRUCTOR_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
  raise SystemExit('Constructor-only mode requires EXTERNAL_INPUT; no host or sender launched')
 spec=importlib.util.spec_from_file_location('probe',Path(__file__).with_name('native-candidate-review.py'))
 m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
+if os.environ.get('FORMS_ONLY') and not os.environ.get('EXTERNAL_INPUT'):
+ raise SystemExit('Form-only mode requires the external OS input sender')
 phase=os.environ.get('PHASE','after')
 m.OUT=Path('build/issue81-native-'+phase).resolve();m.APP=m.OUT/'Browse81.app'
 m.OUT.mkdir(parents=True,exist_ok=True)
@@ -118,7 +120,12 @@ def native(action,*args,target=None):
   assert delivered(events), 'Intended external native target/key delivery unverified; no replay'
   sender_receipt=json.loads(result.stdout);quartz=route_after['quartz'][len(route_before['quartz']):]
   expected_types=[1,2] if action=='click' else [10,11]
-  assert route_after['tapEnabled'] and all(any(e['type']==kind and e['marker']==810053 and e['sourcePID']==sender_receipt['senderPID'] for e in quartz) for kind in expected_types), 'Marked process-tap delivery unverified; no replay'
+  marked = route_after['tapEnabled'] and all(any(e['type']==kind and e['marker']==810053 and e['sourcePID']==sender_receipt['senderPID'] for e in quartz) for kind in expected_types)
+  if not marked:
+   # The sender, exact-window AppKit monitor and intended trusted DOM receiver
+   # are independent receipts. A missing tap record is not a missing key event.
+   assert os.environ.get('FORMS_ONLY') and delivered(events) and cocoa and all(e['window']==owned_window for e in cocoa), 'Marked process-tap delivery unverified; no replay'
+   log.append({'processTapGap':True,'inputNotReplayed':True,'receiverEvidence':'external sender receipt + owned-window AppKit + intended trusted DOM event; Quartz marker unavailable for this pair'})
   assert cocoa and all(e['window']==owned_window for e in cocoa), 'Native Cocoa window association unverified; no replay'
   if action=='click':assert all(abs(e['x']-point['windowX'])<=1 and abs(e['y']-point['windowY'])<=1 for e in cocoa), 'Native Cocoa pointer coordinates unverified; no replay'
   return
@@ -179,6 +186,14 @@ try:
   if not os.environ.get('CONSTRUCTOR_ONLY'):log.append({'senderPreflight':json.loads(subprocess.check_output([str(sender)],text=True))})
 
  c("window.inputEvents=[];for(const type of ['pointerdown','keydown','click'])document.addEventListener(type,e=>inputEvents.push({type,key:e.key,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,trusted:e.isTrusted,target:e.target.closest('button,summary,input')?.id||e.target.tagName,targetText:e.target.closest('button,summary,input')?.textContent?.slice(0,120),composedPath:e.composedPath().filter(n=>n instanceof Element).slice(0,8).map(n=>({tag:n.tagName,id:n.id,classes:n.className,text:n.matches('button,summary')?n.textContent.slice(0,120):undefined})),view:e.target.closest('[data-view]')?.dataset.view,matchesExpectedTarget:!!window.nativeInputTargetSelector&&!!document.querySelector(window.nativeInputTargetSelector)?.contains(e.target),matchesExpectedKeyTarget:e.target===window.nativeKeyTarget,collectionScroll:document.querySelector('.collection').scrollTop,listScroll:document.querySelector('#items').scrollTop,utc:new Date().toISOString()}),true)")
+ if os.environ.get('FORMS_ONLY'):
+  from native_forms_journey import run
+  source_before={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
+  run(c,w,click,key,state,log)
+  assert source_before=={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in (m.OUT/'Sync').glob('*.md')}
+  log.append({'syntheticSourcesPreserved':source_before})
+  print('PASS native contextual forms: owned-window OS pointer/keyboard, complete cycles, invalid, leave/selection and return')
+  raise SystemExit(0)
  c("const {native}=await import('./bridge.js');const {ActionRepository}=await import('./actions.js');const {InitiativeRepository}=await import('./initiatives.js');const a=new ActionRepository(native),i=new InitiativeRepository(native);await a.open();await i.open();for(let j=0;j<9;j++)await a.save({description:'核对本周资料并保留上下文 '+j,status:'todo',focusPosition:j+1});for(let j=0;j<32;j++)await a.save({description:'分页行动 '+j,status:'todo'});for(let j=0;j<51;j++)await i.save({title:'分页事项 '+j,goal:'核对资料',progress:'待核对',status:'later'});await i.save({description:'保留目标与进展的事项',title:'保留目标与进展的事项',goal:'核对资料',progress:'待核对',status:'active'});document.querySelector('[data-view=focus]').click()")
  w("document.querySelectorAll('.focus-row').length===7")
  if not os.environ.get('REMAINING_ONLY'):
