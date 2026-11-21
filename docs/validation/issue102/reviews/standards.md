@@ -55,3 +55,39 @@ Request correction of finding 1 before acceptance; finding 2 is minor but should
 be reconciled. Original findings remain in this report for successor resolution
 and exact-head confirmation. This review does not independently claim any
 unexecuted native GUI acceptance or performance measurement.
+
+## Corrected full-scope review — d456f93
+
+Exact successor reviewed: `d456f931902437df6b0f99067d8211b4a2a0404e`.
+Fixed start/base/merge-base remains
+`2f7f55513f077a88201ee3fadb6b6b540d7514a6`.
+I re-reviewed the complete base-to-successor PR scope and the explicit
+`24ee1c672418204cb6ef3d908aaa43928a827826..d456f931902437df6b0f99067d8211b4a2a0404e`
+correction delta. Commit list now also includes
+`d456f93 Complete Action and Initiative failure receipt ownership after review`.
+The reviewer remains `/root/standards_review`; no session identifier is asserted.
+
+- **Finding 1 resolved.** Action save publishes the complete chosen message
+  through `receipt.failure`, with committed-recovery wording retaining precedence
+  over uncertain-creation wording. Initiative close recovery and save/ending
+  branches now use the same typed port; ending disclosure and ending-required
+  message precedence are preserved. No controller paragraph-content mutation
+  remains in these receipt consumers.
+- **Finding 2 resolved.** Conflict comparison and compact form guidance name
+  `ConflictComparison`, `Button`, `ActionField` and the delivered control ports;
+  removed APIs are explicitly identified as retired historical constructors.
+  No accepted-minor exception is needed.
+
+I inspected the relevant current Action/source/lost-reply/task/Initiative/coherent
+journey and resource receipts. The evidence distinguishes the reused original
+101-test/full-UI/layout coverage from current related checks; it does not relabel
+those original runs as successor executions. All source SHA256 entries in the
+current binding matched the reviewed files; source-tree digest is
+`c08a9e1da56ef369f6e34d1cfa6edcf65c36e200c0a2d160c481c8e17a80901d`.
+Native sources remain byte-identical to base. Packaging and non-GUI resource
+checks remain distinct from deferred/unrun native GUI/OS/performance coverage.
+
+**Current verdict: Standards pass, no remaining findings at d456f93.** The two
+original findings above remain historical records, resolved by this successor.
+Evidence-only publication still requires an exact publication-delta confirmation;
+this verdict does not cover an unseen later code change.
