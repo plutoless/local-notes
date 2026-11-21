@@ -1,0 +1,57 @@
+{
+  "base": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "files": {
+    "web/search-screen.js": {
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+      "bytes": 12141
+    },
+    "web/react/search.tsx": {
+      "sha256": "785bcfe574f2896627747d4398d1176ea69421d160c327ab3691175db5702040",
+      "bytes": 3484
+    },
+    "web/react/search-model.ts": {
+      "sha256": "9cb645d50411b52f2e8c10d695ac39288765185a2cc91dea8c8f2a3b4fe9818a",
+      "bytes": 1472
+    },
+    "web/react/host.tsx": {
+      "sha256": "ae2902cc4150b64081d241f16854403579c5cb3df010ff08a66c591f28382ac4",
+      "bytes": 485
+    },
+    "web/react/catalogue.tsx": {
+      "sha256": "b5bc06e0ba710d13d119817bb43e4ec129ce9631945272edec7d58f8eee9d028",
+      "bytes": 3143
+    },
+    "tests/search-ui.mjs": {
+      "sha256": "11d4b2270a61f6d0ff5fb27e2b5d40dd8e3359d3b1bb15a125e833ca6b9edfa7",
+      "bytes": 12682
+    },
+    "tests/search-model.test.js": {
+      "sha256": "4cb5dc9a2266ae8c0189ba544ebe98aab7e624d6735f22f3139148340bf151f1",
+      "bytes": 1704
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "f21ed8294a2fabc7e9c02b65bdaa5e1ffe116f89209d715eee6c93f77bd4a184",
+      "bytes": 329004
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "build/web/search-screen.js": {
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+      "bytes": 12141
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
+      "sha256": "f21ed8294a2fabc7e9c02b65bdaa5e1ffe116f89209d715eee6c93f77bd4a184",
+      "bytes": 329004
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "bef51838937e51a3ced5cabe40f331f1c905cd4aaa901fed7fb463ae1757fa64",
+      "bytes": 471920
+    }
+  }
+}
