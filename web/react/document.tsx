@@ -1,4 +1,5 @@
 import {createRoot} from 'react-dom/client';
+import {Input} from './ui/input';
 import {flushSync} from 'react-dom';
 /** Mount-once document slots: feature views own their descendants. */
 export function mountDocument(container:HTMLElement) {
@@ -10,7 +11,7 @@ export function mountDocument(container:HTMLElement) {
       <section className="collection">
         <header>
           <h1 id="view-title">当前重点</h1>
-          <label className="ui-field"><span>搜索</span><input
+          <label className="ui-field"><span>搜索</span><Input
             id="search"
             placeholder="搜索标题与正文…"
             aria-label="搜索笔记" aria-invalid="false"
