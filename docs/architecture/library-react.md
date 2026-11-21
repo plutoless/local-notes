@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Library React ownership and offline packaging
 
 Issue #92 is the first vertical slice of #89. The maintainer selected Tailwind 4,

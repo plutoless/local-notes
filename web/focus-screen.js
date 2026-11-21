@@ -68,7 +68,7 @@ export class FocusScreen {
     const request = this.request = (this.request || 0) + 1;
     const repository = this.actions.repository;
     $('#view-title').textContent = '当前重点'; $('#search').hidden = true;
-    $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = true;
+    $('#action-tools').hidden = true; $('#initiative-tools').hidden = true;
     $('#editor').hidden = true; $('#action-editor').hidden = true; $('#initiative-editor').hidden = true; $('#empty').hidden = true;
     const owns = () => this.active && repository === this.actions.repository && request === this.request;
     let focused, waiting, initiatives;

@@ -43,5 +43,6 @@ export async function saveAndLeave(page) {
 }
 
 export async function enterNoteEditing(page) {
+  await page.locator('#editor').waitFor({state:'visible'});
   if (await page.locator('#title').evaluate(node => node.readOnly)) await page.locator('#mode').click();
 }

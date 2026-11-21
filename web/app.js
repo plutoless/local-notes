@@ -1,7 +1,7 @@
-import {readerView, noteReply, shellView, shellUpdate, fileConflictView, noteFieldsView, classificationView, noteInformationView} from './assets/react-host.js';
+import {readerView, noteReply, shellView, shellUpdate, fileConflictView, noteFieldsView, classificationView, noteInformationView, actionControl, mountDocument, taskFormView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
-import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
+import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, drawer} from './presentation.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -11,9 +11,10 @@ import {InitiativeScreen} from './initiative-screen.js';
 import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {FocusScreen} from './focus-screen.js';
 import {ActionScreen} from './action-screen.js';
-const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',filter='recent',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
-const reader = readerView($('#editor'), $('#note-details'));
-function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=document.createElement('button');close.textContent='关闭提示';close.onclick=()=>$('#notice').hidden=true;$('#notice').append(close);}
+mountDocument(document.querySelector('#application-root'));
+const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
+const reader = readerView($('#editor'));
+function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=actionControl('关闭提示',()=>$('#notice').hidden=true);$('#notice').append(close.host);}
 const shell = shellView($('#shell'), {navigate: next => navigate(next).catch(error => notice(error.message)), capture: () => openCapture(), choose: () => chooseWorkspace(), icon});
 const releaseDirectoryLabel = bindDirectoryLabel(root => shellUpdate({root}));
 const globalSearch = new SearchScreen({
@@ -25,7 +26,7 @@ const globalSearch = new SearchScreen({
   error: notice
 });
 $('#global-search-open').onclick = () => globalSearch.open();
-const search = $('#search'); const searchParent = search.parentNode; searchParent.append(field('搜索', search));
+const search = $('#search');
 
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
@@ -220,8 +221,8 @@ async function restoreSearchInvocation(origin, valid) {
   return true;
 }
 for (const container of [$('#global-search-open').parentElement, actions.drawer.footer]) {
-  const control = button('返回搜索结果', () => globalSearch.returnToSearch());
-  control.classList.add('search-return'); if (container !== actions.drawer.footer) control.classList.add('search-return-shell'); control.hidden = true; container.prepend(control);
+  const port = actionControl('返回搜索结果', () => globalSearch.returnToSearch()); const control = port.control;
+  control.classList.add('search-return'); if (container !== actions.drawer.footer) control.classList.add('search-return-shell'); control.hidden = true; container.prepend(port.host);
 }
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
@@ -474,8 +475,8 @@ async function returnWiki() {
   } catch (error) {
     if (!owns()) return;
     notice('上一份笔记暂不可用。可重试返回，或跳过此笔记。');
-    const skip = button('跳过不可用笔记', async () => { if (!owns()) return; wikiHistory.pop(); $('#notice').hidden = true; $('#back').click(); });
-    $('#notice').append(skip);
+    const skip = actionControl('跳过不可用笔记', async () => { if (!owns()) return; wikiHistory.pop(); $('#notice').hidden = true; $('#back').click(); });
+    $('#notice').append(skip.host);
   }
 }
 reader.wiki(followWiki);
@@ -537,7 +538,6 @@ function setNoteMode(reading) {
 reader.on('changed', changed);
 $('#search').oninput=()=>{if(view==='initiatives'){initiatives.search=$('#search').value;initiatives.offset=0;initiatives.list().catch(e=>notice(e.message));}else if(view==='actions'){actions.search=$('#search').value;actions.offset=0;actions.list().catch(e=>notice(e.message));}else {libraryScreen.search=$('#search').value;libraryScreen.offset=0;render();}};
 
-for(const b of document.querySelectorAll('#filters button'))b.onclick=()=>{filter=b.dataset.filter;document.querySelector('#filters .active')?.classList.remove('active');b.classList.add('active');render();};
 async function createNote(initiativeId = null, captured = null) {
   try {
     if (!await flush()) return;
@@ -559,12 +559,8 @@ async function createNote(initiativeId = null, captured = null) {
 let shortTask = null, shortSaving = false;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
 shortDrawer.panel.classList.add('ui-drawer-wide');
-const shortForm = document.createElement('form'); shortForm.id = 'note-task-form'; shortForm.className = 'document'; shortForm.noValidate = true;
+const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',document:true,cancel:()=>leaveShortTask()});
 const shortFields = noteFieldsView(shortForm);
-const shortStatus = document.createElement('div'); shortStatus.id = 'note-task-status'; shortStatus.setAttribute('role', 'status');
-shortDrawer.body.append(shortForm, shortStatus);
-const shortSubmit = document.createElement('button'); shortSubmit.type = 'submit'; shortSubmit.setAttribute('form', shortForm.id); shortSubmit.className = 'ui-action primary ui-compact';
-shortDrawer.footer.append(button('取消', () => leaveShortTask(), {density: 'compact'}), shortSubmit);
 function shortInput() { return JSON.stringify(Object.fromEntries(Object.entries(shortTask.values()).filter(([id]) => !shortForm.querySelector('#' + id)?.matches('input[type=hidden]')))); }
 function shortDirty() { return Boolean(shortTask && shortInput() !== shortTask.initial); }
 function closeShortTask() {
@@ -640,11 +636,10 @@ async function openCapture() {
 }
 const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => flush()});
 noteInfo.panel.classList.add('ui-drawer-wide');
-const details = $('#note-details');
-const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); }); infoOpen.id = 'note-info-open';
+const infoOpen = $('#note-info-open');
+reader.on('info', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); });
 const infoUI = noteInformationView(noteInfo.body);
-details.replaceWith(infoOpen);
-noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
+noteInfo.footer.append(actionControl('完成', () => flush(), {variant: 'primary', density: 'compact'}).host);
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
 libraryScreen.returnToNoteInfo = async (note, committed) => {
   if (current !== note.path || currentWorkspace !== libraryScreen.library.workspaceId || $('#editor').hidden) return;
@@ -763,13 +758,13 @@ async function noteInitiatives(path, focusId = null) {
           // Reload the owner after either a stale base or a recoverable commit. Never repeat the old write.
           initiativeClassification.set(null,{disabled:true});
           feedback(failure, error.revisionSaved ? '关联版本已保存，恢复尚未完成。请重试更新。' : '关联尚未保存，请重新载入后重试。', error.message);
-          failure.append(button('重试更新事项关联', async () => {
+          failure.append(actionControl('重试更新事项关联', async () => {
             if (noteInitiativePending) return noteInitiativePending;
             noteInitiativePending = (async () => {
               try { await noteInitiatives(path, record.entityId); } catch (retryError) { feedback(failure, '更新尚未完成，请重试。', retryError.message); }
             })().finally(() => { noteInitiativePending = null; });
             return noteInitiativePending;
-          }));
+          }).host);
         } finally { container.inert = false; }
       })().finally(() => { noteInitiativePending = null; });
       return noteInitiativePending;

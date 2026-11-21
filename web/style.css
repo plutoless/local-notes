@@ -69,8 +69,6 @@ input:not([type="checkbox"]), select { min-height: 44px; }
 input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--accent); flex-shrink: 0; }
 ::placeholder { color: #677385; opacity: 1; }
 #search { width: 100%; background: var(--canvas); }
-#filters { padding: 0 12px; display: flex; flex-wrap: wrap; gap: 4px; }
-#filters .active { color: var(--accent); background: var(--hover); }
 #items { padding: 4px 10px 24px; overflow: auto; min-height: 0; }
 .card { display: block; text-align: left; width: 100%; padding: 17px 14px; border: 0; border-bottom: 1px solid var(--divider); border-radius: 0; background: transparent; margin: 0; overflow-wrap: anywhere; }
 .card.selected, #items .card.selected { background: var(--hover); border-radius: 8px; border-color: transparent; box-shadow: none; }

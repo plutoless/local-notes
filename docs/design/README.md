@@ -25,22 +25,28 @@ Controls have 44px minimum hit height. Issue #45 supersedes the earlier blanket 
 
 ## Implemented primitives and state contract
 
-`presentation.js` owns legacy DOM construction and presentation vocabulary only. For issue #92 consumers, `web/react/` owns React DOM and receives typed data/callbacks. This supersedes the DOM-constructor-only implementation rule for the migrated Library and shared reader/editor; legacy consumers keep their current ownership. Both implementations consume the same CSS semantic tokens. It must not read records, open workspaces, save revisions, or know storage paths. Existing enum values and user content pass through unchanged.
+`web/react/` owns all production content through typed presentation ports. The
+mount-once document, form, Action/Initiative controls and empty view slots retain
+stable receivers; controllers own values, task lifecycle and persistence. The
+shared `presentation.js` now owns modal lifetime, focus/selection restoration,
+leave decisions and receipt publication only. Its old button, field, disclosure,
+heading, selection-row, pagination and comparison constructors are retired.
+React components receive data/callbacks and never read records, open workspaces,
+save revisions or initiate model requests. All views consume the same semantic
+CSS tokens. See [final ownership](../architecture/renderer-convergence.md).
 
 | Primitive | Consumer / usage | State behavior |
 | --- | --- | --- |
-| `button(text, run, {variant, label})` / `.ui-action` | Focus actions, shell capture/directory controls, save, sync | Primary: one next action per task; secondary: outlined save; quiet: navigation; danger: remove focus. Disabled during awaited action; keyboard outline; failures handled by caller with draft retained |
-| `.icon-action` | Note-detail favorite control; catalogue uses `icon()` vocabulary | 44px square, explicit accessible name; use only when text is redundant in a demonstrated tight toolbar |
-| `field(label, control, {help, invalid})` / `.ui-field` | Shell search; labeled capture title/body use the existing accessible names | Label always associated; invalid sets `aria-invalid`, visible hint linked by `aria-describedby`; callers provide actual validation and retain invalid values |
-| `selectionRow()` / `.ui-row` | Focus row openers | Whole title actionable; `aria-current` and selected fill; loading does not imply empty; disabled and keyboard states follow button |
-| `disclosure()` / `.ui-disclosure` | Focus utilities and per-row management | Native summary: Enter/Space, explicit expanded state, no custom menu keyboard model; management names identify the row |
-| `sectionHeading()` / `.ui-heading`, `.section-heading` | Focus title/sections, workspace section headers | One visible Current Focus title; action aligned beside section heading when needed |
-| `feedback()`, `errorFeedback()` / `.ui-feedback` | Notice, save/error/retry surfaces | Failed diagnostic behind details; concise Chinese explanation first; loading, dirty, saving, saved, recovered text remains live; no success claim before persistence |
-| `bindDialog()` / `.ui-panel`, `.ui-dialog` | File conflict dialog and sync panel | Trap Tab inside modal; restore opener; Escape cannot discard protected edits. Native details/panel scrolling remains available |
-| `nav` / `.active`, `aria-current` | Shell | Selection distinct from hover; descriptive Chinese names, icons hidden from AT |
-| `.ui-pagination`, `.action-pagination` | Bounded Focus paging; action list uses the same layout class | Explicit previous/next, unavailable direction disabled; seven Focus rows initially, explicit expand then bounded pages |
+| `Button`, `actionControl` / `.ui-action` | Page and stable controller control ports | Primary, secondary, quiet and danger; async busy guard; retained nodes |
+| `NoteFields`, `ActionField` / `.ui-field` | Forms and shell search | Associated labels, invalid state/help and retained caret |
+| React browse rows / `.ui-row` | Library, Focus, Actions and Initiatives | Selected identity independent from keyboard focus; bounded queries |
+| Native details / `.ui-disclosure` | Per-page utilities | Native disclosure keyboard behavior; no custom menu owner |
+| `Feedback`, `receiptView` / `.ui-feedback` | Save/error/retry receipts | Chinese message, optional diagnostic and truthful saved/recovered state |
+| `drawerContent`, `LeaveContent`, existing modal controller | C sheets, Save/Discard/Continue | One modal lifetime, containment and opener/selection restoration |
+| Shell navigation | Document shell | Selected/current fill independent from hover/focus |
+| Per-page React pagination / `.ui-pagination` | Bounded collections | Explicit previous/next, disabled unavailable directions |
 
-`primary: true` remains a compatibility alias for existing consumers. The catalogue's disabled/invalid examples are deliberate fixtures, not promises of new product behavior. Status is never conveyed by color alone. Form-level invalid errors retain input and supply a retry path. Failed note saves keep private local drafts and block task return; explicit Save retries the existing write. Autosave and Save share the same serialization and expected-base protection. Reopen reads the saved body; a recovered draft is visibly identified. A local-save receipt never implies remote receipt.
+The catalogue's disabled/invalid examples are deliberate fixtures, not promises of new product behavior. Status is never conveyed by color alone. Form-level invalid errors retain input and supply a retry path. Failed note saves keep private local drafts and block task return; explicit Save retries the existing write. Autosave and Save share the same serialization and expected-base protection. Reopen reads the saved body; a recovered draft is visibly identified. A local-save receipt never implies remote receipt.
 
 A new variant requires a real consumer, an interaction/state need that existing primitives cannot express, a reference entry and catalogue example, keyboard/narrow/contrast evidence, and a review explaining the distinction. Do not add an unused theme system, variant taxonomy or page-specific replacement for shared controls.
 
@@ -273,3 +279,14 @@ choices. The mount-once metadata/source control ports preserve existing contextu
 field focus, invalid receipts and source quote editing. The existing wide drawer
 retains one leave/focus owner and the shared Action editor remains authoritative.
 See [Initiative ownership](../architecture/initiatives-react.md).
+
+
+## Final convergence (#102)
+
+The catalogue now renders production React foundations and feature components.
+The old standalone constructor examples and handwritten search mockup are retired.
+Its contextual panel consumes the actual drawer controller, NoteFields and action
+control port. Document/form scaffolds and the reader information entry use React;
+there is no pre-React note-information DOM island. Legacy storage draft recovery
+keys remain data compatibility, not alternate renderers. See the final ownership
+inventory and issue102 validation for exact evidence and native limits.
