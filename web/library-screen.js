@@ -1,5 +1,5 @@
 import {pageAvailability, requestTaskLeave, feedback, directoryLabel, button, selectionRow, drawer, field, errorFeedback} from './presentation.js';
-import {Library} from './library.js';
+import {Library, archivedPath} from './library.js';
 import {native} from './bridge.js';
 import {escapeHTML as esc} from './core.js';
 const $ = selector => document.querySelector(selector);
@@ -7,9 +7,12 @@ export class LibraryScreen {
   constructor(openNote, notice, isActive, favoritePaths = () => undefined) {
     this.favoritePaths = favoritePaths; this.openNote = openNote; this.notice = notice; this.isActive = isActive;
     this.library = new Library(native, () => { if (isActive()) this.render().catch(error => notice(error.message)); });
-    this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
+    this.order = 'current'; this.archives = 'include'; this.offset = 0; this.directory = '*'; this.topic = ''; this.search = ''; this.sequence = 0;
     $('#library-refresh').onclick = async () => { $('#library-refresh').disabled = true; $('#library-progress').textContent = '正在更新笔记列表…'; try { await this.library.sync(); this.failed = false; await this.render(); } catch (error) { this.failed = true; await this.render(); notice(error.message); } finally { $('#library-refresh').disabled = false; } };
     $('#library-topic').onchange = () => { this.topic = $('#library-topic').value; this.offset = 0; this.render(); };
+    for (const control of ['order', 'archives']) $('#library-' + control).onchange = () => {
+      this[control] = $('#library-' + control).value; this.offset = 0; this.indexChanged = false; this.render();
+    };
     this.setupTopicDrawer();
     $('#library-create-topic').onclick = event => this.editTopic(null, null, event.currentTarget);
     $('#library-rename-topic').onclick = event => { const topic = this.library.records.find(t => t.entityId === this.topic); if (topic) this.editTopic(topic, null, event.currentTarget); };
@@ -107,19 +110,26 @@ export class LibraryScreen {
     if (!this.isActive()) return;
     const sequence = ++this.sequence;
     const generation = this.library.generation;
+    if (this.browseRevision !== this.library.revision) {
+      if (this.offset) { this.offset = 0; this.indexChanged = true; }
+      this.browseRevision = this.library.revision;
+    }
     let result;
-    try { result = await this.library.query({search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()}); }
+    try { result = await this.library.query({order: this.order, archives: this.archives, search: this.search, directory: this.directory, topic: this.topic, offset: this.offset, paths: this.favoritePaths()}); }
     catch (error) {
       if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
       this.failed = true;
       feedback($('#library-progress'), '笔记列表暂不可用，请刷新重试或重新选择目录。', error.message);
       return;
     }
-    if (sequence !== this.sequence || !this.isActive()) return;
+    if (generation !== this.library.generation || sequence !== this.sequence || !this.isActive()) return;
     $('#view-title').textContent = this.favoritePaths() ? '收藏' : '笔记库'; $('#search').placeholder = '搜索标题与正文…'; $('#index-state').textContent = '';
     directoryLabel(this.library.root || '本地笔记');
-    $('#note-count').textContent = `${this.offset + result.notes.length}${result.hasMore ? '+' : ''}`;
-    if (this.library.warnings?.length) feedback($('#library-progress'), '部分笔记暂不可用，请检查目录后刷新。', this.library.warnings.join('\n')); else $('#library-progress').textContent = this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表…' : '';
+    $('#library-order').value = this.order; $('#library-archives').value = this.archives;
+    const coverage = this.library.running || this.failed || this.library.warnings?.length ? '索引未完成' : '已索引';
+    $('#note-count').textContent = `${coverage}：${result.total ?? this.offset + result.notes.length}${result.total === undefined && result.hasMore ? '+' : ''}；本页 ${result.notes.length ? this.offset + 1 : 0}–${this.offset + result.notes.length}`;
+    $('#library-page').textContent = $('#note-count').textContent;
+    if (this.library.warnings?.length) feedback($('#library-progress'), '部分笔记暂不可用，请检查目录后刷新。', this.library.warnings.join('\n')); else $('#library-progress').textContent = this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表，当前结果可能不完整…' : this.indexChanged ? '索引已更新，已返回第一页。' : '';
     const select = $('#library-topic'); select.replaceChildren();
     for (const [value, name] of [['', '全部主题'], ['uncategorized', '未分类'], ...(this.library.records || []).map(t => [t.entityId, t.description])]) { const option = document.createElement('option'); option.value = value; option.textContent = name; select.append(option); }
     select.value = this.topic;
@@ -139,20 +149,20 @@ export class LibraryScreen {
     }
     if (!result.notes.length && !this.library.running) {
       const empty = document.createElement('p'); empty.className = 'no-items'; empty.setAttribute('role', 'status');
-      empty.textContent = this.failed || this.library.warnings?.length ? '目录暂不可用，请检查目录后刷新。' : this.search ? '没有找到匹配的笔记。请换个关键词或清除搜索。' : this.topic === 'uncategorized' ? '没有未分类的笔记。可切换到「全部主题」。' : this.topic ? '这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。' : this.directory !== '*' ? '此目录下没有符合条件的笔记。可返回上一级目录或清除筛选。' : this.favoritePaths() ? '还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。' : '笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。';
+      empty.textContent = this.failed || this.library.warnings?.length ? '目录暂不可用，请检查目录后刷新。' : this.search ? '没有找到匹配的笔记。请换个关键词或清除搜索。' : this.archives !== 'include' ? '当前归档范围内没有符合条件的笔记。可切换「归档范围」或清除筛选。' : this.topic === 'uncategorized' ? '没有未分类的笔记。可切换到「全部主题」。' : this.topic ? '这个主题下还没有笔记。打开笔记后可在「笔记信息与整理」中关联主题。' : this.directory !== '*' ? '此目录下没有符合条件的笔记。可返回上一级目录或清除筛选。' : this.favoritePaths() ? '还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。' : '笔记库为空。使用「随手记」创建第一篇笔记，或选择已有笔记目录。';
       list.append(empty);
     }
     for (const note of result.notes) {
       const card = selectionRow(note.title, () => { this.browseScroll = $('.collection').scrollTop; this.browseListScroll = $('#items').scrollTop; return this.openNote(note.path); }, {selected: note.path === this.selectedPath}); card.classList.add('card'); card.dataset.path = note.path;
-      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt || '暂无正文摘要')}</p><small>${esc(note.path)}</small><small>${Number.isFinite(note.modified) ? '文件修改：' + new Date(note.modified * 1000).toLocaleDateString() : '文件修改时间未知'}</small>`;
+      card.innerHTML = `<h3>${esc(note.title)}</h3><p>${esc(note.excerpt || '暂无正文摘要')}</p><small>${archivedPath(note.path) ? '归档 · ' : ''}${esc(note.path)}</small><small>${Number.isFinite(note.modified) ? '文件修改：' + new Date(note.modified * 1000).toLocaleDateString() : '文件修改时间未知'}</small>`;
       list.append(card);
     }
     if (focusedPath) [...list.querySelectorAll('[data-path]')].find(node => node.dataset.path === focusedPath)?.focus({preventScroll: true});
     $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
-    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0, result.hasMore);
+    pageAvailability($('#library-previous'), $('#library-next'), this.offset > 0 && !this.library.running, result.hasMore && !this.library.running);
   }
   captureContext() {
-    return {offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
+    return {order: this.order, archives: this.archives, offset: this.offset, directory: this.directory, topic: this.topic, search: this.search, selectedPath: this.selectedPath, browseListScroll: $('#items').scrollTop, browseScroll: $('.collection').scrollTop};
   }
   async restoreContext(context) {
     Object.assign(this, context); $('#search').value = this.search;

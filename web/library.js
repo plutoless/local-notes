@@ -31,6 +31,7 @@ function referenceExcerpt(body) {
   });
   return lines.join(' ').replace(/\s+/g, ' ').trim().slice(0, 180);
 }
+export function archivedPath(path) { return path.split('/').slice(0, -1).some(part => ['archive', 'archives', 'archived', '归档'].includes(part.toLowerCase())); }
 export function referenceRecord(note, text) {
   const directory = note.path.includes('/') ? note.path.slice(0, note.path.lastIndexOf('/')) : '';
   const body = referenceBody(text);
@@ -39,7 +40,7 @@ export function referenceRecord(note, text) {
 export function referenceSearchText(title, text) { return `${title}\n${referenceBody(text)}`; }
 // One body at a time keeps editor requests responsive while the initial index fills.
 export class Library {
-  constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; this.topics = new TopicRepository(adapter); this.running = null; }
+  constructor(adapter, changed = () => {}) { this.adapter = adapter; this.changed = changed; this.generation = 0; this.topics = new TopicRepository(adapter); this.running = null; this.revision = 0; }
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, ...args}); }
   async open() {
     const workspace = await this.adapter('workspace');
@@ -75,24 +76,26 @@ export class Library {
         try {
           const {text} = await call('read', {path: note.path}); reads++;
           const record = referenceRecord(note, text);
-          await call('referencePut', {record, search: referenceSearchText(record.title, text)});
+          await call('referencePut', {record, search: referenceSearchText(record.title, text)}); this.revision++;
         } catch (error) { this.warnings.push(`${note.path}: ${error.message}`); }
       }
       const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
-      await call('referenceTags', {path: note.path, topics});
+      if ((await call('referenceTags', {path: note.path, topics})).changed) this.revision++;
       this.progress = `${position + 1}/${result.notes.length}; ${reads} bodies read`;
       if (position % 25 === 0) { this.changed(); await new Promise(resolve => setTimeout(resolve, 0)); }
     }
     // An incomplete enumeration is never evidence that files disappeared.
-    if (!this.warnings.length) for (const path of previous.keys()) if (!seen.has(path)) await call('referenceRemove', {path});
+    if (!this.warnings.length) for (const path of previous.keys()) if (!seen.has(path)) { await call('referenceRemove', {path}); this.revision++; }
     this.lastReads = reads; this.changed();
   }
   async indexSource(note, text) {
     // A direct reader route rebuilds only its already-read source descriptor.
     const workspace = this.workspaceId, record = referenceRecord(note, text);
     const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
+    const previous = (await this.query({exactPath: note.path})).notes[0];
     await this.adapter('referencePut', {workspaceId: workspace, record, search: referenceSearchText(record.title, text)});
-    await this.adapter('referenceTags', {workspaceId: workspace, path: note.path, topics});
+    if (['fingerprint', 'modified', 'size', 'title', 'summaryVersion', 'searchVersion'].some(key => previous?.[key] !== record[key])) this.revision++;
+    if ((await this.adapter('referenceTags', {workspaceId: workspace, path: note.path, topics})).changed) this.revision++;
   }
   query(options = {}) { return this.request('referenceQuery', options); }
   async saveTopic(name, previous = null, retry = null, note = null) {
@@ -103,7 +106,7 @@ export class Library {
     const saved = await this.topics.save(fields, previous, retry);
     try {
       this.records = await allRecords(this.topics);
-      if (note) await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      if (note && (await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')})).changed) this.revision++;
       this.changed(); return saved.record;
     }
     catch (error) { error.record = saved.record; error.revisionSaved = true; throw error; }
@@ -115,7 +118,7 @@ export class Library {
     try {
       await this.topics.save({...topic, sources}, topic); committed = true;
       this.records = await allRecords(this.topics);
-      await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')});
+      if ((await this.request('referenceTags', {path: note.path, topics: this.records.filter(t => t.sources.some(s => s.path === note.path)).map(t => t.entityId).join(',')})).changed) this.revision++;
       this.changed();
     } catch (error) {
       // A persisted association needs index recovery, not another stale-parent save.
