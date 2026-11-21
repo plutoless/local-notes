@@ -71,9 +71,10 @@ semantic tokens, rather than recreating their appearance.
 
 Complex controls continue to use the existing project-owned native-dialog/drawer
 family in `presentation.js`, including the shared Save/Discard/Continue decision.
-No additional overlay library or focus trap is installed. Verify actual contextual
-Action/Topic drawers with search opening, dismissal and return before treating that
-choice as accepted; record the executed journey results in issue #92 validation.
+No additional overlay library or focus trap is installed. Actual contextual
+Action/Topic/Initiative drawers and search opening, dismissal, containment and return
+passed the maintained real-storage browser journeys; see issue #92 validation for
+commands, source reuse and native/OS boundaries.
 
 ## Validation boundaries
 
