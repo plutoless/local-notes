@@ -146,3 +146,14 @@ supersedes prior latest-main bindings for the current PR but preserves all histo
 failure/evidence attribution. The coordinator-reported #94 Favorites pagination
 failure remains owned by the original #94 worker; no #101 integration result lifts
 the merge hold or claims that sibling defect resolved.
+
+## Current status after delivered correction
+
+Issue #116 / PR #117 merged as 2c7b9a0; the coordinator explicitly resolved the
+previous global postmerge hold after resulting-main checks. The current bounded
+integration and fresh own/focused Favorites evidence are in
+[correction-integration/README.md](correction-integration/README.md). This supersedes
+prior latest-base/hold dispositions without rewriting their historical failures.
+The exact original intermittent browser cause remains unproven; readiness and the
+separate deterministically reproduced stale-query defect are not conflated. PR #115
+retains its own review/check gates and coordinator-only merge/close authority.
