@@ -10,7 +10,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / 'build/issue65-keyboard'
 EVIDENCE = REPO / os.environ.get('ISSUE65_EVIDENCE', 'docs/validation/issue65/repair/cycle1/native')
-build_only = '--build-only' in __import__('sys').argv
+resources_only = '--resources-only' in sys.argv
+baseline_only = '--baseline-only' in sys.argv or resources_only
+build_only = '--build-only' in sys.argv
 if not build_only and not os.environ.get('ISSUE65_GUI_GRANT'):
     raise SystemExit('Explicit exclusive coordinator GUI grant required; no app activated or input posted')
 if not build_only and (EVIDENCE/'report.json').exists():
@@ -29,7 +31,15 @@ m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"firstResponderIsWeb":self?.w
 m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('if script == "__host" { let result', 'if script == "__host" { let firstResponderClass:String; if let responder=self?.window.firstResponder {firstResponderClass=String(describing:type(of:responder))} else {firstResponderClass="none"}; let result')
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue65keyboard')
 source = source.replace('generated=OUT/\'main.swift\';generated.write_text(source)', "generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()'))")
-exec(source, m.__dict__); m.build()
+exec(source, m.__dict__)
+if baseline_only:
+    # Instrument actual native body-read requests; production sources stay unchanged.
+    original_source = (REPO/'mac/main.swift').read_text()
+    assert original_source.count('case "read":return') == 1
+    m.__dict__['EXTRA'] = 'if script == "__reads" { try? JSONSerialization.data(withJSONObject:["ok":true,"value":baselineBodyReads]).write(to:reviewProbe.directory.appendingPathComponent("response.json"));return }\n' + m.__dict__['EXTRA']
+    source = source.replace("source=(REPO/'mac/main.swift').read_text()", "source=(REPO/'mac/main.swift').read_text().replace('import Cocoa', 'import Cocoa\\nvar baselineBodyReads = 0', 1).replace('case \"read\":return', 'case \"read\":baselineBodyReads += 1;return')")
+    exec(source, m.__dict__)
+m.build()
 sender = OUT/'native-library-input'
 subprocess.run(['swiftc', str(REPO/'tests/native-library-input.swift'), '-o', str(sender)], check=True)
 window_observer = OUT/'native-owned-windows'
@@ -43,7 +53,7 @@ EVIDENCE.mkdir(parents=True, exist_ok=True)
 for name in ['Sync', 'Private']:
     if (OUT/name).exists(): shutil.rmtree(OUT/name)
     (OUT/name).mkdir()
-for i in range(127):
+for i in range(500 if baseline_only else 127):
     p = OUT/'Sync'/('Archive' if i < 61 else 'Current')/f'{i:03}.md'
     p.parent.mkdir(exist_ok=True); p.write_text(f'# Repeated title\n\nSynthetic source {i}\n\n'+('Readable source context.\n'*80)); os.utime(p, (1000,1000))
 def digest(p): return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -55,7 +65,7 @@ initial_input = None; clipboard_hash = None
 private_snapshot = OUT/'environment-private.json'
 environment_saved = None
 report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'],  'events':[], 'states':[], 'passed':False}
-report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-library-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
+report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-library-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'packagedAssets':{str(p.relative_to(m.APP/'Contents/Resources/web')):digest(p) for p in (m.APP/'Contents/Resources/web').rglob('*') if p.is_file()}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
 assert all(len(set(v.values()))==1 for v in report['bindings']['web'].values())
 c,w = m.command,m.wait
 process = None
@@ -106,42 +116,94 @@ try:
     initial_input=input_source(); clipboard_hash=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
     report.update(inputSourceBefore=initial_input,environmentSaved=environment_saved)
     save_report()
+    launch_started=time.monotonic()
     process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(OUT/'Private'),'REVIEW_PROBE':str(OUT)},stdout=open(OUT/'app.log','w'),stderr=subprocess.STDOUT)
     report['pid']=process.pid
-    w("!!document.querySelector('.home-tools')"); c('__focus'); time.sleep(.5)
+    w("!!document.querySelector('.home-tools')")
+    startup_ms=(time.monotonic()-launch_started)*1000
+    c('__focus'); time.sleep(.5)
     window=c('__host')['windowNumber']; report['window']=window
     c("window.nativeKeys=[];document.addEventListener('keydown',e=>nativeKeys.push({key:e.key,trusted:e.isTrusted,shift:e.shiftKey,meta:e.metaKey,ctrl:e.ctrlKey,alt:e.altKey,expectedTarget:e.target===window.expectedKeyTarget,target:e.target.id||e.target.dataset.path}),true)")
-    enter('[data-view=notes]')
-    w("document.querySelectorAll('#items .card').length===50 && !document.querySelector('#library-progress').textContent")
-    assert c("return [...document.querySelectorAll('#items .card')].every(n=>n.dataset.path.startsWith('Current/'))")
-    # Control values are fixture setup; native Tab/Shift+Tab establish keyboard focus.
-    c("document.querySelector('#library-order').value='title';document.querySelector('#library-order').dispatchEvent(new Event('change'));document.querySelector('#library-archives').value='only';document.querySelector('#library-archives').dispatchEvent(new Event('change'))")
-    w("document.querySelector('#library-page').textContent.includes('61') && document.querySelectorAll('#items .card').length===50")
-    c("document.querySelector('#library-archives').focus()"); key('Tab'); key('Shift+Tab')
-    assert state('archive-control')['active']=='library-archives'
-    first=c("return [...document.querySelectorAll('#items .card')].map(n=>n.dataset.path)")
-    enter('#library-next')
-    w("document.querySelector('#library-next').disabled && document.activeElement.id==='library-previous'")
-    assert state('last-page-focus-handoff')['focusVisible']
-    second=c("return [...document.querySelectorAll('#items .card')].map(n=>n.dataset.path)")
-    assert len(first+second)==61 and len(set(first+second))==61
-    c("document.querySelector('.collection').scrollTop=85;document.querySelector('#items').scrollTop=180;document.querySelectorAll('#items .card')[5].focus()")
-    key('Tab'); key('Shift+Tab')
-    before=state('selected-source-before-open'); target=c('return document.activeElement.dataset.path')
-    assert target and before['focusVisible']
-    key('Return'); w("!document.querySelector('#editor').hidden && !document.querySelector('#reading').hidden")
-    assert c("return document.querySelector('#file-path').textContent")==target
-    enter('#back')
-    w('document.activeElement.dataset.path==='+json.dumps(target))
-    after=state('source-return')
-    assert after['focusVisible'] and after['list']==before['list'] and after['collection']==before['collection'] and after['order']=='title' and after['archives']=='only' and '51–61' in after['page']
-    for width,height in [(1180,800),(393,852),(800,400)]:
-        c(f'__size:{width},{height}'); time.sleep(.3)
-        assert c('return document.documentElement.scrollWidth<=innerWidth')
-        c('__snapshot'); shutil.copy(OUT/'native.png',EVIDENCE/f'return-{width}-{height}.png')
-    assert original=={str(p.relative_to(OUT/'Sync')):digest(p) for p in (OUT/'Sync').rglob('*.md')}
-    assert not list((OUT/'Sync').glob('LocalNotesData/revisions/*/*.json'))
-    report.update(passed=True,uniquePagedResults=61,sourcePreserved=True,input='external process-targeted OS keyboard; DOM fixture/focus setup; no physical input')
+    if baseline_only:
+        report['baseline'] = {'startupMs':startup_ms, 'startupBodyReads':c('__reads'), 'runs':[], 'assetsBytes':sum(p.stat().st_size for p in (m.APP/'Contents/Resources/web').rglob('*') if p.is_file()), 'corpusNotes':500}
+        for iteration in range(3):
+            begin=time.monotonic(); reads=c('__reads')
+            enter('[data-view=notes]')
+            w("document.querySelectorAll('#items .card').length===50 && !document.querySelector('#library-progress').textContent")
+            navigation=(time.monotonic()-begin)*1000
+            indexed_reads=c('__reads')-reads
+            begin=time.monotonic()
+            c("document.querySelector('#search').value='Synthetic source 499';document.querySelector('#search').dispatchEvent(new Event('input'))")
+            w("document.querySelectorAll('#items .card').length===1")
+            search_ms=(time.monotonic()-begin)*1000
+            # Three guarded native events exercise the actual input route without an optional UI matrix.
+            begin=time.monotonic(); enter('#items .card')
+            w("!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='Current/499.md'")
+            open_ms=(time.monotonic()-begin)*1000
+            memory=subprocess.check_output(['ps','-o','rss=','-p',str(process.pid)],text=True).strip()
+            report['baseline']['runs'].append({'iteration':iteration,'navigationMs':navigation,'indexBodyReads':indexed_reads,'searchMs':search_ms,'openMs':open_ms,'totalBodyReads':c('__reads'),'hostRssKiB':int(memory)})
+            enter('#back'); w("document.activeElement.dataset.path==='Current/499.md'")
+            c("document.querySelector('#search').value='';document.querySelector('#search').dispatchEvent(new Event('input'));document.querySelector('[data-view=focus]').click()")
+            w("!!document.querySelector('.home-tools')")
+        if resources_only:
+            exports=c("return Object.keys(await import('./assets/react-host.js'))")
+            assert all(name in exports for name in ['readerView','libraryView','libraryPage'])
+            styles=c("return [...document.styleSheets].map(sheet=>({href:sheet.href,rules:sheet.cssRules.length}))")
+            assert any(sheet['href'].endswith('/assets/react-host.css') and sheet['rules']>0 for sheet in styles)
+            resources=c("return performance.getEntriesByType('resource').map(entry=>entry.name)")
+            assert all(url.startswith('notes://local/') for url in resources), 'Unexpected network resource'
+            # Keep an actual active draft protected while invalid resources fail.
+            c("document.querySelector('[data-view=notes]').click()")
+            w("document.querySelectorAll('#items .card').length===50 && !document.querySelector('#library-progress').textContent")
+            c("document.querySelector('#search').value='Synthetic source 499';document.querySelector('#search').dispatchEvent(new Event('input',{bubbles:true}))")
+            w("document.querySelectorAll('#items .card').length===1")
+            c("document.querySelector('#items .card').click()")
+            w("!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='Current/499.md'")
+            c("document.querySelector('#mode').click();window.resourceDraftBody=document.querySelector('#body');resourceDraftBody.value+='资源拒绝后保留草稿';resourceDraftBody.dispatchEvent(new Event('input',{bubbles:true}));document.querySelector('[data-view=focus]').click()")
+            w("!!document.querySelector('#task-leave-decision')")
+            denials=[]
+            for url in ['notes://other/assets/react-host.js','notes://user@local/assets/react-host.js','notes://local:80/assets/react-host.js','notes://local/assets/react-host.js?forbidden=1','notes://local/assets/%2e%2e/Current/499.md','notes://local/assets/%2Freact-host.js','notes://local/Current/499.md','notes://local/LocalNotesData/workspace.json','notes://local/asset-manifest.json','notes://local/not-shipped.js']:
+                result=c("try {await import("+json.dumps(url)+");return {loaded:true}} catch(error) {return {loaded:false,error:String(error)}}")
+                denials.append({'url':url,**result}); assert not result['loaded'], url
+            assert c("return resourceDraftBody===document.querySelector('#body') && resourceDraftBody.value.includes('资源拒绝后保留草稿') && window.hasUnsavedChanges() && !!document.querySelector('#task-leave-decision')")
+            c("[...document.querySelectorAll('#task-leave-decision button')].find(button=>button.textContent==='放弃更改并离开').click()")
+            w("!!document.querySelector('.home-tools') && !document.querySelector('#task-leave-decision')")
+            report['resources']={'offlineBootstrap':True,'nestedModuleExports':exports,'styles':styles,'resourceURLs':resources,'denials':denials,'activeDraftRetainedAfterDenial':True,'discardAfterDenial':True,'nativeTransport':'production WKScriptMessageHandler and real Markdown/SQLite adapters; DOM-driven resource/draft actions; no physical input'}
+        report.update(passed=True,input='guarded external process-targeted keyboard navigation; search input DOM-driven; no physical/IME/clipboard replay', timingScope='monotonic Python wall-clock including polling and guarded sender launch; one fresh process plus three navigation/search/open runs; host RSS excludes WebContent process')
+        c('__snapshot'); shutil.copy(OUT/'native.png',EVIDENCE/'baseline-home.png')
+    else:
+        enter('[data-view=notes]')
+        w("document.querySelectorAll('#items .card').length===50 && !document.querySelector('#library-progress').textContent")
+        assert c("return [...document.querySelectorAll('#items .card')].every(n=>n.dataset.path.startsWith('Current/'))")
+        # Control values are fixture setup; native Tab/Shift+Tab establish keyboard focus.
+        c("document.querySelector('#library-order').value='title';document.querySelector('#library-order').dispatchEvent(new Event('change'));document.querySelector('#library-archives').value='only';document.querySelector('#library-archives').dispatchEvent(new Event('change'))")
+        w("document.querySelector('#library-page').textContent.includes('61') && document.querySelectorAll('#items .card').length===50")
+        c("document.querySelector('#library-archives').focus()"); key('Tab'); key('Shift+Tab')
+        assert state('archive-control')['active']=='library-archives'
+        first=c("return [...document.querySelectorAll('#items .card')].map(n=>n.dataset.path)")
+        enter('#library-next')
+        w("document.querySelector('#library-next').disabled && document.activeElement.id==='library-previous'")
+        assert state('last-page-focus-handoff')['focusVisible']
+        second=c("return [...document.querySelectorAll('#items .card')].map(n=>n.dataset.path)")
+        assert len(first+second)==61 and len(set(first+second))==61
+        c("document.querySelector('.collection').scrollTop=85;document.querySelector('#items').scrollTop=180;document.querySelectorAll('#items .card')[5].focus()")
+        key('Tab'); key('Shift+Tab')
+        before=state('selected-source-before-open'); target=c('return document.activeElement.dataset.path')
+        assert target and before['focusVisible']
+        key('Return'); w("!document.querySelector('#editor').hidden && !document.querySelector('#reading').hidden")
+        assert c("return document.querySelector('#file-path').textContent")==target
+        enter('#back')
+        w('document.activeElement.dataset.path==='+json.dumps(target))
+        after=state('source-return')
+        assert after['focusVisible'] and after['list']==before['list'] and after['collection']==before['collection'] and after['order']=='title' and after['archives']=='only' and '51–61' in after['page']
+        for width,height in [(1180,800),(393,852),(800,400)]:
+            c(f'__size:{width},{height}'); time.sleep(.3)
+            assert c('return document.documentElement.scrollWidth<=innerWidth')
+            c('__snapshot'); shutil.copy(OUT/'native.png',EVIDENCE/f'return-{width}-{height}.png')
+        assert original=={str(p.relative_to(OUT/'Sync')):digest(p) for p in (OUT/'Sync').rglob('*.md')}
+        assert not list((OUT/'Sync').glob('LocalNotesData/revisions/*/*.json'))
+        report.update(passed=True,uniquePagedResults=61,sourcePreserved=True,input='external process-targeted OS keyboard; DOM fixture/focus setup; no physical input')
+
 except BaseException as error:
     report['failure']={'type':type(error).__name__,'message':str(error)}
     raise
@@ -167,4 +229,4 @@ finally:
         save_report()
         assert report['inputAndClipboardRetained'], 'Input source or clipboard unexpectedly changed; coordinator action required'
         assert report.get('cleanup', {}).get('pidAbsent') and not report['cleanup']['remainingOwnedWindows'] and not report['cleanup']['independentExactExecutableProcesses'], 'Owned PID/window cleanup not established'
-print('PASS owned-window native Library keyboard, paging, source-return and focus')
+print('PASS bounded native Library baseline' if baseline_only else 'PASS owned-window native Library keyboard, paging, source-return and focus')

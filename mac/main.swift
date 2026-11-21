@@ -3,13 +3,33 @@ import WebKit
 
 final class Assets: NSObject, WKURLSchemeHandler {
     let root: URL
-    init(_ root: URL) { self.root = root }
+    let manifest: [String: String]
+    init(_ root: URL) {
+        self.root = root.resolvingSymlinksInPath()
+        self.manifest = (try? Data(contentsOf: root.appendingPathComponent("asset-manifest.json")))
+            .flatMap { try? JSONSerialization.jsonObject(with: $0) as? [String: String] } ?? [:]
+    }
+    func resource(_ url: URL) -> (Data, String)? {
+        guard url.scheme == "notes", url.host == "local", url.user == nil,
+              url.password == nil, url.port == nil, url.query == nil, url.fragment == nil,
+              let parts = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              !parts.percentEncodedPath.contains("%"), url.path.hasPrefix("/") else { return nil }
+        let path = String(url.path.dropFirst())
+        guard !path.isEmpty, path.split(separator: "/", omittingEmptySubsequences: false).allSatisfy({
+            $0.range(of: "^[A-Za-z0-9_-][A-Za-z0-9_.-]*$", options: .regularExpression) != nil && $0 != ".."
+        }), let mime = manifest[path],
+            ["text/javascript", "text/css", "text/html", "font/woff", "font/woff2", "image/png", "image/svg+xml"].contains(mime) else { return nil }
+        let file = root.appendingPathComponent(path)
+        guard file.resolvingSymlinksInPath().path == file.path,
+              file.path.hasPrefix(root.path + "/"), let data = try? Data(contentsOf: file) else { return nil }
+        return (data, mime)
+    }
     func webView(_ webView: WKWebView, start task: WKURLSchemeTask) {
-        let name = task.request.url!.lastPathComponent
-        let allowed = ["index.html", "style.css", "app.js", "global-search.js", "search-screen.js", "presentation.js", "task-drafts.js", "core.js", "bridge.js", "actions.js", "action-screen.js", "initiatives.js", "initiative-screen.js", "library.js", "library-screen.js", "focus-screen.js", "reading-history.js", "revision-graph.js", "sync-screen.js", "organization.js", "organize-screen.js"]
-        guard allowed.contains(name), let data = try? Data(contentsOf: root.appendingPathComponent(name)) else { task.didFailWithError(NSError(domain:"assets",code:404)); return }
-        let mime = name.hasSuffix(".js") ? "text/javascript" : name.hasSuffix(".css") ? "text/css" : "text/html"
-        task.didReceive(URLResponse(url:task.request.url!, mimeType:mime, expectedContentLength:data.count, textEncodingName:"utf-8")); task.didReceive(data); task.didFinish()
+        guard let url = task.request.url, let (data, mime) = resource(url) else {
+            task.didFailWithError(NSError(domain: "assets", code: 404)); return
+        }
+        task.didReceive(URLResponse(url: url, mimeType: mime, expectedContentLength: data.count, textEncodingName: mime.hasPrefix("text/") ? "utf-8" : nil))
+        task.didReceive(data); task.didFinish()
     }
     func webView(_ webView: WKWebView, stop task: WKURLSchemeTask) {}
 }
@@ -93,7 +113,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
         if allowTermination { return .terminateNow }
         terminationPending = true; requestLeave(); return .terminateLater
     }
-    func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" ? .allow : .cancel)}
+    func webView(_ webView:WKWebView,decidePolicyFor navigationAction:WKNavigationAction,decisionHandler:@escaping(WKNavigationActionPolicy)->Void){decisionHandler(navigationAction.request.url?.scheme == "notes" && navigationAction.request.url?.host == "local" ? .allow : .cancel)}
     func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
         let alert = NSAlert(); alert.messageText = prompt
         let field = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 24)); field.stringValue = defaultText ?? ""

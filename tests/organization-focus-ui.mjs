@@ -29,7 +29,7 @@ try {
   } catch (error) { return {error:error.message}; }
  });
  await page.addInitScript(() => { window.NotesNative = {request:async message => { const r = JSON.parse(message); window.nativeReply(r.id, await window.bridge(r)); }}; });
- await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body:await readFile(phase === 'before' && ['organize-screen.js','app.js'].includes(name) ? new URL('../build/issue85-before-'+name, import.meta.url) : new URL('../web/' + name, import.meta.url)), contentType:name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+ await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body:await readFile(phase === 'before' && ['organize-screen.js','app.js'].includes(name) ? new URL('../build/issue85-before-'+name, import.meta.url) : new URL('../build/web/' + name, import.meta.url)), contentType:name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
  const organize = async () => { await page.locator('[data-view=organize]').click(); await page.locator('#ai-selection input').waitFor(); };
  const preview = async () => { await page.locator('#ai-selection input').check(); await page.locator('#ai-preview').click(); await page.waitForFunction(() => !document.querySelector('#ai-send').disabled); };
  const status = async pattern => { await page.waitForFunction(pattern => new RegExp(pattern).test(document.querySelector('#ai-status').textContent), pattern); };

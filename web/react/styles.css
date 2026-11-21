@@ -1,0 +1,12 @@
+/* No preflight: legacy surfaces keep their existing browser and project resets. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+@source './';
+@theme inline {
+  --color-surface: var(--surface);
+  --color-content: var(--text);
+  --color-secondary: var(--muted);
+  --color-selected: var(--selected);
+  --color-boundary: var(--line);
+  --color-focus: var(--focus);
+}

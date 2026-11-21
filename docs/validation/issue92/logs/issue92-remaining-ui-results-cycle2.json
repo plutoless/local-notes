@@ -1,0 +1,92 @@
+[
+  {
+    "command": "node tests/organization-review-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-organization-review-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/workspace-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-workspace-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/sync-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-sync-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/design-system-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-design-system-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/design-catalogue-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-design-catalogue-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/leave-focus-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-leave-focus-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/form-focus-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-form-focus-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/topic-drawer-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-topic-drawer-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/initiative-drawer-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-initiative-drawer-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/remaining-forms-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-remaining-forms-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/task-lifecycle-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-task-lifecycle-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/reader-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-reader-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/reader-focus-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-reader-focus-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/reader-editing-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-reader-editing-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/classification-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-classification-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/wiki-links-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-wiki-links-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/reading-history-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-reading-history-ui-remaining-cycle2.log"
+  },
+  {
+    "command": "node tests/reading-actions-ui.mjs",
+    "exit": 0,
+    "log": "build/issue92-reading-actions-ui-remaining-cycle2.log"
+  }
+]

@@ -1,0 +1,48 @@
+{
+  "phase": "after",
+  "receipts": [
+    {
+      "viewport": {
+        "width": 1180,
+        "height": 800
+      },
+      "target": {
+        "outline": "none",
+        "color": "rgb(32, 38, 51)",
+        "width": "3px",
+        "height": 33,
+        "focused": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 393,
+        "height": 852
+      },
+      "target": {
+        "outline": "none",
+        "color": "rgb(32, 38, 51)",
+        "width": "3px",
+        "height": 33,
+        "focused": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 800,
+        "height": 400
+      },
+      "target": {
+        "outline": "none",
+        "color": "rgb(32, 38, 51)",
+        "width": "3px",
+        "height": 33,
+        "focused": true
+      }
+    }
+  ],
+  "readOnlySourceUnchanged": true,
+  "explicitSave": true,
+  "continueAndDiscard": true,
+  "invalid": "Not applicable: note source editor has no invalid-field state"
+}

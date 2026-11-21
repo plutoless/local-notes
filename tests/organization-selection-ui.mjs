@@ -36,7 +36,7 @@ try {
    return timeout(run,delay,...args);
   };
  });
- await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
+ await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../build/web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('https://notes.test/'); await page.locator('[data-view=organize]').click();
  await page.waitForFunction(()=>document.querySelectorAll('#ai-selection input').length===50);
  assert.equal(await page.locator('#ai-settings-drawer').isVisible(),false);
