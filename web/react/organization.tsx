@@ -50,7 +50,7 @@ export function OrganizationSettings({model:m,callbacks:c}:{model:OrganizationMo
     <label className="ui-field">完整服务地址<input id="ai-address" type="url" required placeholder="https://service.example/v1/chat/completions" value={m.address} onChange={e=>c.setting('address',e.target.value)}/></label>
     <label className="ui-field">模型<input id="ai-model" required value={m.model} onChange={e=>c.setting('model',e.target.value)}/></label>
     <label className="ui-field">凭证<input id="ai-token" type="password" autoComplete="off" placeholder={m.savedCredential?'已保存在此设备，留空则保留':'输入服务凭证'} value={m.token} onChange={e=>c.setting('token',e.target.value)}/></label>
-    <div id="ai-settings-error" className="ui-feedback" role="status">{m.settingsError}</div>
+    <div id="ai-settings-error" className="ui-feedback" data-state={m.settingsError?'failed':'idle'} role="status">{m.settingsError}</div>
   </form>;
 }
 export function organizationView(container:HTMLElement,settings:HTMLElement,callbacks:OrganizationCallbacks) {

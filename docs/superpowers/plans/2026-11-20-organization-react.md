@@ -20,5 +20,5 @@ application copy. No source/schema/native service changes or automatic requests.
   browser journeys with real isolated adapters/readback, typecheck, production build
   and Mac packaging. Native OS/IME/clipboard replay is release deferred; Android and
   standalone Syncthing deferred. Preserve failures and scope every receipt.
-- [ ] Obtain independent final-head Standards/Spec reviews, correct material findings,
+- [x] Obtain independent final-head Standards/Spec reviews, correct material findings,
   commit/push the isolated branch and submit one PR with exact evidence.

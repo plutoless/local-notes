@@ -48,10 +48,10 @@ export class OrganizeScreen {
       this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
     } finally { if (session === this.session) { this.previewing = false; this.controls(); } }
   }
-  status(text) {
+  status(text, state) {
     const analyzing = text.match(/^Analyzing fragment (\d+)\/(\d+); completed (\d+)/);
     const complete = text.match(/^Complete: (\d+)\/(\d+)/);
-    this.state.statusState = analyzing ? 'loading' : complete ? 'saved' : 'idle';
+    this.state.statusState = state || (analyzing ? 'loading' : complete ? 'saved' : 'idle');
     this.state.status = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
     this.controls();
   }
@@ -134,7 +134,7 @@ export class OrganizeScreen {
       else if (/suggestion needs text/i.test(diagnostic)) message = '建议内容不能为空，请填写后再确认。';
       else if (/conflict|changed|workspace/i.test(diagnostic)) message = '工作目录或内容已变化，请重新打开并核对。';
       if (this.settingsDrawer.panel.open) this.state.settingsError = message;
-      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''));
+      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), 'failed');
     } finally {
       this.controls();
       if (current() && document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
