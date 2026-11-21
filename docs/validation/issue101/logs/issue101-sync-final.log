@@ -1,0 +1,13 @@
+Sync initial inspection: {"elapsedMs":307,"markdownReads":0,"bridgeCommands":24}
+TypeError: restarted.get is not a function
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-101/tests/sync-ui.mjs:169:35
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+TypeError: restarted.get is not a function
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-101/tests/sync-ui.mjs:169:35
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+
+Node.js v25.1.0

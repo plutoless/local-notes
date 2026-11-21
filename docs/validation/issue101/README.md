@@ -120,3 +120,8 @@ controllers, without broad unrelated reformatting.
 See separate `standards-review.md` and `spec-review.md` reports. Exact final delivery
 head confirmation is supplied to the coordinator alongside the PR; this report's
 implementation SHA denotes the unchanged code packaged for the final evidence commit.
+
+Raw failed-run output retains two whitespace-only lines in `logs/issue101-unit-final.log`
+(lines 108 and 352); these are preserved evidence formatting, not source changes.
+Source/document diff whitespace checks otherwise pass. Command logs are explicitly
+tracked despite the repository's generic `*.log` ignore rule.
