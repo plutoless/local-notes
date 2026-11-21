@@ -127,7 +127,12 @@ speed measurements. Recorded forwarded adapter counts were unchanged for
 workspace (41), actionFiles (47), actionIndex (40), actionWrite (32), actionQuery
 (55), referenceInventory (9), metadata (9), referencePut (1) and referenceTags (9).
 ReferenceQuery counts were 33 before and 33 after; no increased repository work
-was observed. These counters cover forwarded fixture calls, not direct synthetic
+was observed. The first migrated total (5501 ms) was higher, so a sequential
+controlled repeat was run on both exact sources: 4491 ms migrated versus 4291 ms
+baseline, with identical recorded adapter counts (`performance-repeats.json`).
+The larger initial difference did not repeat; these totals include browser launch
+and screenshots, and do not isolate rendering latency or establish statistical
+performance equivalence. These counters cover forwarded fixture calls, not direct synthetic
 source reads performed by the exposed bridge. No broad performance claim follows.
 
 Source Markdown is preserved byte-for-byte; readback includes original evidence,
