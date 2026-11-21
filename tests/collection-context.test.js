@@ -9,7 +9,9 @@ test('collections preserve independent bounded browsing state across other pages
   assert.deepEqual(contexts.switch('favorites',library),defaults);
   const favorites={...defaults,topic:'topic-1',order:'title',selectedPath:'b.md',browseScroll:95};
   assert.equal(contexts.switch('focus',favorites),null);
-  assert.deepEqual(contexts.switch('notes',favorites),library);
+  const outside={...favorites,browseScroll:0,browseListScroll:0};
+  assert.equal(contexts.switch('actions',outside),null);
+  assert.deepEqual(contexts.switch('notes',outside),library);
   assert.deepEqual(contexts.switch('favorites',library),favorites);
 });
 test('returned snapshots cannot overwrite saved context and workspace reset starts empty',()=>{

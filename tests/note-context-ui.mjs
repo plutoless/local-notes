@@ -39,6 +39,13 @@ try {
       assert.equal(await page.locator('#library-order').inputValue(),'path');assert.match(await page.locator('#library-page').textContent(),/51–65/);assert.equal(await page.locator('#items .selected').getAttribute('data-path'),'synthetic-52.md');
       await page.locator('[data-view=notes]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='笔记库');assert.equal(await page.locator('#library-order').inputValue(),'current');
       await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');assert.equal(await page.locator('#library-order').inputValue(),'path');assert.match(await page.locator('#library-page').textContent(),/51–65/);
+      await page.setViewportSize({width:393,height:340});
+      await page.locator('.collection').evaluate(n=>n.scrollTop=120);
+      const savedScroll=await page.locator('.collection').evaluate(n=>n.scrollTop);assert.ok(savedScroll>0);
+      await page.locator('[data-view=focus]').click();await page.getByRole('heading',{name:'优先处理',exact:true}).waitFor();
+      await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.locator('#action-new').waitFor();
+      await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
+      assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),savedScroll);await page.setViewportSize({width:1180,height:800});
       await page.locator('#new').click();await page.locator('#capture-title').fill('真实收藏上下文捕获');await page.locator('#capture-body').fill('合成持久正文');await page.getByRole('button',{name:'创建笔记',exact:true}).click();await page.locator('#capture-return').waitFor({state:'visible'});
       const captured=await page.locator('#file-path').textContent();assert.match(await readFile(join(fixture.root,captured),'utf8'),/合成持久正文/);
       await page.locator('#capture-return').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏' && document.querySelector('#library-page').textContent.includes('51–65'));assert.equal(await page.locator('nav [aria-current=page]').getAttribute('data-view'),'favorites');assert.match(await page.locator('#library-page').textContent(),/51–65/);

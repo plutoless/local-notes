@@ -222,7 +222,7 @@ function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiati
 async function prepareInitiatives(cached = false) { if (!initiatives.repository.ready || initiatives.repository.workspaceId !== actions.repository.workspaceId) await initiatives.openWorkspace(cached); }
 async function note(cmd,args={}){const result=await native(cmd,{workspaceId:rootKey,...args});return cmd==='read'?noteReply(result):result;}
 function content(){return withTitle(reader.text('body'),reader.text('title')||'无标题');}
-function updateStar(){const selected=stars.has(current);$('#star').textContent=selected?'★':'☆';$('#star').title=selected?'取消收藏笔记':'收藏笔记';$('#star').setAttribute('aria-label',selected?'取消收藏笔记':'收藏笔记');$('#star').setAttribute('aria-pressed',String(selected));}
+function updateStar(){infoUI.set({starred:stars.has(current)});}
 function state(msg){
   updateNoteToolbar();
   reader.set({status:msg,statusDetail:''});
@@ -261,7 +261,7 @@ if(view==='focus'){
   return;
 }if(view==='initiatives'){await actions.show({recover:false});actions.active=false;await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;legacyRoot=workspace.root==='Sample'?'Sample · 样本笔记':workspace.root||'';await libraryScreen.show();}
 function render(){if(['notes','favorites'].includes(view))libraryScreen.render().catch(e=>notice(e.message));}
-async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation){reader.set({capture:false});const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;rememberReading();readingOwner=null;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;reader.text('title', titleOf(r.text,path));reader.text('body', r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));$('#file-path').textContent=path;updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=recover ? readDraft() : null;if(draft){reader.text('title', titleOf(draft.text,path));reader.text('body', draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}readerSelection = null;setNoteMode(!draft);for(const selector of readingScrollSelectors) $(selector).scrollTop=0;committed();
+async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation){reader.set({capture:false});const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;rememberReading();readingOwner=null;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;reader.text('title', titleOf(r.text,path));reader.text('body', r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));infoUI.set({path});updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=recover ? readDraft() : null;if(draft){reader.text('title', titleOf(draft.text,path));reader.text('body', draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}readerSelection = null;setNoteMode(!draft);for(const selector of readingScrollSelectors) $(selector).scrollTop=0;committed();
 readingOwner={workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
 rememberReading();render();await noteInitiatives(path);if(request!==noteLoadRequest)return false;await libraryScreen.noteTopics(path);return request===noteLoadRequest;}
 async function openContextNote(path, reading = true) {
@@ -578,12 +578,11 @@ function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter
 function openShortTask({title, controls, key, values, save, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
   shortFields.show(controls);
-  for (const control of shortForm.querySelectorAll('input:not([type=hidden]),textarea')) control.setAttribute('aria-describedby', [control.getAttribute('aria-describedby'), 'note-task-status'].filter(Boolean).join(' '));
   shortStatus.replaceChildren();
   shortTask = {key, values, save}; shortTask.initial = shortInput();
   let draft; try { draft = JSON.parse(localStorage.getItem(key)); } catch { /* Ignore invalid private drafts. */ }
   if (draft) {
-    for (const [id, value] of Object.entries(draft)) { const input = shortForm.querySelector('#' + id); if (input) input.value = value; }
+    for (const [id, value] of Object.entries(draft)) { const input = shortForm.querySelector('#' + id); if (input) shortFields.set(id,{value}); }
     shortStatus.textContent = '已恢复未保存草稿，请核对后保存。';
   }
   shortDrawer.setTitle(title); shortSubmit.textContent = submit;
@@ -621,7 +620,7 @@ async function openCapture() {
   const title = () => $('#capture-title'), body = () => $('#capture-body'), path = () => $('#capture-path');
   openShortTask({title: '随手记', key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',describedBy:'note-task-status'},{id:'capture-body',label:'正文',multiline:true,describedBy:'note-task-status'}],
     values: () => ({'capture-title': title().value, 'capture-body': body().value, 'capture-path': path().value}), submit: '创建笔记', save: async () => {
-      if (!title().value.trim() && !body().value.trim()) { title().setAttribute('aria-invalid', 'true'); throw Error('请填写标题或正文。'); }
+      if (!title().value.trim() && !body().value.trim()) { shortFields.set('capture-title',{invalid:true}); throw Error('请填写标题或正文。'); }
       if (workspaceId !== rootKey) throw Error('Workspace changed');
       // Create only after explicit submission; failed writes retain all input.
       if (!safePath(path().value)) throw Error('请使用有效的相对 Markdown 路径');
@@ -638,7 +637,7 @@ const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理',
 noteInfo.panel.classList.add('ui-drawer-wide');
 const details = $('#note-details');
 const infoOpen = button('笔记信息与整理', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); }); infoOpen.id = 'note-info-open';
-noteInformationView(noteInfo.body);
+const infoUI = noteInformationView(noteInfo.body);
 details.replaceWith(infoOpen);
 noteInfo.footer.append(button('完成', () => flush(), {primary: true, density: 'compact'}));
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
@@ -652,17 +651,17 @@ libraryScreen.returnToNoteInfo = async (note, committed) => {
 
 
 async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;libraryScreen.resetCollections();organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
-$('#star').onclick=()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();};
+infoUI.on('star',()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();});
 reader.on('back', async()=>{if(wikiHistory.length){await returnWiki();return;}wikiIntent++;if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.view === 'focus' ? [...document.querySelectorAll('[data-reading-path]')].find(node=>node.dataset.readingPath===current) || $('.home-tools .primary') : origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}});
 reader.on('mode', ()=>{setNoteMode(!readMode); if (!readMode) $('#body').focus();});
-$('#rename').onclick = async () => {
+infoUI.on('rename', async () => {
   if (!await flush()) return;
   const original = current, expected = base, workspaceId = currentWorkspace;
   const pathInput = () => $('#note-location');
   openShortTask({title: '移动 / 改名', controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
     key: `location-draft:${workspaceId}:${original}`, values: () => ({'note-location': pathInput().value}), save: async () => {
       const path = pathInput().value.trim();
-      if (!safePath(path)) { pathInput().setAttribute('aria-invalid', 'true'); throw Error('请使用有效的相对 Markdown 路径'); }
+      if (!safePath(path)) { shortFields.set('note-location',{invalid:true}); throw Error('请使用有效的相对 Markdown 路径'); }
       if (path === original) return;
       await repairMovedLinks();
       await note('move', {path: original, target: path, expected, workspaceId});
@@ -673,7 +672,7 @@ $('#rename').onclick = async () => {
       if (stars.delete(original)) { stars.add(path); localStorage.setItem('stars', JSON.stringify([...stars])); }
       await load(path).then(refresh).catch(error => notice('笔记已移动，请重新打开：' + error.message));
     }});
-};
+});
 $('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
 $('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
 window.hasUnsavedChanges = () => { const task = activeTask(); return Boolean(task && (task.dirty() || task.pending?.())); };
@@ -695,7 +694,7 @@ refresh().catch(e=>notice(e.message));
 
 let noteInitiativePending = null, initiativeClassification = null;
 async function noteInitiatives(path, focusId = null) {
-  $('#repair-links').hidden = !localStorage.getItem('pending-note-move:'+rootKey);
+  infoUI.set({repair:Boolean(localStorage.getItem('pending-note-move:'+rootKey))});
   const workspaceId = rootKey;
   await prepareInitiatives();
   await initiatives.repository.serialize(() => initiatives.repository.recover());
@@ -724,9 +723,9 @@ async function noteInitiatives(path, focusId = null) {
         } catch (error) {
           if (!owns()) return;
           const failure = document.createElement('div'); failure.setAttribute('role', 'alert'); initiativeClassification.receipts.append(failure);
-          checkbox.checked = !linked;
+          initiativeClassification.set(record.entityId,{checked:!linked});
           // Reload the owner after either a stale base or a recoverable commit. Never repeat the old write.
-          for (const input of container.querySelectorAll('input')) input.disabled = true;
+          initiativeClassification.set(null,{disabled:true});
           feedback(failure, error.revisionSaved ? '关联版本已保存，恢复尚未完成。请重试更新。' : '关联尚未保存，请重新载入后重试。', error.message);
           failure.append(button('重试更新事项关联', async () => {
             if (noteInitiativePending) return noteInitiativePending;
@@ -752,9 +751,9 @@ async function repairMovedLinks() {
   await libraryScreen.library.open();
   if (!organize.repository.ready || organize.repository.workspaceId !== rootKey) await organize.repository.open();
   await moveReferences([actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], intent.from, intent.to);
-  localStorage.removeItem('pending-note-move:'+rootKey); $('#repair-links').hidden = true;
+  localStorage.removeItem('pending-note-move:'+rootKey); infoUI.set({repair:false});
 }
-$('#repair-links').onclick = async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('已更新移动后的关联。', true); } } catch (error) { notice('关联尚未更新：'+error.message); } };
+infoUI.on('repair', async () => { try { if (await flush()) { await repairMovedLinks(); await noteInitiatives(current); notice('已更新移动后的关联。', true); } } catch (error) { notice('关联尚未更新：'+error.message); } });
 
 // Chinese validation messages are presentation only; domain validation remains authoritative.
 document.addEventListener('invalid', event => {

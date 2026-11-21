@@ -5,6 +5,17 @@ Written and native blockers name #93; it is closed and available at this SHA.
 PR #106 is an ancestor; no open overlapping PR was returned before implementation.
 No sibling implementation, coordinator code changes or native GUI execution.
 
+Independent reviews found two P2 issues: inactive collection ownership could
+overwrite saved scroll; metadata/classification still had competing property
+writers. The correction clears ownership outside collection routes and moves
+field, checkbox and metadata changes through typed React model updates/callbacks.
+Public regression tests cover intervening pages with different scroll values;
+the real-app journey checks Favorites → Focus → Actions → Favorites restoration.
+The first added browser scroll assertion incorrectly assumed the inner list
+scrolled at desktop size; its failed receipt is preserved, and the correction
+uses the real collection scrollport in a short window. No product requirement
+was waived. Focused forms/Topic/classification/focus/Library checks were repeated.
+
 ## Selected layers
 
 | Behavior | Layer / executed receipt |
