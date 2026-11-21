@@ -25,7 +25,8 @@ for node in shared.body:
     if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id in ['EXTRA', 'ROUTE_RECORDER'] for t in node.targets):
         m.__dict__[node.targets[0].id] = ast.literal_eval(node.value)
 m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"active":NSApp.isActive,', '"active":NSApp.isActive,"frontmostPID":NSWorkspace.shared.frontmostApplication?.processIdentifier ?? -1,')
-m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"firstResponderIsWeb":self?.window.firstResponder === self?.web', '"firstResponderIsWeb":self?.window.firstResponder === self?.web,"firstResponderClass":(self?.window.firstResponder).map {String(describing:type(of:$0))} ?? "none","recipientPID":getpid()')
+m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"firstResponderIsWeb":self?.window.firstResponder === self?.web', '"firstResponderIsWeb":self?.window.firstResponder === self?.web,"firstResponderClass":firstResponderClass,"recipientPID":getpid()')
+m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('if script == "__host" { let result', 'if script == "__host" { let firstResponderClass:String; if let responder=self?.window.firstResponder {firstResponderClass=String(describing:type(of:responder))} else {firstResponderClass="none"}; let result')
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue65keyboard')
 source = source.replace('generated=OUT/\'main.swift\';generated.write_text(source)', "generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()'))")
 exec(source, m.__dict__); m.build()
