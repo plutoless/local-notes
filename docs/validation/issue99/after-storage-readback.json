@@ -1,0 +1,210 @@
+{
+  "confirmed": [
+    {
+      "entityType": "action",
+      "focusPosition": null,
+      "parents": [],
+      "initiativeId": null,
+      "status": "todo",
+      "entityId": "7236f604-6491-4e02-b61f-7675bff3e317",
+      "waitingOn": null,
+      "workspaceId": "d8ccc271-298a-4c25-bad2-9748a6a0b6c4",
+      "formatVersion": 1,
+      "modifiedAt": "2026-11-21T06:08:52.498Z",
+      "dueDate": null,
+      "revision": "22d3ca9d-834e-48d4-8677-a97c865abdfa",
+      "description": "合成长中文建议：逐条核对当前适用性、保留来源与用户决定合成长中文建议：逐条核对当前适用性、保留来源与用户决定合成长中文建议：逐条核对当前适用性、保留来源与用户决定合成长中文建议：逐条核对当前适用性、保留来源与用户决定合成长中文建议：逐条核对当前适用性、保留来源与用户决定",
+      "sources": [
+        {
+          "end": 6000,
+          "start": 0,
+          "role": "reference",
+          "fingerprint": "fnv1a32:d9b137d5",
+          "path": "reference.md",
+          "fragmentId": "reference.md:0:6000",
+          "quote": "# 合成长中文来源标题：核对历史"
+        }
+      ]
+    }
+  ],
+  "sourceUnchanged": true,
+  "elapsedMs": 5500.537625,
+  "adapterCallCounts": {
+    "workspace": 41,
+    "actionFiles": 47,
+    "actionIndex": 40,
+    "actionWrite": 32,
+    "actionQuery": 55,
+    "referenceInventory": 9,
+    "metadata": 9,
+    "referencePut": 1,
+    "referenceTags": 9,
+    "referenceQuery": 33
+  },
+  "synchronizedFiles": [
+    {
+      "path": "LocalNotesData/actions/7236f604-6491-4e02-b61f-7675bff3e317.json",
+      "sha256": "aa9afca3d90c41273f87a84a405a80888fdba07024916aa9036abd00891b7b5e"
+    },
+    {
+      "path": "LocalNotesData/candidates/03e067cf-7ef7-4662-8496-4f733666bddf.json",
+      "sha256": "330f291f0ededac01b9029ce5519386d98f03b774ada7ccec05cca0782ca4b53"
+    },
+    {
+      "path": "LocalNotesData/candidates/27963b5f-b4ee-48b8-b877-19ceaf1ac777.json",
+      "sha256": "ea4f888b018392492029736670d3c451d8099756fdf3865244056ac3a35609e3"
+    },
+    {
+      "path": "LocalNotesData/candidates/2a753715-c98b-47b2-90c8-ecd492a9812f.json",
+      "sha256": "213a0a3196994f1613b14a853627eb415d2fd34d9fbc5202c896dac37ca7070b"
+    },
+    {
+      "path": "LocalNotesData/candidates/304b6ea8-96e1-4b20-bc8b-80968be4ed9c.json",
+      "sha256": "e7c40ff69535d77dcfd74bab2911ed136a3bb5445bc58943e48944b0b979be70"
+    },
+    {
+      "path": "LocalNotesData/candidates/87f8bdd4-be0f-46f5-8032-b56ab3e33255.json",
+      "sha256": "e2a5bc5fb49e694241150f88189cfb6c22445199729326f159c6d818debbfc3f"
+    },
+    {
+      "path": "LocalNotesData/candidates/ac0f4899-f97a-4396-8a97-23846c763c8d.json",
+      "sha256": "dd446ce4370cf4a5ed5f2b0b5b62153a7b1bc70f7f31b43709b67af06e4ac83c"
+    },
+    {
+      "path": "LocalNotesData/candidates/bba13f60-6074-4317-b3bd-99c0cb764c4c.json",
+      "sha256": "9ee2a689b069589843e631924c2c834ac83bbb685318d7f71b8857f4d8425c50"
+    },
+    {
+      "path": "LocalNotesData/candidates/bd42009a-e8ce-4206-aa27-b6d7e6d69782.json",
+      "sha256": "b21f097cfbbdc7ac09a327969bb217c0ae53f7fdecc87192084d130f6f0fb996"
+    },
+    {
+      "path": "LocalNotesData/candidates/c11b6d0e-5709-434a-88d0-a8b5ed8d9b8b.json",
+      "sha256": "6f5839e05d0e64c011512dd23b64527ff5e0650217870704139f322c0fb38ac9"
+    },
+    {
+      "path": "LocalNotesData/candidates/df8533ce-5bdd-4abb-8021-6f3cc1570edf.json",
+      "sha256": "22e094707dacd37a113d1b7f4a88d3bb0ce30b06d0435948fd05da96f6d60009"
+    },
+    {
+      "path": "LocalNotesData/candidates/f236f604-6491-4e02-b61f-7675bff3e317.json",
+      "sha256": "8d7636416d04998fea1257ced7824dc8b4c053e03816ccf70d3eba4656682213"
+    },
+    {
+      "path": "LocalNotesData/candidates/f23c90e1-c7db-43e5-8073-ec57ef632922.json",
+      "sha256": "5686b291e48ca80855544a7a19a8a988b0a823cd5498abb5c63a685c0589a8a6"
+    },
+    {
+      "path": "LocalNotesData/initiatives/33d74108-042a-459d-ba35-03f5c4572549.json",
+      "sha256": "4f905d6d65e4339a62bc03333cbd81b4dc1ce28257d93c051167e18be47fa232"
+    },
+    {
+      "path": "LocalNotesData/revisions/03e067cf-7ef7-4662-8496-4f733666bddf/9e292135-f848-4f5d-b881-4dd6c2048cfc.json",
+      "sha256": "330f291f0ededac01b9029ce5519386d98f03b774ada7ccec05cca0782ca4b53"
+    },
+    {
+      "path": "LocalNotesData/revisions/27963b5f-b4ee-48b8-b877-19ceaf1ac777/6f14745c-a4f2-415f-8fbe-484f66e89407.json",
+      "sha256": "ea4f888b018392492029736670d3c451d8099756fdf3865244056ac3a35609e3"
+    },
+    {
+      "path": "LocalNotesData/revisions/2a753715-c98b-47b2-90c8-ecd492a9812f/7d095d0a-28a3-4d48-a3be-2ff56dfe0ad3.json",
+      "sha256": "213a0a3196994f1613b14a853627eb415d2fd34d9fbc5202c896dac37ca7070b"
+    },
+    {
+      "path": "LocalNotesData/revisions/304b6ea8-96e1-4b20-bc8b-80968be4ed9c/9d31b58c-c7b7-49bb-a53d-62c2e0a94060.json",
+      "sha256": "e7c40ff69535d77dcfd74bab2911ed136a3bb5445bc58943e48944b0b979be70"
+    },
+    {
+      "path": "LocalNotesData/revisions/33d74108-042a-459d-ba35-03f5c4572549/df83670c-4ea1-466f-a7e5-8732339586b3.json",
+      "sha256": "4f905d6d65e4339a62bc03333cbd81b4dc1ce28257d93c051167e18be47fa232"
+    },
+    {
+      "path": "LocalNotesData/revisions/7236f604-6491-4e02-b61f-7675bff3e317/22d3ca9d-834e-48d4-8677-a97c865abdfa.json",
+      "sha256": "aa9afca3d90c41273f87a84a405a80888fdba07024916aa9036abd00891b7b5e"
+    },
+    {
+      "path": "LocalNotesData/revisions/87f8bdd4-be0f-46f5-8032-b56ab3e33255/3e655096-7024-41d6-9933-fc66aa0f0df4.json",
+      "sha256": "e2a5bc5fb49e694241150f88189cfb6c22445199729326f159c6d818debbfc3f"
+    },
+    {
+      "path": "LocalNotesData/revisions/ac0f4899-f97a-4396-8a97-23846c763c8d/9f059928-a429-4f7e-a309-8b59227f4904.json",
+      "sha256": "dd446ce4370cf4a5ed5f2b0b5b62153a7b1bc70f7f31b43709b67af06e4ac83c"
+    },
+    {
+      "path": "LocalNotesData/revisions/bba13f60-6074-4317-b3bd-99c0cb764c4c/ebe4368f-43ec-4e61-8538-6d36bbc91aac.json",
+      "sha256": "9ee2a689b069589843e631924c2c834ac83bbb685318d7f71b8857f4d8425c50"
+    },
+    {
+      "path": "LocalNotesData/revisions/bd42009a-e8ce-4206-aa27-b6d7e6d69782/b62017e6-8773-4b69-b071-ba805081ec00.json",
+      "sha256": "b21f097cfbbdc7ac09a327969bb217c0ae53f7fdecc87192084d130f6f0fb996"
+    },
+    {
+      "path": "LocalNotesData/revisions/c11b6d0e-5709-434a-88d0-a8b5ed8d9b8b/5f4e39c9-e5d6-4fee-b7b0-fcd8d6344b75.json",
+      "sha256": "6f5839e05d0e64c011512dd23b64527ff5e0650217870704139f322c0fb38ac9"
+    },
+    {
+      "path": "LocalNotesData/revisions/df8533ce-5bdd-4abb-8021-6f3cc1570edf/ac631488-2576-4a7b-81b5-522528b06383.json",
+      "sha256": "22e094707dacd37a113d1b7f4a88d3bb0ce30b06d0435948fd05da96f6d60009"
+    },
+    {
+      "path": "LocalNotesData/revisions/f236f604-6491-4e02-b61f-7675bff3e317/22f0eb8c-b9bd-4a3a-aff1-e30bf41e4264.json",
+      "sha256": "66fc2e8ed3f2487c61c4098bbc6596084909f41794f298f35ada6f864551e787"
+    },
+    {
+      "path": "LocalNotesData/revisions/f236f604-6491-4e02-b61f-7675bff3e317/796eb8ee-a22c-4655-a51d-81d188aed2ab.json",
+      "sha256": "46edb65929ff938b48e619db302c6764492986eafe4feee790ff517e58ee86c1"
+    },
+    {
+      "path": "LocalNotesData/revisions/f236f604-6491-4e02-b61f-7675bff3e317/d5047ca9-d7c0-4d18-ad8d-875129892087.json",
+      "sha256": "8d7636416d04998fea1257ced7824dc8b4c053e03816ccf70d3eba4656682213"
+    },
+    {
+      "path": "LocalNotesData/revisions/f23c90e1-c7db-43e5-8073-ec57ef632922/0387aad5-74ed-466f-ba93-08b1c054be65.json",
+      "sha256": "5686b291e48ca80855544a7a19a8a988b0a823cd5498abb5c63a685c0589a8a6"
+    },
+    {
+      "path": "LocalNotesData/workspace.json",
+      "sha256": "aab8494491af8d9db2059237f31274c0f6ed74bb85df42ea0f70249c840262cd"
+    },
+    {
+      "path": "reference.md",
+      "sha256": "35bac6bd9a4de312ded68209c6292f08dcd68680304d2c2f24fc1f4dc91259c7"
+    }
+  ],
+  "privateIndexFiles": [
+    {
+      "path": "Workspaces/d8ccc271-298a-4c25-bad2-9748a6a0b6c4/actions.sqlite",
+      "sha256": "8208f6715dda8afc54ac39b938a5403978bb674b173d210495fb17734b6176e8"
+    },
+    {
+      "path": "Workspaces/d8ccc271-298a-4c25-bad2-9748a6a0b6c4/candidates.sqlite",
+      "sha256": "c69f52a4ec506bd4dde3d27ca6b61237fe733b7304f3045e3f1d76c27f60792a"
+    },
+    {
+      "path": "Workspaces/d8ccc271-298a-4c25-bad2-9748a6a0b6c4/initiatives.sqlite",
+      "sha256": "8f91d0880e84b96b5af27f91bc3a9cfe93db61a8e97df1a79c6c9054f1a4a963"
+    },
+    {
+      "path": "Workspaces/d8ccc271-298a-4c25-bad2-9748a6a0b6c4/references.sqlite",
+      "sha256": "6d3719ae841bc7015205086c80d92d6ec3e70e7d806e0ad53f0c9631125f779d"
+    },
+    {
+      "path": "Workspaces/d8ccc271-298a-4c25-bad2-9748a6a0b6c4/topics.sqlite",
+      "sha256": "924aabe7b152fc5fa777833b58d8f7de6d5fafad337c6b79a8a66f44c4ee2d8c"
+    }
+  ],
+  "adapterCommands": [
+    "actionFiles",
+    "actionIndex",
+    "actionQuery",
+    "actionWrite",
+    "metadata",
+    "referenceInventory",
+    "referencePut",
+    "referenceQuery",
+    "referenceTags",
+    "workspace"
+  ],
+  "bridge": "Browser NotesNative.request -> exposed bridge -> isolated Markdown / Swift StorageHarness / SQLite",
+  "nativeTransportExercised": false
+}
