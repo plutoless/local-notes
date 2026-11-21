@@ -56,6 +56,8 @@ try {
       await page.getByRole('checkbox',{name:'上下文跳转合成事项',exact:true}).check();
       await page.getByRole('button',{name:'打开事项：上下文跳转合成事项',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#workspace-title').textContent==='上下文跳转合成事项');
       await page.locator('[data-view=favorites]').click();await page.waitForFunction(()=>document.querySelector('#view-title').textContent==='收藏');
+      await page.waitForFunction(expected=>document.querySelector('.collection').scrollTop===expected,contextualScroll,{timeout:3000});
+      await page.waitForTimeout(180);
       assert.equal(await page.locator('.collection').evaluate(n=>n.scrollTop),contextualScroll);await page.setViewportSize({width:1180,height:800});
       await page.locator('#new').click();await page.locator('#capture-title').fill('真实收藏上下文捕获');await page.locator('#capture-body').fill('合成持久正文');await page.getByRole('button',{name:'创建笔记',exact:true}).click();await page.locator('#capture-return').waitFor({state:'visible'});
       const captured=await page.locator('#file-path').textContent();assert.match(await readFile(join(fixture.root,captured),'utf8'),/合成持久正文/);
