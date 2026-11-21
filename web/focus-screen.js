@@ -7,8 +7,19 @@ export class FocusScreen {
     Object.assign(this, {actions, initiatives, navigate, notice});
     this.limit = 7; this.waitingLimit = 50; this.initiativeLimit = 50;
   }
-  run = async operation => { try { return await operation(); } catch (error) { this.notice(error.message); } };
+  run = async (operation, followsNavigation = false) => {
+    const repository = this.actions.repository, owner = this.ownerGeneration || 0;
+    try { return await operation(); }
+    catch (error) {
+      if (repository === this.actions.repository && (followsNavigation || owner === (this.ownerGeneration || 0))) this.notice(error.message);
+    }
+  };
+  async refreshOwned(repository) {
+    const request = (this.request || 0) + 1;
+    return await this.show() && this.active && repository === this.actions.repository && request === this.request;
+  }
   release() {
+    this.ownerGeneration = (this.ownerGeneration || 0) + 1;
     this.request = (this.request || 0) + 1;
     this.view?.release(); this.view = null;
     clearTimeout(this.backgroundTimer);
@@ -17,9 +28,9 @@ export class FocusScreen {
     this.view ||= focusView(list, {
       status: statusLabel, overdue: isOverdue,
       openAction: action => this.run(() => this.openAction(action)),
-      navigate: page => this.run(() => this.navigate(page)),
-      createInitiative: () => this.run(async () => { if (await this.navigate('initiatives')) await this.initiatives.edit(null); }),
-      openInitiative: record => this.run(async () => { if (await this.navigate('initiatives')) await this.initiatives.edit(record); }),
+      navigate: page => this.run(() => this.navigate(page), true),
+      createInitiative: () => this.run(async () => { if (await this.navigate('initiatives')) await this.initiatives.edit(null); }, true),
+      openInitiative: record => this.run(async () => { if (await this.navigate('initiatives')) await this.initiatives.edit(record); }, true),
       recover: () => this.run(async () => {
         const actions = this.actions.repository, initiatives = this.initiatives.repository;
         const request = this.request;
@@ -34,18 +45,18 @@ export class FocusScreen {
         const repository = this.actions.repository, request = this.request;
         await repository.save({...action, focusPosition:null}, action);
         if (!this.active || repository !== this.actions.repository || request !== this.request) return;
-        await this.show(); $('#items .focus-row-open, .home-tools .primary')?.focus();
+        if (await this.refreshOwned(repository)) $('#items .focus-row-open, .home-tools .primary')?.focus();
       }),
       move: (action, index, direction) => this.run(async () => {
         const repository = this.actions.repository, request = this.request;
         const position = focusPosition(this.focused.actions, index, direction);
         await repository.save({...action, focusPosition:position}, action);
         if (!this.active || repository !== this.actions.repository || request !== this.request) return;
-        await this.show(); [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action.entityId)?.focus();
+        if (await this.refreshOwned(repository)) [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action.entityId)?.focus();
       }),
       more: () => this.run(async () => { this.limit = Math.min(99, this.limit + 50); await this.show(); }),
       page: offset => this.pageFocus(offset),
-      waiting: () => this.run(async () => { this.actions.status='waiting'; this.actions.offset=0; this.actions.search=''; this.actions.initiativeFilter=''; $('#search').value=''; if (await this.navigate('actions')) $('#action-filter').value='waiting'; }),
+      waiting: () => this.run(async () => { this.actions.status='waiting'; this.actions.offset=0; this.actions.search=''; this.actions.initiativeFilter=''; $('#search').value=''; if (await this.navigate('actions')) $('#action-filter').value='waiting'; }, true),
       resume: entry => this.run(() => this.resumeReading(entry)),
       removeReading: path => this.run(() => this.removeReading(path))
     });
