@@ -13,9 +13,9 @@ Starting source: `6f2dec964856c14f98b5a805019dc03b0cc83b41`.
 
 Commands that run tests use generated local assets and isolated synthetic storage.
 No two completed unchanged failure cycles have been blindly repeated. Every repair
-above changes the diagnosed cause or establishes new diagnostic evidence. Native
-baseline evidence is separate from current production implementation validation;
-there is no current native grant and no final-head native pass claimed.
+above changes the diagnosed cause or establishes new diagnostic evidence. At this historical stage, native
+baseline evidence was separate from production implementation validation and no
+final-source native pass had yet been established. The final outcome is below.
 
 | Follow-up cycle / signature | Diagnosis and correction | Targeted result |
 | --- | --- | --- |
@@ -24,10 +24,10 @@ there is no current native grant and no final-head native pass claimed.
 | Source review correction | Archive badge duplicated only one spelling and directory navigation could include the current directory itself | Use existing `archivedPath` domain decision in controller; preserve original directory descendant exclusion; production layout keeps original pager structure |
 | Stalled old-source search diagnostic | One headless navigation test from the removed-Organization-template interval did not settle | Interrupted only its verified owned Node/headless test process tree; recorded `build/issue92-search-navigation-interrupted.json`; subsequent full UI run's search/navigation passed |
 
-Current resource-only native harness mode reuses the existing executor and guards;
-it adds generated-tree bindings and actual custom-scheme module/style/denial checks
-while an active draft remains protected. It has not been launched and requires a
-separate final-source coordinator grant.
+At this historical stage, the new resource-only mode reused the existing executor
+and guards, adding generated-tree bindings and custom-scheme module/style/denial
+checks while an active draft remained protected. It had not yet launched and still
+required a separate final-source coordinator grant; its later outcome is below.
 
 ## Independent-review and final-pass corrections
 
@@ -71,6 +71,6 @@ receipt are in `native/cycle1/`; coordinator independently confirmed process abs
 and released the lease. Production minos13.3 differs from generated minos26.0; all
 24 packaged asset hashes match. The native comparison retains the deterministic
 +89.2% asset size and approximately +9.4% host-RSS increase, with bundle composition
-investigation and measurement limits in README. A prior coordinator message used
+investigation and measurement limits in README. A prior worker status message used
 an incorrect MiB conversion; the repository uses 93.25–93.44 MiB migrated host RSS
 versus 85.22–85.39 MiB baseline, excluding WebContent. No further GUI work is granted.
