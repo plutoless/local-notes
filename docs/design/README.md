@@ -225,3 +225,15 @@ records become inert only while one explicit resolution is active. The live cata
 imports the production comparison with long Chinese content and invalid/selected
 states. The stable controller retains repository guards, committed recovery and the
 shared modal leave/focus owner; see [the ownership inventory](../architecture/sync-react.md).
+
+## Global search React adoption (#97)
+
+Compact A global search consumes production `SearchContent`, `SearchPassage` and
+`Button` through the typed view in `web/react/search.tsx`. The catalogue imports the
+same component with a long Chinese selected note and grounded highlighted excerpt.
+Existing semantic tokens and `.search-*` focus/selection/attribution rules remain
+authoritative. Scope selection, keyboard focus and pointer treatment are distinct;
+there is one existing native-dialog/Tab owner. Presentation never reads the index,
+copies through the bridge or navigates independently. See
+[search ownership](../architecture/search-react.md) and issue97 validation for the
+actual-app source/return, selection, narrow/short, reduced-motion and contrast checks.
