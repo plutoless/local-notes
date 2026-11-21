@@ -1,3 +1,4 @@
+import {flushSync} from 'react-dom';
 import {useState, type ButtonHTMLAttributes, type MouseEvent} from 'react';
 type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
   busyOnAction?:boolean;
@@ -9,8 +10,12 @@ export function Button({className = 'quiet', onClick, disabled, busyOnAction = f
     if(disabled||pending)return;
     const result=onClick?.(event);
     if(busyOnAction&&result&&typeof (result as PromiseLike<unknown>).then==='function') {
-      setPending(true);
-      try{await result;}finally{setPending(false);}
+      flushSync(()=>setPending(true));
+      try{await result;}finally{
+        // Dialog return can run before React commits its pending-state render.
+        // Keep the real stable receiver available when the action has settled.
+        flushSync(()=>setPending(false));
+      }
     }
   }}/>;
 }

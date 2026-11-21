@@ -49,3 +49,16 @@ export function noteInformationView(container:HTMLElement) {
   </>));
   render();return {set(patch:Partial<typeof model>){model={...model,...patch};render();},on(action:string,callback:()=>unknown){callbacks[action]=callback;}};
 }
+
+export interface TaskFormOptions {id:string;statusId:string;errorId?:string;cancelId?:string;document?:boolean;cancel:()=>unknown}
+/** Stable fields and receipt ports; controllers retain draft and write authority. */
+export function taskFormView(body:HTMLElement,footer:HTMLElement,options:TaskFormOptions) {
+  const content=createRoot(body),actions=createRoot(footer);
+  flushSync(()=>content.render(<>
+    {options.errorId&&<div><div id={options.statusId} role="status"/><div id={options.errorId} role="alert" tabIndex={-1}/></div>}
+    <form id={options.id} className={options.document?'document':undefined} noValidate/>
+    {!options.errorId&&<div id={options.statusId} role="status"/>}
+  </>));
+  flushSync(()=>actions.render(<><Button id={options.cancelId} className="quiet ui-compact" busyOnAction onClick={options.cancel}>取消</Button><button type="submit" form={options.id} className="ui-action primary ui-compact"/></>));
+  return {form:body.querySelector<HTMLFormElement>('form')!,status:body.querySelector<HTMLElement>(`#${options.statusId}`)!,error:options.errorId?body.querySelector<HTMLElement>(`#${options.errorId}`)!:null,submit:footer.querySelector<HTMLButtonElement>('button[type=submit]')!};
+}

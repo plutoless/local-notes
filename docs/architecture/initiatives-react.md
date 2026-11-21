@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Initiative presentation ownership (#96)
 
 Starting/fetched main: `514a5138a6c76443a5bc04424bddd9a2960a7d69`.

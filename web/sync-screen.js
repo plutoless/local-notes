@@ -1,8 +1,8 @@
-import {requestTaskLeave, bindDialog, button, icon} from './presentation.js';
-import {syncView, syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft} from './assets/react-host.js';
+import {requestTaskLeave, bindDialog, icon} from './presentation.js';
+import {syncView, syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft, actionControl} from './assets/react-host.js';
 
 const types = {action:'行动',initiative:'事项',topic:'主题',candidate:'建议'};
-// Stable legacy entry point: React owns descendants; repositories and the shared
+// Stable synchronization controller: React owns descendants; repositories and the shared
 // task decision retain persistence and overlay authority.
 export class SyncScreen {
   constructor(repositories, notice, changed) {
@@ -14,8 +14,8 @@ export class SyncScreen {
     document.body.append(this.panel); this.dialog=bindDialog(this.panel);
     this.view=syncView(this.panel,{close:()=>this.close(),refresh:()=>this.refresh(true),jump:key=>{const article=this.article(key);article?.scrollIntoView({block:'start'});article?.querySelector('h3')?.focus();},choose:(key,revision)=>this.choose(key,revision),edit:(key,field,value)=>this.edit(key,field,value),discard:key=>this.discard(key),save:key=>this.saveResolution(key),recover:key=>this.recoverDraft(key)});
     this.panel.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopImmediatePropagation();this.close();}else if(event.key==='Escape'){event.stopImmediatePropagation();}},true);
-    this.opener=button('同步检查',()=>this.refresh(true)); this.opener.onclick=()=>this.refresh(true); this.opener.innerHTML=icon('sync')+'同步检查';
-    document.querySelector('#shell-legacy-utilities').append(this.opener);
+    const opener=actionControl('同步检查',()=>this.refresh(true),{icon:icon('sync')}); this.opener=opener.control;
+    document.querySelector('#shell-utilities').append(opener.host);
     const refresh=()=>this.refresh(false); window.addEventListener('focus',refresh);window.addEventListener('reference-change',refresh);
     this.render();
   }

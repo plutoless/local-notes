@@ -1,7 +1,7 @@
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Button} from './components';
-import {actionLabels, initiativeLabels, statusLabel} from '../presentation.js';
+import {actionLabels, initiativeLabels, statusLabel} from '../presentation-labels.js';
 
 export interface Revision {revision:string; title?:string; description?:string; modifiedAt?:string; deleted?:boolean; [key:string]:unknown}
 export interface ConflictRecord {

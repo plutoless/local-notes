@@ -1,7 +1,7 @@
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Button} from './components';
-import {statusLabel} from '../presentation.js';
+import {statusLabel} from '../presentation-labels.js';
 import type {ActionRecord, ActionEntryPort} from './actions';
 
 export interface InitiativeSource {path:string;quote:string;fingerprint:string;role:'working-note'|'reference'}

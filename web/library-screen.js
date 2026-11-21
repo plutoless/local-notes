@@ -1,5 +1,5 @@
-import {libraryView, libraryPage, shellUpdate, noteFieldsView, classificationView, CollectionContexts} from './assets/react-host.js';
-import {requestTaskLeave, feedback, directoryLabel, button, drawer, errorFeedback} from './presentation.js';
+import {libraryView, libraryPage, shellUpdate, noteFieldsView, classificationView, CollectionContexts, actionControl, taskFormView} from './assets/react-host.js';
+import {requestTaskLeave, feedback, directoryLabel, drawer, errorFeedback} from './presentation.js';
 import {Library, archivedPath} from './library.js';
 import {native} from './bridge.js';
 const $ = selector => document.querySelector(selector);
@@ -26,18 +26,10 @@ export class LibraryScreen {
   }
   setupTopicDrawer() {
     this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
-    const form = document.createElement('form'); form.id = 'topic-form'; form.noValidate = true;
+    const {form,status,error,submit} = taskFormView(this.topicDrawer.body,this.topicDrawer.footer,{id:'topic-form',statusId:'topic-status',errorId:'topic-error',cancelId:'topic-cancel',cancel:()=>this.leaveTopic()});
     this.topicFields = noteFieldsView(form);
     this.topicFields.show([{id:'topic-name',label:'主题名称',required:true,describedBy:'topic-error topic-status'}]);
     const input = form.querySelector('#topic-name');
-    const status = document.createElement('div'); status.id = 'topic-status'; status.setAttribute('role', 'status');
-    const error = document.createElement('div'); error.id = 'topic-error'; error.setAttribute('role', 'alert'); error.tabIndex = -1;
-    const receipts = document.createElement('div'); receipts.append(status,error);
-    this.topicDrawer.body.append(receipts);
-    this.topicDrawer.body.append(form);
-    const cancel = button('取消', () => this.leaveTopic(), {density: 'compact'}); cancel.id = 'topic-cancel';
-    const submit = document.createElement('button'); submit.type = 'submit'; submit.setAttribute('form', form.id); submit.className = 'ui-action primary ui-compact';
-    this.topicDrawer.footer.append(cancel, submit);
     this.topicFields.onInput(() => {
       error.replaceChildren();
       status.textContent = input.value === (this.editingTopic?.description || '') ? '' : '主题名称尚未保存。';
@@ -109,7 +101,7 @@ export class LibraryScreen {
     this.progress = '正在打开笔记库…'; this.controls();
     await this.library.open();
     if (this.topic && this.topic !== 'uncategorized' && !this.library.records.some(topic => topic.entityId === this.topic)) { this.topic = ''; this.offset = 0; }
-    $('#library-tools').hidden = false; $('#filters').hidden = true;
+    $('#library-tools').hidden = false;
     await this.render();
     $('.collection').scrollTop = this.browseScroll || 0; $('#items').scrollTop = this.browseListScroll || 0;
     this.library.sync().then(() => { this.failed = false; return this.render(); }).catch(error => { this.failed = true; this.render(); this.notice(error.message); });
@@ -203,15 +195,15 @@ export class LibraryScreen {
           if (error.associationSaved) {
             this.topicClassification.set(null,{disabled:true});
             feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', error.message);
-            const retry = button('重试更新关联', async () => {
+            const retry = actionControl('重试更新关联', async () => {
               this.noteTopicPending = (async () => {
               this.noteTopicSaving = true; container.inert = true;
               try { await this.library.sync(); if (ownsNote()) await this.noteTopics(path, topic.entityId); }
-              catch (recoveryError) { if (!ownsNote()) return; feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry); }
+              catch (recoveryError) { if (!ownsNote()) return; feedback(failure, '主题关联已保存，但列表尚未更新。请重试更新。', recoveryError.message); failure.append(retry.host); }
               finally { this.noteTopicSaving = false; container.inert = false; }
               })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });
             });
-            failure.append(retry);
+            failure.append(retry.host);
           } else { errorFeedback(failure, error.message); this.topicClassification.set(topic.entityId,{checked:!checkbox.checked,disabled:false}); }
         } finally { this.noteTopicSaving = false; container.inert = false; }
         })(); return this.noteTopicPending.finally(() => { this.noteTopicPending = null; });

@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Global search ownership (#97)
 
 Search uses the delivered pinned React/TypeScript/Tailwind pipeline and the existing compact A presentation. Application labels and accessibility names are Simplified Chinese. Targets remain macOS 13.3/WebKit 16.4 and Android 8/API26/WebView111+.

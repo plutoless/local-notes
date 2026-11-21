@@ -1,69 +1,14 @@
 <!doctype html>
-<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local Notes maintainer catalogue</title><link rel="stylesheet" href="../../web/style.css">
-<style>body{max-width:960px;margin:auto;padding:24px}section{margin-block:32px} .examples{display:flex;flex-wrap:wrap;gap:8px} .swatch{padding:12px;border:1px solid var(--line);border-radius:8px} h1{margin-top:24px} .ui-field{max-width:600px}</style>
-<h1>Presentation primitives and states</h1><p>Maintainer-only reference. <a href="README.md">Contract and adoption checklist</a>. Examples import the shipped tokens and constructors; they never access notes or storage.</p>
-<section><h2>Computed semantic tokens</h2><div id="tokens" class="examples"></div></section>
-<section><h2>Actions, feedback and keyboard</h2><p>Tab through controls. Click an enabled action to see its receipt. Compact primary, secondary, quiet, danger and icon controls use the production constructor. Surfaces are 32px; their nonoverlapping targets reserve at least 44px. Wrapped labels grow naturally.</p><div id="actions" class="examples"></div><div id="receipt" role="status"></div></section>
-<section><h2>Inline reader navigation</h2><p>Local wiki aliases remain part of the sentence. Tab and Enter use native button behavior with 44px targets and shared focus/accent tokens.</p><div id="wiki-example"></div></section>
-<section><h2>Fields and validation</h2><p>The shared field constructor reserves a 44px label click target around a 40px native field. Click its outer padding to focus the input.</p><div id="fields"></div></section>
-<section><h2>Rows, navigation, disclosure and pagination</h2><p>Pointer buttons and programmatic pointer returns keep actual focus without a keyboard frame. Tab/Shift+Tab exposes one 3px cue: inset on scrollable rows, outer on individual controls. Selected/current fill and checked fill persist independently. Invalid fields retain their message and caret when focused. Composite checkbox labels draw one keyboard cue around the label, never both child and parent. Real consumers: Current Focus, sidebar, Library/Favorites and Initiative/Action browsing.</p><nav aria-label="导航示例"><button class="active" aria-current="page">当前重点</button><button>笔记库</button><button disabled>正在载入…</button></nav><div id="rows"></div></section>
-<section><h2>Organization multi-selection</h2><label class="ui-selection"><input type="checkbox" checked>已选择的来源笔记.md</label><label class="ui-selection"><input type="checkbox">待选择的来源笔记.md</label></section>
-<section><h2>Feedback state matrix</h2><div id="states"></div></section>
-<section><h2>Focused panel and dialog</h2><div id="panel" class="ui-panel"><h3>Review surface</h3><p>Use this surface for focused decisions; a page layout remains separate.</p></div></section>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Local Notes maintainer catalogue</title>
+<link rel="stylesheet" href="../../web/style.css"><link rel="stylesheet" href="../../build/web/assets/react-host.css">
+<style>body{max-width:960px;margin:auto;padding:24px}section{margin-block:32px}.examples{display:flex;flex-wrap:wrap;gap:8px}.swatch{padding:12px;border:1px solid var(--line);border-radius:8px}.ui-field{max-width:600px}</style>
+<div id="foundation"></div><section id="react-library"></section>
 <script type="module">
-import {renderMarkdown} from '../../web/core.js';
-document.querySelector('#wiki-example').innerHTML = renderMarkdown('参考 [[folder/note|本地笔记]] 继续阅读。');
-import {button, field, disclosure, selectionRow, pagination, feedback, icon, bindDialog, comparisonRow, drawer} from '../../web/presentation.js';
-const $ = s => document.querySelector(s);
-for(const token of ['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','target-height','button-surface','field-surface','control-inset','radius','radius-panel']){
- const node=document.createElement('span');node.className='swatch';node.textContent=`--${token}: ${getComputedStyle(document.documentElement).getPropertyValue('--'+token)}`;$('#tokens').append(node);
-}
-for(const [variant,label] of [['primary','保存行动'],['secondary','保存笔记'],['quiet','返回任务'],['danger','移出重点'],['icon-action','新建笔记']]){
- const node=button(label,()=>feedback($('#receipt'),'已保存到本地'),{variant,label,density:'compact'});if(variant==='icon-action')node.innerHTML=icon('plus');$('#actions').append(node);
-}
-const disabled=button('正在保存…',()=>{},{density:'compact'});disabled.disabled=true;$('#actions').append(disabled);
-for(const invalid of [false,true]){const input=document.createElement('input');input.value=invalid?'':'持续推进的事项';input.required=true;$('#fields').append(field('事项标题',input,{density:'compact',invalid,help:invalid?'请填写标题，编辑仍保留。':'用户输入保持原样。'}));}
-$('#rows').append(selectionRow('整理资料，确认下一步',()=>{}, {selected:true}),selectionRow('等待评审时间',()=>{}),disclosure('管理：整理资料',[button('上移',()=>{}),button('移出重点',()=>{}, {variant:'danger'})]),pagination(()=>{},()=>{}, {hasNext:true}));
-for(const [state,text] of [['normal','尚未选择内容'],['empty','还没有重点行动。'],['loading','正在载入重点…'],['dirty','编辑中…'],['saving','正在保存…'],['invalid','请填写标题，编辑仍保留'],['failed','未保存 · 编辑仍保留'],['saved','已保存到本地'],['recovered','已恢复未保存草稿']]){const node=document.createElement('div');node.setAttribute('role','status');feedback(node,text,state==='failed'?'Controlled failure example':'');node.dataset.state=state;$('#states').append(node);}
-const comparison=document.createElement('dl');comparison.append(comparisonRow('内容','核对原文'),comparisonRow('当前进展','已人工比较，需要保留两侧来源。',{changed:true}));$('#panel').append(comparison);
-const modal=document.createElement('div');modal.className='sync-panel ui-panel ui-dialog';modal.hidden=true;modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','核对保存结果');modal.append('核对保存结果',button('关闭',()=>modal.hidden=true));document.body.append(modal);bindDialog(modal);$('#panel').append(button('打开核对面板',()=>modal.hidden=false));
-</script><link rel="stylesheet" href="../../build/web/assets/react-host.css">
-<section id="react-library"></section>
-<script type="module">
-import {mountLibraryCatalogue} from '../../build/web/assets/react-host.js';
-import {icon} from '../../web/presentation.js';
-mountLibraryCatalogue(document.querySelector('#react-library'), icon);
+import {mountFoundationCatalogue,mountLibraryCatalogue,noteFieldsView,actionControl} from '../../build/web/assets/react-host.js';
+import {icon,drawer} from '../../build/web/presentation.js';
+const panel=drawer({id:'catalogue-drawer',title:'核对保存结果',onDismiss:()=>panel.hide()});
+const fields=noteFieldsView(panel.body);fields.show([{id:'catalogue-dialog-field',label:'核对内容',value:'长中文内容与键盘焦点'}]);
+panel.footer.append(actionControl('关闭',()=>panel.hide()).host);
+mountFoundationCatalogue(document.querySelector('#foundation'),()=>panel.open(panel.body.querySelector('input')));
+mountLibraryCatalogue(document.querySelector('#react-library'),icon);
 </script></html>
-
-<script type="module">
-
-import {drawer, button, field} from '../../web/presentation.js';
-const section = document.createElement('section');
-section.innerHTML = '<h2>Contextual topic drawer</h2><p>Production drawer constructor, consumed by LibraryScreen for real topic creation and renaming. This isolated catalogue example has no persistence. The actual journey and guards are verified in issue46 evidence.</p>';
-const panel = drawer({id:'catalogue-drawer', title:'新建主题', onDismiss:()=>panel.hide()});
-const input = document.createElement('input');
-const invalidInput = document.createElement('input'); invalidInput.value = '需要核对的长中文主题名称';
-panel.body.append(field('主题名称',input,{density:'compact'}), field('无效名称示例', invalidInput, {density:'compact',invalid:true,help:'名称需要核对，输入仍保留。'}));
-panel.footer.append(button('取消',()=>panel.hide(),{density:'compact'}),button('创建',()=>panel.hide(),{primary:true,density:'compact'}));
-section.append(button('打开主题抽屉',()=>panel.open(input))); document.body.append(section);
-</script>
-
-<script type="module">
-
-import {drawer, button, field, disclosure} from '../../web/presentation.js';
-const section = document.createElement('section');
-section.innerHTML = '<h2>Remaining short tasks and layout exceptions</h2><p>Actions, capture and note location consume the existing wide drawer. Note information uses individually persisted association controls. Long Markdown, candidate review and multi-version conflict comparison retain their document or review families. This catalogue has no persistence; see the issue48 inventory and executed evidence.</p>';
-const task = drawer({id:'catalogue-short-task', title:'新建行动', onDismiss:()=>task.hide()});
-task.panel.classList.add('ui-drawer-wide');
-const form = document.createElement('form'); form.className = 'document';
-const description = document.createElement('textarea'); description.rows = 3;
-const date = document.createElement('input'); date.type = 'date';
-form.append(field('行动描述',description),disclosure('日期（可选）',[field('截止日期',date,{density:'compact'})]));
-task.body.append(form);
-task.footer.append(button('取消',()=>task.hide(),{density:'compact'}),button('创建',()=>task.hide(),{primary:true,density:'compact'}));
-section.append(button('打开多字段任务',()=>task.open(description))); document.body.append(section);
-</script>
-<section><h2>Compact scoped search states (#58/#59)</h2><p>The real consumer is the shared search modal. Single column, bounded scrollable results, selectable bordered copy range, explicit source context and optional attribution. These static fixtures do not claim retrieval.</p>
-<div class="ui-panel"><label class="ui-field">关键词<input value="延迟 latency" aria-label="关键词示例"></label><div class="search-scopes" role="group" aria-label="搜索范围示例"><button class="ui-action" aria-pressed="true">全部内容</button><button class="ui-action" aria-pressed="false">笔记</button><button class="ui-action" aria-pressed="false">事项</button><button class="ui-action" aria-pressed="false">行动</button></div><p role="status">索引正在更新；以下为已有结果</p><div class="search-results"><section class="search-result"><button class="ui-action search-select" aria-current="true">历史性能记录</button><p>笔记 · Archive/performance.md</p><pre class="search-passage" aria-label="复制范围示例">- 原始记录中的<mark>延迟</mark> latency
-| 指标 | 数值 |
-| p99 | 20 |</pre><button class="ui-action secondary">复制片段</button></section></div><label class="search-attribution"><input type="checkbox">附带来源</label><p>没有匹配的内容</p><p>来源已改变或不可读取，请刷新重试</p><p>未能复制，请刷新重试或手动选择文字复制</p></div></section>

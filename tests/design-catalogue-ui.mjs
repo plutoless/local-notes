@@ -7,7 +7,7 @@ try {
  page.on('pageerror',e=>errors.push(e.message));
  await page.route('https://catalogue.test/**',async route=>{
   const path=new URL(route.request().url()).pathname;
-  if(!['/docs/design/catalogue.html','/web/style.css','/web/presentation.js','/web/core.js','/build/web/assets/react-host.js','/build/web/assets/react-host.css'].includes(path)) return route.abort();
+  if(!['/docs/design/catalogue.html','/web/style.css','/build/web/presentation.js','/build/web/presentation-labels.js','/build/web/directory-label.js','/build/web/core.js','/web/core.js','/build/web/assets/react-host.js','/build/web/assets/react-host.css'].includes(path)) return route.abort();
   await route.fulfill({body:await readFile(new URL('..'+path,import.meta.url)),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});
  });
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
@@ -26,7 +26,7 @@ try {
   return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected'].map(bg=>ratio(t,bg)))]));
  });
  for(const [token,ratio] of Object.entries(ratios))assert.ok(ratio>=(['line','focus'].includes(token)?3:4.5),`${token}: ${ratio}`);
- const selected=page.locator('#rows .ui-row.selected');await selected.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
+ const selected=page.locator('#react-library .ui-row.selected').first();await selected.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
  assert.equal(await selected.evaluate(n=>getComputedStyle(n).outlineOffset),'-3px');
  const checkbox=page.locator('.ui-selection input').first();await checkbox.click();
  assert.equal(await checkbox.evaluate(n=>getComputedStyle(n.parentElement).outlineStyle),'none');
