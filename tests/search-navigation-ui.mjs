@@ -1,11 +1,15 @@
 import {readFile, writeFile, mkdir, rename, unlink} from 'node:fs/promises';
 import {join} from 'node:path';
+import {createHash} from 'node:crypto';
+import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {ActionRepository} from '../web/actions.js';
 import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
 const fixture = await storageFixture();
+const evidence = {head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(), checks:[], clipboardBoundary:'Trusted browser Copy event with default prevented, plus controlled clipboardWrite bridge receipt; no OS clipboard readback or native integration claim.'};
+const digest = text => createHash('sha256').update(text).digest('hex');
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {})});
 let clipboard = '', deny = false, delay = null, failQuery = false, workspaceDelay = null, saves = 0, failSave = false, readDelay = null, readStarted, readCounter = 0, readDelayAt = 1, armReturn = false, returnRead = false, delayReturn = false, releaseReturn, returnStarted;
 const readBegun = () => new Promise(resolve => { readStarted = resolve; });
@@ -58,6 +62,26 @@ try {
         await lookup(scope); await input.focus(); await page.keyboard.press('Enter');
         await page.waitForTimeout(150);
         const expanded = await page.locator('.search-result pre').first().textContent();
+        if (width === 1180 && origin === 'focus' && scope === 'note') {
+          // Range placement is setup; Copy itself is a trusted browser shortcut.
+          await page.locator('.search-result pre').first().evaluate(node => {
+            const range = document.createRange(); range.selectNodeContents(node);
+            getSelection().removeAllRanges(); getSelection().addRange(range);
+            window.searchCopyEvents = [];
+            document.addEventListener('copy', event => {
+              event.preventDefault(); // Observe the browser event without exporting to a system clipboard.
+              searchCopyEvents.push({trusted:event.isTrusted, selection:getSelection().toString(),defaultPrevented:event.defaultPrevented});
+            },{once:true});
+          });
+          await page.keyboard.press('ControlOrMeta+c');
+          await page.waitForFunction(() => window.searchCopyEvents.length === 1);
+          assert.deepEqual(await page.evaluate(() => searchCopyEvents),[{trusted:true,selection:expanded,defaultPrevented:true}]);
+          await page.evaluate(() => getSelection().removeAllRanges());
+          await open('复制片段');
+          await page.getByText('已复制片段',{exact:true}).waitFor();
+          assert.equal(clipboard,expanded); assert.ok(original.includes(clipboard));
+          evidence.checks.push({journey:'search expand, browser selection/Copy and bridge Copy',browserCopy:await page.evaluate(() => searchCopyEvents),bridgeTextSHA256:digest(clipboard),sourceSHA256:digest(original)});
+        }
         await page.locator('.search-results').evaluate(n => n.scrollTop = 25);
         const scroll = await page.locator('.search-results').evaluate(n=>n.scrollTop);
         await open(label);
@@ -66,11 +90,13 @@ try {
         if (scope === 'note') {
           assert.equal(await page.locator('#reading').isVisible(), true);
           assert.ok(await page.locator('#reading [aria-label="搜索匹配原文"] mark').count());
+          assert.equal(await page.locator('#reading [aria-label="搜索匹配原文"]').evaluate(n=>n===document.activeElement),true,'Source opening retains the exact highlighted reader destination');
           assert.ok((await page.locator('#reading').textContent()).includes('p99'));
         }
         if (scope === 'initiative') assert.equal(await page.locator('#workspace-title').textContent(),'latency 事项');
         if (scope === 'action') assert.equal(await page.locator('#action-description').inputValue(),'latency 行动');
         await back();
+        assert.equal(await page.evaluate(()=>document.activeElement.textContent),label,'Source return restores the activated source control');
         assert.equal(await page.locator('.search-result pre').first().textContent(),expanded);
         assert.equal(await page.locator('.search-results').evaluate(n=>n.scrollTop),scroll);
         if (origin === 'actions') assert.equal(await page.locator('#view-title').textContent(),'行动');
@@ -103,10 +129,24 @@ try {
   await page.locator('#items [data-path="a.md"]').click();
   if (await page.locator('#body').isHidden()) await page.locator('#mode').click();
   await page.locator('#body').fill('dirty origin');
+  await page.locator('#body').evaluate(n=>n.setSelectionRange(2,8,'backward'));
+  const dirtySelection = await page.locator('#body').evaluate(n=>[n.selectionStart,n.selectionEnd,n.selectionDirection]);
   await lookup('note');
   await open('打开原文'); await page.locator('#task-leave-decision').waitFor();
   await page.getByRole('button',{name:'继续编辑',exact:true}).click(); await input.waitFor();
   assert.equal(await page.locator('#body').inputValue(),'dirty origin');
+  assert.deepEqual(await page.locator('#body').evaluate(n=>[n.selectionStart,n.selectionEnd,n.selectionDirection]),dirtySelection);
+  assert.equal(await readFile(join(fixture.root,'a.md'),'utf8'),original,'Continue never writes the dirty source');
+  assert.equal(await page.locator('#global-search').evaluate(n=>n.open && n.contains(document.activeElement) && !document.activeElement.disabled),true,'Continue restores a usable search receiver');
+  // A newer search input/caret and subsequent Tab own focus after Continue.
+  await input.click(); await input.evaluate(n=>n.setSelectionRange(1,4));
+  await page.keyboard.press('Tab');
+  const nextFocus = await page.evaluate(() => document.activeElement.textContent);
+  await page.waitForTimeout(50);
+  assert.equal(await page.evaluate(() => document.activeElement.textContent),nextFocus);
+  assert.equal(nextFocus,'关闭搜索');
+  assert.deepEqual(await input.evaluate(n=>[n.selectionStart,n.selectionEnd]),[1,4]);
+  evidence.checks.push({journey:'dirty-source Continue, newer input selection and Tab',sourceSHA256:digest(await readFile(join(fixture.root,'a.md'),'utf8')),dirtySelection,nextFocus});
   failSave = true; await open('打开原文'); await page.getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#task-leave-decision [role=alert]').filter({hasText:'保存尚未完成'}).waitFor();
   await page.getByRole('button',{name:'继续编辑',exact:true}).click(); await input.waitFor();
@@ -120,7 +160,10 @@ try {
   await lookup('action');
   await open('打开行动'); await page.getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#action-drawer[open]').waitFor(); await back(); await page.keyboard.press('Escape');
-  assert.ok((await readFile(join(fixture.root,'a.md'),'utf8')).includes('saved origin latency'));
+  const savedOrigin = await readFile(join(fixture.root,'a.md'),'utf8');
+  assert.ok(savedOrigin.includes('saved origin latency'));
+  assert.equal(await readFile(join(fixture.root,'Archive/a.md'),'utf8'),original,'Untouched duplicate source is byte-preserved');
+  evidence.checks.push({journey:'explicit Save and source-return',savedSourceSHA256:digest(savedOrigin),untouchedSourceSHA256:digest(original)});
   assert.deepEqual(await page.locator('#body').evaluate(n=>[n.selectionStart,n.selectionEnd,n.selectionDirection]),[3,9,'backward']);
   // Exact-path stale sources fail, without silently choosing the duplicate title.
   await lookup('note');
@@ -168,5 +211,23 @@ try {
   assert.equal(await page.locator('#body').inputValue(),'newer competing draft');
   assert.equal(await page.locator('#file-path').textContent(),'a.md');
   assert.deepEqual(errors, []);
+  // The competing-read case intentionally leaves a newer private draft. Discard
+  // it through the application before checking persisted readback after reload.
+  await page.locator('nav [data-view=focus]').click();
+  await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
+  await page.locator('.home-tools').waitFor();
+  // Reload and re-enter the real source: saved text must survive the UI session.
+  await page.reload(); await page.locator('.home-tools').waitFor();
+  await page.locator('nav [data-view=notes]').click();
+  await page.locator('#items [data-path="a.md"]').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='a.md');
+  if (await page.locator('#body').isHidden()) await page.locator('#mode').click();
+  assert.equal(await page.locator('#body').inputValue(),'saved origin latency');
+  assert.equal(await readFile(join(fixture.root,'a.md'),'utf8'),savedOrigin);
+  assert.equal(await readFile(join(fixture.root,'Archive/a.md'),'utf8'),original);
+  assert.deepEqual(errors, []);
+  evidence.checks.push({journey:'reload and real UI persisted readback',savedSourceSHA256:digest(savedOrigin),untouchedSourceSHA256:digest(original)});
+  await mkdir('build/issue84-repair',{recursive:true});
+  await writeFile('build/issue84-repair/search-navigation.json',JSON.stringify(evidence,null,2)+'\n');
   console.log('PASS issue60 real UI/bridge/storage/index: all origin/destination types, desktop/393px, expansion/scroll return, dirty continue/discard/save/failure, stale and dismissed delayed reads.');
 } finally { await browser.close(); await fixture.close(); }

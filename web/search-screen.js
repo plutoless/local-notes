@@ -20,7 +20,7 @@ export class SearchScreen {
     this.status = document.createElement('p'); this.status.setAttribute('role', 'status');
     this.results = document.createElement('div'); this.results.className = 'search-results'; this.results.setAttribute('aria-label', '搜索结果');
     this.include = document.createElement('input'); this.include.type = 'checkbox';
-    const include = document.createElement('label'); include.className = 'search-attribution'; include.append(this.include, '附带来源');
+    const include = document.createElement('label'); include.className = 'ui-selection search-attribution'; include.append(this.include, '附带来源');
     this.previous = button('上一页', () => { this.offset = Math.max(0, this.offset - 20); return this.query(); });
     this.next = button('下一页', () => { this.offset += 20; return this.query(); });
     const paging = document.createElement('div'); paging.className = 'ui-pagination'; paging.append(this.previous, this.next);
@@ -79,7 +79,9 @@ export class SearchScreen {
       this.results.replaceChildren(); this.rows = page.notes.map(note => { const row = this.row(note, query); const old = previous.find(item => item.note.identity === note.identity && (item.note.fingerprint || item.note.revision) === (note.fingerprint || note.revision) && item.query === query); if (old) { row.text = old.text; this.highlight(row.passage, row.text, query); } return row; });
       this.previous.disabled = this.offset === 0; this.next.disabled = !page.hasMore;
       const selected = this.rows.find(row => row.note.identity === this.selected) || this.rows[0]; if (selected) this.select(selected, false);
-      if (focusedRow && focusedButton >= 0) (this.rows.find(row => row.note.identity === focusedRow.note.identity)?.node.querySelectorAll('button')[focusedButton] || this.input).focus({preventScroll: true});
+      // Inert results can move focus to the body. A newly chosen control owns
+      // focus instead; a late refresh must not take it back.
+      if (focusedRow && focusedButton >= 0 && (document.activeElement === document.body || focusedRow.node.contains(document.activeElement))) (this.rows.find(row => row.note.identity === focusedRow.note.identity)?.node.querySelectorAll('button')[focusedButton] || this.input).focus({preventScroll: true});
       this.results.scrollTop = scroll;
       this.status.textContent = this.service.error || page.partial ? '索引未完整更新，请刷新重试；以下为缓存结果' : this.service.indexing || this.service.entitiesRunning ? '索引正在更新；以下为已有结果' : this.rows.length ? `本页 ${this.rows.length} 条结果` : '没有匹配的内容';
     } catch { if (token === this.sequence && this.panel.open) { this.results.replaceChildren(); this.rows = []; this.results.inert = false; this.status.textContent = '搜索失败，请刷新重试'; } }
@@ -91,7 +93,8 @@ export class SearchScreen {
     const passage = document.createElement('pre'); passage.className = 'search-passage'; passage.setAttribute('aria-label', '复制范围');
     const row = {note, node, select, passage, query, text: note.passage};
     this.highlight(passage, row.text, query);
-    node.append(select, locator, passage, button('复制片段', () => this.copy(row)), button({note: '打开原文', initiative: '打开事项', action: '打开行动'}[note.type], () => this.openSource(row))); this.results.append(node); return row;
+    row.source = button({note: '打开原文', initiative: '打开事项', action: '打开行动'}[note.type], () => this.openSource(row));
+    node.append(select, locator, passage, button('复制片段', () => this.copy(row)), row.source); this.results.append(node); return row;
   }
   highlight(node, text, query) {
     node.replaceChildren(); let start = 0, position; const lower = text.toLowerCase(), term = query.toLowerCase();
@@ -117,7 +120,9 @@ export class SearchScreen {
     const session = this.session, sequence = this.sequence, invocation = this.invocation;
     const valid = () => session === this.session && sequence === this.sequence && this.navigation.owns(invocation);
     this.savedScroll = this.results.scrollTop;
-    const focus = document.activeElement;
+    // The shared action disables itself before running; retain its real opener
+    // rather than the body focus that native WebKit may expose at that point.
+    const focus = row.source;
     try {
       // Capture before the first read; closing/dismissal invalidates this intent.
       await this.service.source(row.note);
