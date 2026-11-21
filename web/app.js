@@ -1,4 +1,4 @@
-import {readerView, noteReply, shellView, shellUpdate} from './assets/react-host.js';
+import {readerView, noteReply, shellView, shellUpdate, fileConflictView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
 import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, field, drawer, button} from './presentation.js';
@@ -678,8 +678,8 @@ $('#rename').onclick = async () => {
       await load(path).then(refresh).catch(error => notice('笔记已移动，请重新打开：' + error.message));
     }});
 };
-$('#copy').onclick=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
-$('#reload').onclick=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
+const copyConflict=async()=>{try{const path=current.replace(/\.md$/i,`-conflict-${Date.now()}.md`);await note('create',{path,text:content(),workspaceId:currentWorkspace});localStorage.removeItem(draftKey());dirty=false;blocked=false;$('#conflict').hidden=true;await validateReferences();await refresh();await load(path);}catch(e){notice(e.message);}};
+const reloadConflict=async()=>{try{localStorage.removeItem(draftKey());await load(current);await refresh();}catch(e){notice(e.message);}};
 window.hasUnsavedChanges = () => { const task = activeTask(); return Boolean(task && (task.dirty() || task.pending?.())); };
 window.requestNativeLeave = token => {
   flush().then(allowed => native('leaveResult', {token, allowed}), error => {
@@ -766,4 +766,5 @@ document.addEventListener('invalid', event => {
   if (event.target.matches('input, textarea, select')) event.target.setCustomValidity('请填写有效内容后重试。');
 }, true);
 document.addEventListener('input', event => event.target.setCustomValidity?.(''));
+fileConflictView($('#conflict'), copyConflict, reloadConflict);
 bindDialog($('#conflict'));

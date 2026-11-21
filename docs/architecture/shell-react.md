@@ -9,7 +9,7 @@ changes are introduced.
 | --- | --- | --- |
 | Sidebar navigation, capture and directory controls | `ShellContent` in `#shell` | `app.js` navigation/flush/workspace guards |
 | Directory name/path and hidden count | Shell model via `shellUpdate` | `directoryLabel` stable adapter and Library count |
-| Synchronization opener | Legacy `SyncScreen` in explicit `#shell-legacy-utilities` island | Existing synchronization/leave controller |
+| Synchronization opener | Stable `SyncScreen` entry point with React panel descendants in explicit `#shell-legacy-utilities` island | Existing synchronization/leave controller |
 | Header search and search return | Existing legacy header adapter | Single `SearchScreen` and document shortcut listener |
 | Current Focus sections, rows, menus and continuation | `FocusContent` in shared `#items` while home owns it | `FocusScreen`, Action/Initiative repositories and existing task drawers |
 | Reading continuation and home return | React home rows and delivered shared reader | Existing workspace-scoped `ReadingHistory`, source fingerprints, app generation fences and `sourceOrigin` |
@@ -45,3 +45,5 @@ checks source identity, reports changed/missing content and returns to home cont
 The catalogue imports the same consumed shell and Focus components. It has no
 storage or AI callbacks. `docs/validation/issue93/` records actual browser/storage,
 packaging, source binding, failures and unrun native/minimum-version boundaries.
+
+See [synchronization ownership](sync-react.md) for #101 panel, draft and bridge boundaries.

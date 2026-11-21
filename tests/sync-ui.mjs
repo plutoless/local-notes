@@ -55,6 +55,7 @@ try {
   });
   const evidenceDir = process.env.ISSUE86_EVIDENCE_DIR || (process.env.ISSUE86 ? 'docs/validation/issue86' : 'docs/validation/issue36');
   await mkdir(evidenceDir, {recursive:true});
+  const startTime=performance.now();
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   const {ActionRepository} = await import('../web/actions.js');
@@ -71,6 +72,7 @@ try {
     assert.equal(await panel.evaluate(el=>el.contains(document.activeElement)),true,'First open must focus a modal control');
   }
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
+  console.log('Sync initial inspection:',JSON.stringify({elapsedMs:Math.round(performance.now()-startTime),markdownReads:bridgeCalls.filter(cmd=>cmd==='read').length,bridgeCommands:bridgeCalls.length}));
   await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
   await page.setViewportSize({width:393,height:852});
   assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
@@ -158,6 +160,16 @@ try {
   const result = (await repo.query()).actions[0];
   assert.equal(result.description, 'Merged explicitly'); assert.deepEqual(new Set(result.parents), new Set([local.revision, remote.revision]));
   assert.equal((await repo.history(base.entityId)).length, 4);
+  if(process.env.ISSUE101) {
+    await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+    await page.reload();await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
+    await page.getByRole('button',{name:'同步检查',exact:true}).click();
+    await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
+    const {ActionRepository:Restarted}=await import('../web/actions.js');const restarted=new Restarted(fixture.adapter);await restarted.open();
+    assert.equal((await restarted.query({entityId:base.entityId,limit:1})).actions[0].description,'Merged explicitly');
+    assert.equal((await restarted.history(base.entityId)).length,4);
+  }
+
   await panel.getByRole('button', {name:'关闭检查',exact:true}).click();
   assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(el=>el===document.activeElement),true);
   await closeSavedAction(page); await page.getByRole('button',{name:'同步检查',exact:true}).click();
@@ -235,6 +247,16 @@ try {
   await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   await first.getByRole('button',{name:'3. 保存解决结果到本地'}).focus(); await page.keyboard.press('Tab');
   assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
+  if(process.env.ISSUE101) {
+    await first.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
+    await first.getByLabel('合并版本 JSON').fill('{重启保留的无效草稿');
+    await page.reload();await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
+    await page.getByRole('button',{name:'同步检查',exact:true}).click();
+    await first.getByRole('button',{name:'恢复未保存解决内容',exact:true}).click();
+    await first.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
+    assert.equal(await first.getByLabel('合并版本 JSON').inputValue(),'{重启保留的无效草稿');
+    assert.equal(await first.getByLabel('合并版本 JSON').getAttribute('aria-invalid'),'true');
+  }
   const selectedRevision=process.env.PHASE !== 'before' ? await first.locator('[aria-pressed=true]').getAttribute('data-revision') : null;
   await first.getByRole('button',{name:'放弃编辑',exact:true}).click();
   if(process.env.ISSUE86 && process.env.PHASE !== 'before') assert.equal(await first.evaluate((el,revision)=>el.contains(document.activeElement) && document.activeElement.dataset.revision===revision,selectedRevision),true);
@@ -317,7 +339,8 @@ try {
       const {SyncScreen}=await import('/sync-screen.js');
       const {ActionRepository}=await import('/actions.js');
       const {native}=await import('/bridge.js');
-      window.firstOpenProbe=new SyncScreen(()=>[new ActionRepository(native)],()=>{},async()=>{});
+      const probeRepository=new ActionRepository(native);
+      window.firstOpenProbe=new SyncScreen(()=>[probeRepository],()=>{},async()=>{});
       firstOpenProbe.opener.id='sync-first-open-probe';
     });
     await page.locator('#sync-first-open-probe').click();
@@ -361,4 +384,4 @@ try {
   }
   assert.deepEqual(errors, []);
   console.log('PASS: shared synchronization UI compares forked revisions and saves explicit multi-parent resolution through production Mac storage.');
-} finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
+} catch (error) { console.error(error); throw error; } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }
