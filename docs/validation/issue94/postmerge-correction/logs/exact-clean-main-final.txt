@@ -1,0 +1,1 @@
+PASS paired C form layout/caret, Favorites paging/selection/return and independent context, capture saved readback/reload, original source hashes preserved [{"variant":"baseline","warmRefreshMs":[91,100,100],"readCommands":66,"jsBytes":323504,"cssBytes":6132},{"variant":"migrated","warmRefreshMs":[132,100,100],"readCommands":6,"jsBytes":348456,"cssBytes":6132}]

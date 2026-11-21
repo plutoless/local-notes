@@ -1,0 +1,3 @@
+PASS real-app leave: Continue selection, disabled return, held fallback after browser Tab/pointer, containment, discard/opener
+PASS real reader consumer: held Continue cannot steal newer Tab/pointer; discard and reopen preserve source
+PASS remaining forms: real persistence, invalid, dirty close, retry, recovery, desktop/393/reduced height

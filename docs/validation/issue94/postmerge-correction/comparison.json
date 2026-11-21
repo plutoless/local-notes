@@ -1,0 +1,45 @@
+{
+  "originalHead": "eaa239d15977308adf4587ad813d88cfc151444f",
+  "mergedMain": "7042d0669734bdfc0e7d86e9437e12a790965a83",
+  "cleanArchive": "/var/folders/hh/pylr345909b5lkwdskk672yw0000gp/T/pr114-main-lohse09o",
+  "baselineFiles": 24,
+  "exactBaselineVerified": true,
+  "sourceComparison": {
+    "web/library-screen.js": {
+      "original": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e",
+      "mergedMain": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e",
+      "cleanArchive": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e",
+      "equal": true
+    },
+    "tests/note-context-ui.mjs": {
+      "original": "d6d5465639b462a537bf3627ee624780d6f676af41cf5efdb7c0a3080b15464e",
+      "mergedMain": "d6d5465639b462a537bf3627ee624780d6f676af41cf5efdb7c0a3080b15464e",
+      "cleanArchive": "d6d5465639b462a537bf3627ee624780d6f676af41cf5efdb7c0a3080b15464e",
+      "equal": true
+    },
+    "web/library.js": {
+      "original": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "mergedMain": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "cleanArchive": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "equal": true
+    },
+    "mac/ReferenceIndex.swift": {
+      "original": "82a0bbf2a2b5e06d743df9d5e12d1998b6a7a23ff99cd35a95ba5ddc2df0eca7",
+      "mergedMain": "82a0bbf2a2b5e06d743df9d5e12d1998b6a7a23ff99cd35a95ba5ddc2df0eca7",
+      "cleanArchive": "82a0bbf2a2b5e06d743df9d5e12d1998b6a7a23ff99cd35a95ba5ddc2df0eca7",
+      "equal": true
+    },
+    "tests/action-adapter.js": {
+      "original": "9ef4b7b67be25c34cfb921969bc318588bf11dd0aa33a0e3731d1dded197470e",
+      "mergedMain": "9ef4b7b67be25c34cfb921969bc318588bf11dd0aa33a0e3731d1dded197470e",
+      "cleanArchive": "9ef4b7b67be25c34cfb921969bc318588bf11dd0aa33a0e3731d1dded197470e",
+      "equal": true
+    },
+    "package-lock.json": {
+      "original": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+      "mergedMain": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+      "cleanArchive": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+      "equal": true
+    }
+  }
+}
