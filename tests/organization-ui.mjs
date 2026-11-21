@@ -3,6 +3,7 @@ import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {storageFixture} from './action-adapter.js';
 const fixture=await storageFixture(),calls=[];
+const originalSource=await readFile(fixture.root+'/reference.md','utf8');
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_PATH});
 try {
  // Wheel input must expose controls without Playwright's automatic click scrolling.
@@ -77,8 +78,42 @@ try {
  await page.locator('#ai-selection input').check();
  const evidence = await wheelReach('#ai-results button');
  await page.mouse.click(evidence.x + evidence.width / 2, evidence.y + evidence.height / 2);await page.locator('#editor').waitFor();assert.equal(await page.locator('#file-path').textContent(),'reference.md');
+ // Favorite the explicitly opened evidence through the delivered metadata owner.
+ await page.locator('#note-info-open').click(); await page.locator('#star').click();
+ assert.equal(await page.locator('#star').getAttribute('aria-pressed'),'true');
+ await page.getByRole('button',{name:'关闭笔记信息与整理',exact:true}).click();
  await page.locator('#back').click(); await page.locator('#ai-results').waitFor();
  await page.waitForFunction(() => document.activeElement.getAttribute('aria-label') === '打开来源：reference.md，建议：Inspect evidence');
  assert.equal(await page.locator('#ai-selection input').isChecked(), true);
- assert.deepEqual(errors,[]);console.log('Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.');
+ // Preserve Favorites origin through capture cancellation and explicit reader-to-Action save.
+ await page.setViewportSize({width:1180,height:800});
+ await page.locator('[data-view=favorites]').click();
+ await page.locator('#items [data-path="reference.md"]').waitFor();
+ await page.locator('#library-order').selectOption('title');
+ await page.locator('#new').click(); await page.locator('#capture-title').fill('合成未保存捕获');
+ await page.getByRole('button',{name:'取消',exact:true}).click();
+ await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
+ await page.locator('#items [data-path="reference.md"]').click();
+ await page.locator('#note-create-action').click();
+ await page.locator('#action-drawer[open]').waitFor();
+ await page.locator('#action-description').fill('合成收藏来源行动');
+ await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
+ const workspaceId=(await fixture.adapter('workspace')).workspaceId;
+ const persisted=(await fixture.adapter('actionQuery',{workspaceId,entityType:'action'})).actions;
+ assert.equal(persisted.length,1); assert.equal(persisted[0].description,'合成收藏来源行动');
+ assert.equal(persisted[0].sources[0].path,'reference.md');
+ assert.equal(await page.locator('#file-path').textContent(),'reference.md');
+ await page.locator('#back').click();
+ await page.locator('#items [data-path="reference.md"]').waitFor();
+ assert.equal(await page.locator('#library-order').inputValue(),'title');
+ assert.equal(await page.locator('#items .selected').getAttribute('data-path'),'reference.md');
+ await page.locator('[data-view=organize]').click(); await page.locator('#ai-selection input').waitFor();
+ assert.equal(await page.locator('#ai-selection input').isChecked(),true);
+ await page.getByText('行动：Inspect evidence',{exact:true}).waitFor();
+ assert.equal(calls.filter(c=>c.cmd==='aiAnalyze').length,1,'Favorite/capture/Action returns never send implicitly');
+ assert.equal(await readFile(fixture.root+'/reference.md','utf8'),originalSource);
+ await page.reload(); await page.locator('[data-view=favorites]').click();
+ await page.locator('#items [data-path="reference.md"]').waitFor();
+ assert.equal((await fixture.adapter('actionQuery',{workspaceId,entityType:'action'})).actions[0].entityId,persisted[0].entityId);
+ assert.deepEqual(errors,[]);console.log('Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, Favorites/capture cancellation/Action save and return with persisted readback/source preservation, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.');
 }finally{await browser.close();await fixture.close();}

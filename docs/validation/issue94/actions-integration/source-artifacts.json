@@ -1,0 +1,70 @@
+{
+  "implementationHead": "da436f74670d9961b48e11df40b29632701ef54b",
+  "continuationStartingHead": "f7fc2d711d431d6d5d175c1e321e92cd24c5407e",
+  "originalStartingBase": "8ae4622f4a23033ec149038d9a370c9985a138e8",
+  "fetchedMain": "1ab961d31287489324f6063549a6ce2aa9dabf7c",
+  "node": "v25.1.0",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "files": {
+    "web/app.js": {
+      "sha256": "e9676d92f6222808cf5a26e41106a819a57d20f8a8d20426ec38353166474772",
+      "bytes": 58938
+    },
+    "web/library-screen.js": {
+      "sha256": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e",
+      "bytes": 17779
+    },
+    "web/action-screen.js": {
+      "sha256": "5b040820b303b7a21fc72ee70d1223c175591b5aa34b80869b14d1569d7a232c",
+      "bytes": 28254
+    },
+    "web/index.html": {
+      "sha256": "1f14d697a0b108914a00433c69a7401646f5efa25f7d5aa8de275cda1ee23af0",
+      "bytes": 10809
+    },
+    "web/react/note-forms.tsx": {
+      "sha256": "9c95589aa174b9a45453af732a6e41ee0c16f9c6e072640ce8b72273e896267f",
+      "bytes": 5010
+    },
+    "web/react/browse-context.ts": {
+      "sha256": "6ee5dec600ea0ff4deaacb1a3345e4db2f12734d8e1b7fcdd332f0e2ff4bb617",
+      "bytes": 735
+    },
+    "web/react/actions.tsx": {
+      "sha256": "af2166254e5129d0226d3e9ad8b551781370669393f1215413735714dff52fb8",
+      "bytes": 9630
+    },
+    "web/react/catalogue.tsx": {
+      "sha256": "a9e4bfa4a288bdc37fb88e34bd3456dc8b4f6f926c532b097bdfe16ef4b99b14",
+      "bytes": 4272
+    },
+    "web/react/host.tsx": {
+      "sha256": "0ba33d09b65d1b6805b4c20e1dfecc2a6b1ee6180612788a110aedfa5c7e2781",
+      "bytes": 728
+    },
+    "package-lock.json": {
+      "sha256": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+      "bytes": 49204
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "bff8af7674b1416468eada2343233de75c18300f7d2b3e7d3a632db6546ac072",
+      "bytes": 348368
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b",
+      "bytes": 6132
+    },
+    "build/web/asset-manifest.json": {
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5",
+      "bytes": 885
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "4276bd8fbff94734a308c3f1e4d15ab354ba231ea0d198323ab537e212b4d4ea",
+      "bytes": 471920
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js": {
+      "sha256": "bff8af7674b1416468eada2343233de75c18300f7d2b3e7d3a632db6546ac072",
+      "bytes": 348368
+    }
+  }
+}

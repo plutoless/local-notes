@@ -225,6 +225,14 @@ state during model refresh. The live catalogue imports these same components;
 candidate review retains its separate legacy island until #99. See
 `docs/architecture/organization-react.md` for bridge, service and overlay ownership.
 
+## Favorites and contextual note forms React adoption (#94)
+
+Favorites consumes the shared Library/reader with independent browsing snapshots.
+Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
+classification uses `Classification`, also imported by the catalogue. The existing
+C sheet owner retains focus, protected leave decisions and repositories. See
+`docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
+
 ## Action React adoption (#95)
 
 Issue #95 consumes production React Action rows, static form controls, source

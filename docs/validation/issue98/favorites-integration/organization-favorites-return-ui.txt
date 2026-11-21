@@ -1,0 +1,1 @@
+Organization UI passed: settings cleared, explicit preview/send, persisted suggestions after reload, evidence opening, Favorites/capture cancellation/Action save and return with persisted readback/source preservation, and wheel-only reachability at default, smaller desktop and minimum supported content sizes.
