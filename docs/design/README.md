@@ -306,3 +306,22 @@ control port. Document/form scaffolds and the reader information entry use React
 there is no pre-React note-information DOM island. Legacy storage draft recovery
 keys remain data compatibility, not alternate renderers. See the final ownership
 inventory and issue102 validation for exact evidence and native limits.
+
+## Maintainer-selected follow-on direction (#122)
+
+The maintainer rejected #122's first A/B/C exploration and selected **round-2
+01 Page-first workspace + 08 Reference desk**: stable common navigation, a calm
+document-centered reading area, and an optional **right-hand context panel,
+collapsed by default**. Top-right global search / Command+K, independent Notes,
+Actions and Initiatives, existing routes/data, and the current single modal/task
+owner remain authoritative. This choice is recorded in #122 and relayed by the
+coordinator; no further direction selection is needed.
+
+[Selected semantic rules and explicit old-rule reconciliation](issue122/SELECTED.md)
+govern subsequent separately scoped visual adoption, including typography,
+surfaces, focus, geometry and replacing blanket 120ms feedback with a finite
+100ms color-feedback rule. The [durable isolated preview](issue122/COMPARISON.md)
+shows the composition with synthetic data. Earlier values above still describe
+implemented production styles until their assigned adoption slices change them.
+This preparation changes neither production tokens nor navigation/storage and
+does not dispatch dependent work. Preview evidence is not product/native acceptance.
