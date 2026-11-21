@@ -11,7 +11,7 @@ try {
   await route.fulfill({body:await readFile(new URL('..'+path,import.meta.url)),contentType:path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':'text/html'});
  });
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
- await page.locator('#react-library .card').waitFor();
+ await page.locator('#react-library [data-path]').waitFor();
  await page.locator('#states [data-state=recovered]').waitFor();
  const input=page.locator('#fields input').first();
  assert.equal(await input.evaluate(n=>n.getBoundingClientRect().height),40);

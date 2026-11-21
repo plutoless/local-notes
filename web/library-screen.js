@@ -1,4 +1,4 @@
-import {libraryView, libraryPage} from './assets/react-host.js';
+import {libraryView, libraryPage, shellUpdate} from './assets/react-host.js';
 import {requestTaskLeave, feedback, directoryLabel, button, drawer, field, errorFeedback} from './presentation.js';
 import {Library, archivedPath} from './library.js';
 import {native} from './bridge.js';
@@ -131,7 +131,7 @@ export class LibraryScreen {
     directoryLabel(this.library.root || '本地笔记');
     const coverage = this.library.running || this.failed || this.library.warnings?.length ? '索引未完成' : '已索引';
     this.count = `${coverage}：${result.total ?? this.offset + result.notes.length}${result.total === undefined && result.hasMore ? '+' : ''}；本页 ${result.notes.length ? this.offset + 1 : 0}–${this.offset + result.notes.length}`;
-    $('#note-count').textContent = this.count;
+    shellUpdate({count:this.count});
     this.detail = this.library.warnings?.join('\n') || '';
     this.progress = this.detail ? '部分笔记暂不可用，请检查目录后刷新。' : this.failed ? '目录暂不可用，请检查目录权限后刷新，或重新选择目录。' : this.library.running ? '正在更新笔记列表，当前结果可能不完整…' : this.indexChanged ? '索引已更新，已返回第一页。' : '';
     this.previous = this.offset > 0 && !this.library.running; this.next = result.hasMore && !this.library.running;
