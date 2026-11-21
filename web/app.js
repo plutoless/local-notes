@@ -51,13 +51,16 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
 }, () => flush());
 actions.initiatives = initiatives;
 const organize = new OrganizeScreen(async (path, opener) => {
-  if (!await flush()) return;
+  organize.captureCandidates();
+  if (!await flush(false, false, true)) return;
   const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: opener.closest('[data-candidate]')?.dataset.candidate, label: opener.getAttribute('aria-label')}};
   const generation = workspaceGeneration, request = ++noteLoadRequest;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
   if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
-  if (await navigate('notes')) { if (generation !== workspaceGeneration) return; sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); }
+  organize.sourceDetour = true;
+  try { if (await navigate('notes')) { if (generation !== workspaceGeneration) return; sourceOrigin = origin; await load(path, loaded); $('#mode').focus(); } }
+  finally { organize.sourceDetour = false; }
 });
 const readingHistory = new ReadingHistory(localStorage);
 let readingOwner = null;
@@ -331,12 +334,12 @@ function activeTask() {
   if (!syncScreen.panel.hidden) return syncScreen.task();
   if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
     pending: () => libraryScreen.noteTopicPending || noteInitiativePending, close: () => noteInfo.hide()};
-  return visibleNote() ? noteTask() : null;
+  return organize.candidateTask() || (visibleNote() ? noteTask() : null);
 }
-async function flush(navigation = false, retainAction = false) {
+async function flush(navigation = false, retainAction = false, sourceDetour = false) {
   rememberReading();
   const task = activeTask();
-  return requestTaskLeave(retainAction && actions.drawer.panel.open ? {...task, close: undefined} : task);
+  return requestTaskLeave(sourceDetour && task?.kind === 'candidate' ? null : retainAction && actions.drawer.panel.open ? {...task, close: undefined} : task);
 }
 function draftKey(){return 'draft:'+(currentWorkspace||rootKey)+':'+current;}
 function readDraft(){const key=draftKey(),legacyKey='draft:'+legacyRoot+':'+current;let value=localStorage.getItem(key);if(value===null&&legacyRoot){value=localStorage.getItem(legacyKey);if(value!==null){localStorage.setItem(key,value);localStorage.removeItem(legacyKey);}}return JSON.parse(value||'null');}

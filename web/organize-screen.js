@@ -1,5 +1,5 @@
-import {organizationView} from './assets/react-host.js';
-import {button as makeButton, field, disclosure, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
+import {organizationView, candidateReviewView, readCandidateDraft} from './assets/react-host.js';
+import {button as makeButton, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -7,7 +7,7 @@ const $ = selector => document.querySelector(selector);
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
-    this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map();
+    this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map(); this.recoveredDrafts = new Set(); this.draftRevisions = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
     this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', retry: false,
       request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: ''};
@@ -30,6 +30,26 @@ export class OrganizeScreen {
         try { await operation; } finally { if (generation === this.session) { this.controls(); await this.candidates(); } }
       }),
       cancel: () => this.attempt(async () => { await this.organization.cancel(); this.controls(); this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`); })
+    });
+    this.candidateUI = candidateReviewView($('#ai-results'), {
+      activate: id => { this.activeCandidate = id; },
+      edit: (id, value) => { this.activeCandidate = id; this.recoveredDrafts.delete(id); this.drafts.set(id, value); const record = this.candidateRecords.find(r => r.entityId === id); this.draftRevisions.set(id, record.revision); localStorage.setItem(this.candidateDraftKey(id), JSON.stringify({revision: record.revision, description: value})); this.renderCandidates(); },
+      target: (id, value) => { const context = this.candidateContext.get(id) || {}; context.target = value; this.candidateContext.set(id, context); this.renderCandidates(); },
+      disclosure: (id, label, open) => { const context = this.candidateContext.get(id) || {}; context.disclosures = {...context.disclosures, [label]: open}; this.candidateContext.set(id, context); },
+      source: (path, opener) => this.openNote(path, opener),
+      decide: (record, decision, owner) => this.attempt(async () => {
+        if (this.reviewing) return;
+        if (this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision) throw Error('Candidate changed; review again');
+        const session = this.session;
+        this.reviewing = true; this.renderCandidates();
+        try {
+          await this.review.decide(record, decision, {description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description, targetId: this.candidateContext.get(record.entityId)?.target || ''});
+          if (session !== this.session) return;
+          this.drafts.delete(record.entityId); this.clearCandidateDraft(record.entityId);
+          this.status('决定已保存到本地。每条建议都需要单独确认。');
+        } finally { this.reviewing = false; this.renderCandidates(); if (session === this.session) await this.candidates({owner}); }
+      }),
+      recover: owner => this.attempt(async () => { if (this.reviewing) return; this.reviewing = true; this.renderCandidates(); try { await this.review.recover(); } finally { this.reviewing = false; await this.candidates({owner}); } })
     });
     this.settingsSave = makeButton('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
     this.settingsDrawer.footer.append(makeButton('取消设置', () => this.leaveSettings()), this.settingsSave);
@@ -114,7 +134,7 @@ export class OrganizeScreen {
   resetSelection(fromShow = false) {
     if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
     this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.renderCandidates(); this.invalidate();
   }
   async attempt(operation, owns) {
     const owner = document.activeElement, session = this.session;
@@ -180,6 +200,23 @@ export class OrganizeScreen {
       throw error;
     } finally { if (current()) this.controls(); }
   }
+  candidateDraftKey(id) { return `candidate-draft:${this.repository.workspaceId}:${id}`; }
+  clearCandidateDraft(id) { localStorage.removeItem(this.candidateDraftKey(id)); }
+  candidateTask() {
+    if (this.reviewing && !$('#organize-tools').hidden) return {label: '建议决定', dirty: () => false, pending: () => this.review.queue};
+    const record = this.candidateRecords?.find(r => r.entityId === this.activeCandidate);
+    if (!record || !this.drafts.has(record.entityId) || $('#organize-tools').hidden || this.sourceDetour) return null;
+    return {kind: 'candidate', label: '建议编辑', dirty: () => this.activeCandidate === record.entityId && this.drafts.has(record.entityId), pending: () => this.review.queue,
+      save: () => { localStorage.setItem(this.candidateDraftKey(record.entityId), JSON.stringify({revision: this.draftRevisions.get(record.entityId), description: this.drafts.get(record.entityId)})); this.activeCandidate = null; return true; },
+      discard: () => { this.drafts.delete(record.entityId); this.clearCandidateDraft(record.entityId); this.activeCandidate = null; this.renderCandidates(); }};
+  }
+  renderCandidates() {
+    if (!this.candidateUI) return;
+    this.candidateUI.render({cards: (this.candidateRecords || []).map(record => ({record,
+      description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description,
+      dirty: this.drafts.has(record.entityId), recovered: this.recoveredDrafts.has(record.entityId), stale: this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision, target: this.candidateContext.get(record.entityId)?.target || '', disclosures: this.candidateContext.get(record.entityId)?.disclosures || {}})),
+      destinations: this.destinations || [], busy: Boolean(this.reviewing)});
+  }
   captureCandidates() {
     for (const card of $('#ai-results').querySelectorAll('[data-candidate]')) {
       if (card.dataset.workspace !== this.repository.workspaceId) continue;
@@ -202,44 +239,13 @@ export class OrganizeScreen {
     const page = await this.repository.query({offset: this.offset, limit: 50});
     if (session !== this.session || request !== this.candidateRequest) return;
     const restoreFocus = document.activeElement === owner || document.activeElement === document.body;
-    $('#ai-results').replaceChildren();
+    this.candidateRecords = page.actions; this.destinations = destinations.filter(r => !r.syncState);
     for (const record of page.actions) {
-      const context = this.candidateContext.get(record.entityId);
-      const card = document.createElement('article'); card.className = 'card suggestion-card'; card.dataset.candidate = record.entityId; card.dataset.workspace = this.repository.workspaceId; card.tabIndex = -1; card.setAttribute('aria-label', `建议：${record.description}`);
-      for (const text of [`${{initiative:'事项', action:'行动', topic:'主题', relationship:'关联', progress:'进展'}[record.candidateType] || '建议'}：${record.description}`, `建议归属：${record.placement}`, `理由：${record.reasoning}`, `当前适用性：${record.relevance}`]) { const p = document.createElement(text.startsWith('建议归属') || text.startsWith('理由') || text.startsWith('当前适用性') ? 'p' : 'h3'); p.textContent = text; card.append(p); }
-      for (const source of record.sources) { const quote = document.createElement('blockquote'); quote.textContent = source.quote; const button = makeButton(`${source.path} [${source.start}–${source.end}]`, () => this.openNote(source.path, button), {label: `打开来源：${source.path}，建议：${record.description}`}); card.append(quote, button); }
-      const state = document.createElement('p');
-      state.textContent = record.syncState ? '存在同步冲突，请打开「同步检查」。' : record.review ? `处理决定：${{confirm:'确认',ignore:'忽略',later:'留待以后',reference:'作为参考',attach:'关联事项'}[record.review.decision] || '待核对'}，${record.review.state === 'done' ? '已保存' : '待恢复'}` : '等待你确认';
-      state.className = 'ui-feedback'; state.setAttribute('role', 'status'); card.append(state);
-      if (record.review?.suggestion && record.review.suggestion !== record.description) { const approved = document.createElement('p'); approved.textContent = `保存的建议：${record.review.suggestion}`; card.append(approved); }
-      if (!record.syncState && (!record.review || (record.review.decision === 'later' && !record.review.target && record.review.state === 'done'))) {
-        const editDetails = disclosure('确认前编辑建议'), draftState = document.createElement('p'); draftState.setAttribute('role', 'status'); card.append(editDetails);
-        const edit = document.createElement('textarea'); edit.setAttribute('aria-label', '编辑建议'); edit.value = this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description;
-        edit.oninput = () => { edit.setAttribute('aria-invalid', String(!edit.value.trim())); this.drafts.set(record.entityId, edit.value); draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }; editDetails.append(field('编辑建议', edit, {invalid: !edit.value.trim()}), draftState); if (this.drafts.has(record.entityId)) { editDetails.open = true; draftState.textContent = '编辑尚未保存，选择处理方式后保存。'; }
-        const target = document.createElement('select'); target.setAttribute('aria-label', '已有事项');
-        target.append(Object.assign(document.createElement('option'), {value: '', textContent: '选择要关联的已有事项'}));
-        for (const initiative of destinations.filter(r => !r.syncState)) target.append(Object.assign(document.createElement('option'), {value: initiative.entityId, textContent: initiative.title}));
-        if (context?.target && [...target.options].some(option => option.value === context.target)) target.value = context.target;
-        if (context?.range) edit.setSelectionRange(...context.range);
-        card.append(field('归入已有事项', target, {help: '关联、参考或进展建议时选择。'}));
-        const decisions = document.createElement('div'); decisions.className = 'organization-actions'; card.append(decisions);
-        for (const [decision, label] of [['confirm', '确认此建议'], ['attach', '关联到事项'], ['reference', '作为参考资料'], ['later', '留待以后'], ['ignore', '忽略']]) {
-          const button = makeButton(label, () => this.attempt(async () => {
-            const owner = button;
-            this.reviewing = true; state.textContent = '正在保存决定…'; const buttons = [...card.querySelectorAll('button')]; buttons.forEach(b => b.disabled = true);
-            try { await this.review.decide(record, decision, {description: edit.value, targetId: target.value}); this.drafts.delete(record.entityId); this.status('决定已保存到本地。每条建议都需要单独确认。'); }
-            finally { this.reviewing = false; buttons.forEach(b => b.disabled = false); await this.candidates({owner}); }
-          }), {variant: decision === 'confirm' ? 'primary' : 'quiet', label: `${label}：${record.description}`}); decisions.append(button);
-        }
-      } else if (record.review?.state === 'pending' && !record.syncState) {
-        const retry = makeButton('恢复已确认的决定', () => this.attempt(async () => { try { await this.review.recover(); } finally { await this.candidates({owner: retry}); } }), {variant: 'secondary', label: `恢复已确认的决定：${record.description}`}); card.append(retry);
+      if (!this.drafts.has(record.entityId)) {
+        const draft = readCandidateDraft(localStorage.getItem(this.candidateDraftKey(record.entityId)), record.revision); if (draft !== null) { this.drafts.set(record.entityId, draft); this.recoveredDrafts.add(record.entityId); this.draftRevisions.set(record.entityId, record.revision); }
       }
-      const raw = document.createElement('pre');
-      raw.textContent = JSON.stringify({entityId: record.entityId, revision: record.revision, review: record.review || null}, null, 2); card.append(disclosure('建议记录详情', [raw]));
-      if (context) [...card.querySelectorAll('details')].forEach(node => { node.open = context.disclosures[node.querySelector('summary').textContent] ?? node.open; });
-      $('#ai-results').append(card);
     }
-    if (!page.actions.length) $('#ai-results').textContent = '还没有保存的建议。选择笔记并分析后，在这里逐条核对。';
+    this.renderCandidates();
     if (focusId && restoreFocus) {
       const card = [...$('#ai-results').children].find(node => node.dataset.candidate === focusId);
       const control = [...(card?.querySelectorAll('[aria-label]') || [])].find(node => node.getAttribute('aria-label') === focusName);
