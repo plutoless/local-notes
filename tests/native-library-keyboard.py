@@ -4,14 +4,17 @@
 Reuse the delivered browse probe's read-only window constructor/route recorder;
 DOM is used only for fixture setup, instrumentation, and explicit focus setup.
 """
-import ast, hashlib, importlib.util, inspect, json, os, shutil, subprocess, time
+import ast, hashlib, importlib.util, inspect, json, os, shutil, subprocess, sys, time
+sys.dont_write_bytecode = True
 from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 OUT = REPO / 'build/issue65-keyboard'
-EVIDENCE = REPO / os.environ.get('ISSUE65_EVIDENCE', 'docs/validation/issue65/integration/native')
+EVIDENCE = REPO / os.environ.get('ISSUE65_EVIDENCE', 'docs/validation/issue65/repair/cycle1/native')
 build_only = '--build-only' in __import__('sys').argv
 if not build_only and not os.environ.get('ISSUE65_GUI_GRANT'):
     raise SystemExit('Explicit exclusive coordinator GUI grant required; no app activated or input posted')
+if not build_only and (EVIDENCE/'report.json').exists():
+    raise SystemExit('Evidence already exists; select a fresh cycle directory before execution')
 OUT.mkdir(parents=True, exist_ok=True)
 spec = importlib.util.spec_from_file_location('probe', REPO/'tests/native-candidate-review.py')
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
@@ -22,15 +25,17 @@ for node in shared.body:
     if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id in ['EXTRA', 'ROUTE_RECORDER'] for t in node.targets):
         m.__dict__[node.targets[0].id] = ast.literal_eval(node.value)
 m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"active":NSApp.isActive,', '"active":NSApp.isActive,"frontmostPID":NSWorkspace.shared.frontmostApplication?.processIdentifier ?? -1,')
+m.__dict__['EXTRA'] = m.__dict__['EXTRA'].replace('"firstResponderIsWeb":self?.window.firstResponder === self?.web', '"firstResponderIsWeb":self?.window.firstResponder === self?.web,"firstResponderClass":(self?.window.firstResponder).map {String(describing:type(of:$0))} ?? "none","recipientPID":getpid()')
 source = inspect.getsource(m.build).replace('dev.localnotes.validation.issue7', 'dev.localnotes.validation.issue65keyboard')
 source = source.replace('generated=OUT/\'main.swift\';generated.write_text(source)', "generated=OUT/'main.swift';generated.write_text(source.replace('let wrapped =', EXTRA+'let wrapped =').replace('let reviewProbe = ReviewProbe()', ROUTE_RECORDER+'\\nlet reviewProbe = ReviewProbe()'))")
 exec(source, m.__dict__); m.build()
-sender = OUT/'native-browse-input'
-subprocess.run(['swiftc', str(REPO/'tests/native-browse-input.swift'), '-o', str(sender)], check=True)
+sender = OUT/'native-library-input'
+subprocess.run(['swiftc', str(REPO/'tests/native-library-input.swift'), '-o', str(sender)], check=True)
 window_observer = OUT/'native-owned-windows'
 subprocess.run(['swiftc', str(REPO/'tests/native-owned-windows.swift'), '-o', str(window_observer)], check=True)
 environment = OUT/'native-library-environment'
 subprocess.run(['swiftc', str(REPO/'tests/native-library-environment.swift'), '-o', str(environment)], check=True)
+subprocess.run([str(sender), '--self-test'], check=True)
 if build_only:
     print('PASS build-only; no app launched, activated, or input posted'); raise SystemExit(0)
 EVIDENCE.mkdir(parents=True, exist_ok=True)
@@ -45,14 +50,18 @@ original = {str(p.relative_to(OUT/'Sync')):digest(p) for p in (OUT/'Sync').rglob
 input_code = 'import Carbon\nlet s=TISCopyCurrentKeyboardInputSource().takeRetainedValue()\nprint(Unmanaged<CFString>.fromOpaque(TISGetInputSourceProperty(s,kTISPropertyInputSourceID)).takeUnretainedValue())'
 def input_source(): return subprocess.check_output(['swift','-e',input_code],text=True).strip()
 # No input-source switch or copy/paste operation occurs in this journey.
-initial_input = input_source(); clipboard_hash = hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
+initial_input = None; clipboard_hash = None
 private_snapshot = OUT/'environment-private.json'
-environment_saved = json.loads(subprocess.check_output([str(environment), 'save', str(private_snapshot)], text=True))
-report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'], 'inputSourceBefore':initial_input, 'environmentSaved':environment_saved, 'events':[], 'states':[]}
-report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-browse-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
+environment_saved = None
+report = {'head':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(), 'base':subprocess.check_output(['git','merge-base','HEAD','origin/main'],text=True).strip(), 'grant':os.environ['ISSUE65_GUI_GRANT'],  'events':[], 'states':[], 'passed':False}
+report['bindings'] = {'application':str(m.APP), 'bundleIdentifier':'dev.localnotes.validation.issue65keyboard', 'executable':digest(m.APP/'Contents/MacOS/LocalNotes'), 'generatedHost':digest(OUT/'main.swift'), 'probe':digest(Path(__file__)), 'senderSource':digest(REPO/'tests/native-library-input.swift'), 'senderExecutable':digest(sender), 'environmentSource':digest(REPO/'tests/native-library-environment.swift'), 'environmentExecutable':digest(environment), 'nativeSources':{str(p):digest(p) for p in (REPO/'mac').glob('*.swift')}, 'web':{p.name:{'source':digest(p),'package':digest(m.APP/'Contents/Resources/web'/p.name),'productionPackage':digest(REPO/'dist/LocalNotes.app/Contents/Resources/web'/p.name)} for p in (REPO/'web').iterdir() if p.is_file()}}
 assert all(len(set(v.values()))==1 for v in report['bindings']['web'].values())
 c,w = m.command,m.wait
 process = None
+
+def save_report():
+    pending = EVIDENCE/'report.tmp'
+    pending.write_text(json.dumps(report,indent=2)); pending.replace(EVIDENCE/'report.json')
 
 def state(name):
     value=c("const n=document.activeElement;return {active:n.id||n.dataset.path,focusVisible:n.matches(':focus-visible'),collection:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop,page:document.querySelector('#library-page').textContent,order:document.querySelector('#library-order').value,archives:document.querySelector('#library-archives').value}")
@@ -60,12 +69,15 @@ def state(name):
 
 def key(name):
     host=c('__host'); before=c('__route')
-    assert host['frontmostPID']==process.pid and host['windowNumber']==window and host['active'] and host['key'] and host['visible'] and not host['occluded'] and c('return document.hasFocus()'), 'Lost exclusive owned recipient; nothing posted'
+    report['events'].append({'key':name,'host':host,'recipientPID':process.pid,'window':window,'stage':'host-preflight'})
+    save_report()
+    assert host['frontmostPID']==process.pid and host['recipientPID']==process.pid and host['windowNumber']==window and host['active'] and host['key'] and host['main'] and host['firstResponderIsWeb'] and host['visible'] and not host['occluded'] and c('return document.hasFocus()'), 'Lost exclusive owned recipient; nothing posted'
     c('window.expectedKeyTarget=document.activeElement'); previous=c('return nativeKeys.length')
     payload=c('__events:'+json.dumps({'key':name}))
     assert len(payload['roundtrip'])==2 and all(e['window']==window and e['resolvedWindow'] for e in payload['roundtrip'])
     result=subprocess.run([str(sender),str(process.pid),str(window),'post'],input=json.dumps(payload),capture_output=True,text=True)
-    report['events'].append({'key':name,'host':host,'recipientPID':process.pid,'window':window,'constructor':payload['roundtrip'],'senderExit':result.returncode,'sender':result.stdout})
+    report['events'][-1].update(constructor=payload['roundtrip'],senderExit=result.returncode,sender=result.stdout,senderStderr=result.stderr,hostAfter=c('__host'))
+    save_report()
     assert result.returncode==0, 'Sender failed; no replay'
     expected={'Tab':'Tab','Shift+Tab':'Tab','Return':'Enter','Escape':'Escape'}[name]
     for _ in range(20):
@@ -84,6 +96,15 @@ def enter(selector):
     key('Return')
 
 try:
+    # The baseline is durable and private before any host launch.
+    old_mask=os.umask(0o077)
+    try:
+        environment_saved=json.loads(subprocess.check_output([str(environment),'save',str(private_snapshot)],text=True))
+    finally:
+        os.umask(old_mask)
+    initial_input=input_source(); clipboard_hash=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
+    report.update(inputSourceBefore=initial_input,environmentSaved=environment_saved)
+    save_report()
     process=subprocess.Popen([str(m.APP/'Contents/MacOS/LocalNotes')],env={**os.environ,'LOCAL_NOTES_TEST_ROOT':str(OUT/'Sync'),'LOCAL_NOTES_TEST_PRIVATE':str(OUT/'Private'),'REVIEW_PROBE':str(OUT)},stdout=open(OUT/'app.log','w'),stderr=subprocess.STDOUT)
     report['pid']=process.pid
     w("!!document.querySelector('.home-tools')"); c('__focus'); time.sleep(.5)
@@ -120,6 +141,9 @@ try:
     assert original=={str(p.relative_to(OUT/'Sync')):digest(p) for p in (OUT/'Sync').rglob('*.md')}
     assert not list((OUT/'Sync').glob('LocalNotesData/revisions/*/*.json'))
     report.update(passed=True,uniquePagedResults=61,sourcePreserved=True,input='external process-targeted OS keyboard; DOM fixture/focus setup; no physical input')
+except BaseException as error:
+    report['failure']={'type':type(error).__name__,'message':str(error)}
+    raise
 finally:
     try:
         if process:
@@ -127,13 +151,19 @@ finally:
             try: os.kill(process.pid,0); absent=False
             except ProcessLookupError: absent=True
             owned_windows = json.loads(subprocess.check_output([str(window_observer), str(process.pid)], text=True))
-            report['cleanup']={'pid':process.pid,'exit':process.returncode,'waitCompleted':True,'pidAbsent':absent,'remainingOwnedWindows':owned_windows}
+            process_rows=subprocess.check_output(['ps','-axo','pid=,command='],text=True).splitlines()
+            executable=str(m.APP/'Contents/MacOS/LocalNotes')
+            remaining=[{'pid':int(row.strip().split(None,1)[0]),'executable':executable} for row in process_rows if len(row.strip().split(None,1))==2 and row.strip().split(None,1)[1]==executable]
+            report['cleanup']={'pid':process.pid,'exit':process.returncode,'waitCompleted':True,'pidAbsent':absent,'remainingOwnedWindows':owned_windows,'independentExactExecutableProcesses':remaining}
     finally:
+        report['sourcePreservedAfterAttempt']=original=={str(p.relative_to(OUT/'Sync')):digest(p) for p in (OUT/'Sync').rglob('*.md')}
+        report['noFormalRevisionsAfterAttempt']=not list((OUT/'Sync').glob('LocalNotesData/revisions/*/*.json'))
         report['environmentRestoration']=json.loads(subprocess.check_output([str(environment), 'restore', str(private_snapshot)], text=True))
         report['inputSourceAfter']=input_source()
         final_clipboard_hash=hashlib.sha256(subprocess.check_output(['pbpaste'])).hexdigest()
         report['inputAndClipboardRetained']=report['inputSourceAfter']==initial_input and final_clipboard_hash==clipboard_hash
-        (EVIDENCE/'report.json').write_text(json.dumps(report,indent=2))
+        report['privateSnapshotDeleted']=not private_snapshot.exists()
+        save_report()
         assert report['inputAndClipboardRetained'], 'Input source or clipboard unexpectedly changed; coordinator action required'
-        assert report.get('cleanup', {}).get('pidAbsent') and not report['cleanup']['remainingOwnedWindows'], 'Owned PID/window cleanup not established'
+        assert report.get('cleanup', {}).get('pidAbsent') and not report['cleanup']['remainingOwnedWindows'] and not report['cleanup']['independentExactExecutableProcesses'], 'Owned PID/window cleanup not established'
 print('PASS owned-window native Library keyboard, paging, source-return and focus')
