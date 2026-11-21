@@ -20,7 +20,7 @@ interface RowsModel {notes:LibraryNote[]; directories:string[]; selectedPath?:st
 export function LibraryRows({notes,directories,selectedPath,empty,root,open,browse}:RowsModel) {
   return <>{root&&<Button busyOnAction onClick={()=>browse('')}>浏览目录</Button>}{directories.map(path=><Button busyOnAction key={path} onClick={()=>browse(path)}>目录：{path}</Button>)}
     {empty&&<p className="no-items text-secondary" role="status">{empty}</p>}
-    {notes.map(note=><Button busyOnAction key={note.path} type="button" data-path={note.path} className={`quiet ui-row card w-full text-left ${note.path===selectedPath?'selected':''}`} aria-current={note.path===selectedPath?'true':undefined} onClick={()=>open(note.path)}><h3>{note.title}</h3><p>{note.excerpt||'暂无正文摘要'}</p><small>{note.archived?'归档 · ':''}{note.path}</small><small>{Number.isFinite(note.modified)?'文件修改：'+new Date(note.modified!*1000).toLocaleDateString():'文件修改时间未知'}</small></Button>)}
+    {notes.map(note=><Button key={note.path} type="button" data-path={note.path} className={`quiet ui-row card w-full text-left ${note.path===selectedPath?'selected':''}`} aria-current={note.path===selectedPath?'true':undefined} onClick={()=>open(note.path)}><h3>{note.title}</h3><p>{note.excerpt||'暂无正文摘要'}</p><small>{note.archived?'归档 · ':''}{note.path}</small><small>{Number.isFinite(note.modified)?'文件修改：'+new Date(note.modified!*1000).toLocaleDateString():'文件修改时间未知'}</small></Button>)}
   </>;
 }
 export function libraryView(container:HTMLElement, tools:HTMLElement, callbacks:LibraryCallbacks) {
