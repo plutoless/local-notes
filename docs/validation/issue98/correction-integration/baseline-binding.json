@@ -1,0 +1,151 @@
+{
+  "head": "d5494970622a2100769a8d537e64d30b1d96fb98",
+  "resources": [
+    {
+      "built": "build/web/action-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/action-screen.js",
+      "bytes": 28254,
+      "sha256": "5b040820b303b7a21fc72ee70d1223c175591b5aa34b80869b14d1569d7a232c"
+    },
+    {
+      "built": "build/web/actions.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/actions.js",
+      "bytes": 15874,
+      "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019"
+    },
+    {
+      "built": "build/web/app.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/app.js",
+      "bytes": 58938,
+      "sha256": "e9676d92f6222808cf5a26e41106a819a57d20f8a8d20426ec38353166474772"
+    },
+    {
+      "built": "build/web/asset-manifest.json",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/asset-manifest.json",
+      "bytes": 885,
+      "sha256": "70be193cd8521db97bb18aa994b8c44c7885a87fdff2d97c41d8069eb9de67c5"
+    },
+    {
+      "built": "build/web/assets/react-host.css",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.css",
+      "bytes": 6132,
+      "sha256": "a7fc20be8cfafb383b6325c32970032b22fc15b5a610da802f59bb1cac48d89b"
+    },
+    {
+      "built": "build/web/assets/react-host.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/assets/react-host.js",
+      "bytes": 357571,
+      "sha256": "e887a2ed6f2d958b75c2fabd6a728ff7f360ec5473558b91ffe27b335ff3aac4"
+    },
+    {
+      "built": "build/web/bridge.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/bridge.js",
+      "bytes": 717,
+      "sha256": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c"
+    },
+    {
+      "built": "build/web/core.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/core.js",
+      "bytes": 7606,
+      "sha256": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509"
+    },
+    {
+      "built": "build/web/focus-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/focus-screen.js",
+      "bytes": 8532,
+      "sha256": "d6a2d7c06ea440f45225b991849a8adc1304117759db1c059489b59faea009a0"
+    },
+    {
+      "built": "build/web/global-search.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/global-search.js",
+      "bytes": 12391,
+      "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862"
+    },
+    {
+      "built": "build/web/index.html",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/index.html",
+      "bytes": 8333,
+      "sha256": "617cb54be78c22f59c530ed261f1c2fa5ee2153ce7b669d7b17bcefc9fe3402e"
+    },
+    {
+      "built": "build/web/initiative-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/initiative-screen.js",
+      "bytes": 34962,
+      "sha256": "2d1280acbdc6a8490044fe8f622fd4733c6327a6817a81012008d01b74a1089e"
+    },
+    {
+      "built": "build/web/initiatives.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/initiatives.js",
+      "bytes": 4232,
+      "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+    },
+    {
+      "built": "build/web/library-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/library-screen.js",
+      "bytes": 17779,
+      "sha256": "306365a285dde86f6387450d6b80ff9eedee34c72ffdc99b9fd3ad0ffff2974e"
+    },
+    {
+      "built": "build/web/library.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/library.js",
+      "bytes": 8436,
+      "sha256": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee"
+    },
+    {
+      "built": "build/web/organization.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/organization.js",
+      "bytes": 16277,
+      "sha256": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8"
+    },
+    {
+      "built": "build/web/organize-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/organize-screen.js",
+      "bytes": 22296,
+      "sha256": "8a529d609eedf89e696864c0923dbb364a30e292a0b245012be848efcc9b9026"
+    },
+    {
+      "built": "build/web/presentation.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/presentation.js",
+      "bytes": 16539,
+      "sha256": "d2fe7ea3357da84bf38873272114a9fdfb3795879fd57b7e49fd8af18fc99d28"
+    },
+    {
+      "built": "build/web/reading-history.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/reading-history.js",
+      "bytes": 1339,
+      "sha256": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643"
+    },
+    {
+      "built": "build/web/revision-graph.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/revision-graph.js",
+      "bytes": 1651,
+      "sha256": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032"
+    },
+    {
+      "built": "build/web/search-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/search-screen.js",
+      "bytes": 12141,
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926"
+    },
+    {
+      "built": "build/web/style.css",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/style.css",
+      "bytes": 35138,
+      "sha256": "173fdc6fbf51f23227d71c931718d0a680eb4a704a70adf3320936d65ac16858"
+    },
+    {
+      "built": "build/web/sync-screen.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/sync-screen.js",
+      "bytes": 16907,
+      "sha256": "86b01136838d9432fd7cdc9fe556882b483fa73a6c651326781c83d96ca3f029"
+    },
+    {
+      "built": "build/web/task-drafts.js",
+      "packaged": "dist/LocalNotes.app/Contents/Resources/web/task-drafts.js",
+      "bytes": 1016,
+      "sha256": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3"
+    }
+  ],
+  "snapshot": "build/issue98-correction-baseline",
+  "verifiedAgainstPriorBinding": true
+}
