@@ -40,7 +40,7 @@ builds for the current machine's architecture; it is not a universal binary.
 | Library rows and empty states | React rows root in `#items` | Existing bounded query/filter/index logic |
 | Shared reader toolbar, title/body, Markdown and search highlight | React `readerView` | Existing note generation/draft/save/leave/wiki/history logic in `app.js` |
 | Note information button/associations | Explicit legacy island inside reader document; contextual drawer outside root | Existing topic/initiative adapters and drawer |
-| Search, Topic, Action, Initiative, Organization, synchronization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
+| Search, Topic, Action, Initiative, Organization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
 | Tokens | `web/style.css` semantic variables | Tailwind maps those variables; no second semantic palette |
 
 `LibraryScreen.release()` synchronously unmounts rows before navigation hands the
@@ -91,3 +91,5 @@ The pre-change baseline lease was released. Minimum OS/engine runtime tests, And
 execution, standalone Syncthing and ordinary native IME/clipboard replay are not
 inferred from browser results. Preserve failed cycles and source/artifact bindings
 in `docs/validation/issue92/`.
+
+Synchronization and reader file-conflict ownership migrated in #101; see [the explicit inventory](sync-react.md).

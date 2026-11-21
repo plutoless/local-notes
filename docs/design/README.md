@@ -214,3 +214,14 @@ field/invalid state remain authoritative. The live catalogue imports these actua
 components, including long Chinese content and reading continuation. Storage, modal
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
+
+## Synchronization React adoption (#101)
+
+The production `SyncContent` and `ConflictComparison` render complete field evidence,
+source references and diagnostics through the existing comparison/field/disclosure
+styles. The selected source uses pressed fill independently of keyboard focus. Raw
+invalid JSON retains the danger border, field focus and editable content. Other
+records become inert only while one explicit resolution is active. The live catalogue
+imports the production comparison with long Chinese content and invalid/selected
+states. The stable controller retains repository guards, committed recovery and the
+shared modal leave/focus owner; see [the ownership inventory](../architecture/sync-react.md).
