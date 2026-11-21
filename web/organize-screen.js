@@ -66,7 +66,7 @@ export class OrganizeScreen {
   }
   openSettings() {
     const session = this.session, request = this.showRequest, openRequest = this.settingsOpenRequest = (this.settingsOpenRequest || 0) + 1;
-    const current = () => session === this.session && request === this.showRequest && openRequest === this.settingsOpenRequest && !$('#organize-tools').hidden;
+    const current = () => session === this.session && request === this.showRequest && openRequest === this.settingsOpenRequest && !$('#organize-tools').hidden && !document.querySelector('dialog[open]');
     return this.attempt(async () => {
       await this.settings(false, current);
       if (!current()) return;

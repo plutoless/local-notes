@@ -40,7 +40,8 @@ builds for the current machine's architecture; it is not a universal binary.
 | Library rows and empty states | React rows root in `#items` | Existing bounded query/filter/index logic |
 | Shared reader toolbar, title/body, Markdown and search highlight | React `readerView` | Existing note generation/draft/save/leave/wiki/history logic in `app.js` |
 | Note information button/associations | Explicit legacy island inside reader document; contextual drawer outside root | Existing topic/initiative adapters and drawer |
-| Search, Topic, Action, Initiative, Organization, synchronization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
+| Search | React `SearchContent`; existing controller/typed navigation adapter | See `search-react.md` |
+| Topic, Action, Initiative, Organization, synchronization | Existing legacy screen modules | Existing repositories and shared modal lifecycle |
 | Tokens | `web/style.css` semantic variables | Tailwind maps those variables; no second semantic palette |
 
 `LibraryScreen.release()` synchronously unmounts rows before navigation hands the

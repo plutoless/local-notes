@@ -224,3 +224,14 @@ from the single keyboard label cue. Keyed fields preserve caret and native discl
 state during model refresh. The live catalogue imports these same components;
 candidate review retains its separate legacy island until #99. See
 `docs/architecture/organization-react.md` for bridge, service and overlay ownership.
+## Global search React adoption (#97)
+
+Compact A global search consumes production `SearchContent`, `SearchPassage` and
+`Button` through the typed view in `web/react/search.tsx`. The catalogue imports the
+same component with a long Chinese selected note and grounded highlighted excerpt.
+Existing semantic tokens and `.search-*` focus/selection/attribution rules remain
+authoritative. Scope selection, keyboard focus and pointer treatment are distinct;
+there is one existing native-dialog/Tab owner. Presentation never reads the index,
+copies through the bridge or navigates independently. See
+[search ownership](../architecture/search-react.md) and issue97 validation for the
+actual-app source/return, selection, narrow/short, reduced-motion and contrast checks.
