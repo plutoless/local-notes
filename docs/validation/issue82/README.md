@@ -1,5 +1,7 @@
 # Issue 82 — reader focus validation
 
+Current browser-first/layered completion is documented in [browser-first-delivery.md](browser-first-delivery.md). The records below preserve historical validation and limitations; the approved policy supersedes their former blanket native replay requirement, without relabeling unrun checks as passed.
+
 Starting/base commit: `a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3` (merged #88).
 Live native `blocked_by` and written blocker both identify closed #81; its shared
 contract was available on `origin/main` before implementation. No sibling merge

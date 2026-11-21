@@ -78,8 +78,9 @@
       "command": "Focused reader-editing-ui.mjs on corrected final head",
       "observedBefore": "Committed-head final-reader.log failed before equality/discard/reload completion; failure and test source preserved under build/issue82-delivery/failures/browser-keys-reload",
       "diagnosticProgress": true,
-      "consecutiveSameSignatureWithoutProgress": 0
+      "consecutiveSameSignatureWithoutProgress": 0,
+      "observedResult": "Corrected reader journey passed at7234ec0beeca5a36b73f456e436e76d7a73d666f, including exact newer-Tab equality, actual save/discard/readback and reload; instrumentation finding resolved without product/assertion weakening"
     }
   ],
-  "next": "Final focused exact-head browser/storage checks and package/source binding; separate independent Standards/Spec; native replay/actualOSIME deferred by maintainer policy, never passed."
+  "next": "Final source/artifact evidence binding and independent final-head Standards/Spec; coordinator alone decides merge and shared hold exit."
 }

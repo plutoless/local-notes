@@ -64,3 +64,29 @@ The final current-head report binds each reused/executed receipt, source/package
 hash and independent Standards/Spec review; evidence-only commits require final
 diff review/provenance, not an unrelated matrix rerun. Coordinator alone decides
 merge, issue closure and shared hold exit.
+
+
+## Completed focused reacceptance
+
+The corrected actual-app reader journey passed at
+`7234ec0beeca5a36b73f456e436e76d7a73d666f`. The complete committed receipt and
+narrow composition screenshot are under `browser-first/`; provenance identifies
+the executed head and hashes. Newer trusted Tab's note-save destination survives
+the held prior callback; subsequent discard/readback and reload complete. Saved
+and final Markdown hashes match and no formal records were written. The real
+source/index adapter remains isolated and synthetic.
+
+A final-head instrumentation bug was caught independently: the first-document
+browserKeys log was destroyed by reload. Its failed command/source are preserved
+under `build/issue82-delivery/failures/browser-keys-reload`. The corrected probe
+initializes logging per document and retains earlier keys in the Node runner.
+It preserves the exact product acceptance assertion and now passes. This failure
+was a harness defect, not evidence of a product failure or acceptance success.
+
+At the preceding source-identical product head, syntax checks, 23 selected fast
+public-module/real-adapter tests, #105's public-interface controlled-order DOM
+component suite and Mac packaging passed. Final delivery binds their unchanged
+input bytes and package artifacts rather than repeating unrelated suites after
+this test-instrumentation/evidence correction. FullUI/native replay is not rerun
+without a new broad-impact reason. Final independent reviews assess the actual
+final diff and receipt applicability, including this evidence-only completion.
