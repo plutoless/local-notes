@@ -2,7 +2,7 @@ import {createRoot, type Root} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Button} from './components';
 
-export interface FocusAction {entityId:string; description:string; status:string; dueDate?:string; waitingOn?:string; focusPosition:number}
+export interface FocusAction {entityId:string; description:string; status:string; dueDate?:string|null; waitingOn?:string|null; focusPosition:number|null}
 export interface FocusInitiative {entityId:string; title:string; progress?:string}
 export interface ReadingEntry {path:string; title:string; fingerprint:string; scroll:Record<string,number>}
 interface Page<T> {actions:T[]; hasMore:boolean}
