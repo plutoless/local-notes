@@ -1,0 +1,253 @@
+{
+  "passed": false,
+  "head": "eefa71544613203b3df616dcd591843a7f72345b",
+  "pid": 75946,
+  "exit": -15,
+  "clipboardRestored": true,
+  "inputSourceRestored": true,
+  "initialInputSource": "com.tencent.inputmethod.wetype.pinyin",
+  "sourcePreserved": true,
+  "sourceSHA256": "2458230be1ea7566a5f33d53bf6e55683dc73167572c8a9e856fe6586ee37a4c",
+  "assets": {
+    "library-screen.js": {
+      "source": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c",
+      "package": "51f7ee54b052ab4cbbd0f77e21730113cabb2e9a2f69244d3a0fdb94ddaf4a8c"
+    },
+    "organization.js": {
+      "source": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "package": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8"
+    },
+    "index.html": {
+      "source": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6",
+      "package": "ddc131f55b4c158ca03f90c0c16d2abab3fccfdcdd6947b625110208298040a6"
+    },
+    "core.js": {
+      "source": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "package": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509"
+    },
+    "bridge.js": {
+      "source": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "package": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c"
+    },
+    "actions.js": {
+      "source": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "package": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019"
+    },
+    "reading-history.js": {
+      "source": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "package": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643"
+    },
+    "initiative-screen.js": {
+      "source": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5",
+      "package": "5db957ca44ac1d31e8d1fa26017cd81d794539f12a5c6386f62f3e28faf0a6a5"
+    },
+    "library.js": {
+      "source": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9",
+      "package": "972549382aec4aaf06e24e0f6fb7454a783df17a4559fef7c393f86ca3478ab9"
+    },
+    "focus-screen.js": {
+      "source": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21",
+      "package": "e68c0a6dacded3e6a74127eb98df445ea458ee426fd51250d00520db5cfafd21"
+    },
+    "global-search.js": {
+      "source": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "package": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862"
+    },
+    "task-drafts.js": {
+      "source": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "package": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3"
+    },
+    "revision-graph.js": {
+      "source": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "package": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032"
+    },
+    "search-screen.js": {
+      "source": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056",
+      "package": "d3c0b349671f2020a6443d26b09e01b6fac3ce3a65cf81f0ef03ecb39068a056"
+    },
+    "style.css": {
+      "source": "33c87e6fd27b1497b77467b4d89c8e16c28066b663e7fc3cec0ac8a33cc9fa05",
+      "package": "33c87e6fd27b1497b77467b4d89c8e16c28066b663e7fc3cec0ac8a33cc9fa05"
+    },
+    "organize-screen.js": {
+      "source": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b",
+      "package": "20f99ed91f00693cf8cead11ec025cd2545db03a2cfcbe8b632941468561685b"
+    },
+    "action-screen.js": {
+      "source": "618346343d78d631bd9069ab300db437668c065d371834a0c467957a9a97a3fa",
+      "package": "618346343d78d631bd9069ab300db437668c065d371834a0c467957a9a97a3fa"
+    },
+    "presentation.js": {
+      "source": "854499c765cf97da8f7a694b2107bc99a0c65a9e111468d10a7f797d9820bfae",
+      "package": "854499c765cf97da8f7a694b2107bc99a0c65a9e111468d10a7f797d9820bfae"
+    },
+    "sync-screen.js": {
+      "source": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd",
+      "package": "1297c114e1654d7637a1865b54d9a72b630bff1d022adc5328eb061c35a72dbd"
+    },
+    "app.js": {
+      "source": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b",
+      "package": "49294aa051277cfb8943213aca6594873605f4bad3b99cbce7eb91a3e3aa190b"
+    },
+    "initiatives.js": {
+      "source": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "package": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1"
+    }
+  },
+  "probeSHA256": "b29f55ba2f6741328b4f14f66998425aa86c4c5b10f4963be1a3223f3cf32409",
+  "executableSHA256": "146f477ca454b53e728a2cd99eb943c5683c7a331966549cff8a37d9187c352d",
+  "hostSHA256": "6c1a66fd7a9eced87c4ba5dcf4e914749d7bb6a393680d290c8aa1aba51bd45f",
+  "senderSHA256": "e65ea81cf954537842da621024c74e1594acb5ab64ff9b5ec8dee2745f111d6e",
+  "senderSourceSHA256": "47133d3755fc1c6a98962de5bb461823f4fd8bae89d87e660728e88aae903edb",
+  "maintainedSenderSourceSHA256": "5888b1aecc8789eda7b545ad5ffd93071dbce4c4d0a1294f54b2248ded4d2c82",
+  "events": [
+    {
+      "request": {
+        "action": "click",
+        "x": 1111.4296875,
+        "y": 774.5
+      },
+      "selector": "#global-search-open",
+      "host": {
+        "webHidden": false,
+        "active": true,
+        "visible": true,
+        "windowNumber": 1427,
+        "hidden": false,
+        "key": true,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "firstResponderInWeb": true,
+        "occluded": false
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":75813,\"postAccess\":true,\"posted\":[{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":1427,\"sourcePID\":76018,\"type\":1,\"utc\":\"2026-11-20T13:38:05Z\",\"x\":1277.4296875,\"y\":104.5},{\"flags\":0,\"keyCode\":0,\"marker\":810053,\"nativeWindow\":1427,\"sourcePID\":76018,\"type\":2,\"utc\":\"2026-11-20T13:38:05Z\",\"x\":1277.4296875,\"y\":104.5}],\"recipientPID\":75946,\"senderPID\":76018,\"window\":1427}\n",
+      "events": [
+        {
+          "matchesExpectedPointer": true,
+          "trusted": true,
+          "type": "pointerdown",
+          "target": "#global-search-open"
+        },
+        {
+          "matchesExpectedPointer": true,
+          "trusted": true,
+          "type": "click",
+          "target": "#global-search-open"
+        }
+      ],
+      "cocoa": [
+        {
+          "keyCode": -1,
+          "type": 1,
+          "window": 1427,
+          "x": 1111.4296875,
+          "y": 774.5,
+          "flags": 0,
+          "utc": "2026-11-20T13:38:05Z"
+        },
+        {
+          "y": 774.5,
+          "utc": "2026-11-20T13:38:05Z",
+          "type": 2,
+          "x": 1111.4296875,
+          "keyCode": -1,
+          "window": 1427,
+          "flags": 0
+        }
+      ],
+      "quartz": [
+        {
+          "marker": 810053,
+          "x": 1277.4296875,
+          "sourcePID": 76018,
+          "utc": "2026-11-20T13:38:05Z",
+          "type": 1,
+          "y": 104.5
+        },
+        {
+          "marker": 810053,
+          "utc": "2026-11-20T13:38:05Z",
+          "type": 2,
+          "y": 104.5,
+          "sourcePID": 76018,
+          "x": 1277.4296875
+        }
+      ]
+    },
+    {
+      "state": "pointer-open",
+      "value": {
+        "outline": "3px solid rgb(7, 95, 204)",
+        "active": "global-search-input",
+        "query": "",
+        "focus": true
+      }
+    },
+    {
+      "request": {
+        "key": "CmdOrCtrl+K"
+      },
+      "selector": null,
+      "host": {
+        "active": true,
+        "occluded": false,
+        "main": true,
+        "firstResponderIsWeb": true,
+        "webHidden": false,
+        "hidden": false,
+        "visible": true,
+        "firstResponderInWeb": true,
+        "key": true,
+        "windowNumber": 1427
+      },
+      "sender": "{\"axTrusted\":true,\"delivery\":\"unverified until observed in recipient\",\"listenAccess\":true,\"ok\":true,\"parentPID\":75813,\"postAccess\":true,\"posted\":[{\"flags\":1048576,\"keyCode\":40,\"marker\":810053,\"nativeWindow\":1427,\"sourcePID\":76021,\"type\":10,\"utc\":\"2026-11-20T13:38:06Z\",\"x\":166,\"y\":879},{\"flags\":1048576,\"keyCode\":40,\"marker\":810053,\"nativeWindow\":1427,\"sourcePID\":76021,\"type\":11,\"utc\":\"2026-11-20T13:38:06Z\",\"x\":166,\"y\":879}],\"recipientPID\":75946,\"senderPID\":76021,\"window\":1427}\n",
+      "events": [
+        {
+          "matchesExpectedPointer": false,
+          "trusted": true,
+          "type": "keydown",
+          "target": "#global-search-input",
+          "key": "k"
+        }
+      ],
+      "cocoa": [
+        {
+          "x": 0,
+          "flags": 1048576,
+          "y": 0,
+          "window": 1427,
+          "utc": "2026-11-20T13:38:06Z",
+          "keyCode": 40,
+          "type": 10
+        },
+        {
+          "y": 0,
+          "window": 1427,
+          "type": 11,
+          "x": 0,
+          "keyCode": 40,
+          "flags": 1048576,
+          "utc": "2026-11-20T13:38:06Z"
+        }
+      ],
+      "quartz": [
+        {
+          "type": 10,
+          "y": 879,
+          "marker": 810053,
+          "utc": "2026-11-20T13:38:06Z",
+          "x": 166,
+          "sourcePID": 76021
+        },
+        {
+          "sourcePID": 76021,
+          "utc": "2026-11-20T13:38:06Z",
+          "y": 879,
+          "x": 166,
+          "marker": 810053,
+          "type": 11
+        }
+      ]
+    }
+  ]
+}

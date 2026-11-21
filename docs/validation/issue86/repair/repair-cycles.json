@@ -1,0 +1,37 @@
+{
+  "revision": 2,
+  "originalTask": "task_6a862031f45d",
+  "repairTask": "task_5d6ba8496f03",
+  "startingSHA": "10c8f47fae35f9d422281fd0956be4bfa50f4e88",
+  "integratedBase": "20302d140dac350e543731543d72246275ee7353",
+  "cycles": [
+    {
+      "id": "historical-review-correction",
+      "head": "09b2fa0ebf17045085aa5253a1751c56df2147e6",
+      "outcome": "progress",
+      "evidence": "../README.md: initial first-open and keyboard activation review findings fixed; browser green"
+    },
+    {
+      "id": "historical-native-acceptance",
+      "head": "f5d67c05cfedc3b1299f336f3b3c2b97192e884f",
+      "outcome": "failed",
+      "signature": "Escape->BODY; modal-wrap focusVisible=false",
+      "evidence": "../after/transcript.json",
+      "retry": false
+    },
+    {
+      "id": "revision2-browser-control-and-repair",
+      "outcome": "progress",
+      "signature": "non-focusing pointer opener -> incorrect Escape return",
+      "red": "red.txt and red-focus.json",
+      "green": "green.txt and green-focus.json",
+      "change": "Focus known SyncScreen opener before bindDialog captures origin; no shared105 duplicate",
+      "nativeWrapDisposition": "Browser wrap visibly green before and after; native-only runtime cue remains release-level deferred, not passed"
+    }
+  ],
+  "circuitBreaker": {
+    "identicalSignatureCompletedCyclesWithoutProgress": 0,
+    "limit": 2
+  },
+  "nativeReplay": "not launched; no GUI custody"
+}

@@ -61,3 +61,10 @@ Native production close/quit/restart evidence and instrumented native failure
 coverage are reported separately from Chromium and storage tests. OS-injected
 Cmd+Q is not a claim of physical keyboard testing. Android-specific and standalone
 Syncthing testing remain deferred by user decision.
+
+Deferred focus return is scoped to the completed leave decision. A newer focus,
+keyboard or pointer intention supersedes its post-handler fallback; Continue
+retains the captured editable selection. Async dismissal buttons still receive
+that fallback when no newer intention intervenes. Test journeys must establish
+completed save/reveal/leave before opening the next recovered task; drawer
+visibility alone does not establish that boundary.

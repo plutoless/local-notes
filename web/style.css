@@ -227,6 +227,8 @@ details { overflow-wrap: anywhere; }
 .sync-panel dt { color: var(--muted, #53645c); margin-top: 8px; font-weight: 600; }
 .sync-version { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 12px 0; }
 .sync-version summary { font-weight: 600; }
+/* Chosen source version is independent of the active keyboard control. */
+.sync-version button[aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
 .sync-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .sync-editor .ui-field { margin-block: 0; }
 .sync-editor textarea, .sync-editor input, .sync-editor select { width: 100%; min-width: 0; }
@@ -446,11 +448,13 @@ details { overflow-wrap: anywhere; }
 .search-dialog h2 { margin: 0 0 16px; }
 .search-results { max-height: 48dvh; overflow: auto; }
 .search-result { padding: 12px 0; border-bottom: 1px solid var(--divider); }
+/* Child actions share the inward scrollport cue used by result openers. */
+.search-result > .ui-action:focus-visible { outline-offset: -3px; }
 .search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; }
 .search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
 .search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; user-select: text; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); }
-.search-attribution { display: flex; align-items: center; min-height: 44px; gap: 8px; }
-.search-attribution input { width: auto; }
+.search-attribution { padding: 0; border-bottom: 0; display: flex; align-items: center; min-height: 44px; gap: 8px; }
+.search-attribution input { width: auto; scroll-margin-block: 16px; }
 @media (max-width: 600px) { .search-dialog { padding: 16px; } }
 
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); overflow: auto; padding: 24px; border: 1px solid var(--divider); border-radius: var(--radius-panel); color: var(--text); background: var(--surface); box-shadow: var(--shadow-panel); }
@@ -476,6 +480,12 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 
 /* Inline local navigation uses the reader's text rhythm and shared focus tokens. */
 .wiki-link { color: var(--accent); background: none; border: 0; text-decoration: underline; font: inherit; padding: 0 4px; min-height: 44px; max-width: 100%; overflow-wrap: anywhere; cursor: pointer; }
+/* Source locations receive navigation focus, not a control-sized frame. */
+#reading[tabindex="-1"]:focus-visible,
+#reading [tabindex="-1"]:focus-visible { outline: none; }
+/* A wide table is keyboard-scrollable; keep its cue inside the scrollport. */
+#reading .markdown-table:focus-visible { outline: 3px solid var(--focus); outline-offset: -3px; }
+
 
 /* A Home continuation opens one document without loading the Library corpus. */
 .app.reading-continuation { grid-template-columns: 196px minmax(0, 1fr); }

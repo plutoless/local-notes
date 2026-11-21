@@ -47,9 +47,9 @@ const initiatives = new InitiativeScreen(actions, notice, async path => {
   return libraryScreen.library.inventory();
 }, () => flush());
 actions.initiatives = initiatives;
-const organize = new OrganizeScreen(async path => {
+const organize = new OrganizeScreen(async (path, opener) => {
   if (!await flush()) return;
-  const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: document.activeElement.closest('[data-candidate]')?.dataset.candidate, label: document.activeElement.getAttribute('aria-label')}};
+  const origin = {view: 'organize', organization: {scroll: $('#organize-tools').scrollTop, candidate: opener.closest('[data-candidate]')?.dataset.candidate, label: opener.getAttribute('aria-label')}};
   const generation = workspaceGeneration, request = ++noteLoadRequest;
   let loaded;
   try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) notice(error.message); return; }
