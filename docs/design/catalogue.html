@@ -31,7 +31,8 @@ const modal=document.createElement('div');modal.className='sync-panel ui-panel u
 <section id="react-library"></section>
 <script type="module">
 import {mountLibraryCatalogue} from '../../build/web/assets/react-host.js';
-mountLibraryCatalogue(document.querySelector('#react-library'));
+import {icon} from '../../web/presentation.js';
+mountLibraryCatalogue(document.querySelector('#react-library'), icon);
 </script></html>
 
 <script type="module">

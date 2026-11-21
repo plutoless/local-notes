@@ -13,24 +13,7 @@
   <body>
     <header class="global-header"><button id="global-search-open" class="ui-action quiet ui-compact">搜索笔记 ⌘K</button></header>
     <div class="app home">
-      <aside>
-        <div class="brand">拾记</div>
-        <button id="new" class="ui-action secondary">随手记</button>
-        <nav aria-label="主导航">
-          <button data-view="focus" class="active">当前重点</button
-          ><button data-view="notes">
-            笔记库 <span id="note-count" hidden></span></button
-          ><button data-view="initiatives">事项</button
-          ><button data-view="organize">整理</button
-          ><button data-view="favorites">收藏</button>
-        </nav>
-        <details class="directory-details">
-          <summary><span id="root-name">样本笔记</span></summary>
-          <div class="folder-label">当前笔记目录</div>
-          <div id="root-label">样本笔记</div>
-          <button id="choose" class="ui-action quiet">选择本地目录</button>
-        </details>
-      </aside>
+      <aside id="shell"></aside>
       <section class="collection">
         <header>
           <h1 id="view-title">当前重点</h1>
