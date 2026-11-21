@@ -1,4 +1,5 @@
-import {readFile, writeFile, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, mkdir, readdir} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
 import {storageFixture} from './action-adapter.js';
@@ -100,8 +101,26 @@ try {
   assert.equal(await card(0).evaluate(n=>n===document.activeElement),true,'confirmed candidate remains the meaningful return target');
  }
  await page.screenshot({path:`build/issue85-${phase}/confirmed-keyboard.png`});
- assert.equal((await fixture.adapter('actionQuery',{workspaceId:initiative.workspaceId,entityType:'action'})).actions.length,1);
+ const confirmed=(await fixture.adapter('actionQuery',{workspaceId:initiative.workspaceId,entityType:'action'})).actions;
+ assert.equal(confirmed.length,1);
+ assert.equal(confirmed[0].description,'合成长中文建议：逐条核对当前适用性、保留来源与用户决定'.repeat(5));
+ assert.equal(confirmed[0].initiativeId,initiative.entityId);
  assert.equal(await readFile(fixture.root+'/reference.md','utf8'),text);
+ const hashes=async root=>{
+  const result=[];
+  for(const entry of await readdir(root,{withFileTypes:true,recursive:true})) {
+   if(entry.isFile()) {
+    const path=entry.parentPath+'/'+entry.name;
+    result.push({path:path.slice(root.length+1),sha256:createHash('sha256').update(await readFile(path)).digest('hex')});
+   }
+  }
+  return result.sort((a,b)=>a.path.localeCompare(b.path));
+ };
+ await writeFile(`build/issue85-${phase}/storage-readback.json`,JSON.stringify({
+  confirmed,sourceUnchanged:true,synchronizedFiles:await hashes(fixture.root),privateIndexFiles:await hashes(fixture.privateRoot),
+  adapterCommands:[...new Set(fixture.calls.map(call=>call.cmd))].sort(),
+  bridge:'Browser NotesNative.request -> exposed bridge -> isolated Markdown / Swift StorageHarness / SQLite',nativeTransportExercised:false
+ },null,2));
  assert.deepEqual(errors,[]);
  console.log(`PASS issue85 ${phase}: checkbox pointer/Space/Tab, geometry, exact preview, controlled send, invalid action, source detour context, explicit individual confirmation and source preservation`);
 } finally {await browser.close();await fixture.close();}

@@ -1,0 +1,33 @@
+{
+  "run": "run_4c9f8d25f80d",
+  "cycles": [
+    {
+      "task": "task_d2730dd4b3ce",
+      "dispatch": "ctx_512d8e84eeab",
+      "head": "f873d287f8b40675b013c70b15c95d20b4a0c58c",
+      "outcome": "accepted original implementation",
+      "evidence": "docs/validation/issue85 and build/issue85-final-report"
+    },
+    {
+      "task": "task_de588b8bd396",
+      "dispatch": "ctx_2db6c4faa648",
+      "head": "6130a43d5a50e3f20bf1e27f3b4e1f0e4553d94b",
+      "outcome": "failed",
+      "signatures": ["remaining-forms stale Continue focus87/88", "recovery opening before leave completion114", "native process marker missing"],
+      "evidence": "build/issue85-integration",
+      "limitations": ["historical114 exact telemetry limited", "immediate native input-source baseline unknown", "numeric native wait result unknown", "complete native transcript missing"],
+      "cleanup": "exact owned PID69266 absent; authorized prior-handoff source restored; release accepted"
+    },
+    {
+      "task": "task_9e02a3eb6ed7",
+      "dispatch": "ctx_30ca72e065e8",
+      "revision": 2,
+      "startingHead": "6130a43d5a50e3f20bf1e27f3b4e1f0e4553d94b",
+      "base": "20302d140dac350e543731543d72246275ee7353",
+      "progress": "integrated sole shared correction; extended real settings consumer and exact action storage readback evidence",
+      "outcomeReceipt": "build/issue85-revision2/report.md",
+      "stopRule": "Stop at genuine ownership/privacy/security/permission boundaries or two completed identical-signature cycles without progress; idle scans are not cycles.",
+      "native": "No custody or replay; ordinary compatibility replay release-level deferred by policy."
+    }
+  ]
+}
