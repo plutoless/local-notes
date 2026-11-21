@@ -87,8 +87,14 @@ try {
   await page.locator('#action-status').selectOption('todo');
   await page.locator('#action-save').click();
   await page.waitForFunction(()=>document.querySelector('#action-save-state').dataset.state==='saved');
+  fixture.fail((cmd,args)=>cmd==='actionWrite' && args.path.startsWith('actions/'),2);
   await page.locator('#action-focus').click();
+  await page.waitForFunction(()=>document.querySelector('#action-save-state').textContent.includes('版本已保存'));
+  await page.locator('#action-save').click();
+  await page.waitForFunction(()=>document.querySelector('#action-save-state').dataset.state==='saved');
   await page.waitForFunction(()=>document.querySelector('#action-focus').textContent==='移出当前重点');
+  await page.locator('#action-history').click();
+  await page.waitForFunction(()=>document.querySelectorAll('.action-revision').length===4);
   assert.ok((await fixture.adapter('actionQuery',{workspaceId:workspace,limit:30})).actions[0].focusPosition!==null);
   await page.locator('#action-description').focus();
   await page.locator('#action-description').evaluate(n=>n.setSelectionRange(2,5));
