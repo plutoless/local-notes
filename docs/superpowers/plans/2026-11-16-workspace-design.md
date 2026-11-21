@@ -41,7 +41,7 @@
 
 ### Task 3: Verify and provide an isolated preview
 
-**Files:** `docs/validation/workspace-design.md` and screenshots under `docs/validation/workspace-design/`.
+**Outputs:** retain the validation report and screenshots in ignored local output or CI artifacts; publish concise results in the PR under `docs/agents/validation.md`.
 
 **Interfaces:** Existing `npm run check`, `npm test`, `npm run test:ui`, `npm run build:mac`; preview uses unique bundle identity and isolated note/private roots.
 

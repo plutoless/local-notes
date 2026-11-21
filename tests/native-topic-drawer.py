@@ -2,6 +2,7 @@
 """Issue 46 isolated Cocoa/WKWebView topic drawer and persistence."""
 import hashlib, importlib.util, inspect, json, os, shutil, subprocess
 from pathlib import Path
+Path('docs/validation/issue46').mkdir(parents=True, exist_ok=True)
 spec = importlib.util.spec_from_file_location('probe', Path(__file__).with_name('native-candidate-review.py'))
 m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 phase = os.environ.get('PHASE', 'after')

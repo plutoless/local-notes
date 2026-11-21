@@ -6,5 +6,5 @@ Reuse the approved content structure and issue #16 presentation foundation. Nati
 
 1. Refine `web/action-screen.js` and its markup/styles: primary description/state/save, optional assignment/date/waiting/source groups, selected rows, distinct no-results, readable source evidence and complete expandable history. Keep Chinese labels in presentation and stored values unchanged.
 2. Extend `tests/ui.mjs` with reopened canceled actions, focus membership, no-results, unsaved navigation, retained failed drafts, accessible names and narrow layout assertions. Run syntax/shared suites and Mac/Android builds; Android device tests and standalone Syncthing tests remain deferred.
-3. Capture isolated native Mac before/after task and secondary screenshots, check keyboard/focus and native save/history interaction. Record actual evidence and limitations in `docs/validation/issue-17.md`.
+3. Capture isolated native Mac before/after task and secondary screenshots, check keyboard/focus and native save/history interaction. Keep raw evidence outside Git and publish the actual scope and limitations in the PR under `docs/agents/validation.md`.
 4. Commit implementation, run separate Standards and Spec code reviews against the starting SHA, resolve findings, push and open one PR. The coordinator owns merging and issue closure.

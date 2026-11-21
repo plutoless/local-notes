@@ -2,6 +2,7 @@
 """Issue 33 isolated WKWebView interaction using the existing test-only probe."""
 import importlib.util
 from pathlib import Path
+Path('docs/validation/issue33').mkdir(parents=True, exist_ok=True)
 import subprocess, os, shutil
 spec=importlib.util.spec_from_file_location('probe','tests/native-candidate-review.py'); m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 m.OUT=Path.cwd()/'build/native-issue33';m.APP=m.OUT/'Initiatives33.app'

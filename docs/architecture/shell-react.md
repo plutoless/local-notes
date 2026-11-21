@@ -48,7 +48,8 @@ and never reads Markdown bodies. Explicit continuation reads only its chosen not
 checks source identity, reports changed/missing content and returns to home context.
 
 The catalogue imports the same consumed shell and Focus components. It has no
-storage or AI callbacks. `docs/validation/issue93/` records actual browser/storage,
-packaging, source binding, failures and unrun native/minimum-version boundaries.
+storage or AI callbacks. Record actual browser/storage, packaging, source bindings,
+failures and unrun native/minimum-version boundaries in the PR. Keep raw evidence
+outside Git under [the validation policy](../agents/validation.md).
 
 See [synchronization ownership](sync-react.md) for #101 panel, draft and bridge boundaries.

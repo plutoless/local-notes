@@ -21,4 +21,4 @@ English project material; Simplified Chinese app copy. No schema/storage changes
 
 ## Delivery limitation
 
-Native after acceptance is blocked by an occluded, inactive owned host and unavailable AX window. The exclusive GUI lease was released; the draft PR remains incomplete pending a new focused desktop window. See `docs/validation/issue81/README.md` for actual execution scope.
+Native after acceptance is blocked by an occluded, inactive owned host and unavailable AX window. The exclusive GUI lease was released; the draft PR remains incomplete pending a new focused desktop window. See [issue #81](https://github.com/plutoless/local-notes/issues/81) for the delivery discussion. Historical artifacts are retained outside Git; this plan is not a current execution receipt.
