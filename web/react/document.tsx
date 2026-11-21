@@ -7,7 +7,7 @@ export function mountDocument(container:HTMLElement) {
   flushSync(()=>root.render(<>
     <header className="global-header"><button id="global-search-open" className="ui-action quiet ui-compact">搜索笔记 ⌘K</button></header>
     <div className="app home">
-      <aside id="shell"></aside>
+      <aside id="shell" className="shell"></aside>
       <section className="collection">
         <header>
           <h1 id="view-title">当前重点</h1>
