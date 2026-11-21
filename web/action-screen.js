@@ -1,4 +1,4 @@
-import {mountActionControls, actionRows, actionSources, actionHistory} from './assets/react-host.js';
+import {mountActionControls, actionRows, actionSources, actionHistory, actionOptions} from './assets/react-host.js';
 import {recoverTaskDraft} from './task-drafts.js';
 import {pageAvailability, requestTaskLeave, statusLabel, errorFeedback, progressLabel, directoryLabel, feedback, drawer} from './presentation.js';
 import {ActionRepository, isOverdue} from './actions.js';
@@ -9,8 +9,13 @@ export class ActionScreen {
   constructor(notice) {
     this.repository = new ActionRepository(native); this.notice = notice; this.dirty = false; this.active = false;
     this.previous = null; this.retry = null; this.offset = 0; this.status = ''; this.search = ''; this.saving = null;
-    mountActionControls($('#action-editor'), $('#action-tools'));
     this.setupDrawer();
+    mountActionControls(this.drawer.body, $('#action-tools'), this.drawer.footer);
+    this.drawer.body.addEventListener('focusin', event => {
+      if (event.target.matches('input, textarea, select, button, summary, [tabindex]')) this.editingFocus = event.target;
+    });
+    this.assignmentView = actionOptions($('#action-initiative'), '独立行动');
+    this.filterView = actionOptions($('#action-initiative-filter'), '全部事项');
     this.sourcesView = actionSources($('#action-sources'), () => this.changed(), path => this.initiatives.openNote(path));
     this.historyView = actionHistory($('#action-revisions'));
     $('#action-recover').onclick = async () => {
@@ -42,38 +47,26 @@ export class ActionScreen {
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
     $('#action-add-source').onclick = () => { $('#action-source-options').open = true; this.addSource({path: '', quote: '', fingerprint: ''}); this.changed(); };
     $('#action-history').onclick = async () => {
+      const repository = this.repository, entityId = this.previous?.entityId, request = this.editRequest;
       try {
         if (!this.previous) return;
-        const repository = this.repository, entityId = this.previous.entityId;
-        const request = this.editRequest;
         this.historyView(null);
         const records = await repository.history(entityId);
         if (repository !== this.repository || entityId !== this.previous?.entityId || request !== this.editRequest || !this.drawer.panel.open) return;
         this.historyView(records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt)));
-      } catch (error) { errorFeedback($('#action-save-state'), error.message); }
+      } catch (error) { if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); }
     };
   }
   // Typed ActionEntry port; legacy edit(...) remains supported for sibling consumers.
-  async open(entry) { await this.edit(entry.record, null, null, entry.opener); this.returnToFocus = entry.returnToOrigin || null; }
+  async open(entry) {
+    const request = (this.openRequest || 0) + 1;
+    if (await this.edit(entry.record, null, null, entry.opener) && request === this.openRequest && this.drawer.panel.open) this.returnToFocus = entry.returnToOrigin || null;
+  }
   setupDrawer() {
     this.drawer = drawer({id: 'action-drawer', title: '新建行动', onDismiss: () => this.dismissDrawer()});
     this.drawer.panel.classList.add('ui-drawer-wide');
-    const form = $('#action-form'); form.querySelector('h2').remove();
-    this.drawer.body.append(form);
-    this.drawer.body.append($('#action-editor .toolbar details'));
-    // Native pointer dismissal can leave the dialog itself active. Retain the
-    // last editing control instead of returning Continue Editing to the frame.
-    this.drawer.body.addEventListener('focusin', event => {
-      if (event.target.matches('input, textarea, select, button, summary, [tabindex]')) this.editingFocus = event.target;
-    });
-    for (const node of form.querySelectorAll('.ui-field, .ui-action')) node.classList.add('ui-compact');
-    const cancel = $('#action-back'), submit = $('#action-save');
-    cancel.classList.add('ui-action', 'quiet', 'ui-compact'); submit.setAttribute('form', form.id);
-    this.drawer.footer.append(cancel, submit);
-    $('#action-editor .toolbar').remove();
-    form.querySelector('.action-save-controls').remove();
-
   }
+
   closeDrawer(discard = false) {
     if (!this.drawer.panel.open) return true;
     if (this.saving) return false;
@@ -85,7 +78,7 @@ export class ActionScreen {
     const proposal = this.contextualProposal; this.contextualProposal = null; this.creationAttempt = null;
     if (this.drawerContext) {
       if (!this.drawerContext.committed) this.previous = this.drawerContext.previous;
-      for (const row of document.querySelectorAll('#items [data-entity-id]')) { const selected = row.dataset.entityId === this.previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
+      this.rowsView?.select(this.previous?.entityId);
       $('.app').className = this.drawerContext.classes;
       $('#editor').hidden = this.drawerContext.noteHidden;
       $('#empty').hidden = this.drawerContext.emptyHidden;
@@ -183,12 +176,11 @@ export class ActionScreen {
     // Loading options must not undo a choice made while the drawer was usable.
     if (select.value !== initial) selected = select.value;
     this.initiativeNames = new Map(records.map(record => [record.entityId, record.title]));
-    select.replaceChildren(new Option('独立行动', ''));
-    for (const record of records.filter(i => i.status !== 'ended' || i.entityId === selected)) select.add(new Option(record.title, record.entityId));
-    if (selected && !records.some(i => i.entityId === selected)) select.add(new Option('事项不可用，请重新选择', selected));
+    this.assignmentView.set(records.filter(i => i.status !== 'ended' || i.entityId === selected));
+    this.assignmentView.ensure(selected, '事项不可用，请重新选择');
     select.value = selected;
-    const filter = $('#action-initiative-filter'); filter.replaceChildren(new Option('全部事项', ''));
-    for (const record of records) filter.add(new Option(record.title, record.entityId));
+    const filter = $('#action-initiative-filter');
+    this.filterView.set(records);
     filter.value = this.initiativeFilter || '';
   }
   fields() {
@@ -213,14 +205,14 @@ export class ActionScreen {
   showForm(fields, previous) {
     if (!this.drawer.panel.open) this.drawerContext = this.captureContext(previous);
     this.previous = previous; this.retry = null;
-    for (const row of document.querySelectorAll('#items .card[data-entity-id]')) { const selected = row.dataset.entityId === previous?.entityId; row.classList.toggle('selected', selected); row.setAttribute('aria-current', String(selected)); }
+    this.rowsView?.select(previous?.entityId);
     $('#action-open-initiative').disabled = !fields.initiativeId;
     $('#action-options').open = !!(fields.initiativeId || fields.dueDate || fields.waitingOn);
     $('#action-source-options').open = !!fields.sources?.length;
     $('#action-focus').disabled = !previous || !['todo', 'in-progress'].includes(fields.status);
     $('#action-focus').textContent = previous?.focusPosition == null ? '加入当前重点' : '移出当前重点';
     $('#action-description').value = fields.description || ''; $('#action-status').value = fields.status || 'todo';
-    if (fields.initiativeId && ![...$('#action-initiative').options].some(o => o.value === fields.initiativeId)) $('#action-initiative').add(new Option(fields.initiativeId, fields.initiativeId));
+    this.assignmentView.ensure(fields.initiativeId);
     $('#action-initiative').value = fields.initiativeId || ''; $('#action-due').value = fields.dueDate || ''; $('#action-waiting').value = fields.waitingOn || '';
     this.sourcesView.set(fields.sources || []);
     this.historyView([]); $('#action-id').textContent = previous?.entityId || '新建行动'; $('#action-history').disabled = !previous;
@@ -271,6 +263,7 @@ export class ActionScreen {
     if (draft) this.state('已恢复行动草稿，请核对后保存。');
     if (!this.dirty) this.state(action ? '已保存到本地' : '写下你已决定执行的下一步。');
     // Opening already placed focus; late option loading must not move it again.
+    return true;
   }
   async refreshSources(action) {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;
