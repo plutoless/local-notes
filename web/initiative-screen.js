@@ -1,4 +1,4 @@
-import {initiativeSources, initiativeEnding, mountInitiativeControls, initiativeRows, initiativeLinks, initiativeActions, initiativeDecisions, mountInitiativeSource, openInitiativeAction} from './assets/react-host.js';
+import {initiativeSources, initiativeEnding, mountInitiativeControls, initiativeRows, initiativeLinks, initiativeActions, initiativeDecisions, mountInitiativeSource, openInitiativeAction, receiptView} from './assets/react-host.js';
 import {recoverTaskDraft} from './task-drafts.js';
 import {pageAvailability, requestTaskLeave, statusLabel, errorFeedback, progressLabel, drawer} from './presentation.js';
 import {InitiativeRepository, allRecords, endInitiative, unfinished, fingerprint, sourceState} from './initiatives.js';
@@ -7,6 +7,7 @@ const $ = selector => document.querySelector(selector);
 export class InitiativeScreen {
   constructor(actions, notice, openNote, createNote, listReferences, beforeEdit = async () => true) {
     this.beforeEdit = beforeEdit; this.detailKind = 'overview'; this.listReferences = listReferences; this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = ''; this.listGeneration = 0;
+    this.receipt = receiptView(() => $('#initiative-save-state'));
     this.setupDrawer();
     $('#initiative-recover').onclick = async () => {
       const draft = recoverTaskDraft('initiative', this.repository.workspaceId);
@@ -85,8 +86,8 @@ export class InitiativeScreen {
       } catch (error) {
         if (!discard) {
           this.recoveryPending = true;
-          this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.draft(); errorFeedback($('#initiative-save-state'), error.message);
-          $('#initiative-save-state p').textContent = '关联行动尚未恢复，草稿仍保留。请重试关闭，或继续编辑。'; return false;
+          this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.draft();
+          this.receipt.failure(error.message, '关联行动尚未恢复，草稿仍保留。请重试关闭，或继续编辑。'); return false;
         }
         this.notice('已放弃尚未提交的更改。已提交的版本仍保留，关联列表稍后需要刷新。');
         if (this.drawerContext?.committedAction) this.actions.showForm(this.drawerContext.committedAction, this.drawerContext.committedAction);
@@ -192,7 +193,7 @@ export class InitiativeScreen {
       if (!wasEditing) $('.app').classList.remove('editing');
     }
     $('#view-title').textContent = '事项'; $('#search').setAttribute('aria-label', '搜索事项'); $('#search').placeholder = '搜索事项…';
-    $('#filters').hidden = true; $('#action-tools').hidden = true; $('#initiative-tools').hidden = false;
+    $('#action-tools').hidden = true; $('#initiative-tools').hidden = false;
     $('#editor').hidden = true; $('#action-editor').hidden = true;
     $('#initiative-editor').hidden = !this.previous && !this.dirty; $('#empty').hidden = !$('#initiative-editor').hidden;
     await this.list(); $('#index-state').textContent = '';
@@ -420,12 +421,12 @@ export class InitiativeScreen {
         }
         const saved = committed || (error.revisionSaved && error.record?.entityType === 'initiative' ? error.record : null);
         this.retry = saved; if (saved) { this.previous = saved; this.baseline = JSON.stringify(this.fields()); this.rememberCommit(saved); }
-        this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.draft(); errorFeedback($('#initiative-save-state'), error.message);
-        if (saved) $('#initiative-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。';
-        if (/Choose how to handle|Actions changed|destination initiative/.test(error.message)) {
-          $('#initiative-ending').open = true;
-          $('#initiative-save-state p').textContent = '尚未结束事项。请为每项未完成行动选择处理方式，再保存；可选择「暂不结束」。';
-        }
+        this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.draft();
+        const endingRequired = /Choose how to handle|Actions changed|destination initiative/.test(error.message);
+        if (endingRequired) $('#initiative-ending').open = true;
+        const message = endingRequired ? '尚未结束事项。请为每项未完成行动选择处理方式，再保存；可选择「暂不结束」。'
+          : saved ? '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。' : undefined;
+        this.receipt.failure(error.message, message);
         return false;
       } finally { this.saving = null; $('#initiative-form').inert = false; $('#initiative-save').disabled = false; }
     })(); return this.saving;

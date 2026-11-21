@@ -1,18 +1,7 @@
-import {escapeHTML as esc} from './core.js';
+import {failureMessage} from './presentation-labels.js';
+import {drawerContent, leaveContent, feedbackContent} from './assets/react-host.js';
 
-// Presentation vocabulary never changes persisted enum values or user content.
-export const actionLabels = {todo: '待办', 'in-progress': '进行中', waiting: '等待中', completed: '已完成', canceled: '已取消'};
-export const initiativeLabels = {active: '进行中', later: '以后再做', ended: '已结束'};
-export const sourceLabels = {unchanged: '来源未变', available: '来源可用', changed: '来源已修改，请核对引用', valid: '来源可用', unavailable: '来源不可用，请重新关联', missing: '来源缺失，请重新关联', moved: '来源已移动', ambiguous: '找到多个来源，请手动关联'};
-export const statusLabel = value => actionLabels[value] || initiativeLabels[value] || sourceLabels[value] || '需要核对';
-
-export function button(text, run, {primary = false, variant = primary ? 'primary' : 'quiet', label, density} = {}) {
-  const node = document.createElement('button'); node.type = 'button'; node.textContent = text;
-  node.className = `ui-action ${variant}${density === 'compact' ? ' ui-compact' : ''}`;
-  if (label) node.setAttribute('aria-label', label);
-  node.onclick = async () => { node.disabled = true; try { await run(); } finally { node.disabled = false; } };
-  return node;
-}
+export {actionLabels, initiativeLabels, sourceLabels, statusLabel} from './presentation-labels.js';
 
 // Keep keyboard position meaningful when the activated page direction becomes disabled.
 export function pageAvailability(previous, next, hasPrevious, hasNext) {
@@ -31,21 +20,11 @@ export function pageAvailability(previous, next, hasPrevious, hasNext) {
 export function feedback(target, message, diagnostic = '') {
   target.classList.add('ui-feedback');
   target.dataset.state = diagnostic ? 'failed' : 'saved';
-  target.replaceChildren();
-  const explanation = document.createElement('p'); explanation.textContent = message; target.append(explanation);
-  if (diagnostic) {
-    const details = document.createElement('details');
-    details.innerHTML = `<summary>查看技术详情</summary><pre>${esc(diagnostic)}</pre>`;
-    target.append(details);
-  }
+  feedbackContent(target, message, diagnostic);
 }
 
 export function errorFeedback(target, diagnostic) {
-  let message = '操作未完成。请检查目录是否可用，然后重试；未保存的编辑仍保留。';
-  if (/conflict|CONFLICT|branch/i.test(diagnostic)) message = '发现版本冲突。请打开「同步检查」核对版本后重试，现有内容仍保留。';
-  else if (/请填写|请选择|引用原文|required|description|title|date|Choose|Quote|fragment|handle every unfinished/i.test(diagnostic)) message = '内容需要核对。请检查必填项、日期和来源引用后重新保存。';
-  else if (/workspace changed/i.test(diagnostic)) message = '笔记目录已切换。请从当前目录重新打开内容。';
-  else if (/有效.*路径|路径超出|relative.*path|invalid.*path/i.test(diagnostic)) message = '路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。';
+  const message = failureMessage(diagnostic);
   feedback(target, message, diagnostic);
 }
 
@@ -93,77 +72,16 @@ export function icon(name) {
   return `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name] || paths.notes}</svg>`;
 }
 
-let renderDirectory = null;
-// Installed once by the document shell; other consumers keep this stable adapter.
-export function bindDirectoryLabel(render) { renderDirectory = render; return () => { if (renderDirectory === render) renderDirectory = null; }; }
-export function directoryLabel(root) {
-  if (renderDirectory) return renderDirectory(root);
-  const label = document.querySelector('#root-label');
-  label.textContent = root;
-  document.querySelector('#root-name').textContent = root === 'Sample' ? '样本笔记' : root?.split(/[\\/]/).filter(Boolean).pop() || '本地笔记';
-}
-
-// These constructors own DOM presentation only; callers retain queries and mutations.
-export function disclosure(label, children = [], className = '') {
-  const node = document.createElement('details'); node.className = `ui-disclosure ${className}`;
-  const summary = document.createElement('summary'); summary.textContent = label;
-  node.append(summary, ...children); return node;
-}
-
-export function sectionHeading(text, {level = 2, className = ''} = {}) {
-  const node = document.createElement(`h${level}`); node.className = `ui-heading ${className}`;
-  node.textContent = text; return node;
-}
-
-export function field(label, control, {help = '', invalid = false, density} = {}) {
-  const node = document.createElement('label'); node.className = 'ui-field';
-  const name = document.createElement('span'); name.textContent = label;
-  control.setAttribute('aria-invalid', String(invalid));
-  if (density === 'compact') {
-    const target = document.createElement('span'); target.className = 'ui-field-target';
-    target.append(control); node.append(name, target);
-  } else node.append(name, control);
-  if (help) {
-    const hint = document.createElement('small'); hint.id = `field-help-${++field.sequence}`;
-    hint.textContent = help; node.append(hint); control.setAttribute('aria-describedby', hint.id);
-  }
-  return node;
-}
-field.sequence = 0;
-
-export function selectionRow(label, run, {selected = false} = {}) {
-  const node = button(label, run); node.classList.add('ui-row');
-  node.classList.toggle('selected', selected); node.setAttribute('aria-current', String(selected));
-  return node;
-}
-
-export function pagination(previous, next, {hasPrevious = false, hasNext = false} = {}) {
-  const node = document.createElement('div'); node.className = 'ui-pagination';
-  const back = button('上一页', previous, {variant: 'secondary'});
-  const forward = button('下一页', next, {variant: 'secondary'});
-  back.disabled = !hasPrevious; forward.disabled = !hasNext; node.append(back, forward); return node;
-}
-
-// A definition row keeps long field evidence readable without horizontal tables.
-export function comparisonRow(label, value, {changed = false} = {}) {
-  const node = document.createElement('div'); node.className = 'ui-comparison-row';
-  const term = document.createElement('dt'), detail = document.createElement('dd');
-  term.textContent = label + (changed ? ' · 有差异' : ''); detail.textContent = value;
-  node.append(term, detail); return node;
-}
+export {bindDirectoryLabel, directoryLabel} from './directory-label.js';
 
 // The native modal top layer owns background inertness and keyboard containment.
 // Consumers own validation, persistence and the unsaved-data decision.
 export function drawer({id, title, onDismiss}) {
   const panel = document.createElement('dialog'); panel.id = id; panel.className = 'ui-drawer';
-  const heading = sectionHeading(title); heading.id = `${id}-title`;
-  panel.setAttribute('aria-labelledby', heading.id);
-  const header = document.createElement('header'); header.className = 'ui-drawer-header';
-  const close = button('关闭', () => onDismiss(), {label: '关闭' + title, density: 'compact'});
-  header.append(heading, close);
-  const body = document.createElement('div'); body.className = 'ui-drawer-body';
-  const footer = document.createElement('footer'); footer.className = 'ui-drawer-footer';
-  panel.append(header, body, footer); document.body.append(panel);
+  panel.setAttribute('aria-labelledby', `${id}-title`);
+  const content = drawerContent(panel, id, title, onDismiss);
+  const {body, footer, close} = content;
+  document.body.append(panel);
   panel.addEventListener('cancel', event => { event.preventDefault(); onDismiss(); });
   panel.addEventListener('keydown', event => {
     if (event.key !== 'Tab') return;
@@ -184,7 +102,7 @@ export function drawer({id, title, onDismiss}) {
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();
   });
   let opener, autofocusTarget;
-  return {panel, body, footer, close, setTitle(text) { heading.textContent = text; close.setAttribute('aria-label', '关闭' + text); },
+  return {panel, body, footer, close, setTitle: content.setTitle,
     open(first, origin = document.activeElement) {
       if (panel.open) return;
       opener = origin;
@@ -230,15 +148,9 @@ function taskLeaveChoice(label, failure, committed, focusOrigin) {
       ? [origin.selectionStart, origin.selectionEnd, origin.selectionDirection] : null;
     const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
-    const title = document.createElement('h2'); title.id = 'task-leave-title'; title.textContent = '离开' + label;
-    const message = document.createElement('p'); message.textContent = committed ? '版本已保存，恢复尚未完成。保存并离开会重试恢复；放弃更改并离开只会清除本机待处理状态，已保存版本仍保留。' : '当前编辑尚未保存。请选择保存并离开、放弃更改并离开，或继续编辑。';
-    const status = document.createElement('p'); status.setAttribute('role', 'alert'); status.textContent = failure;
-    const footer = document.createElement('div'); footer.className = 'ui-actions';
-    const keep = button('继续编辑', () => finish('continue'));
-    footer.append(keep,
-      button('放弃更改并离开', () => finish('discard'), {variant: 'danger'}),
-      button('保存并离开', () => finish('save'), {primary: true}));
-    panel.append(title, message, status, footer); document.body.append(panel);
+    const content = leaveContent(panel, {label, failure, committed:Boolean(committed)}, finish);
+    const {keep, footer} = content;
+    document.body.append(panel);
     panel.addEventListener('cancel', event => { event.preventDefault(); finish('continue'); });
     panel.addEventListener('keydown', event => {
       if (event.key !== 'Tab') return;
@@ -251,7 +163,7 @@ function taskLeaveChoice(label, failure, committed, focusOrigin) {
       const restoreSelection = () => {
         if (choice === 'continue' && selection && document.activeElement === origin) origin.setSelectionRange(...selection);
       };
-      panel.close(); panel.remove(); origin?.focus({preventScroll:true}); restoreSelection();
+      panel.close(); content.dispose(); panel.remove(); origin?.focus({preventScroll:true}); restoreSelection();
       // The fallback belongs to this return only. New input or focus supersedes it.
       let superseded = false;
       const supersede = () => { superseded = true; };

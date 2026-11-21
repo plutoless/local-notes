@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {bindDirectoryLabel,directoryLabel} from '../web/presentation.js';
+import {bindDirectoryLabel,directoryLabel} from '../web/directory-label.js';
 
 test('directory presentation delegates to the current shell owner and a stale disposer cannot detach its replacement',()=>{
   const first=[], second=[];

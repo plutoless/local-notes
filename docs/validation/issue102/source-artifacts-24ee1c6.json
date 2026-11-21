@@ -1,0 +1,224 @@
+{
+  "base": "2f7f55513f077a88201ee3fadb6b6b540d7514a6",
+  "sourceTreeSha256": "ec01a740ce56e92e4cb6aca46d16add421471d3c8d6d089301dc2807bbfc5dfc",
+  "sources": {
+    "web/action-screen.js": "3486887040142ffbdef24c5ffb91ed4ae7cb9189fadfba06fb26e5c801a27d58",
+    "web/actions.js": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+    "web/app.js": "72f7c5d077aa1532337ba4d7a54b1925d5b0949b95932d80b548f0c53c86c06d",
+    "web/bridge.js": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+    "web/candidate-review-model.js": "5ed66d2aa07e406d5a89a8376166bf3d8b5196073e9129ed07401c7a0079151d",
+    "web/core.js": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+    "web/directory-label.js": "ea7b115747806266f18692909c367b35b80e4760c784c3783f843fa61f129c31",
+    "web/focus-screen.js": "a9c70a383925ce42905115bd68c8b8f2fcab004268d4cb357c543fb96448151e",
+    "web/global-search.js": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+    "web/index.html": "7634553c401b9abf4a0d19a8b89fa33eae70914d21fa22cc2ff28d03dd8fda43",
+    "web/initiative-screen.js": "6628a944732401139c76f7a231446198d60ea9c515261d2a2f9293c2215cb9df",
+    "web/initiatives.js": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+    "web/library-screen.js": "651414b790d9cd47f70334733f9bb95d3c28f3736de35c61e83ddad5ea878024",
+    "web/library.js": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+    "web/organization.js": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+    "web/organize-screen.js": "95e2845ba075a286d274b18311ab2c98784171b12c68b99007298a32c711d688",
+    "web/presentation-labels.js": "b57dff10aae8d5021843a95d34ba70254924c2875e11fb9bf1820c87d11e05c5",
+    "web/presentation.js": "fb5e5f34a7bbf25238d74a6af65133b4ab5a1039fe01b96239f6b173e20890c3",
+    "web/react/actions.tsx": "4f751d1b612c667ace6ae0bb163851174b1973be1bbcd77d6ec9d2faae4cb2a2",
+    "web/react/browse-context.ts": "6ee5dec600ea0ff4deaacb1a3345e4db2f12734d8e1b7fcdd332f0e2ff4bb617",
+    "web/react/candidate-review.tsx": "08fc0b6a65056252a75389b7724df466f99cb5674ec5f461df3c31d76a5ec927",
+    "web/react/catalogue.tsx": "82f78da7baff0d1610989502f06e8ee8e9ec1d8a097c60b728374d828606f40f",
+    "web/react/components.tsx": "55066a3da0b83dc55531f56773cf0694898070f7c6a2736a5a5cb7b9f0b27382",
+    "web/react/document.tsx": "307b836c6405ed7dc1c51c16545930c6adf6f421135ed9f0535da5af4227d790",
+    "web/react/focus-model.ts": "2da816480a3c65f02cc26a01770cdf4f5ee2337d9bb1ab5cb1c1c0d57cec6624",
+    "web/react/focus.tsx": "ca8b2f7e3b3678ff1c277d6d7ea0d48e01007436edbab358390d0c467ef52140",
+    "web/react/foundation-catalogue.tsx": "7774e6dd8ffac832ef1334f5f568ec9c0b62bf45d935b5f0fc83157e690ce6ac",
+    "web/react/host.tsx": "fd36445656f11c9295e3af2586b33e67dcfcdfbb1f2868a969063e385eacc126",
+    "web/react/initiative-model.js": "579addf237eae9f41ef7ee8fc988c1fc833cf5f2647e1759d6698b67dff1781a",
+    "web/react/initiatives.tsx": "a064c737e779451cf23a2d8dcc97ab99095a1e1adecc76e092de8d4ae5fa1e78",
+    "web/react/library-model.ts": "1a9056d56f96393eb0e87a900ca3c02628a0cc2460c133cc44e16c9fbc82d716",
+    "web/react/library.tsx": "c3c9a9831e328493eef4184955b4571812695994744b33cbe7f57c843b5aa213",
+    "web/react/note-forms.tsx": "6375e1e7c67f70879529e369cce07089668dff3fac9e8432a086ca0b99994411",
+    "web/react/organization.tsx": "277e11b0418afa3e6d65f224bdd32b9f2ecdd4e275bc1a0839a1513c3efa98d2",
+    "web/react/overlays.tsx": "4d2ea0fbf7919f20603ec59f58b4f219026704e75058d168b14677a4e71e9f75",
+    "web/react/presentation.tsx": "1afcfd2aa9f10a345639c36ea9cd3e1591a43ab93143306c82239b2cad5624bf",
+    "web/react/reader.tsx": "3adbf3162e0df6c962d2fe29e71fb4d83137e450a43f42d81b370a358878c0da",
+    "web/react/search-model.ts": "9cb645d50411b52f2e8c10d695ac39288765185a2cc91dea8c8f2a3b4fe9818a",
+    "web/react/search.tsx": "eb8806b1b644c6dd5247f5a44df41a5352cf3b7fd6351e504d538f4638c2e3aa",
+    "web/react/shell.tsx": "e8138fc95fa75561c8b82ec7b755dd5b152096b4af12dd9233aba7253d50a0f7",
+    "web/react/styles.css": "e7ab7685e448b1434d91342f16085fdf60bc2e1b7eab2c2e6de061df6730bc21",
+    "web/react/sync.tsx": "9c6b90065bacdfe373b1b42253ff399f80f1e550a45d317b9ea925b6efe92b72",
+    "web/reading-history.js": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+    "web/revision-graph.js": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+    "web/search-screen.js": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+    "web/style.css": "886e806b1afb52f810fe541ee74d6637b425c5249e752ebfbf78372aa5a5b470",
+    "web/sync-drafts.js": "e0602979ff3b94e6259f787fcabeff5e4f7d29d3b287dee1927183a10373e1ba",
+    "web/sync-screen.js": "dda67a1cb103c49be4483c5d2084f99a3a825d0df4f64645a225a73b83eb0932",
+    "web/task-drafts.js": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+    "package.json": "9b6a3c3be531bc170af731eced9d50d5d528e02795bbe69b36e2f5830171ace4",
+    "package-lock.json": "0b1ece68130e99c8dc267c84a4667196471f28b0b999c9e3de87c0e66726e127",
+    "vite.config.ts": "aa2f907a938493d2e330cff4e1be4cf0376b86cac63c4a145529a33c4203afff",
+    "scripts/build-web.mjs": "1e2684c280ba5fb85035cf44310494df9426fd973746a3ab633981b20ec602d3",
+    "scripts/build-mac.sh": "a8ed0fdd21d4b913d64aec60ea5bd96e2215d3e5eb9e014d873919414f048260",
+    "scripts/asset-policy.mjs": "1240b1543aa4146e2b93c804255f2bc633c50ae416da6d8be806c86e6d44b1a1"
+  },
+  "artifacts": {
+    "build/web/action-screen.js": {
+      "sha256": "3486887040142ffbdef24c5ffb91ed4ae7cb9189fadfba06fb26e5c801a27d58",
+      "bytes": 28238
+    },
+    "build/web/actions.js": {
+      "sha256": "419c484c91c86ffff108297c08c6cf2e0df68a7c40c0f68fae6a3015eb932019",
+      "bytes": 15874
+    },
+    "build/web/app.js": {
+      "sha256": "72f7c5d077aa1532337ba4d7a54b1925d5b0949b95932d80b548f0c53c86c06d",
+      "bytes": 59947
+    },
+    "build/web/asset-manifest.json": {
+      "sha256": "abf91ef715bf1b112e220dcc5645c8a292e098b244fb5747763b5f438e0d7b57",
+      "bytes": 1064
+    },
+    "build/web/assets/react-host.css": {
+      "sha256": "af1f90b02a2aaeb607cbfe37bfbb1195a38501f244c0896654c5246497731e6d",
+      "bytes": 6154
+    },
+    "build/web/assets/react-host.js": {
+      "sha256": "f52fff4dc0c9577c4bce95ae52743e32c4bc50f4ac16787ab4bfc081b1cce913",
+      "bytes": 410625
+    },
+    "build/web/bridge.js": {
+      "sha256": "5bc7d8babc0e46c0707cef05ffba0cff428e3b6da1ea30295ca4e68c4ec48c5c",
+      "bytes": 717
+    },
+    "build/web/candidate-review-model.js": {
+      "sha256": "5ed66d2aa07e406d5a89a8376166bf3d8b5196073e9129ed07401c7a0079151d",
+      "bytes": 521
+    },
+    "build/web/core.js": {
+      "sha256": "011c3a7e4dec418270ac1c4dfe38f326b27fbc4ee9a3decaa2cd0c8550695509",
+      "bytes": 7606
+    },
+    "build/web/directory-label.js": {
+      "sha256": "ea7b115747806266f18692909c367b35b80e4760c784c3783f843fa61f129c31",
+      "bytes": 331
+    },
+    "build/web/focus-screen.js": {
+      "sha256": "a9c70a383925ce42905115bd68c8b8f2fcab004268d4cb357c543fb96448151e",
+      "bytes": 8503
+    },
+    "build/web/global-search.js": {
+      "sha256": "ddce0dc8c3ec49dea3ff0151538c78f74eac26a231a7da62a2b60afe06c54862",
+      "bytes": 12391
+    },
+    "build/web/index.html": {
+      "sha256": "7634553c401b9abf4a0d19a8b89fa33eae70914d21fa22cc2ff28d03dd8fda43",
+      "bytes": 456
+    },
+    "build/web/initiative-screen.js": {
+      "sha256": "6628a944732401139c76f7a231446198d60ea9c515261d2a2f9293c2215cb9df",
+      "bytes": 32778
+    },
+    "build/web/initiatives.js": {
+      "sha256": "71ffce9e79b87b0d903073923a0bd74f70b8e79f913e3e28b15ef76292a922e1",
+      "bytes": 4232
+    },
+    "build/web/library-screen.js": {
+      "sha256": "651414b790d9cd47f70334733f9bb95d3c28f3736de35c61e83ddad5ea878024",
+      "bytes": 17182
+    },
+    "build/web/library.js": {
+      "sha256": "f25f7a3f3525dc9660f3d8f6d7691cc676988bd2c4968f0bee9f9180705e74ee",
+      "bytes": 8436
+    },
+    "build/web/organization.js": {
+      "sha256": "c8137441022b9d2d001ffb42e4cc8ffcc47ace0c00a5837e6c7fa23097a3d9c8",
+      "bytes": 16277
+    },
+    "build/web/organize-screen.js": {
+      "sha256": "95e2845ba075a286d274b18311ab2c98784171b12c68b99007298a32c711d688",
+      "bytes": 21191
+    },
+    "build/web/presentation-labels.js": {
+      "sha256": "b57dff10aae8d5021843a95d34ba70254924c2875e11fb9bf1820c87d11e05c5",
+      "bytes": 1665
+    },
+    "build/web/presentation.js": {
+      "sha256": "fb5e5f34a7bbf25238d74a6af65133b4ab5a1039fe01b96239f6b173e20890c3",
+      "bytes": 10153
+    },
+    "build/web/reading-history.js": {
+      "sha256": "ee0bf3f2b1b2c7932722614f516b02f8f4c6946521c7a7350ad88e083bd14643",
+      "bytes": 1339
+    },
+    "build/web/revision-graph.js": {
+      "sha256": "f97e17c4f501b6009c0e36076e1484aaa9080f84721c9bd4d4c0dd50ecbf3032",
+      "bytes": 1651
+    },
+    "build/web/search-screen.js": {
+      "sha256": "4a2fd6df6432fc75541b3e4cbb5e5688417d442aeb881155af4f95868a3a5926",
+      "bytes": 12141
+    },
+    "build/web/style.css": {
+      "sha256": "886e806b1afb52f810fe541ee74d6637b425c5249e752ebfbf78372aa5a5b470",
+      "bytes": 34997
+    },
+    "build/web/sync-drafts.js": {
+      "sha256": "e0602979ff3b94e6259f787fcabeff5e4f7d29d3b287dee1927183a10373e1ba",
+      "bytes": 1975
+    },
+    "build/web/sync-screen.js": {
+      "sha256": "dda67a1cb103c49be4483c5d2084f99a3a825d0df4f64645a225a73b83eb0932",
+      "bytes": 10890
+    },
+    "build/web/task-drafts.js": {
+      "sha256": "9ed4237e3b2202e90da2f3c8e21752f884612ac4c59fdaedab18127f18c254d3",
+      "bytes": 1016
+    },
+    "dist/LocalNotes.app/Contents/Resources/web/asset-manifest.json": {
+      "sha256": "abf91ef715bf1b112e220dcc5645c8a292e098b244fb5747763b5f438e0d7b57",
+      "bytes": 1064
+    },
+    "dist/LocalNotes.app/Contents/MacOS/LocalNotes": {
+      "sha256": "7a2977d760e3db45cb5c453b6cd1ea50a93d1c3989245a7d2fdaf9b3ee7287c3",
+      "bytes": 471920
+    }
+  },
+  "nativeSourceBinding": {
+    "mac/ReferenceIndex.swift": {
+      "sha256": "82a0bbf2a2b5e06d743df9d5e12d1998b6a7a23ff99cd35a95ba5ddc2df0eca7",
+      "unchangedFromBase": true
+    },
+    "mac/AIService.swift": {
+      "sha256": "698f9a3a86d34f360721b4f2ca873587c17173a11e04b2c060d335cf0b1d63b0",
+      "unchangedFromBase": true
+    },
+    "mac/ActionIndex.swift": {
+      "sha256": "18a9ad5f5f272dabb6f7c5ff0d24fac1734ee15b7f9247912cb1f732697f0d4c",
+      "unchangedFromBase": true
+    },
+    "mac/ReferenceScan.swift": {
+      "sha256": "ff2e3cd4ae22d07b28f20c790d94bff98b495797ceef63b5cb42ef44220523b1",
+      "unchangedFromBase": true
+    },
+    "mac/ActionStorage.swift": {
+      "sha256": "d76d070f1d60102c6ef68e46bd67896d7e4530108ae65ab48a701405028f1909",
+      "unchangedFromBase": true
+    },
+    "mac/main.swift": {
+      "sha256": "125f158bed95e5ae8af0888954135c1b133f4e5add695f5a6b525c5c63979f3a",
+      "unchangedFromBase": true
+    }
+  },
+  "packagedManifestAndEveryAssetByteEqual": true,
+  "environment": {
+    "macOS": "26.5.2",
+    "architecture": "arm64",
+    "node": "v25.1.0",
+    "chrome": "Google Chrome 158.0.8127.36",
+    "swift": "Apple Swift version 6.3.2 (swiftlang-6.3.2.1.108 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0"
+  },
+  "assetTotals": {
+    "baseline": 719091,
+    "current": 728350,
+    "baselineJS": 392237,
+    "currentJS": 410625
+  },
+  "coverage": "Compiled Mac package and non-GUI production Assets contract; browser NotesNative shim to real Swift Markdown/JSON/SQLite. No WKWebView GUI or native OS-input/runtime/performance result."
+}

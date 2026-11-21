@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Organization selection, preview and sending (#98)
 
 The pinned React/TypeScript/Tailwind pipeline, semantic tokens and existing role

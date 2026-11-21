@@ -1,5 +1,5 @@
-import {organizationView, candidateReviewView, readCandidateDraft} from './assets/react-host.js';
-import {button as makeButton, drawer, requestTaskLeave, pageAvailability} from './presentation.js';
+import {organizationView, candidateReviewView, readCandidateDraft, actionControl} from './assets/react-host.js';
+import {drawer, requestTaskLeave, pageAvailability} from './presentation.js';
 import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
@@ -51,8 +51,9 @@ export class OrganizeScreen {
       }),
       recover: owner => this.attempt(async () => { if (this.reviewing) return; this.reviewing = true; this.renderCandidates(); try { await this.review.recover(); } finally { this.reviewing = false; await this.candidates({owner}); } })
     });
-    this.settingsSave = makeButton('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
-    this.settingsDrawer.footer.append(makeButton('取消设置', () => this.leaveSettings()), this.settingsSave);
+    const settingsSave = actionControl('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
+    this.settingsSave = settingsSave.control;
+    this.settingsDrawer.footer.append(actionControl('取消设置', () => this.leaveSettings()).host, settingsSave.host);
     this.controls();
     $('#ai-results-next').onclick = () => { this.offset += 50; this.candidates(); };
     $('#ai-results-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.candidates(); };
@@ -163,7 +164,7 @@ export class OrganizeScreen {
   async show(library) {
     const request = this.showRequest = (this.showRequest || 0) + 1;
     const current = () => request === this.showRequest;
-    $('#organize-tools').hidden = false; $('#view-title').textContent = '整理'; $('#items').replaceChildren(); $('#filters').hidden = true;
+    $('#organize-tools').hidden = false; $('#view-title').textContent = '整理'; $('#items').replaceChildren();
     await this.attempt(async () => {
       const previousWorkspace = this.repository.workspaceId;
       await this.repository.open(); if (!current()) return;

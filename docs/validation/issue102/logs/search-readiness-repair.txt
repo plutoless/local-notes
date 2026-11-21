@@ -1,0 +1,14 @@
+{"phase":"migrated","warmTypingMs":[16.155083000000104,16.11804200000006,17.09900000000016,16.044624999999996,17.317999999999756,16.191874999999982,16.880416999999852,17.253584000000046,16.289124999999785,16.611499999999978,15.835124999999607,17.5017499999999],"bodyReads":0,"indexedQueries":12}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('#items button').filter({ hasText: '重复标题' }).first()[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-102/tests/search-ui.mjs:94:125 {
+  name: 'TimeoutError'
+}
+
+Node.js v25.1.0

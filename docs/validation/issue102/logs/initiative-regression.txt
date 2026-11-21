@@ -1,0 +1,2 @@
+{"surface":"migrated","readyMs":216,"bridgeCommands":23,"reads":4,"queries":16}
+PASS actual application: real storage reload, note return, shared Action and explicit ending retry with immutable partial commit; source bytes preserved.

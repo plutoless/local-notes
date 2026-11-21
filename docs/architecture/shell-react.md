@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Shell and Current Focus ownership
 
 Issue #93 consumes the #92 pinned React/TypeScript/Tailwind 4 pipeline and semantic

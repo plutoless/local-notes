@@ -1,0 +1,15 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Error: strict mode violation: locator('#items [data-path]') resolved to 3 elements:
+    1) <button type="button" aria-current="true" data-path="Notes/note-1795242791210.md" class="ui-action quiet ui-row card w-full text-left selected">…</button> aka getByRole('button', { name: '汇合捕获 历史计划，需要逐条确认。 核对来源 Notes/' })
+    2) <button type="button" data-path="reference.md" class="ui-action quiet ui-row card w-full text-left ">…</button> aka getByRole('button', { name: 'Synthetic reference material' })
+    3) <button type="button" data-path="source.md" class="ui-action quiet ui-row card w-full text-left ">…</button> aka getByRole('button', { name: '合成来源 历史计划，需要逐条确认。 下一份原文' })
+
+Call log:
+[2m  - waiting for locator('#items [data-path]')[22m
+
+    at /Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-102/tests/convergence-ui.mjs:41:43
+
+Node.js v25.1.0

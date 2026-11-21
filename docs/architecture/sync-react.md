@@ -1,3 +1,5 @@
+> Current final ownership: [renderer convergence](renderer-convergence.md). This document also records the original slice boundary; historical coexistence descriptions below are superseded by #102.
+
 # Synchronization and file-conflict React ownership
 
 Issue #101 consumes the delivered #92/#93 pipeline and #86 focus contract.
