@@ -90,6 +90,7 @@ try {
         if (scope === 'note') {
           assert.equal(await page.locator('#reading').isVisible(), true);
           assert.ok(await page.locator('#reading [aria-label="搜索匹配原文"] mark').count());
+          assert.equal(await page.locator('#reading [aria-label="搜索匹配原文"]').evaluate(n=>n===document.activeElement),true,'Source opening retains the exact highlighted reader destination');
           assert.ok((await page.locator('#reading').textContent()).includes('p99'));
         }
         if (scope === 'initiative') assert.equal(await page.locator('#workspace-title').textContent(),'latency 事项');

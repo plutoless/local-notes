@@ -1,7 +1,7 @@
 # Issue #84 latest-main integration
 
 Starting reviewed/pushed head: `aba47e9acf8e3d3fbc2d591854ab8eb35998692d`.
-Latest main: `2e0dfeac0eb2edf603481d163a56e5d5c250baf7`, containing merged Organization #85 / PR100 and sync #86 / PR103. Original implementation base remains `a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3`; prior shared-fix integration base remains `20302d140dac350e543731543d72246275ee7353`. Both the live native dependency and written blocker still identify closed #81; #105 remains integrated once through PR106.
+First integrated main: `2e0dfeac0eb2edf603481d163a56e5d5c250baf7`, containing merged Organization #85 / PR100 and sync #86 / PR103. Original implementation base remains `a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3`; prior shared-fix integration base remains `20302d140dac350e543731543d72246275ee7353`. Both the live native dependency and written blocker still identify closed #81; #105 remains integrated once through PR106.
 
 ## Integration impact and selected layers
 
@@ -32,3 +32,11 @@ Fresh exact-head receipts, input/source/behavior reuse bindings, separate comple
 The original failed task and nine native failures remain failed; completed repair at `aba47e9` remains succeeded. Historical native focus-guard subcondition stays unknown. Browser Copy uses a trusted event with default export prevented; the application clipboard bridge is controlled. Actual OS clipboard content, native transport/runtime, actual IME and OS/physical input are not established. Ordinary native compatibility is release-level deferred, never passed; Android-specific and standalone Syncthing checks remain deferred. No GUI custody, app activation, OS input, native executor construction, model download or private processing is involved.
 
 The cumulative ledger distinguishes an integration stage from correction cycles; no idle scan or successful merge invents an additional failed-signature cycle. The coordinator retains merge/closure/triage authority. Marking the existing PR ready requires passing final acceptance and both reviews; it does not authorize this worker to merge.
+
+## Reader integration discovered at final fetch
+
+Before making the PR ready, a final fetch found main `c87ac6f523e6273339c254d2e99ab28c0660b9ae` (merged #82 / PR90). The already reviewed `21b453e` checkpoint and its five passed receipts remain preserved; they are not relabeled as execution of this newer head. The latest-main merge preserves reader tests/native helpers and both Search/Reader design sections. The sole conflict was independent adjacent design-guidance additions, resolved by retaining both verbatim; no conflicting production behavior required a choice.
+
+Incoming production changes add only reader-scoped CSS: source-location destinations retain real programmatic focus without a control-sized outline, while scrollable tables keep an inset cue. This can affect a source destination opened from search, so the maintained navigation journey now explicitly checks that the exact highlighted reader block is the active element. No new workflow matrix is added. Repeat the affected fast tests and search browser journeys, and rebuild/rebind the changed stylesheet in the Mac package at the resulting final head. The newly inherited `native-reader-ime.test.js` is an import-only unit check that expressly exits before build/host/input setup; running it does not execute an IME or native GUI journey.
+
+Historical 67-test evidence remains tied to its unchanged original test/dependency inventory. The one new unit is executed separately with the affected tests. Leave primitive inputs remain unchanged; the added reader selectors cannot match its fixture, just as the added sync selector cannot. Relevant reuse bindings enumerate both stylesheet additions. No native host/transport code changes and no optional replay are introduced. Fresh reader-stage receipts and bindings are under `build/issue84-integration/reader-stage/`; top-level prior-stage receipts stay intact.

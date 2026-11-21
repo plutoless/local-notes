@@ -39,6 +39,13 @@
       "impact": "Merged reviewed Organization and sync slices without conflict or new issue84 production edits; see latest-main-integration.md",
       "correctionCycle": false,
       "validation": "Fresh affected unit/integration, both search browser journeys and Mac packaging; unchanged unit/leave evidence reuse requires explicit source and behavior bindings; results recorded separately at final head"
+    },
+    {
+      "startingSha": "21b453e8c635b29c751512f7336b058ba35cc90a",
+      "integratedMain": "c87ac6f523e6273339c254d2e99ab28c0660b9ae",
+      "impact": "Final fetch discovered merged reader focus; preserve sibling native/browser tests and both design sections; assert real highlighted source receiver in existing search navigation journey",
+      "correctionCycle": false,
+      "validation": "Repeat affected fast tests (including inherited import-only unit), search browser journeys and Mac packaging; bind unchanged historical 67-unit and leave evidence separately; prior-stage five passes preserved"
     }
   ]
 }
