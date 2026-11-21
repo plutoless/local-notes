@@ -87,3 +87,34 @@ this does not claim runtime custom-scheme validation. Physical input, Intel and 
 macOS/WebKit are unrun. Android-specific validation and standalone Syncthing tests
 remain user-deferred and nonblocking. No private note transmission, model download or
 external AI processing occurred; synthetic service fixtures never contact the network.
+
+## Independent review corrections
+
+Standards/Spec both identified a delayed settings opener escaping its route/session
+and competing setup reads overwriting an active form. The opener now captures
+session, show request and per-open request generation; metadata and drawer opening
+both check ownership, and non-force reads recheck whether editing has begun.
+Standards also identified the lost pagination focus fallback. The React boundary
+now restores the surviving direction or heading, and availability publishes with
+completed query results so starting a query cannot prematurely strand keyboard focus.
+Actual-app selection coverage now checks both terminal page directions, delayed setup
+reply after leaving to Library, and out-of-order setup replies around an edited field.
+
+Preserved harness correction failures: `opener-selection.txt` first failed the old
+assertion that *all* queries use Organization's limit after adding a Library detour;
+the limit assertion now remains scoped to the original Organization phase. Next,
+`review-fixes-selection.txt` exposed a cleanup variable scoped inside try; moved it
+outside and added pre-cleanup error logging. `review-fixes-selection-cycle2.txt` then
+identified the real previous-page early-disable focus behavior, corrected by publishing
+availability only with query completion. These are distinct signatures/diagnostic
+progress, not repeated blind reruns. All failed receipts remain intact.
+
+The next controlled-opener run reached both pagination assertions successfully, then
+its setup-order assertion saw three requests because the returned Organization show
+was still finishing its own metadata read. The harness now waits for the observable
+ready status before staging the two controlled opener reads; `opener-order-selection.txt`
+passes all assertions. No product request is suppressed to satisfy the test.
+`review-fixes-package.txt` passes after these corrections. Final source/package binding
+is available at `build/issue98-delivery-bindings.json` (exact delivered SHA, SHA-256 of
+sources, every built/packaged resource pair and executable). Final independent reports
+are attached to the PR/coordinator receipt rather than self-certified here.

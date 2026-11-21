@@ -55,5 +55,14 @@ export function OrganizationSettings({model:m,callbacks:c}:{model:OrganizationMo
 }
 export function organizationView(container:HTMLElement,settings:HTMLElement,callbacks:OrganizationCallbacks) {
   const root=createRoot(container),form=createRoot(settings);
-  return {render(model:OrganizationModel){flushSync(()=>{root.render(<OrganizationContent model={model} callbacks={callbacks}/>);form.render(<OrganizationSettings model={model} callbacks={callbacks}/>);});}};
+  return {render(model:OrganizationModel){
+    const focused=document.activeElement instanceof HTMLElement ? document.activeElement.id : '';
+    flushSync(()=>{root.render(<OrganizationContent model={model} callbacks={callbacks}/>);form.render(<OrganizationSettings model={model} callbacks={callbacks}/>);});
+    const control=focused&&container.querySelector<HTMLButtonElement>('#'+focused);
+    if (['ai-notes-previous','ai-notes-next'].includes(focused)&&control&&control.disabled) {
+      const fallback=container.querySelector<HTMLButtonElement>('#ai-notes-previous:not(:disabled), #ai-notes-next:not(:disabled)');
+      const target=fallback||document.querySelector<HTMLElement>('#view-title');
+      if(target){if(!fallback)target.tabIndex=-1;target.focus({preventScroll:true});}
+    }
+  }};
 }
