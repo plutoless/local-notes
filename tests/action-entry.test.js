@@ -41,3 +41,23 @@ test('focus membership remains pending for leave and a superseded result cannot 
     }
   } finally {globalThis.document=previousDocument;}
 });
+
+test('a durable focus revision with failed repair stays a committed private recovery candidate',async()=>{
+  const previousDocument=globalThis.document,previousStorage=globalThis.localStorage;
+  const nodes=new Map(),drafts=new Map();
+  const node=()=>({classList:{add(){}},dataset:{},replaceChildren(){},append(){}});
+  globalThis.document={querySelector:selector=>{if(!nodes.has(selector))nodes.set(selector,node());return nodes.get(selector);},createElement:node};
+  globalThis.localStorage={setItem:(key,value)=>drafts.set(key,value)};
+  try {
+    const screen=Object.create(ActionScreen.prototype);
+    const record={entityId:'action',status:'todo',revision:'committed',focusPosition:1};
+    screen.previous={...record,revision:'before',focusPosition:null};screen.editRequest=1;screen.save=async()=>true;
+    screen.repository={query:async()=>({actions:[]}),save:async()=>{throw Object.assign(Error('repair unavailable'),{revisionSaved:true,record});}};
+    screen.showForm=value=>{screen.previous=value;};screen.key=()=> 'private-action';screen.fields=()=>({description:'unchanged',sources:[]});
+    assert.equal(await screen.changeFocus(),false);
+    assert.equal(screen.task().committed(),true);
+    assert.equal(screen.retry,record);assert.equal(screen.previous.revision,'committed');
+    assert.equal(JSON.parse(drafts.get('private-action')).retry.revision,'committed');
+    assert.match(nodes.get('#action-save-state p').textContent,/版本已保存/);
+  }finally{globalThis.document=previousDocument;globalThis.localStorage=previousStorage;}
+});

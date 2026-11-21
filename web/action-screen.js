@@ -64,7 +64,19 @@ export class ActionScreen {
         if (!owns()) return true;
         this.showForm(result.record, result.record); this.state('已保存到本地');
         return true;
-      } catch (error) { if (owns()) errorFeedback($('#action-save-state'), error.message); return false; }
+      } catch (error) {
+        if (owns()) {
+          if (error.revisionSaved && error.record) {
+            this.showForm(error.record, error.record);
+            this.retry = error.record; this.dirty = true;
+            if (this.drawerContext) this.drawerContext.committed = true;
+            localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry}));
+          }
+          errorFeedback($('#action-save-state'), error.message);
+          if (this.retry) $('#action-save-state p').textContent = '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。';
+        }
+        return false;
+      }
       finally {
         this.saving = null;
         if (repository === this.repository && owner === this.owner?.() && current.entityId === this.previous?.entityId) {
