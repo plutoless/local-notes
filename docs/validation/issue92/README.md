@@ -76,3 +76,29 @@ Historical screenshot/receipt files overwritten by maintained suites were preser
 privately under `build/issue92-suite-artifacts` and restored to their original tracked
 bytes. Selected issue #92 screenshots and logs are retained here; previous issues'
 validation reports are not rewritten as evidence for this implementation.
+
+## Post-review source update
+
+Implementation source at `0718a53` incorporates the independent-review empty-source
+focus correction and opt-in busy semantics. A real-storage focused search test
+reproduced the empty-source defect against the exact `b4e8495` packaged assets,
+then passed against the corrected build after waiting for completed continuation.
+The fresh unit/integration run passed **75/75** (`logs/issue92-unit-integration-0718a53.txt`).
+The final focused UI run passed remaining-form newer Tab/pointer restoration,
+active-task lifecycle, reader/focus/editing, classification, wiki, history,
+reading-to-Action and empty-source search. That run then found a keyed row staying
+busy on a quick Back return; removing row-owned busy state corrected it and the
+exact Library paging/keyboard/open/return/scroll/reload/source-preservation journey
+passed (`logs/issue92-library-return-busy-fixed.txt`). This last row-only correction
+reuses unchanged reader/controller/storage evidence, rather than replaying their
+unit matrix through UI. The earlier Library metadata-status timeout also did not
+recur in either the diagnostic rerun or the final full pass.
+
+The full maintained UI command was executed and its failed stops remain explicit;
+it is not represented as one wholly successful invocation. Across that command,
+targeted repairs and continuation runs every maintained journey was executed and
+passed on the relevant source, with the new empty-source journey added. Reviewers
+must assess the exact source binding/reuse map, not infer a green whole-command exit.
+
+Required current Mac custom-scheme/offline/resource-security checks and final-head
+reviews remain pending. No final native pass or completion is claimed here.

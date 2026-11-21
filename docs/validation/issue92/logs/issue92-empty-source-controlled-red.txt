@@ -1,0 +1,18 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: empty matched source receives actual DOM focus
+
+false !== true
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-92/tests/reader-empty-source-ui.mjs:32:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.1.0

@@ -51,3 +51,14 @@ separate final-source coordinator grant.
 - The final full unit/integration run at `b4e8495` passed 75/75. It is preserved as
   evidence for that executed source, with focused validation and a fresh final
   suite run required after these corrections.
+
+- Empty-source focused test timing was refined to wait for the search continuation
+  to become available, rather than only the early file-path/read-mode update.
+  Against the SHA-bound pre-fix Mac package's web assets it still failed actual
+  source focus; the corrected generated assets passed. Both attempts are retained.
+- Final focused Library return then exposed persistent row busy state: React keeps
+  the keyed row alive while its open promise finishes, whereas the legacy renderer
+  recreated an enabled row. Returning quickly could therefore focus a disabled
+  selected row and lose return focus. Removed component-owned busy state from row
+  openers; existing host request/workspace fencing owns navigation. The existing
+  exact paging/open/Back/focus/scroll journey is the regression retest.
