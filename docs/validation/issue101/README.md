@@ -125,3 +125,14 @@ Raw failed-run output retains two whitespace-only lines in `logs/issue101-unit-f
 (lines 108 and 352); these are preserved evidence formatting, not source changes.
 Source/document diff whitespace checks otherwise pass. Command logs are explicitly
 tracked despite the repository's generic `*.log` ignore rule.
+
+## Action integration continuation
+
+The original delivery evidence above remains attributed to ac7651f and its prior
+implementation heads. PR #112 was subsequently merged into main as 1ab961d; the
+bounded existing-branch continuation integrates it without force-push and records
+fresh targeted validation and source/package bindings in
+[action-integration/README.md](action-integration/README.md). That report supersedes
+the earlier latest-main/head binding for the current PR while retaining failures
+and unchanged-source historical coverage. Coordinator postmerge checks are not
+presumed passed by this worker's receipts.
