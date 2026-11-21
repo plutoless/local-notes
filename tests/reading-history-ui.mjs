@@ -115,6 +115,7 @@ try {
   await page.locator('#choose').click();
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).waitFor();
   releaseRead();
+  if(await page.getByRole('button',{name:'关闭提示',exact:true}).isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='reference.md');
   await page.locator('#note-info-open').click();
