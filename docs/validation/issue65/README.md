@@ -1,3 +1,7 @@
+# Current policy and completion evidence
+
+See [layered completion](layered/README.md) for the current validation policy, cleanup reconciliation and latest integrated evidence. All reports below retain their historical heads and native failures; their blanket native acceptance disposition is superseded by the current layered policy.
+
 # Library ordering and archive scope (#65)
 
 Starting SHA: `01dd405d472f12bcd7724a1ddfbc5d315d5641e7`.

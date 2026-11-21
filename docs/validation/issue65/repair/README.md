@@ -1,3 +1,5 @@
+> Historical native repair preparation. The current maintainer policy defers ordinary native replay; see [layered completion](../layered/README.md). No new native execution is authorized or planned by this report.
+
 # Issue 65 native delivery repair
 
 ## Provenance and boundary
