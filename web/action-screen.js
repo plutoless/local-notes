@@ -26,16 +26,7 @@ export class ActionScreen {
     };
     $('#action-filter').onchange = () => { this.status = $('#action-filter').value; this.offset = 0; this.list().catch(error => notice(error.message)); };
     $('#action-initiative-filter').onchange = () => { this.initiativeFilter = $('#action-initiative-filter').value; this.offset = 0; this.list().catch(error => notice(error.message)); };
-    $('#action-focus').onclick = async () => {
-      if (!await this.save() || !this.previous) return;
-      try {
-        const current = this.previous;
-        const tail = await this.repository.query({focus: true, lastFocus: true, limit: 1});
-        const position = current.focusPosition == null ? (tail.actions[0]?.focusPosition ?? 0) + 1 : null;
-        const result = await this.repository.save({...current, focusPosition: position}, current);
-        this.showForm(result.record, result.record); this.state('已保存到本地');
-      } catch (error) { errorFeedback($('#action-save-state'), error.message); }
-    };
+    $('#action-focus').onclick = () => this.changeFocus();
     $('#action-next').onclick = () => { this.offset += 30; this.list().catch(error => notice(error.message)); };
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = event => this.edit(null, null, null, event.currentTarget);
@@ -56,6 +47,27 @@ export class ActionScreen {
         this.historyView(records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt)));
       } catch (error) { if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); }
     };
+  }
+  async changeFocus() {
+    if (!await this.save() || !this.previous) return false;
+    if (this.saving) return this.saving;
+    const repository = this.repository, current = this.previous, owner = this.owner?.(), request = this.editRequest;
+    const owns = () => repository === this.repository && owner === this.owner?.() && request === this.editRequest && current.entityId === this.previous?.entityId;
+    this.saving = (async () => {
+      await Promise.resolve();
+      $('#action-form').inert = true; $('#action-focus').disabled = true;
+      try {
+        const tail = await repository.query({focus: true, lastFocus: true, limit: 1});
+        if (!owns()) return false;
+        const position = current.focusPosition == null ? (tail.actions[0]?.focusPosition ?? 0) + 1 : null;
+        const result = await repository.save({...current, focusPosition: position}, current);
+        if (!owns()) return true;
+        this.showForm(result.record, result.record); this.state('已保存到本地');
+        return true;
+      } catch (error) { if (owns()) errorFeedback($('#action-save-state'), error.message); return false; }
+      finally { this.saving = null; if (repository === this.repository && owner === this.owner?.()) $('#action-form').inert = false; }
+    })();
+    return this.saving;
   }
   // Typed ActionEntry port; legacy edit(...) remains supported for sibling consumers.
   async open(entry) {
