@@ -1,0 +1,19 @@
+{"surface":"migrated","readyMs":202,"bridgeCommands":23,"reads":4,"queries":16}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'false' !== 'true'
+
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-96/tests/initiative-react-ui.mjs:100:12 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'false',
+  expected: 'true',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v25.1.0
