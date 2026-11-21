@@ -1,0 +1,26 @@
+file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-94/build/web/bridge.js:3
+window.nativeReply = (id, result) => {
+^
+
+ReferenceError: window is not defined
+    at file:///Users/zhangqianze/orca/workspaces/local-notes/local-notes-issue-94/build/web/bridge.js:3:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:377:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:671:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v25.1.0
+✖ tests/library-ownership.test.js (33.147292ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 36.47425
+
+✖ failing tests:
+
+test at tests/library-ownership.test.js:1:1
+✖ tests/library-ownership.test.js (33.147292ms)
+  'test failed'

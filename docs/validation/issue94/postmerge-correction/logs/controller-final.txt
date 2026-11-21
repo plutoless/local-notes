@@ -1,0 +1,11 @@
+✔ collections preserve independent bounded browsing state across other pages (0.546416ms)
+✔ returned snapshots cannot overwrite saved context and workspace reset starts empty (0.057291ms)
+✔ changing collection invalidates a pending query before the next route render starts (0.682375ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 64.48375
