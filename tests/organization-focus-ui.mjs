@@ -104,7 +104,7 @@ try {
  const confirmed=(await fixture.adapter('actionQuery',{workspaceId:initiative.workspaceId,entityType:'action'})).actions;
  assert.equal(confirmed.length,1);
  assert.equal(confirmed[0].description,'合成长中文建议：逐条核对当前适用性、保留来源与用户决定'.repeat(5));
- assert.equal(confirmed[0].initiativeId,initiative.entityId);
+ assert.equal(confirmed[0].initiativeId,null,'Confirmation stays independent; selecting a destination does not authorize attachment');
  assert.equal(await readFile(fixture.root+'/reference.md','utf8'),text);
  const hashes=async root=>{
   const result=[];
