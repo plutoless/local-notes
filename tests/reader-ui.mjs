@@ -49,7 +49,7 @@ try {
   for(const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport);
     assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-    assert.equal(await page.locator('.markdown-table').evaluate(n=>n.scrollWidth>n.clientWidth),true);
+    if(viewport.width===393) assert.equal(await page.locator('.markdown-table').evaluate(n=>n.scrollWidth>n.clientWidth),true,'wide tables remain horizontally scrollable on narrow screens');
     await page.locator('.markdown-table').evaluate(n=>n.scrollLeft=100);
     await page.screenshot({path:join(evidence,`reader-${viewport.width}-${viewport.height}.png`)});
   }

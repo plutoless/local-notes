@@ -39,7 +39,7 @@ try {
     } catch (e) { return {error:e.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async text => { const r = JSON.parse(text); window.nativeReply(r.id, await window.bridge(r)); }}; });
-  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(new URL('../build/web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
+  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR,name) : new URL('../build/web/'+name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
   await page.goto('https://notes.test/'); await page.locator('.home-tools').waitFor();
   const input = page.locator('#global-search-input');
   const ready = async () => page.waitForFunction(() => document.querySelector('#global-search [role=status]').textContent.startsWith('本页'));
@@ -190,6 +190,9 @@ try {
   const returnBegun = new Promise(resolve=>returnStarted=resolve); armReturn = true;
   await page.locator('.search-return:visible').click();
   await Promise.race([returnBegun,new Promise((_,reject)=>setTimeout(()=>reject(Error('Return refresh not reached')),10000))]);
+  // Page-first reading requires an explicit list return before another selection.
+  if (await page.locator('#global-search').evaluate(n=>n.open)) await page.keyboard.press('Escape');
+  if (!await page.locator('.collection').isVisible()) await page.locator('#back').click();
   if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('#items [data-path="Archive/a.md"]').click();
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='Archive/a.md');

@@ -496,3 +496,56 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   border-color: var(--focus);
   box-shadow: inset 0 0 0 1px var(--focus);
 }
+
+/* Selected #122 theme: shared semantic mapping, with adoption scoped to Library/reader. */
+:root {
+  --text: #292927; --muted: #555550; --canvas: #f7f7f5; --surface: #ffffff;
+  --sidebar: #f7f7f5; --line: #787875; --divider: #deded9;
+  --focus: #245cac; --accent: #245cac; --danger: #a12625;
+  --hover: #eeeee9; --selected: #e8e8e3; --selected-text: #292927;
+  --radius: 6px; --radius-panel: 10px;
+}
+button { transition: background-color 100ms; }
+/* Official fields have a single high-contrast focus owner, never stacked rings. */
+[data-slot="input"], [data-slot="textarea"] { min-height: 44px; }
+.ui-drawer .ui-field input[data-slot="input"]:focus-visible, .ui-drawer .ui-field textarea[data-slot="textarea"]:focus-visible,
+[data-slot="input"]:focus-visible, [data-slot="textarea"]:focus-visible,
+[data-slot="button"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; box-shadow: none; }
+.library-view.editing { grid-template-columns: 196px minmax(0, 1fr); }
+.library-view.editing > .collection { display: none; }
+.library-view .card { padding: 12px 14px; }
+.library-view .card.selected { background: var(--selected); }
+.library-view .card h3 { font-weight: 600; }
+.library-view .card small { margin-top: 4px; overflow-wrap: anywhere; }
+.reader-layout { display: grid; grid-template-columns: minmax(0, 1fr); align-items: start; }
+.reader-layout.has-reference { grid-template-columns: minmax(0, 1fr) 280px; }
+.reader-layout > .document { width: 100%; max-width: 800px; padding: 40px 48px 80px; }
+#title { font-size: 30px; line-height: 1.5; }
+#reading, #body { line-height: 1.95; }
+#reading h2 { font-size: 20px; line-height: 1.6; }
+#reading h3 { font-size: 18px; }
+#reading blockquote { background: var(--canvas); border-color: var(--line); padding: 12px 18px; }
+.editor-mode #body { border-color: var(--line); padding: 12px; background: var(--canvas); }
+.editor-mode #title { border-color: var(--line); padding-inline: 12px; }
+.reference-desk { background: var(--canvas); border-left: 1px solid var(--divider); padding: 20px; min-width: 0; }
+.reference-desk header { padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.reference-desk h2 { font-size: 14px; margin: 0; }
+.reference-desk p, .reference-desk dl { font-size: 13px; color: var(--muted); }
+.reference-desk dd { margin: 8px 0 24px; overflow-wrap: anywhere; }
+.reference-desk dt { font-size: 12px; }
+@media (max-width: 1000px) {
+  .reader-layout.has-reference { grid-template-columns: minmax(0, 1fr) 240px; }
+  .reader-layout > .document { padding: 28px 32px 64px; }
+}
+@media (max-width: 700px) {
+  .app.library-view.editing { display: flex; }
+  .reader-layout.has-reference { grid-template-columns: minmax(0, 1fr); }
+  .reader-layout > .document { padding: 24px 20px 48px; }
+  #title { font-size: 26px; }
+  .reference-desk { border-left: 0; border-top: 1px solid var(--divider); margin: 0 16px 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  button, [data-slot] { transition: none !important; animation: none !important; }
+}
+/* Keep keyboard cues inside scrollable rows so the collection cannot clip them. */
+[data-slot="button"].ui-row:focus-visible { outline-offset: -3px; }
