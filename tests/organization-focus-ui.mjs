@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 import {storageFixture} from './action-adapter.js';
 import {InitiativeRepository} from '../web/initiatives.js';
 const fixture = await storageFixture();
+const journeyStarted = performance.now();
 const phase = process.env.PHASE || 'after';
 await mkdir(`build/issue85-${phase}`, {recursive:true});
 const text = '# 合成长中文来源标题：核对历史计划、保留原文、逐条确认当前适用性与后续行动\n\n' + '历史计划需要确认。核对来源证据。'.repeat(450);
@@ -117,7 +118,7 @@ try {
   return result.sort((a,b)=>a.path.localeCompare(b.path));
  };
  await writeFile(`build/issue85-${phase}/storage-readback.json`,JSON.stringify({
-  confirmed,sourceUnchanged:true,synchronizedFiles:await hashes(fixture.root),privateIndexFiles:await hashes(fixture.privateRoot),
+  confirmed,sourceUnchanged:true,elapsedMs:performance.now()-journeyStarted,adapterCallCounts:Object.fromEntries([...new Set(fixture.calls.map(c=>c.cmd))].map(cmd=>[cmd,fixture.calls.filter(c=>c.cmd===cmd).length])),synchronizedFiles:await hashes(fixture.root),privateIndexFiles:await hashes(fixture.privateRoot),
   adapterCommands:[...new Set(fixture.calls.map(call=>call.cmd))].sort(),
   bridge:'Browser NotesNative.request -> exposed bridge -> isolated Markdown / Swift StorageHarness / SQLite',nativeTransportExercised:false
  },null,2));

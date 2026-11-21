@@ -27,3 +27,4 @@ export {mountInitiativeControls, initiativeRows, initiativeLinks, initiativeActi
 export {initiativeSources, initiativeEnding} from './initiative-model';
 
 export {candidateReviewView} from './candidate-review';
+export {readCandidateDraft} from '../candidate-review-model.js';

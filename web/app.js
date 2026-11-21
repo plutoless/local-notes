@@ -338,8 +338,8 @@ function activeTask() {
 }
 async function flush(navigation = false, retainAction = false, sourceDetour = false) {
   rememberReading();
-  const task = sourceDetour && !organize.settingsDrawer.panel.open ? null : activeTask();
-  return requestTaskLeave(retainAction && actions.drawer.panel.open ? {...task, close: undefined} : task);
+  const task = activeTask();
+  return requestTaskLeave(sourceDetour && task?.kind === 'candidate' ? null : retainAction && actions.drawer.panel.open ? {...task, close: undefined} : task);
 }
 function draftKey(){return 'draft:'+(currentWorkspace||rootKey)+':'+current;}
 function readDraft(){const key=draftKey(),legacyKey='draft:'+legacyRoot+':'+current;let value=localStorage.getItem(key);if(value===null&&legacyRoot){value=localStorage.getItem(legacyKey);if(value!==null){localStorage.setItem(key,value);localStorage.removeItem(legacyKey);}}return JSON.parse(value||'null');}
