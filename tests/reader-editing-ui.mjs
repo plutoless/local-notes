@@ -42,11 +42,12 @@ try {
   const original='# 浏览器编辑验收 Chinese English\n\n## 保留原文\n\n- [ ] 原文复选框\n\n'+'中文 English 长段落。\n\n'.repeat(70);
   await writeFile(sourcePath,original);
   const open=async()=>{await page.locator('[data-view=notes]').click();await page.locator('#items [data-path="reference.md"]').click();await page.locator('#reading').waitFor({state:'visible'});};
+  await page.addInitScript(()=>{window.browserKeys=[];document.addEventListener('keydown',e=>window.browserKeys.push({key:e.key,isTrusted:e.isTrusted,target:e.target.id}),true);});
   await page.goto('https://notes.test/');await open();
   await page.setViewportSize({width:393,height:852});
   await page.locator('#mode').click();const body=page.locator('#body');await body.waitFor();
   const initial=await body.inputValue();
-  await body.evaluate(n=>{window.browserKeys=[];document.addEventListener('keydown',e=>browserKeys.push({key:e.key,isTrusted:e.isTrusted,target:e.target.id}),true);window.compositionReceipt=[];for(const type of ['compositionstart','compositionupdate','compositionend','beforeinput','input'])n.addEventListener(type,e=>compositionReceipt.push({type,data:e.data,inputType:e.inputType,isComposing:e.isComposing,isTrusted:e.isTrusted,value:n.value,selection:[n.selectionStart,n.selectionEnd]}));n.setSelectionRange(0,0);});
+  await body.evaluate(n=>{window.compositionReceipt=[];for(const type of ['compositionstart','compositionupdate','compositionend','beforeinput','input'])n.addEventListener(type,e=>compositionReceipt.push({type,data:e.data,inputType:e.inputType,isComposing:e.isComposing,isTrusted:e.isTrusted,value:n.value,selection:[n.selectionStart,n.selectionEnd]}));n.setSelectionRange(0,0);});
   const cdp=await page.context().newCDPSession(page);
   // Browser-engine composition via DevTools; this is not an OS input method.
   await cdp.send('Input.imeSetComposition',{text:'中文候选',selectionStart:4,selectionEnd:4});
@@ -75,6 +76,7 @@ try {
   const saved=await readFile(sourcePath,'utf8');assert.ok(saved.includes('中文已确认'));
   await page.locator('#mode').click();await page.locator('#mode').click();
   assert.deepEqual(await body.evaluate(n=>[n.selectionStart,n.selectionEnd]),range,'Read/Edit retains source selection');
+  const firstDocumentKeys=await page.evaluate(()=>window.browserKeys);
   await page.reload();await open();await page.locator('#mode').click();
   assert.ok((await body.inputValue()).includes('中文已确认'),'reload reads the persisted real Markdown');
   // Hold only the shared deferred leave-focus fallback; a trusted Tab is newer intent.
@@ -88,7 +90,7 @@ try {
   assert.notEqual(destination.id,'back');
   await page.evaluate(()=>{for(const run of heldLeave.splice(0))run();});
   const after=await page.evaluate(()=>({id:document.activeElement.id,tag:document.activeElement.tagName,text:document.activeElement.textContent}));
-  await writeFile(`${evidence}/receipt.json`,JSON.stringify({input:'Chromium DevTools engine composition; not actual OS IME; CDP compositionend is untrusted',events,browserKeys:await page.evaluate(()=>browserKeys),cancelSourceUnchanged:true,saveReadback:true,reload:true,searchSelection:true,readEditSelection:true,continueDestination:destination,afterHeldFallback:after,shared105Pass:JSON.stringify(destination)===JSON.stringify(after)},null,2));
+  await writeFile(`${evidence}/receipt.json`,JSON.stringify({input:'Chromium DevTools engine composition; not actual OS IME; CDP compositionend is untrusted',events,browserKeys:[...firstDocumentKeys,...await page.evaluate(()=>window.browserKeys)],cancelSourceUnchanged:true,saveReadback:true,reload:true,searchSelection:true,readEditSelection:true,continueDestination:destination,afterHeldFallback:after,shared105Pass:JSON.stringify(destination)===JSON.stringify(after)},null,2));
   assert.deepEqual(after,destination,'shared105: newer browser Tab must survive the prior Continue fallback');
   await page.evaluate(()=>window.setTimeout=originalTimeout);
   await page.locator('#back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
