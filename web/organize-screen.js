@@ -20,7 +20,7 @@ export class OrganizeScreen {
       },
       page: direction => { this.selectionOffset = Math.max(0, this.selectionOffset + direction * 50); this.attempt(() => this.inventory()); },
       retry: () => this.attempt(() => this.inventory()),
-      configure: () => this.attempt(async () => { await this.settings(); this.state.settingsError = ''; this.controls(); this.settingsDrawer.open($('#ai-address'), $('#ai-configure')); }),
+      configure: () => this.openSettings(),
       setting: (key, value) => { this.state[key] = value; this.controls(); },
       save: () => this.attempt(() => this.saveSettings()),
       preview: () => this.attempt(() => this.preview()),
@@ -56,7 +56,7 @@ export class OrganizeScreen {
     this.controls();
   }
   controls() {
-    this.ui.render({...this.state, selected: [...this.selected], previous: Boolean(this.selectionOffset), next: Boolean(this.selectionHasMore),
+    this.ui.render({...this.state, selected: [...this.selected], previous: Boolean(this.selectionPrevious), next: Boolean(this.selectionHasMore),
       running: Boolean(this.organization.running), previewing: Boolean(this.previewing), configured: Boolean(this.configured),
       covered: this.organization.covered || 0, batches: this.organization.batches || [], settingsPending: Boolean(this.settingsPending)});
   }
@@ -64,10 +64,20 @@ export class OrganizeScreen {
     this.organization.batches = null; this.organization.covered = 0; this.state.request = '';
     this.status('选择已更新，请重新预览后发送。');
   }
-  async settings(force = false) {
+  openSettings() {
+    const session = this.session, request = this.showRequest, openRequest = this.settingsOpenRequest = (this.settingsOpenRequest || 0) + 1;
+    const current = () => session === this.session && request === this.showRequest && openRequest === this.settingsOpenRequest && !$('#organize-tools').hidden;
+    return this.attempt(async () => {
+      await this.settings(false, current);
+      if (!current()) return;
+      this.state.settingsError = ''; this.controls();
+      this.settingsDrawer.open($('#ai-address'), $('#ai-configure'));
+    }, current);
+  }
+  async settings(force = false, owns = () => true) {
     if (this.settingsDrawer.panel.open && !force) return;
     const session = this.session, settings = await native('aiSettings');
-    if (session !== this.session) return;
+    if (session !== this.session || !owns() || (this.settingsDrawer.panel.open && !force)) return;
     this.configured = Boolean(settings.configured && settings.address && settings.model);
     this.state.address = settings.address; this.state.model = settings.model; this.state.savedCredential = Boolean(settings.configured);
     this.state.service = this.configured ? '服务已配置。核对预览后可主动发送。' : '尚未配置服务。可先选择并预览；发送前请设置 AI 服务。';
@@ -104,7 +114,7 @@ export class OrganizeScreen {
   resetSelection(fromShow = false) {
     if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
     this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.candidateContext.clear(); this.offset = 0; this.invalidate();
   }
   async attempt(operation, owns) {
     const owner = document.activeElement, session = this.session;
@@ -161,11 +171,11 @@ export class OrganizeScreen {
     try {
       const result = await this.library.query({search: this.state.search.slice(0, 200), directory: this.state.directory, offset: this.selectionOffset, limit: 50});
       if (!current()) return;
-      this.state.notes = result.notes; this.selectionHasMore = result.hasMore;
+      this.selectionPrevious = Boolean(this.selectionOffset); this.state.notes = result.notes; this.selectionHasMore = result.hasMore;
       this.state.inventory = `本页 ${result.notes.length} 篇${result.hasMore ? '，还有下一页' : ''}。` + (this.library.running || this.library.warnings?.length ? '索引尚未完整，结果可能不全。' : '来自当前本机索引。');
     } catch (error) {
       if (!current()) return;
-      this.selectionHasMore = false; this.state.notes = [];
+      this.selectionPrevious = Boolean(this.selectionOffset); this.selectionHasMore = false; this.state.notes = [];
       this.state.inventory = '查找未完成，已选笔记仍保留。'; this.state.retry = true;
       throw error;
     } finally { if (current()) this.controls(); }
