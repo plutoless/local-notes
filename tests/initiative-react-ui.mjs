@@ -1,5 +1,4 @@
-import {enterNoteEditing} from './form-journeys.js';
-import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
+import {closeSavedAction} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -16,7 +15,6 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let writeGate = null, queryGate = null, failNoteSave = false;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
@@ -24,8 +22,6 @@ try {
     try {
       bridgeCalls.push(request.cmd);
       if (request.cmd.startsWith('ai')) throw Error('Unexpected AI request');
-      if (request.cmd === 'actionWrite' && writeGate) { const gate = writeGate; writeGate = null; await gate; }
-      if (request.cmd === 'actionQuery' && request.entityType === 'initiative' && queryGate) { const gate = queryGate; queryGate = null; await gate; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -41,13 +37,13 @@ try {
           return {notes, root: activeFixture.root};
         }
         case 'read': return {text: await readFile(path, 'utf8')};
-        case 'save': if (failNoteSave) throw Error('Injected note save failure'); if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
+        case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
         case 'create': await mkdir(join(path, '..'), {recursive: true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
         default: throw Error('Unhandled bridge command');
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
@@ -91,11 +87,25 @@ try {
     await page.getByRole('heading',{name:'保存后重启核对',exact:true}).click();
     await page.locator('#workspace-progress').filter({hasText:'已保存的进展'}).waitFor({state:'attached'});
     await page.locator('#workspace-overview').waitFor({state:'visible'});
-    await page.locator('#workspace-references button').click();
+    await rename(sourcePath, join(fixture.root,'moved-reference.md'));
+    const {workspaceId}=await fixture.adapter('workspace');
+    await rm(join(fixture.privateRoot,'Workspaces',workspaceId,'references.sqlite'),{force:true});
+    await page.reload();
+    await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
+    await page.locator('[data-view=initiatives]').click();
+    await page.getByRole('heading',{name:'保存后重启核对',exact:true}).click();
+    const moved=page.locator('#workspace-references [data-path="moved-reference.md"]');
+    await moved.click();
+    await page.locator('#editor').waitFor({state:'visible'});
+    await page.locator('#workspace-references [data-path="moved-reference.md"][aria-current="true"]').waitFor({state:'attached'});
+    assert.equal(await moved.getAttribute('aria-current'),'true');
     await page.locator('#editor').waitFor({state:'visible'});
     // Shared reader back is the production control, not a simulated navigation callback.
     await page.locator('#back').click();
-    await page.locator('#workspace-overview').waitFor({state:'visible'});
+    await page.locator('#editor').waitFor({state:'hidden'});
+    await page.locator('#workspace-references [data-path="moved-reference.md"][aria-current="true"]').waitFor({state:'attached'});
+    assert.equal(await moved.getAttribute('aria-current'),'true');
+    assert.equal(await moved.evaluate(node=>node===document.activeElement),true);
     await page.locator('#initiative-new-action').click();
     await page.locator('#action-description').fill('必须明确处理的行动');
     await page.locator('#action-save').click();
@@ -115,7 +125,7 @@ try {
     await page.locator('#initiative-save').click();
     await page.locator('#initiative-drawer').waitFor({state:'hidden'});
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status,'ended');
-    assert.equal(await readFile(sourcePath,'utf8'),original);
+    assert.equal(await readFile(join(fixture.root,'moved-reference.md'),'utf8'),original);
     await page.reload();
     await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
     await page.locator('[data-view=initiatives]').click();
