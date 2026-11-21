@@ -215,6 +215,15 @@ components, including long Chinese content and reading continuation. Storage, mo
 focus/leave decisions, search and capture remain with their existing controllers;
 see `docs/architecture/shell-react.md` for the explicit ownership inventory.
 
+## Organization React adoption (#98)
+
+The source selector, exact request preview and device settings use production
+`OrganizationContent` / `OrganizationSettings` with the existing Button, semantic
+styles, checkbox-label focus role and contextual drawer. Checked state is independent
+from the single keyboard label cue. Keyed fields preserve caret and native disclosure
+state during model refresh. The live catalogue imports these same components;
+candidate review retains its separate legacy island until #99. See
+`docs/architecture/organization-react.md` for bridge, service and overlay ownership.
 ## Synchronization React adoption (#101)
 
 The production `SyncContent` and `ConflictComparison` render complete field evidence,
@@ -235,6 +244,9 @@ Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
 classification uses `Classification`, also imported by the catalogue. The existing
 C sheet owner retains focus, protected leave decisions and repositories. See
 `docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
+
+## Action React adoption (#95)
+
 Issue #95 consumes production React Action rows, static form controls, source
 references and immutable history with the existing wide contextual drawer. The
 [Action ownership inventory](../architecture/actions-react.md) records the stable
