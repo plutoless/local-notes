@@ -11,7 +11,9 @@ export function readerView(container:HTMLElement) {
   let wiki:(target:string, opener:HTMLElement)=>void=()=>{};
   let model:ReaderModel={path:'',title:'',body:'',reading:false,html:'',status:'已保存到本地',statusKind:'saved',statusDetail:'',saveHidden:false,statusHidden:false,capture:false,searchFallback:false};
   function Reader() {
-    const [context,setContext]=useState(false);
+    const [reference,setReference]=useState({path:model.path,open:false});
+    const context=reference.path===model.path && reference.open;
+    const setContext=(open:boolean)=>setReference({path:model.path,open});
     const invoke=(action:ReaderAction)=>()=>callbacks[action]?.();
     const input=(key:'title'|'body', value:string)=>{model={...model,[key]:value}; render(); callbacks.changed?.();};
     return <><div className="toolbar">
@@ -35,7 +37,7 @@ export function readerView(container:HTMLElement) {
     </div><ReferenceDesk path={model.path} hidden={!context} collapse={()=>{setContext(false);container.querySelector<HTMLButtonElement>('#note-reference-open')?.focus({preventScroll:true});}} organize={invoke('info')}/></div></>;
   }
   const root=createRoot(container);
-  function render(){flushSync(()=>root.render(<Reader key={model.path}/>));}
+  function render(){flushSync(()=>root.render(<Reader/>));}
   render();
   return {
     on(action:ReaderAction, callback:()=>void){callbacks[action]=callback;},
