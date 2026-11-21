@@ -76,3 +76,19 @@ test('late pagination failure preserves replacement loading status and navigatio
     }
   }finally{globalThis.document=previous;}
 });
+
+test('superseded home reads do not propagate stale errors, while current reads remain retryable failures',async()=>{
+  const previous=globalThis.document;const nodes=new Map();
+  globalThis.document={activeElement:{dataset:{}},querySelector(selector){if(!nodes.has(selector))nodes.set(selector,{hidden:false,classList:{add(){},remove(){}}});return nodes.get(selector);}};
+  try {
+    let rejectOld,rejectCurrent;
+    const old=new Promise((_,fail)=>rejectOld=fail),current=new Promise((_,fail)=>rejectCurrent=fail);
+    let response=old;const repository={query:()=>response};
+    const screen=new FocusScreen({repository},{repository},()=>{},()=>{});screen.active=true;
+    const older=screen.show();response=current;const latest=screen.show();
+    rejectOld(Error('Superseded query failure'));assert.equal(await older,undefined);
+    const failure=assert.rejects(latest,/Current query failure/);rejectCurrent(Error('Current query failure'));await failure;
+    response=Promise.reject(Error('Released query failure'));
+    const released=screen.show();screen.release();assert.equal(await released,undefined);
+  }finally{globalThis.document=previous;}
+});
