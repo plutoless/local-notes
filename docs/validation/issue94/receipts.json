@@ -1,0 +1,297 @@
+{
+  "logFiles": {
+    "docs/validation/issue94/logs/baseline-build.log": {
+      "bytes": 350,
+      "sha256": "def6d11f1166978f5835c52f9cda5a84fdd2ef4487e984e9401d16948fda7463"
+    },
+    "docs/validation/issue94/logs/build-final.log": {
+      "bytes": 350,
+      "sha256": "40938944a0a7f43073b667965a27cd97ce5bcf054a151e379dc831d4614408d3"
+    },
+    "docs/validation/issue94/logs/build.log": {
+      "bytes": 350,
+      "sha256": "ad2fe9bf2e05949e973e357ebdd6fb9c99fcf25086bed466958f3717fe0bfa52"
+    },
+    "docs/validation/issue94/logs/classification-final.log": {
+      "bytes": 128,
+      "sha256": "452a4b5983de9fc5c3e98c666b16fc64653b5797430bfb807371483d68ba4140"
+    },
+    "docs/validation/issue94/logs/classification.log": {
+      "bytes": 128,
+      "sha256": "452a4b5983de9fc5c3e98c666b16fc64653b5797430bfb807371483d68ba4140"
+    },
+    "docs/validation/issue94/logs/context-delivered.log": {
+      "bytes": 364,
+      "sha256": "1d7c300af3344b87a5dc0ca37d06222c4d91df0a45805354c35abe77c69905c6"
+    },
+    "docs/validation/issue94/logs/context-final.log": {
+      "bytes": 363,
+      "sha256": "7bbe7bb60aa834771ce1572d7e4c2c20fd8220808ea3b080c5bf1d04fd97a463"
+    },
+    "docs/validation/issue94/logs/context-final2.log": {
+      "bytes": 365,
+      "sha256": "d685f5b48f9a5e07077f6b975d3f72516c3805c847877712b0abc884e7376448"
+    },
+    "docs/validation/issue94/logs/context-retry1.log": {
+      "bytes": 436,
+      "sha256": "7509769fb2ee22ad016f25e88203a9581504ec9f1b73c37862dab31ce6abcccf"
+    },
+    "docs/validation/issue94/logs/context-retry2.log": {
+      "bytes": 508,
+      "sha256": "f85036948d22ce89be77d090ea70a5c4a31fe1e8d9c39c46a99c1926a92735c5"
+    },
+    "docs/validation/issue94/logs/context-retry3.log": {
+      "bytes": 364,
+      "sha256": "fc89ff5f76e0d870c2194dc5a651ae20da35a7595a24fd737fd0ca2538e956ca"
+    },
+    "docs/validation/issue94/logs/context-review-browser.log": {
+      "bytes": 554,
+      "sha256": "98fbfdc0ce0db09a86436baed80a54db228a8e4573d5c016d71104da2337b449"
+    },
+    "docs/validation/issue94/logs/context-review-browser2.log": {
+      "bytes": 365,
+      "sha256": "d9bef7c382a95f8b9d85ac0939db4995839013f1c87e34e898cdae8720f1d257"
+    },
+    "docs/validation/issue94/logs/context-review-fix.log": {
+      "bytes": 306,
+      "sha256": "c3dbff72a9b029182ef61500ca9672a3baec90a0d7b649ac80a92c5317cc592e"
+    },
+    "docs/validation/issue94/logs/context-route-build.log": {
+      "bytes": 350,
+      "sha256": "e83489382c25003b0f5400df95797129aa27ed5941f7fb5df8f245b975fbbbdb"
+    },
+    "docs/validation/issue94/logs/context-unit-final.log": {
+      "bytes": 305,
+      "sha256": "24bfe77fc06f5ffc560b66d71cc6484b46f5ed0d511dae20f3407b9982e5b88b"
+    },
+    "docs/validation/issue94/logs/context-unit-final2.log": {
+      "bytes": 304,
+      "sha256": "b9d7b31d2500ab98a9c0d6c63e45e7719ee5c8cf5e34866f1c6760a680a02aba"
+    },
+    "docs/validation/issue94/logs/context-unit.log": {
+      "bytes": 306,
+      "sha256": "f3cd48b8c7b568e4217a6fe83f5cd7aa9f74e3dddf26386c85a1b98cbedc657c"
+    },
+    "docs/validation/issue94/logs/context.log": {
+      "bytes": 366,
+      "sha256": "ff96a7a0ccd893396c3f9e52ca2daf0d9f5c3ce7ebebe0d3bc52394410137c0a"
+    },
+    "docs/validation/issue94/logs/final-design-catalogue-ui.log": {
+      "bytes": 337,
+      "sha256": "2a29b8b51dc71fd55fa2a24901c5ce89985a0e95618c74fd976aa43758b354bd"
+    },
+    "docs/validation/issue94/logs/final-library-ui.log": {
+      "bytes": 293,
+      "sha256": "f60609a1b3cac6dd198b8b3266eee3a741ec03ea7d863bbb99e531fcf1cf868e"
+    },
+    "docs/validation/issue94/logs/final-remaining-forms-ui.log": {
+      "bytes": 341,
+      "sha256": "1a851225c453181d06158351196d4873a819fb682bc198cb440112729563ca0e"
+    },
+    "docs/validation/issue94/logs/final-task-lifecycle-ui.log": {
+      "bytes": 146,
+      "sha256": "b2d930be2592753c18953863eefaf51b9899b0fd1df290f7fcba268a72b96cef"
+    },
+    "docs/validation/issue94/logs/final-topic-drawer-ui.log": {
+      "bytes": 161,
+      "sha256": "c5fe6faa7979b116e2b84657bcb3d748bb68a8ad23c99751ba20f829a46f0cc6"
+    },
+    "docs/validation/issue94/logs/focus.log": {
+      "bytes": 126,
+      "sha256": "1c37376ec5509a6e354e1ff2ddac3cabeb30a69f34eabc749cf1851584dc9426"
+    },
+    "docs/validation/issue94/logs/forms.log": {
+      "bytes": 341,
+      "sha256": "1a851225c453181d06158351196d4873a819fb682bc198cb440112729563ca0e"
+    },
+    "docs/validation/issue94/logs/install.log": {
+      "bytes": 141,
+      "sha256": "48c5b5a4f4968eb30120d8032c5d8d3695917076601e28526c40dba74ae1e59b"
+    },
+    "docs/validation/issue94/logs/integrated-context-retry.log": {
+      "bytes": 365,
+      "sha256": "de714b4a0fb7444cc3254e805d403486f0266f944acb996654c4b2dd64c63ee6"
+    },
+    "docs/validation/issue94/logs/integrated-design-catalogue-ui.log": {
+      "bytes": 337,
+      "sha256": "2a29b8b51dc71fd55fa2a24901c5ce89985a0e95618c74fd976aa43758b354bd"
+    },
+    "docs/validation/issue94/logs/integrated-note-context-ui.log": {
+      "bytes": 418,
+      "sha256": "70005835852207dbd33f1aa3abea8ca42681a5cfc0ff1625a02a0bcca92dde04"
+    },
+    "docs/validation/issue94/logs/integrated-search-navigation-ui.log": {
+      "bytes": 185,
+      "sha256": "a447c3f861f7715e821d61f7f1f3c7f0f0995c246ea0ba13e708216e57144e8a"
+    },
+    "docs/validation/issue94/logs/integration-build.log": {
+      "bytes": 350,
+      "sha256": "731caf9d4655c193844fbfe1db615199b08e6e72ff747dd5a67efbba3e5fa811"
+    },
+    "docs/validation/issue94/logs/integration-mac.log": {
+      "bytes": 663,
+      "sha256": "048bba8e2047085f3699c4b46de49fb25ef846285079898116c26bc1989bbcf5"
+    },
+    "docs/validation/issue94/logs/integration-models.log": {
+      "bytes": 520,
+      "sha256": "756d4ea8a781da360ebf53a9668a7fe414eacba7e0bb84b4ebae15a57cc09a8d"
+    },
+    "docs/validation/issue94/logs/integration-signature.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/integration-syntax.log": {
+      "bytes": 581,
+      "sha256": "a97b7d7eb4d9ff0b4120cf8ec05c3921df32f3f796e6cf8335f9f9283711110a"
+    },
+    "docs/validation/issue94/logs/integration-typecheck.log": {
+      "bytes": 47,
+      "sha256": "73deed3d3289df90705311b64e164aaaa68bd5c3acb22d61fbdf4817998d4cc3"
+    },
+    "docs/validation/issue94/logs/package-final.log": {
+      "bytes": 663,
+      "sha256": "37186716ab6937992d30ad539afbd59a46f8573b2d6bef7c8ba2bfb6a8fa895e"
+    },
+    "docs/validation/issue94/logs/package-final2.log": {
+      "bytes": 663,
+      "sha256": "2831c05b4883b70506a4bab7110e9f8bdd7058d7a7749c662bbaf42501cdd992"
+    },
+    "docs/validation/issue94/logs/package-final3.log": {
+      "bytes": 663,
+      "sha256": "9823b8b3a2df99fceb167a687e42ca6e4cb0ca0f6d67aaa781e2f69429a3e2fa"
+    },
+    "docs/validation/issue94/logs/package-review-fix.log": {
+      "bytes": 663,
+      "sha256": "f58852175db6176dfdaf56901173ed5ffac5356f8d64f81314ffd98e7f72c770"
+    },
+    "docs/validation/issue94/logs/package-route-final.log": {
+      "bytes": 663,
+      "sha256": "311b41d6aaaedd78218eee5014d1848df9dcac419975886a40254cc2e0db5de0"
+    },
+    "docs/validation/issue94/logs/package.log": {
+      "bytes": 663,
+      "sha256": "facf79995420d650e7224a559b3cf5a4d7cdfd9113f51c62b86cac97510acc6b"
+    },
+    "docs/validation/issue94/logs/reader.log": {
+      "bytes": 155,
+      "sha256": "06da4151df146a2ac7d5815f121650c4dbe21d3f8ffbe9cedee19081e9b0f4af"
+    },
+    "docs/validation/issue94/logs/review-build.log": {
+      "bytes": 350,
+      "sha256": "116035f74311489fc1ad04d02cdedd831fa5ff1c7e3d09fd40138031d0148e66"
+    },
+    "docs/validation/issue94/logs/review-classification-ui.log": {
+      "bytes": 128,
+      "sha256": "452a4b5983de9fc5c3e98c666b16fc64653b5797430bfb807371483d68ba4140"
+    },
+    "docs/validation/issue94/logs/review-form-focus-ui.log": {
+      "bytes": 126,
+      "sha256": "1c37376ec5509a6e354e1ff2ddac3cabeb30a69f34eabc749cf1851584dc9426"
+    },
+    "docs/validation/issue94/logs/review-library-ui.log": {
+      "bytes": 293,
+      "sha256": "f60609a1b3cac6dd198b8b3266eee3a741ec03ea7d863bbb99e531fcf1cf868e"
+    },
+    "docs/validation/issue94/logs/review-remaining-forms-ui.log": {
+      "bytes": 341,
+      "sha256": "1a851225c453181d06158351196d4873a819fb682bc198cb440112729563ca0e"
+    },
+    "docs/validation/issue94/logs/review-topic-drawer-ui.log": {
+      "bytes": 161,
+      "sha256": "c5fe6faa7979b116e2b84657bcb3d748bb68a8ad23c99751ba20f829a46f0cc6"
+    },
+    "docs/validation/issue94/logs/route-browser.log": {
+      "bytes": 435,
+      "sha256": "ee3da1a0b39c1e05a0d0096bd22ad0ac9021eb4a9ca541e37b4ab13aef906fe6"
+    },
+    "docs/validation/issue94/logs/route-browser2.log": {
+      "bytes": 418,
+      "sha256": "0ec5ec939d8804006cf5866ba5cfb4bec72ded39062b6c116a2783f4a5ac142b"
+    },
+    "docs/validation/issue94/logs/route-browser3.log": {
+      "bytes": 418,
+      "sha256": "05d76d52bb9e34c0c0b441ef0860379ca6bc19d366f226f97cfdfd05a77fbf7c"
+    },
+    "docs/validation/issue94/logs/route-browser4.log": {
+      "bytes": 365,
+      "sha256": "0ec6d3e1841e885fc803a56d2f46097c430136a91cee33a47be12d0401cc3a0a"
+    },
+    "docs/validation/issue94/logs/route-classification-ui.log": {
+      "bytes": 128,
+      "sha256": "452a4b5983de9fc5c3e98c666b16fc64653b5797430bfb807371483d68ba4140"
+    },
+    "docs/validation/issue94/logs/route-final-build.log": {
+      "bytes": 350,
+      "sha256": "6c6775a9a6aff81d48d00b44325b92e109121adfc04df60d4c8b0a9c757ecac4"
+    },
+    "docs/validation/issue94/logs/route-reading-history-ui.log": {
+      "bytes": 122,
+      "sha256": "d6360f549b137388371523d5c1995cfb41bb8a8af5efcc10ff77ab0a0dae8b43"
+    },
+    "docs/validation/issue94/logs/route-workspace-ui.log": {
+      "bytes": 301,
+      "sha256": "e86f7793267725cb3839f1954f141b259e0ba8d4bedf9a7a67818175c7bbb923"
+    },
+    "docs/validation/issue94/logs/signature-final2.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/signature-final3.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/signature-review-fix.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/signature-route-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/signature.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "docs/validation/issue94/logs/syntax-final.log": {
+      "bytes": 581,
+      "sha256": "a97b7d7eb4d9ff0b4120cf8ec05c3921df32f3f796e6cf8335f9f9283711110a"
+    },
+    "docs/validation/issue94/logs/syntax-final3.log": {
+      "bytes": 581,
+      "sha256": "a97b7d7eb4d9ff0b4120cf8ec05c3921df32f3f796e6cf8335f9f9283711110a"
+    },
+    "docs/validation/issue94/logs/syntax.log": {
+      "bytes": 581,
+      "sha256": "a97b7d7eb4d9ff0b4120cf8ec05c3921df32f3f796e6cf8335f9f9283711110a"
+    },
+    "docs/validation/issue94/logs/tests-delivered.log": {
+      "bytes": 8903,
+      "sha256": "12c59ebfa597c6a77a2e3aa7645d8c9603a64df8bee78fee4ef839b85653477c"
+    },
+    "docs/validation/issue94/logs/tests.log": {
+      "bytes": 8930,
+      "sha256": "f9762ddc522705f45c4b824cd03affc4ae69245cfce0f776bda984d4c03270dd"
+    },
+    "docs/validation/issue94/logs/topic-callback-final.log": {
+      "bytes": 161,
+      "sha256": "c5fe6faa7979b116e2b84657bcb3d748bb68a8ad23c99751ba20f829a46f0cc6"
+    },
+    "docs/validation/issue94/logs/topic.log": {
+      "bytes": 161,
+      "sha256": "c5fe6faa7979b116e2b84657bcb3d748bb68a8ad23c99751ba20f829a46f0cc6"
+    },
+    "docs/validation/issue94/logs/typecheck-final.log": {
+      "bytes": 47,
+      "sha256": "73deed3d3289df90705311b64e164aaaa68bd5c3acb22d61fbdf4817998d4cc3"
+    },
+    "docs/validation/issue94/logs/typecheck-final3.log": {
+      "bytes": 47,
+      "sha256": "73deed3d3289df90705311b64e164aaaa68bd5c3acb22d61fbdf4817998d4cc3"
+    },
+    "docs/validation/issue94/logs/typecheck.log": {
+      "bytes": 47,
+      "sha256": "73deed3d3289df90705311b64e164aaaa68bd5c3acb22d61fbdf4817998d4cc3"
+    }
+  },
+  "notes": "Raw logs retained locally, including every failed attempt. npm test 86/86 passed; integrated public models separately passed. Browser evidence is not native OS/transport evidence."
+}

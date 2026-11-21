@@ -16,5 +16,8 @@ export {syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyn
 export {mountActionControls, actionRows, actionSources, actionHistory, actionOptions} from './actions';
 
 
+
+export {noteFieldsView, classificationView, noteInformationView} from './note-forms';
+export {CollectionContexts} from './browse-context';
 export {searchView} from './search';
 export {searchRows} from './search-model';

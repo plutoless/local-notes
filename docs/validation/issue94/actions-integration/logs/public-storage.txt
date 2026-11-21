@@ -1,0 +1,27 @@
+✔ Action entry adopts a return route only after an accepted, current drawer open (0.390667ms)
+✔ focus membership remains pending for leave and a superseded result cannot replace another Action (0.342917ms)
+✔ a durable focus revision with failed repair stays a committed private recovery candidate (0.489584ms)
+✔ confirmed actions start empty despite reference checkboxes, and survive native index removal (2099.08725ms)
+✔ every state can be reopened while complete immutable history and optional fields survive restart (48.754792ms)
+✔ interrupted revision writes retain the edit and restart recovers only committed revisions (24.972333ms)
+✔ interrupted current writes retain the edit and restart recovers only committed revisions (25.706333ms)
+✔ interrupted index writes retain the edit and restart recovers only committed revisions (27.561333ms)
+✔ transient current-record and index failures report recovered saves after repair (21.053375ms)
+✔ queries paginate and workspace IDs reject writes from another root (44.753583ms)
+✔ a missing live SQLite index is rebuilt before returning query results (19.705292ms)
+✔ editing after a recoverable commit extends the committed revision without branching or duplicating the action (26.954917ms)
+✔ collections preserve independent bounded browsing state across other pages (0.606417ms)
+✔ returned snapshots cannot overwrite saved context and workspace reset starts empty (0.064458ms)
+✔ private reading hints are bounded, ordered by reading, isolated and index independent (0.860834ms)
+✔ invalid private hints recover without treating them as records (0.085ms)
+✔ topic list failure after commit retries the same revision without duplicate topics (1738.623542ms)
+✔ contextual topic creation commits its source with the topic and rejects duplicate names (15.460333ms)
+✔ contextual topic index failure retries the same linked immutable revision (15.982042ms)
+ℹ tests 19
+ℹ suites 0
+ℹ pass 19
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 2381.949417
