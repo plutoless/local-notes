@@ -1,12 +1,13 @@
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const evidence = 'docs/validation/issue48';
 const fixture = await storageFixture();
 let failCreate = false, holdCreate = false, releaseCreate, holdAction = false, releaseAction;
-let createCalls = 0;
+let createCalls = 0, holdReveal = false, releaseReveal, revealReached;
 const {TopicRepository} = await import('../web/library.js');
 const topics = new TopicRepository(fixture.adapter); await topics.open();
 await topics.save({description:'专项验证主题',sources:[]});
@@ -19,6 +20,7 @@ try {
 
   await page.exposeFunction('bridge', async request => {
     try {
+      if (request.cmd === 'metadata' && holdReveal) { holdReveal = false; revealReached(); await new Promise(resolve => { releaseReveal = resolve; }); }
       if (request.cmd === 'actionWrite' && holdAction) { holdAction = false; await new Promise(resolve=>{releaseAction=resolve;}); }
       if (request.cmd === 'create') { createCalls++; if (holdCreate) { holdCreate = false; await new Promise(resolve=>{releaseCreate=resolve;}); } }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
@@ -51,7 +53,19 @@ try {
     if (!['index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
+  // Hold only the shared return fallback; real app handlers and storage remain live.
+  await page.addInitScript(() => {
+    window.heldLeaveReturns = []; window.holdLeaveReturn = false;
+    const timeout = window.setTimeout;
+    window.setTimeout = (run, delay, ...args) => {
+      if (window.holdLeaveReturn && typeof run === 'function' && run.toString().includes('origin.focus') && run.toString().includes('task-leave-decision')) {
+        window.heldLeaveReturns.push(() => run(...args)); return 0;
+      }
+      return timeout(run, delay, ...args);
+    };
+  });
   await page.goto('https://notes.test/');
+  await page.evaluate(async () => { const {taskLeavePending} = await import('/presentation.js'); window.captureLeavePending = taskLeavePending; });
   await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
   await page.locator('[data-view=notes]').click();
   await page.locator('#items .card').first().waitFor();
@@ -75,6 +89,48 @@ try {
   await page.locator('#note-task-drawer [role=status]').filter({hasText: '内容需要核对'}).waitFor();
   await page.locator('#capture-title').fill('短表单真实存储');
   await page.locator('#capture-body').fill('保留正文与草稿。'.repeat(80));
+  const releaseReturn = async () => {
+    assert.equal(await page.evaluate(() => heldLeaveReturns.length), 1);
+    await page.evaluate(() => heldLeaveReturns.splice(0).forEach(run => run()));
+  };
+  const continueEditing = async dismiss => {
+    await page.evaluate(() => { window.holdLeaveReturn = true; });
+    await dismiss();
+    await page.getByRole('button', {name:'继续编辑', exact:true}).click();
+    await page.waitForFunction(() => !window.captureLeavePending());
+  };
+  await page.locator('#capture-body').focus();
+  await page.locator('#capture-body').evaluate(node => node.setSelectionRange(2, 6));
+  await continueEditing(() => page.keyboard.press('Escape')); await releaseReturn();
+  assert.deepEqual(await page.locator('#capture-body').evaluate(node => [node === document.activeElement, node.selectionStart, node.selectionEnd]), [true, 2, 6]);
+  const headerClose = page.locator('#note-task-drawer .ui-drawer-header button');
+  await continueEditing(() => headerClose.click());
+  assert.equal(await headerClose.isDisabled(), false); await releaseReturn();
+  assert.equal(await headerClose.evaluate(node => node === document.activeElement), true, 'Async dismissal returns after re-enable');
+  for (const intent of ['Tab', 'pointer']) {
+    await page.locator('#capture-body').click();
+    await continueEditing(() => page.keyboard.press('Escape'));
+    if (intent === 'Tab') await page.keyboard.press('Tab');
+    else await page.locator('#capture-title').click();
+    const destination = await page.evaluate(() => { window.leaveDestination = document.activeElement; return leaveDestination.id || leaveDestination.textContent; });
+    assert.ok(destination); assert.equal(await page.locator('#capture-body').evaluate(node => node === document.activeElement), false);
+    await releaseReturn();
+    assert.equal(await page.evaluate(() => document.activeElement === leaveDestination), true, `Old return must preserve newer browser ${intent}`);
+    for (const key of ['Tab', 'Shift+Tab']) {
+      await page.keyboard.press(key);
+      assert.equal(await page.locator('#note-task-drawer').evaluate(node => node.contains(document.activeElement)), true);
+    }
+  }
+  await page.evaluate(() => { window.holdLeaveReturn = false; });
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', {name:'放弃更改并离开', exact:true}).click();
+  await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+  assert.equal(await page.locator('#new').evaluate(node => node === document.activeElement), true, 'Discard restores the capture opener');
+  assert.equal(createCalls, 0, 'Continue and discard never create files');
+  await page.locator('#new').click();
+  await page.locator('#capture-title').fill('短表单真实存储');
+  await page.locator('#capture-body').fill('保留正文与草稿。'.repeat(80));
+  console.log('PASS real-app leave: Continue selection, disabled return, held fallback after browser Tab/pointer, containment, discard/opener');
   await page.keyboard.press('Escape');
   await page.getByRole('button', {name: '继续编辑', exact: true}).click();
   assert.equal(await page.locator('#capture-title').inputValue(), '短表单真实存储');
@@ -104,8 +160,18 @@ try {
   await page.locator('#note-task-form').evaluate(node=>{node.dispatchEvent(new Event('submit',{cancelable:true}));node.dispatchEvent(new Event('submit',{cancelable:true}));});
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#note-task-drawer').evaluate(n=>n.open),true);
   assert.equal(await page.evaluate(()=>window.hasUnsavedChanges()),true);
+  const revealing = new Promise(resolve => { revealReached = resolve; });
+  holdReveal = true;
   assert.equal(createCalls,callsBefore+1); releaseCreate();
+  await revealing;
   await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+  assert.equal(await page.evaluate(() => window.captureLeavePending()), true, 'Held reveal keeps the Escape leave pending');
+  assert.equal(await page.locator('#capture-return').evaluate(node => node.hidden), true);
+  assert.equal(await page.evaluate(() => !window.captureLeavePending() && !document.querySelector('#capture-return').hidden), false, 'Hidden alone is not capture readiness');
+  releaseReveal();
+  // Hidden precedes the saved-note reveal and the pending Escape leave completion.
+  // Poll synchronously: an async predicate is not a settled-state check here.
+  await page.waitForFunction(() => !window.captureLeavePending() && !document.querySelector('#capture-return').hidden);
   const files = await readdir(join(fixture.root,'Notes'));
   assert.equal(files.length,1);
   assert.match(await readFile(join(fixture.root,'Notes',files[0]),'utf8'), /短表单真实存储/);
@@ -115,6 +181,7 @@ try {
   assert.equal((await readdir(join(fixture.root,'Notes'))).length,1,'Recovered already-committed capture must not duplicate');
   await page.locator('#new').click(); await page.locator('#capture-title').fill('恢复的输入');
   await page.reload(); await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
+  await page.evaluate(async () => { const {taskLeavePending} = await import('/presentation.js'); window.captureLeavePending = taskLeavePending; });
   await page.locator('#new').click(); assert.equal(await page.locator('#capture-title').inputValue(),'恢复的输入');
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   assert.equal((await readdir(join(fixture.root,'Notes'))).length,1);
@@ -145,6 +212,28 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(),'抽屉行动真实保存');
   await page.keyboard.press('Escape');
   await page.locator('[data-view=notes]').click(); await page.locator('#items [data-path="reference.md"]').click();
+  await page.setViewportSize({width:1180, height:800});
+  const readerSource = await readFile(join(fixture.root, 'reference.md'), 'utf8');
+  await page.locator('#mode').click();
+  await page.locator('#body').fill('保留的未保存草稿 Browser draft');
+  for (const intent of ['Tab', 'pointer']) {
+    await continueEditing(() => page.locator('#back').click());
+    assert.equal(await page.locator('#body').inputValue(), '保留的未保存草稿 Browser draft');
+    if (intent === 'Tab') await page.keyboard.press('Tab');
+    else await page.locator('#body').click();
+    const destination = await page.evaluate(() => { window.leaveDestination = document.activeElement; return leaveDestination.id; });
+    assert.equal(destination, intent === 'Tab' ? 'note-save' : 'body');
+    await releaseReturn();
+    assert.equal(await page.evaluate(() => document.activeElement === leaveDestination), true, `Reader Continue preserves newer ${intent}`);
+  }
+  await page.evaluate(() => { window.holdLeaveReturn = false; });
+  await page.locator('#back').click();
+  await page.getByRole('button', {name:'放弃更改并离开', exact:true}).click();
+  assert.equal(await readFile(join(fixture.root, 'reference.md'), 'utf8'), readerSource, 'Reader discard preserves persisted source');
+  await page.locator('#items [data-path="reference.md"]').click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  assert.equal(await readFile(join(fixture.root, 'reference.md'), 'utf8'), readerSource);
+  console.log('PASS real reader consumer: held Continue cannot steal newer Tab/pointer; discard and reopen preserve source');
   await page.locator('#note-info-open').click();
   fixture.fail((cmd,args)=>cmd==='actionWrite'&&args.entityType==='topic'&&args.path.startsWith('revisions/'));
   await page.getByLabel('专项验证主题',{exact:true}).check();
@@ -189,6 +278,23 @@ try {
   await page.locator('#note-location').fill('moved.md'); await page.locator('#note-task-drawer .primary').click();
   await page.locator('#note-task-drawer').waitFor({state:'hidden'});
   assert.equal(await readFile(join(fixture.root,'moved.md'),'utf8') !== '',true);
+  const hashes = async (root, prefix = '') => {
+    const entries = [];
+    for (const name of await readdir(join(root, prefix))) {
+      const relative = join(prefix, name), path = join(root, relative);
+      if ((await stat(path)).isDirectory()) entries.push(...await hashes(root, relative));
+      else entries.push({path:relative, sha256:createHash('sha256').update(await readFile(path)).digest('hex')});
+    }
+    return entries.sort((a,b) => a.path.localeCompare(b.path));
+  };
+  await mkdir('build/issue105', {recursive:true});
+  await writeFile('build/issue105/application-storage.json', JSON.stringify({
+    captureMarkdownReadback:true, recoveredCommittedNoDuplicate:true, draftReload:true,
+    readerDiscardSourceUnchanged:true, readerReopen:true, topicRecordRecoveryReadback:true,
+    sharedBridge:'NotesNative.request -> exposed bridge -> isolated filesystem / Swift StorageHarness',
+    nativeTransportExercised:false, synchronizedFiles:await hashes(fixture.root), privateIndexFiles:await hashes(fixture.privateRoot),
+    adapterCommands:[...new Set(fixture.calls.map(call => call.cmd))].sort()
+  }, null, 2));
   assert.deepEqual(errors,[]);
   }
   console.log('PASS remaining forms: real persistence, invalid, dirty close, retry, recovery, desktop/393/reduced height');

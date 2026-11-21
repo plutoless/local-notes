@@ -30,5 +30,10 @@ See docs/agents/domain.md.
 
 ### Validation
 
-Syncthing standalone tests and Android-specific tests are deferred until explicitly requested by the user and do not block merging.
+Use layered testing: primarily behavior-focused unit tests, focused real-adapter
+integration tests, and a small number of justified UI end-to-end journeys. Prefer
+browser validation when UI verification is needed. Run affected native checks for
+host, bridge, resource, lifecycle, or OS integration changes. Ordinary UI native compatibility replay is deferred to
+release-level checks. Syncthing standalone tests and Android-specific tests remain
+deferred and do not block merging.
 See docs/agents/validation.md.
