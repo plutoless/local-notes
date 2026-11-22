@@ -79,6 +79,8 @@ export class ActionRepository {
     };
     this.progress?.('Reading confirmed revisions…');
     const result = await request('actionFiles', {known: this.fileStamps || {}});
+    // A workspace bind can run between the adapter's guard and this continuation.
+    checkWorkspace();
     const fileWarnings = result.warnings || [];
     const files = result.stamps ? Object.fromEntries(Object.keys(result.stamps).map(path => [path, result.files[path] ?? this.fileCache?.[path]]).filter(([,text]) => text !== undefined)) : result.files;
     for (const warning of fileWarnings) if (warning.path.endsWith('/')) {
@@ -115,7 +117,10 @@ export class ActionRepository {
         const history = revisions.get(record.entityId) || new Map();
         if (history.has(record.revision) && JSON.stringify(history.get(record.revision)) !== JSON.stringify(record)) throw Error('Revision identity has incompatible content');
         // Preserve a current file or Syncthing conflict copy before any repair can replace it.
-        if (!readOnly && path !== revisionPath && !Object.hasOwn(files, revisionPath)) await request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
+        if (!readOnly && path !== revisionPath && !Object.hasOwn(files, revisionPath)) {
+          await request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
+          checkWorkspace();
+        }
         history.set(record.revision, record);
         revisions.set(record.entityId, history);
         if (path === `${this.collection}/${record.entityId}.json`) currents.set(record.entityId, record);
@@ -134,6 +139,7 @@ export class ActionRepository {
       const record = state.tips[0];
       if (!readOnly && !damaged.has(`${this.collection}/${id}.json`) && (currents.get(id)?.revision !== record.revision || JSON.stringify(currents.get(id)) !== JSON.stringify(record))) {
         await request('actionWrite', {path: `${this.collection}/${id}.json`, text: JSON.stringify(record)});
+        checkWorkspace();
       }
       records.push(record);
     }
@@ -142,6 +148,7 @@ export class ActionRepository {
       try {
         for (let offset = 0;; offset += 100) {
           const page = await request('actionQuery', {limit: 100, offset});
+          checkWorkspace();
           for (const old of page.actions) if (!revisions.has(old.entityId)) {
             records.push(conflictView(new Map([[old.revision, old]]), {incomplete: true}));
             this.conflicts.set(old.entityId, {incomplete: true, tips: [], versions: [old]});
@@ -161,6 +168,7 @@ export class ActionRepository {
         }
         for (const entityId of previous.keys()) await request('actionIndex', {record: {entityId, deleted: true}});
       }
+      checkWorkspace();
       this.indexedSnapshot = snapshot;
     }
     this.heads = new Map(records.map(record => [record.entityId, record.revision]));

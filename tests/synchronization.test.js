@@ -14,12 +14,16 @@ test('a reopened Topics repository only uses recovery data from its current work
   try {
     let active = first;
     let delayed;
+    function hold(gate) {
+      gate.arrived.resolve();
+      return gate.release.promise;
+    }
     const topics = new TopicRepository(async (cmd, args) => {
       const result = await active.adapter(cmd, args);
-      if (active === first && delayed?.commands.has(cmd)) {
-        const gate = delayed;
-        gate.arrived.get(cmd).resolve();
-        await gate.release.promise;
+      if (active === first && delayed?.previous.has(cmd)) {
+        await hold(delayed.previous.get(cmd));
+      } else if (active === second && delayed?.current.has(cmd)) {
+        await hold(delayed.current.get(cmd));
       }
       return result;
     });
@@ -45,20 +49,28 @@ test('a reopened Topics repository only uses recovery data from its current work
     await otherTopics.open();
     const current = (await otherTopics.save({description:'Second workspace topic'})).record;
     const restoreSecond = await unavailable(second);
-    const commands = new Set(['actionFiles', 'actionQuery']);
+    const gatesFor = commands => new Map(commands.map(cmd => [cmd, {
+      arrived:Promise.withResolvers(), release:Promise.withResolvers(),
+    }]));
     delayed = {
-      commands,
-      arrived: new Map([...commands].map(cmd => [cmd, Promise.withResolvers()])),
-      release: Promise.withResolvers(),
+      previous:gatesFor(['actionFiles', 'actionQuery']),
+      current:gatesFor(['workspace', 'actionFiles']),
     };
     const previousInspection = assert.rejects(topics.recover(), /Workspace changed during record recovery/);
     const previousQuery = assert.rejects(topics.query(), /Workspace changed during record query/);
-    await Promise.all([...delayed.arrived.values()].map(gate => gate.promise));
+    await Promise.all([...delayed.previous.values()].map(gate => gate.arrived.promise));
     active = second;
-    let reopened;
-    try { reopened = await topics.open(); }
-    finally { delayed.release.resolve(); }
+    const reopening = topics.open();
+    await delayed.current.get('workspace').arrived.promise;
+    // Settle the old read and the new workspace binding in the same turn.
+    delayed.previous.get('actionFiles').release.resolve();
+    delayed.current.get('workspace').release.resolve();
+    await delayed.current.get('actionFiles').arrived.promise;
+    delayed.previous.get('actionQuery').release.resolve();
     await Promise.all([previousInspection, previousQuery]);
+    delayed.current.get('actionFiles').release.resolve();
+    const reopened = await reopening;
+    delayed = undefined;
     assert.equal(reopened.workspaceId, current.workspaceId);
     assert.ok(reopened.warnings.some(warning => warning.startsWith('topics/:')));
     assert.ok(!reopened.warnings.join('\n').includes(previous.entityId), reopened.warnings);
