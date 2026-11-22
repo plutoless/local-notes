@@ -76,11 +76,12 @@ test('a source detour is tied to the open Action and its accepted input', async 
 
   let accepted;
   screen.openLinkedNote = async (path, context) => {
-    assert.equal(path, source.path);
+    assert.equal(path, 'moved.md');
     accepted = context;
   };
-  await screen.openSource(source.path, 0);
+  await screen.openSource('moved.md', 0);
   assert.equal(accepted.action, record);
+  assert.throws(() => accepted.verify('Different note'), /移动后的来源已更改/);
   assert.equal(accepted.owns(), true);
   screen.dirty = true;
   assert.equal(accepted.owns(), false);
