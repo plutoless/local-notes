@@ -82,7 +82,8 @@ try {
     await page.keyboard.press('Escape');
     await page.locator('#note-task-drawer').waitFor({state:'hidden'});
     await page.locator('#items [data-path="reference.md"]').click();
-    await showReaderDetails(page); await page.locator('#note-info-open').click();
+    if (await page.locator('#note-reference-open').count()) await showReaderDetails(page);
+    await page.locator('#note-info-open').click();
     for (const width of [1180,393]) { await page.setViewportSize({width,height:800}); await screenshot(join(evidence,`before-note-info-${width}.png`)); }
     console.log('PASS baseline real-storage browser captures at starting SHA');
   } else {
