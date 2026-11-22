@@ -1,7 +1,7 @@
 export type SearchScope = 'all'|'note'|'initiative'|'action';
 interface SearchIdentity {
   identity:string; workspaceId:string; entityId:string;
-  title:string; contextLabel:string; passage:string; locator:string;
+  title:string; contextLabel:string; passage:string; locator:string; meaning?:boolean;
 }
 export type SearchResult = SearchIdentity & (
   {type:'note';path:string;passageStart:number;fingerprint:string;revision?:never} |
@@ -26,6 +26,8 @@ export function searchRows(notes:SearchResult[], query:string, previous:SearchRo
   return notes.map(note=>{
     const old=previous.find(row=>row.note.identity===note.identity &&
       (row.note.fingerprint || row.note.revision)===(note.fingerprint || note.revision) && row.query===query);
-    return {note,query,text:old?old.text:note.passage,expanded:old?.expanded};
+    if (!old) return {note,query,text:note.passage};
+    old.note=note;
+    return old;
   });
 }

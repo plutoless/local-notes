@@ -58,6 +58,38 @@ CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' npm r
 
 Keep run-specific evidence in ignored local output or CI artifacts, and publish concise results in PR descriptions or issue comments. Historical validation artifacts are not part of the current source tree. Existing harnesses may write to the ignored `docs/validation/` directory; those files must not be added to Git. Android-specific and standalone Syncthing checks remain deferred until requested, never reported as passed.
 
+## Optional local meaning search (Mac)
+
+Global search keeps keyword results first. The optional E5 service adds separately labeled related passages in the same search field. It works with notes, initiatives, and actions in the active workspace. The first page can show up to five related excerpts alongside keyword results. A match opens or copies the stored source.
+
+Setup requires Python 3.11 or later and about 135 MB for the pinned multilingual E5 Small model and tokenizer. Run the commands only if you want to download the local model files:
+
+```sh
+model_dir="$HOME/Library/Application Support/LocalNotes/MeaningSearchModel"
+model_url="https://huggingface.co/Xenova/multilingual-e5-small/resolve/761b726dd34fb83930e26aab4e9ac3899aa1fa78"
+mkdir -p "$model_dir"
+curl --fail --location "$model_url/onnx/model_quantized.onnx" --output "$model_dir/model_quantized.onnx"
+curl --fail --location "$model_url/tokenizer.json" --output "$model_dir/tokenizer.json"
+python3 -m venv build/meaning-runtime
+build/meaning-runtime/bin/python -m pip install 'onnxruntime==1.23.2' 'tokenizers==0.22.1'
+build/meaning-runtime/bin/python scripts/meaning-search-server.py --model-dir "$model_dir"
+```
+
+The service verifies both model files at startup and uses a Unix socket restricted to the current macOS user. Open global search and enable **本机语义检索** for the current workspace. The setting is device-local and starts off for each workspace. While enabled, queries and changed source passages go to this local process. Its rebuildable index lives under `~/Library/Application Support/LocalNotes/MeaningSearch`, outside the synchronized workspace. Disable the option to stop requests, or stop the service and use keyword search. Restart the service and refresh the index to recover from unavailability.
+
+Multilingual embeddings support Chinese and English input. Same-language paraphrase retrieval is more reliable than cross-language retrieval on the evaluated synthetic cases. Scores are used for relevance ranking and do not establish that a passage answers the query.
+
+For the real-model browser check, build the web assets, then run:
+
+```sh
+LOCAL_NOTES_MEANING_MODEL_DIR="$model_dir" \
+LOCAL_NOTES_MEANING_PYTHON="$PWD/build/meaning-runtime/bin/python" \
+CHROME_PATH='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' \
+node tests/meaning-search-ui.mjs
+```
+
+The test starts its own service with an isolated private socket and index.
+
 ## AI suggestions (issue 6)
 
 Organize supports one OpenAI-compatible Chat Completions endpoint (`POST`, Bearer authorization, non-streaming `choices[0].message.content` containing JSON). Configure the full HTTPS endpoint, model and API key on each device. Mac also accepts HTTP at `127.0.0.1` for a controlled local service. Redirects are refused. Network failures and invalid responses require explicit retry; requests have finite timeouts. No real provider is bundled or called automatically.

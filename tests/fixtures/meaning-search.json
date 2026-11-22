@@ -1,0 +1,183 @@
+{
+  "notes": [
+    {
+      "workspace": "primary",
+      "path": "Current/ops.md",
+      "body": "# 值班交接\n\n夜间发生服务异常时，由备用负责人接手告警，直到当班人员恢复。"
+    },
+    {
+      "workspace": "primary",
+      "path": "Archive/ops.md",
+      "body": "# 值班交接\n\n旧方案把白天演练的参会名单发到群里。"
+    },
+    {
+      "workspace": "primary",
+      "path": "shipping.md",
+      "body": "# Parcel operations\n\nA courier places parcels in a locked compartment and sends the customer a one-time code."
+    },
+    {
+      "workspace": "primary",
+      "path": "handoff-body.md",
+      "body": "---\nreview: antler-code\n---\n# Work calendar\n\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\nThe design team rehearsed its monthly planning presentation.\n\n## Transaction safety\n\n| case | outcome |\n| --- | --- |\n| power cut | journal rolls back unfinished writes |\n\nThe original record stays intact."
+    },
+    {
+      "workspace": "primary",
+      "path": "checkout.md",
+      "body": "# 支付保护\n\n重复提交订单时，系统只扣款一次。"
+    },
+    {
+      "workspace": "primary",
+      "path": "phone.md",
+      "body": "# 配送更新\n\n发货后，收件人可以用手机查看包裹的当前位置。"
+    },
+    {
+      "workspace": "primary",
+      "path": ".hidden/canary.md",
+      "body": "# frost-canary\n\nThis file is excluded from indexing."
+    },
+    {
+      "workspace": "secondary",
+      "path": "boundary.md",
+      "body": "# copper-lantern\n\nSynthetic second workspace boundary marker."
+    }
+  ],
+  "records": [
+    {
+      "id": "action-signer",
+      "type": "action",
+      "description": "Request the supplier's signed acknowledgement before shipment."
+    },
+    {
+      "id": "initiative-index",
+      "type": "initiative",
+      "title": "Knowledge discovery",
+      "goal": "Improve original paragraph recall for bilingual paraphrases.",
+      "progress": "The first evaluation collection now includes an archived duplicate."
+    }
+  ],
+  "queries": [
+    {
+      "id": "literal-zh",
+      "query": "备用负责人",
+      "scope": "note",
+      "kind": "literal",
+      "expected": "Current/ops.md",
+      "passage": "由备用负责人接手告警"
+    },
+    {
+      "id": "literal-en",
+      "query": "locked compartment",
+      "scope": "note",
+      "kind": "literal",
+      "expected": "shipping.md",
+      "passage": "places parcels in a locked compartment"
+    },
+    {
+      "id": "literal-structured",
+      "query": "unfinished writes",
+      "scope": "note",
+      "kind": "literal",
+      "expected": "handoff-body.md",
+      "passage": "journal rolls back unfinished writes"
+    },
+    {
+      "id": "literal-initiative",
+      "query": "bilingual paraphrases",
+      "scope": "initiative",
+      "kind": "literal",
+      "expected": "initiative-index",
+      "passage": "Improve original paragraph recall for bilingual paraphrases."
+    },
+    {
+      "id": "literal-action",
+      "query": "signed acknowledgement",
+      "scope": "action",
+      "kind": "literal",
+      "expected": "action-signer",
+      "passage": "Request the supplier's signed acknowledgement before shipment."
+    },
+    {
+      "id": "meaning-zh",
+      "query": "午夜系统出故障该找谁",
+      "scope": "note",
+      "kind": "meaning",
+      "expected": "Current/ops.md",
+      "passage": "由备用负责人接手告警",
+      "reject": [
+        "Archive/ops.md"
+      ]
+    },
+    {
+      "id": "meaning-en",
+      "query": "retrieve delivery from a secure pickup box",
+      "scope": "note",
+      "kind": "meaning",
+      "expected": "shipping.md",
+      "passage": "places parcels in a locked compartment"
+    },
+    {
+      "id": "meaning-bilingual",
+      "query": "prevent double charging at checkout",
+      "scope": "all",
+      "kind": "meaning",
+      "expected": "checkout.md",
+      "passage": "系统只扣款一次"
+    },
+    {
+      "id": "meaning-structured",
+      "query": "retain valid data after sudden electrical failure",
+      "scope": "note",
+      "kind": "meaning",
+      "expected": "handoff-body.md",
+      "passage": "journal rolls back unfinished writes"
+    },
+    {
+      "id": "meaning-action",
+      "query": "ask vendor for written confirmation prior to dispatch",
+      "scope": "action",
+      "kind": "meaning",
+      "expected": "action-signer",
+      "passage": "Request the supplier's signed acknowledgement before shipment."
+    },
+    {
+      "id": "meaning-initiative",
+      "query": "make it easier to find source text from restated ideas in two languages",
+      "scope": "initiative",
+      "kind": "meaning",
+      "expected": "initiative-index",
+      "passage": "Improve original paragraph recall for bilingual paraphrases."
+    },
+    {
+      "id": "archive",
+      "query": "白天演练",
+      "scope": "note",
+      "kind": "literal",
+      "expected": "Archive/ops.md",
+      "passage": "把白天演练的参会名单发到群里"
+    },
+    {
+      "id": "hidden",
+      "query": "frost-canary",
+      "scope": "all",
+      "kind": "exclusion"
+    },
+    {
+      "id": "workspace",
+      "query": "copper-lantern",
+      "scope": "all",
+      "kind": "exclusion"
+    },
+    {
+      "id": "type-scope",
+      "query": "signed acknowledgement",
+      "scope": "note",
+      "kind": "exclusion"
+    },
+    {
+      "id": "irrelevant",
+      "query": "submarine coral propagation",
+      "scope": "all",
+      "kind": "exclusion"
+    }
+  ]
+}

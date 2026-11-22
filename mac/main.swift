@@ -48,6 +48,7 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
     }
     lazy var ai = AIService(support)
     let worker = DispatchQueue(label: "dev.localnotes.storage", qos: .userInitiated)
+    let meaningWorker = DispatchQueue(label: "dev.localnotes.meaning", qos: .utility)
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
             support = try fm.url(for:.applicationSupportDirectory,in:.userDomainMask,appropriateFor:nil,create:true).appendingPathComponent("LocalNotes")
@@ -184,6 +185,23 @@ final class App: NSObject, NSApplicationDelegate, WKScriptMessageHandler, WKNavi
                     DispatchQueue.main.async { self.web.evaluateJavaScript("window.nativeReply(\(id),\(json))", completionHandler: nil) }
                 }
             }; return
+        }
+        if req["cmd"] as? String == "meaningSearch" {
+            worker.async {
+                let workspace = try? ActionStorage(root: self.root, privateRoot: self.support).workspace()
+                let privateRoot = self.support!
+                self.meaningWorker.async {
+                    let result: [String: Any]
+                    if let workspace, workspace == req["workspaceId"] as? String {
+                        do { result = try runMeaningSearch(req, privateRoot: privateRoot, workspaceId: workspace) }
+                        catch { result = ["error": error.localizedDescription] }
+                    } else { result = ["error": "Workspace changed"] }
+                    if let data = try? JSONSerialization.data(withJSONObject: result), let json = String(data: data, encoding: .utf8) {
+                        DispatchQueue.main.async { self.web.evaluateJavaScript("window.nativeReply(\(id),\(json))", completionHandler: nil) }
+                    }
+                }
+            }
+            return
         }
         let perform = {
             let result: [String: Any]
