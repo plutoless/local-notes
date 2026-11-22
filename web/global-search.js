@@ -2,6 +2,7 @@ import {referenceBody, referenceRecord, referenceSearchText} from './library.js'
 import {fingerprint, InitiativeRepository} from './initiatives.js';
 import {ActionRepository} from './actions.js';
 import {safePath} from './core.js';
+import {MeaningSearch, meaningNoteChunks, meaningRecordChunks} from './meaning-search.js';
 
 // One workspace-aware boundary for indexed descriptors and validated source context.
 export class NoteSearch {
@@ -64,7 +65,57 @@ export class NoteSearch {
 
 // The dialog knows descriptors, never the formal-record storage protocol.
 export class WorkspaceSearch extends NoteSearch {
-  reset() { super.reset(); this.repositories = null; this.entitiesRunning = null; this.entityErrors = false; }
+  constructor(adapter, changed = () => {}) {
+    super(adapter, changed);
+    this.meaning = new MeaningSearch(adapter, changed);
+  }
+  reset() {
+    super.reset();
+    this.repositories = null;
+    this.entitiesRunning = null;
+    this.entityErrors = false;
+    this.meaning.reset();
+  }
+  async prepareMeaning() {
+    await this.open();
+    await this.meaning.open(this.workspaceId);
+    if (this.meaning.enabled) this.refreshMeaning();
+  }
+  refreshMeaning() {
+    return this.meaning.sync(() => this.meaningSources());
+  }
+  async *meaningSources() {
+    const workspaceId = this.workspaceId, generation = this.generation;
+    const call = (cmd, args = {}) => this.adapter(cmd, {workspaceId, ...args});
+    const active = () => this.generation === generation;
+    await this.sync();
+    if (!active()) return;
+    if (this.error || this.entityErrors) throw Error('Source index incomplete');
+    for (let offset = 0; active(); offset += 50) {
+      const page = await call('referenceInventory', {offset});
+      for (const record of page.notes) {
+        if (!active()) return;
+        if (!safePath(record.path) || record.searchVersion !== 1) continue;
+        yield {type: 'note', entityId: record.path, version: record.fingerprint, read: async () => {
+          const {text} = await call('read', {path: record.path});
+          return meaningNoteChunks(record, text, workspaceId);
+        }};
+      }
+      if (!page.hasMore) break;
+    }
+    for (const type of ['initiative', 'action']) {
+      for (let offset = 0; active(); offset += 50) {
+        const page = await call('actionQuery', {entityType: type, offset, limit: 50});
+        for (const record of page.actions) {
+          if (!active()) return;
+          if (record.deleted || record.syncState || record.workspaceId !== workspaceId) continue;
+          yield {type, entityId: record.entityId, version: record.revision,
+            read: () => meaningRecordChunks(type, record, workspaceId)};
+        }
+        if (!page.hasMore) break;
+      }
+    }
+  }
   async open() {
     await super.open();
     if (!this.repositories) {
@@ -146,6 +197,24 @@ export class WorkspaceSearch extends NoteSearch {
     const fold = text => text.replace(/[A-Z]/g, character => character.toLowerCase());
     results.sort((a, b) => Number(!fold(a.title).includes(fold(search))) - Number(!fold(b.title).includes(fold(search))) || binary(a.type, b.type) || binary(a.entityId, b.entityId) || (a.type === 'note' ? a.passageStart - b.passageStart : binary(a.passageId, b.passageId)));
     return {notes: results.slice(offset, offset + 20), hasMore: results.length > offset + 20, partial};
+  }
+  async meaningQuery(query, scope, moreKeywordPages) {
+    const workspaceId = this.workspaceId, generation = this.generation;
+    const related = await this.meaning.query(query, scope);
+    if (!moreKeywordPages || generation !== this.generation) return related;
+    // Check only the bounded semantic candidates against later keyword pages.
+    const duplicates = await Promise.allSettled(related.map(async row => {
+      if (row.type === 'note') {
+        const page = await this.adapter('referenceSearch',
+          {workspaceId, search: query, exactPath: row.path, limit: 1,
+            overlapStart: row.passageStart, overlapLength: Array.from(row.passage).length});
+        return page.notes.length > 0;
+      }
+      const page = await this.adapter('actionQuery', {workspaceId, entityType: row.type, entityId: row.entityId, limit: 1});
+      return page.actions.some(record => record[row.passageId]?.toLowerCase().includes(query.toLowerCase()));
+    }));
+    if (generation !== this.generation) return [];
+    return related.filter((_, index) => duplicates[index].status === 'fulfilled' && !duplicates[index].value);
   }
   async source(result) {
     const workspaceId = this.workspaceId, generation = this.generation;

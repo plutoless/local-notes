@@ -8,12 +8,12 @@ import type {SearchScope, SearchRow} from './search-model';
 export type {SearchNavigation} from './search-model';
 export interface SearchModel {
   scope:SearchScope; rows:SearchRow[]; selected:string|null; status:string;
-  previous:boolean; next:boolean; initialQuery?:string; tone?:'loading'|'warning'|'error'|'success';
+  previous:boolean; next:boolean; initialQuery?:string; meaning?:{enabled:boolean;configuring:boolean;state:string}; tone?:'loading'|'warning'|'error'|'success';
 }
 export interface SearchCallbacks {
   scope:(scope:SearchScope)=>unknown; close:()=>unknown; page:(direction:number)=>unknown;
   refresh:()=>unknown; expand:(row:SearchRow, toggle?:boolean)=>unknown; copy:(row:SearchRow)=>unknown;
-  open:(row:SearchRow)=>unknown;
+  open:(row:SearchRow)=>unknown; meaning?:(enabled:boolean)=>unknown;
 }
 export function SearchPassage({text,query}:{text:string;query:string}) {
   const parts=[]; let start=0, position; const lower=text.toLowerCase(), term=query.toLowerCase();
@@ -28,7 +28,7 @@ export function SearchContent({model:m,callbacks:c}:{model:SearchModel;callbacks
     <h2 id="global-search-title">搜索内容</h2>
     <div className="search-toolbar">
       <label className="search-query">
-        <span>关键词</span>
+        <span>{m.meaning?.enabled?'搜索内容':'关键词'}</span>
         <Input id="global-search-input" type="search" defaultValue={m.initialQuery} placeholder="搜索标题和正文"/>
       </label>
       <Button onClick={c.close}>关闭搜索</Button>
@@ -45,7 +45,7 @@ export function SearchContent({model:m,callbacks:c}:{model:SearchModel;callbacks
           <Button className={`quiet ui-row search-select${selected?' selected':''}`} aria-current={selected} aria-expanded={!!row.expanded}
             onClick={()=>c.expand(row)}>{row.note.title}</Button>
           <p className="search-source">{{note:'笔记',initiative:'事项',action:'行动'}[row.note.type]} · {row.note.contextLabel}</p>
-          <span className="search-passage-label">{row.expanded?'展开片段':'匹配片段'}</span>
+          <span className="search-passage-label">{row.note.meaning?'语义相关 · ':''}{row.expanded?'展开片段':'匹配片段'}</span>
           <pre className="search-passage" aria-label="复制范围"><SearchPassage text={row.text} query={row.query}/></pre>
           <div className="search-actions">
             <Button aria-expanded={!!row.expanded} onClick={()=>c.expand(row,true)}>{row.expanded?'收起片段':'展开片段'}</Button>
@@ -55,6 +55,16 @@ export function SearchContent({model:m,callbacks:c}:{model:SearchModel;callbacks
         </section>;
       })}
     </div>
+    {m.meaning&&<div className="search-meaning">
+      <label className="ui-selection">
+        <input type="checkbox" checked={m.meaning.enabled} disabled={m.meaning.configuring} aria-describedby="search-meaning-privacy"
+          onChange={event=>c.meaning?.(event.currentTarget.checked)}/>本机语义检索
+      </label>
+      <small id="search-meaning-privacy">启用后，此目录的查询和原文片段由本机运行的模型处理。</small>
+      {m.meaning.enabled&&m.meaning.state==='indexing'&&<small role="status">正在更新语义索引，可继续使用关键词搜索。</small>}
+      {m.meaning.enabled&&m.meaning.state==='partial'&&<small role="status">部分内容未完成语义索引，请刷新重试。</small>}
+      {m.meaning.enabled&&m.meaning.state==='unavailable'&&<small role="status">本机语义模型不可用，可使用关键词搜索。启动服务后刷新索引。</small>}
+    </div>}
     <footer className="search-footer">
       <label className="ui-selection search-attribution"><input type="checkbox"/>附带来源</label>
       <div className="search-actions">
