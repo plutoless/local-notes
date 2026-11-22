@@ -334,6 +334,8 @@ function activeTask() {
   if (initiatives.drawer.panel.open) return initiatives.task();
   if (!syncScreen.panel.hidden) return syncScreen.task();
   if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
+    suspend: () => { noteInfo.body.inert = true; },
+    resume: () => { noteInfo.body.inert = false; },
     pending: () => {
       const work = [...(infoSession?.pending || []), libraryScreen.noteTopicPending, noteInitiativePending].filter(Boolean);
       if (work.length) return Promise.all(work);

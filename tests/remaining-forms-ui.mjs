@@ -304,6 +304,7 @@ try {
   await infoRead;
   await infoSheet.getByRole('button',{name:'完成'}).click();
   assert.ok(await infoSheet.evaluate(node => node.open), 'Note information owns pending association loading');
+  assert.ok(await infoSheet.locator('.ui-drawer-body').evaluate(node => node.inert), 'A pending leave prevents a new classification decision');
   releaseInfoRead();
   await infoSheet.waitFor({state:'hidden'});
   assert.equal(await referenceOpener.evaluate(node=>node===document.activeElement),true);
