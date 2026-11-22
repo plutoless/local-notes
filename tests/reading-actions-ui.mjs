@@ -150,8 +150,10 @@ try {
   const updated = (await count()).find(record => record.entityId === selected.entityId);
   assert.notEqual(updated.revision,selected.revision);
   assert.deepEqual(updated.sources,selected.sources);
+  await page.setViewportSize({width:393,height:340});
   await page.locator('#back').click();
   await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='打开来源：reference.md');
+  assert.equal(await openSource.evaluate(button=>{const rect=button.getBoundingClientRect();return rect.top>=0&&rect.bottom<=innerHeight;}),true);
   assert.equal(await page.locator('#action-description').inputValue(),updated.description);
   assert.equal(await page.locator('#search').inputValue(),'Confirmed list');
   assert.equal(await page.locator('#action-filter').inputValue(),'todo');
@@ -159,6 +161,7 @@ try {
   await page.locator('#action-back').click();
   assert.equal(await page.evaluate(()=>document.activeElement?.dataset.entityId),selected.entityId);
   assert.equal(await readFile(sourcePath,'utf8'),original);
+  await page.setViewportSize({width:1180,height:800});
   console.log('PASS saved source detour, real identity and return focus');
   // Late source reads may not reopen a drawer after workspace switching.
   await page.locator('[data-view=notes]').click();

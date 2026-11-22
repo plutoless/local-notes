@@ -77,6 +77,9 @@ try {
   await page.locator('#items [data-initiative-id]').first().click();
   await page.locator('#initiative-new-action').click();
   await page.locator('#action-description').fill('Verify the release');
+  await page.locator('#action-add-source').evaluate(button => { button.closest('details').open = true; });
+  await page.locator('#action-add-source').click();
+  await page.locator('#action-sources .source-path').fill('reference.md');
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();
@@ -168,7 +171,7 @@ try {
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   // Dismiss the injected save-failure receipt before opening the row beneath it.
   if (await page.locator('#notice').isVisible()) await page.locator('#notice').getByRole('button', {name:'关闭提示',exact:true}).click();
-  await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
+  await page.locator('#items [data-entity-id]').filter({hasText: 'Verify the release'}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
   const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
   await page.locator('#action-options').evaluate(node => node.open = true);
@@ -184,6 +187,14 @@ try {
   await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
+  const linkedAction = page.locator('#initiative-actions button').filter({hasText: 'Verify the release'});
+  await linkedAction.click();
+  await page.getByRole('button',{name:'打开来源：reference.md',exact:true}).click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  await page.locator('#back').click();
+  await page.waitForFunction(() => document.activeElement?.matches('#initiative-actions button'));
+  await page.locator('#workspace-return-action').click();
+  assert.equal(await page.locator('#action-description').inputValue(), 'Verify the release');
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="notes"]').click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-create-topic').click();

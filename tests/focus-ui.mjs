@@ -132,7 +132,7 @@ try {
   await page.locator('#action-initiative-filter').selectOption(initiative.entityId);
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByRole('button', {name: '全部等待行动'}).click();
-  await page.waitForFunction(() => document.querySelector('#items h3')?.textContent.startsWith('Waiting item'));
+  await page.waitForFunction(() => document.querySelector('#items .action-list-title')?.textContent.startsWith('Waiting item'));
   assert.equal(await page.locator('#search').inputValue(), '');
   assert.equal(await page.locator('#action-initiative-filter').inputValue(), '');
   assert.equal(await page.locator('#action-filter').inputValue(), 'waiting');
