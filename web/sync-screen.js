@@ -2,12 +2,13 @@ import {requestTaskLeave, bindModal, escapeInComposition, icon} from './presenta
 import {syncView, syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft, actionControl} from './assets/react-host.js';
 
 const types = {action:'行动',initiative:'事项',topic:'主题',candidate:'建议'};
+const emptyInspection = () => ({records:[],warnings:[],running:false,checked:false,active:'',message:'',detail:''});
 // Stable synchronization controller: React owns descendants; repositories and the shared
 // task decision retain persistence and overlay authority.
 export class SyncScreen {
   constructor(repositories, notice, changed) {
     this.repositories=repositories; this.notice=notice; this.changed=changed;
-    this.model={records:[],warnings:[],running:false,checked:false,active:'',message:'',detail:''};
+    this.model=emptyInspection();
     this.generation=0; this.dirty=false;
     this.panel=document.createElement('dialog');
     this.panel.className='sync-panel ui-panel ui-modal';
@@ -31,7 +32,14 @@ export class SyncScreen {
     const refresh=()=>this.refresh(false); window.addEventListener('focus',refresh);window.addEventListener('reference-change',refresh);
     this.render();
   }
-  render(){this.view.render(this.model);this.refreshButton=this.panel.querySelector('[data-sync-refresh]');this.status=this.panel.querySelector('[data-sync-status]');this.panel.setAttribute('aria-busy',String(this.model.running));}
+  render(){
+    this.view.render(this.model);
+    this.refreshButton=this.panel.querySelector('[data-sync-refresh]');
+    this.status=this.panel.querySelector('[data-sync-status]');
+    this.panel.setAttribute('aria-busy',String(this.model.running));
+    const record=this.record(this.model.active);
+    this.panel.toggleAttribute('data-sync-delete-choice',Boolean(record && !record.committed && !record.invalid && record.value.deleted===true));
+  }
   article(key){return [...this.panel.querySelectorAll('article')].find(node=>node.dataset.syncKey===key);}
   jump(key){
     const article=this.article(key);
@@ -43,10 +51,8 @@ export class SyncScreen {
   message(message,detail=''){Object.assign(this.model,{message,detail});this.render();}
   canLeave(){if(!this.dirty&&!this.savePending)return true;this.message('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');return false;}
   task(){
-    const record=this.record(this.model.active);
-    const deletesRecord=record && !record.committed && !record.invalid && record.value.deleted===true;
     return {
-      label:deletesRecord ? '冲突解决（标记删除）' : '冲突解决',
+      label:this.panel.hasAttribute('data-sync-delete-choice') ? '冲突解决（标记删除）' : '冲突解决',
       committed:()=>Boolean(this.resolutionCommitted),
       dirty:()=>this.dirty,
       pending:()=>this.savePending,
@@ -59,13 +65,21 @@ export class SyncScreen {
     };
   }
   close(){return requestTaskLeave(this.task());}
-  owned(repos,generation){return generation===this.generation&&repos.every((repo,i)=>repo===this.repositories()[i]&&(!this.workspaceIds[i]||repo.workspaceId===this.workspaceIds[i]));}
+  owned(repos,generation,openingIndex=-1){
+    const current=this.repositories();
+    return generation===this.generation && repos.every((repo,i)=>repo===current[i] &&
+      (i===openingIndex || !this.workspaceIds[i] || repo.workspaceId===this.workspaceIds[i]));
+  }
   async refresh(show, afterSave=false){
     if(show&&!this.panel.open){
       if(document.querySelector('dialog[open]'))return;
       this.panel.showModal();
     }
-    if(this.boundRepositories && !this.owned(this.boundRepositories,this.generation) && !this.dirty && !this.savePending){this.generation++;this.model.running=false;this.model.records=[];this.model.checked=false;this.saved='';}
+    if(this.boundRepositories && !this.owned(this.boundRepositories,this.generation) && !this.dirty && !this.savePending){
+      this.generation++;
+      this.model=emptyInspection();
+      this.saved='';
+    }
     if(this.model.running||(this.savePending&&!afterSave))return;
     if(this.dirty){if(show)this.canLeave();return;}
     const repos=[...this.repositories()],generation=++this.generation;
@@ -74,10 +88,30 @@ export class SyncScreen {
     this.model.running=true;this.model.checkFailed=false;this.message('正在检查本地版本…');
     try {
       const warnings=[];
-      for(const repo of repos){if(!repo.ready)await repo.open();if(!this.owned(repos,generation))return;this.workspaceIds[repos.indexOf(repo)]=repo.workspaceId;const result=await repo.serialize(()=>repo.recover());if(!this.owned(repos,generation))return;warnings.push(...result.warnings);}
+      for(const [index,repo] of repos.entries()){
+        const workspace=this.workspaceIds[0];
+        // Other screens can retain repositories from the previous directory.
+        if(!repo.ready || (workspace && repo.workspaceId!==workspace)){
+          await repo.open();
+          if(!this.owned(repos,generation,index))return;
+          this.workspaceIds[index]=repo.workspaceId;
+          if(workspace && repo.workspaceId!==workspace){
+            if(index===0){this.model=emptyInspection();this.saved='';}
+            throw Error('Workspace changed during synchronization check');
+          }
+        }
+        const result=await repo.serialize(()=>repo.recover());
+        if(!this.owned(repos,generation))return;
+        warnings.push(...result.warnings);
+      }
       const records=[];
       for(const repo of repos)for(const [id,conflict]of repo.conflicts||[]){const name=conflict.versions.find(v=>v.title||v.description);const value=structuredClone(conflict.tips[0]||conflict.versions[0]);records.push({key:`${repo.entityType}:${id}`,id,type:repo.entityType,repo,draftKey:syncDraftKey(repo.workspaceId,repo.entityType,id),hasDraft:Boolean(readSyncDraft(localStorage,syncDraftKey(repo.workspaceId,repo.entityType,id),{workspaceId:repo.workspaceId,entityType:repo.entityType,entityId:id})),...conflict,name:`${types[repo.entityType]}：${name?.title||name?.description||'未命名记录'}`,selected:'',value,json:JSON.stringify(value,null,2),invalid:false,committed:false,saving:false,message:'尚未选择解决版本。请先选择，再审核与编辑。',detail:''});}
-      Object.assign(this.model,{records,warnings,checked:true,active:'',message:this.saved||'',detail:''});this.render();await this.changed();
+      Object.assign(this.model,{records,warnings,checked:true,active:'',message:this.saved||'',detail:''});
+      this.render();
+      try { await this.changed(); }
+      catch(error) {
+        if(this.owned(repos,generation))this.notice('同步检查已完成，但页面未能刷新：'+error.message);
+      }
     }catch(error){if(this.owned(repos,generation)){
       this.model.checkFailed=true;
       this.model.active='';

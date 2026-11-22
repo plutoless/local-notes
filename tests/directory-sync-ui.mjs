@@ -12,7 +12,7 @@ const browser = await chromium.launch({executablePath:process.env.CHROME_PATH});
 const fixture = await storageFixture();
 const other = await storageFixture();
 try {
-  let active = fixture, cancel = true, failInspection = false;
+  let active = fixture, cancel = true, failInspection = false, failFocusRefresh = false;
   const repo = new ActionRepository(fixture.adapter);
   await repo.open();
   const ancestor = (await repo.save({description:'核对同步样本', status:'todo'})).record;
@@ -39,6 +39,7 @@ try {
         return {};
       }
       if (request.cmd === 'actionFiles' && failInspection) throw Error('Controlled inspection failure');
+      if (request.cmd === 'actionQuery' && request.focus && failFocusRefresh) throw Error('Controlled page refresh failure');
       return await active.adapter(request.cmd, request);
     } catch (error) {
       return {error:error.message};
@@ -118,8 +119,12 @@ try {
   await inspection.getByText('下方为上次检查的结果。请重新检查后再选择版本。').waitFor();
   assert.equal(await sync.locator('.sync-branches').getByRole('button', {name:/选择版本/}).first().isDisabled(), true);
   failInspection = false;
+  failFocusRefresh = true;
   await refresh.click();
   await inspection.getByText('有待解决的冲突 · 1 条').waitFor();
+  assert.equal(await sync.locator('.sync-branches').getByRole('button', {name:/选择版本/}).first().isEnabled(), true);
+  assert.match(await page.locator('#notice').textContent(), /Controlled page refresh failure/);
+  failFocusRefresh = false;
 
   const history = sync.locator('.sync-history summary');
   await history.focus();
@@ -137,6 +142,8 @@ try {
   const guard = page.locator('#task-leave-decision');
   await close.click();
   await guard.getByRole('heading', {name:'离开冲突解决（标记删除）'}).waitFor();
+  const guardedDelete = guard.getByRole('button', {name:'保存并离开', exact:true});
+  assert.equal(await guardedDelete.evaluate(node => getComputedStyle(node).backgroundColor), 'rgb(161, 38, 37)');
   await guard.getByRole('button', {name:'继续编辑', exact:true}).click();
   await sync.getByRole('button', {name:'放弃编辑', exact:true}).click();
   assert.equal(await focused(deleted), true);
@@ -209,6 +216,14 @@ try {
   await choose.click();
   await page.getByText('仅在另一个目录的行动', {exact:true}).waitFor();
   assert.equal(await page.locator('#root-label').textContent(), other.root);
+  failInspection = true;
+  await opener.click();
+  await inspection.getByText('检查未完成', {exact:true}).waitFor();
+  assert.equal(await sync.getByText(/部分版本需要核对/).count(), 0);
+  failInspection = false;
+  await refresh.click();
+  await page.waitForFunction(() => document.querySelector('.sync-panel').getAttribute('aria-busy') === 'false');
+  assert.match(await inspection.textContent(), /无待处理冲突/);
   assert.deepEqual(errors, []);
   console.log('Directory disclosure and chooser cancel/switch, Sync status, keyboard guarded cancel/confirm, and real adapter readback passed.');
 } finally {

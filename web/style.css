@@ -314,6 +314,8 @@ details { overflow-wrap: anywhere; }
 .sync-resolution-actions { border-top: 1px solid var(--workspace-divider); margin-top: 16px; }
 .sync-resolution-actions p { color: var(--workspace-muted); }
 .sync-resolution-actions .sync-controls { justify-content: flex-end; }
+.sync-panel[open][data-sync-delete-choice] ~ .task-leave-decision .primary { background: var(--danger); }
+.sync-panel[open][data-sync-delete-choice] ~ .task-leave-decision .primary:is(:hover, :active) { background: color-mix(in srgb, var(--danger), black 12%); }
 .sync-panel .sync-records { display: grid; gap: 0; }
 .sync-records h3 { margin-block: 0 4px; }
 .sync-records .ui-action { white-space: normal; text-align: start; min-width: 0; border-bottom-color: var(--workspace-divider); }
