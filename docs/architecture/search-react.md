@@ -18,3 +18,22 @@ Search uses the delivered pinned React/TypeScript/Tailwind pipeline and the exis
 The input and attribution checkbox remain uncontrolled stable nodes: rendering results/status does not replace typed input, caret or composition state. Keyed results retain DOM identity. Controller restoration keeps the old DOM reference across React ref detachment and yields to newer user focus. Empty/reset/failure releases inertness and stale next-page availability. Existing session/request/workspace fences and protected-modal rules remain unchanged. There are no new native shortcut registrations, host/transport/resource handlers, persistence formats, writes, semantic search or model downloads. The one application-lifetime dialog/root is not remounted for route or workspace transitions; its lifetime ends with the document.
 
 The design catalogue uses actual production components and the existing semantic CSS tokens. Existing selected/keyboard/pointer/invalid treatment and role-appropriate hit geometry remain in `web/style.css`; compiled Tailwind adds layout utilities without preflight. No independent palette, dependency or engine floor is added.
+
+## Selected compact search adoption (#128)
+
+The production search and catalogue share the official Input and Button source
+already adopted into the repository. Their upstream source and local focus and
+geometry adaptations are recorded in [Library adoption](../design/issue123/ADOPTION.md).
+The [shadcn Command](https://ui.shadcn.com/docs/components/command) composition
+informs the query, result surface and empty-state layout. Its cmdk listbox and
+selection keyboard handling do not fit index-ranked passages with independently
+focusable copy and source actions. The [shadcn Dialog](https://ui.shadcn.com/docs/components/dialog)
+composition informs the title and dismissal affordance. The existing native
+HTML dialog remains the application overlay owner and already contains focus.
+No additional widget runtime is needed.
+
+Selected results use the selected design's passage fill and border. Full source
+metadata wraps independently of the title. The labelled snippet or expanded
+passage is the exact copy range, with optional attribution outside that range.
+The catalogue exercises production scope, passage expansion and search-status
+controls on synthetic data.
