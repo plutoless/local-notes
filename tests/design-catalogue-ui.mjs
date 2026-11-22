@@ -12,6 +12,11 @@ try {
  });
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
  await page.locator('#react-library .card[data-path]').waitFor();
+ const initiative = page.getByRole('region', {name:'事项工作区示例'});
+ await initiative.locator('[data-initiative-id][aria-current=true]').waitFor();
+ await initiative.getByRole('button', {name:'打开参考资料：归档/迁移后资料.md'}).waitFor();
+ assert.equal(await initiative.locator('#initiative-title').getAttribute('aria-describedby'), 'initiative-save-state');
+ assert.equal(await initiative.locator('#initiative-save-state').getAttribute('data-state'), 'failed');
  await page.locator('#states [data-state=recovered]').waitFor();
  const search=page.getByRole('region',{name:'搜索组件示例'});
  const query=search.getByRole('searchbox',{name:'关键词'});
