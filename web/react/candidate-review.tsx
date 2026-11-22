@@ -19,7 +19,7 @@ export interface CandidateCardModel {
 }
 export interface CandidateReviewModel {
   cards:CandidateCardModel[]; destinations:{entityId:string;title:string}[]; busy:boolean;
-  pendingId?:string; error?:{id:string;message:string};
+  pendingId?:string; error?:{id:string;message:string}; availability?:'loading'|'failed';
 }
 export interface CandidateReviewCallbacks {
   activate:(id:string)=>void;
@@ -32,8 +32,16 @@ export interface CandidateReviewCallbacks {
 const types={initiative:'事项',action:'行动',topic:'主题',relationship:'关联',progress:'进展'};
 const decisions:Record<CandidateDecision,string>={confirm:'确认此建议',attach:'关联到事项',reference:'作为参考资料',later:'留待以后',ignore:'忽略'};
 const receipts:Record<CandidateDecision,string>={confirm:'确认',attach:'关联事项',reference:'作为参考',later:'留待以后',ignore:'忽略'};
+const emptyState = {
+  loading: '正在载入已保存的建议…',
+  failed: '暂无法载入已保存的建议。请重新打开整理后重试。',
+  empty: '还没有保存的建议。选择笔记并分析后，在这里逐条核对。'
+};
 export function CandidateReviewContent({model,callbacks:c}:{model:CandidateReviewModel;callbacks:CandidateReviewCallbacks}) {
-  return <>{!model.cards.length?<p className="candidate-empty">还没有保存的建议。选择笔记并分析后，在这里逐条核对。</p>:model.cards.map(({record:r,description,target,dirty,recovered,stale,disclosures})=>{
+  if (!model.cards.length) {
+    return <p className="candidate-empty" role="status">{emptyState[model.availability||'empty']}</p>;
+  }
+  return <>{model.cards.map(({record:r,description,target,dirty,recovered,stale,disclosures})=>{
     const editable=candidateEditable(r);
     const details=(label:string,children:React.ReactNode)=><details className="ui-disclosure" open={disclosures[label]??(label==='确认前编辑建议'&&dirty)} onToggle={e=>c.disclosure(r.entityId,label,e.currentTarget.open)}><summary>{label}</summary>{children}</details>;
     const error=model.error?.id===r.entityId?model.error.message:'';
@@ -51,7 +59,7 @@ export function CandidateReviewContent({model,callbacks:c}:{model:CandidateRevie
             <blockquote>{source.quote}</blockquote>
             <figcaption>
               <span>{source.path} [{source.start}–{source.end}]</span>
-              <Button className="quiet ui-compact" disabled={model.busy} aria-label={`打开来源：${source.path}，建议：${r.description}`} onClick={e => c.source(source.path,e.currentTarget)}>打开原笔记</Button>
+              <Button className="quiet ui-compact" disabled={model.busy} aria-label={`打开来源：${source.path}，建议：${r.description}`} onClick={e => c.source(source.path,e.currentTarget)}>打开来源</Button>
             </figcaption>
           </figure>)}
         </div>

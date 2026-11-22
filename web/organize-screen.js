@@ -10,7 +10,7 @@ export class OrganizeScreen {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
     this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map(); this.recoveredDrafts = new Set(); this.draftRevisions = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
-    this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', retry: false,
+    this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', inventoryLoading: true, retry: false,
       request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: '', settingsFields: {}};
     this.ui = organizationView($('#organization-react'), this.settingsDrawer.body, {
       search: value => { this.state.search = value; this.selectionOffset = 0; this.attempt(() => this.inventory()); },
@@ -34,14 +34,18 @@ export class OrganizeScreen {
         const operation = this.organization.run(text => { if (generation === this.session) this.status(text); }); this.controls();
         try { await operation; } finally {
           if (generation === this.session) {
-            this.state.request = this.organization.requestPreview(this.savedSettings);
+            this.state.request = this.organization.requestPreview(this.savedSettings) || this.state.request;
             this.controls(); await this.candidates();
           }
         }
       }),
       cancel: () => this.attempt(async () => {
-        await this.organization.cancel();
-        this.state.request = this.organization.requestPreview(this.savedSettings);
+        const session = this.session;
+        const cancellation = this.canceling = this.organization.cancel();
+        this.state.request = this.organization.requestPreview(this.savedSettings) || this.state.request;
+        this.controls();
+        try { await cancellation; } finally { if (this.canceling === cancellation) this.canceling = null; }
+        if (session !== this.session) return;
         this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`);
       })
     });
@@ -62,23 +66,24 @@ export class OrganizeScreen {
           this.drafts.delete(record.entityId); this.clearCandidateDraft(record.entityId);
           this.status('决定已保存到本地。每条建议都需要单独确认。');
         } finally { this.reviewing = false; this.renderCandidates(); if (session === this.session) await this.candidates({owner}); }
-      }, undefined, record.entityId),
+      }, undefined, {candidateId: record.entityId}),
       recover: owner => {
         const id = owner.closest('[data-candidate]').dataset.candidate;
         return this.attempt(async () => {
           if (this.reviewing) return;
           this.reviewing = id; this.renderCandidates();
           try { await this.review.recover(); } finally { this.reviewing = false; await this.candidates({owner}); }
-        }, undefined, id);
+        }, undefined, {reviewSection: true});
       }
     });
     const settingsSave = actionControl('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
     this.settingsSave = settingsSave.control;
     this.settingsDrawer.footer.append(actionControl('取消设置', () => this.leaveSettings()).host, settingsSave.host);
     this.controls();
+    this.renderCandidates();
     $('#ai-review-jump').onclick = () => $('#ai-review-title').focus();
-    $('#ai-results-next').onclick = () => { this.offset += 50; this.candidates(); };
-    $('#ai-results-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.candidates(); };
+    $('#ai-results-next').onclick = () => this.pageCandidates(50);
+    $('#ai-results-previous').onclick = () => this.pageCandidates(-50);
   }
   async preview() {
     if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
@@ -91,16 +96,17 @@ export class OrganizeScreen {
       this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
     } finally { if (session === this.session) { this.previewing = false; this.controls(); } }
   }
-  status(text, state) {
+  status(text, state, inReview = false) {
     const analyzing = text.match(/^Analyzing fragment (\d+)\/(\d+); completed (\d+)/);
     const complete = text.match(/^Complete: (\d+)\/(\d+)/);
     this.state.statusState = state || (analyzing ? 'loading' : complete ? 'saved' : 'idle');
+    this.state.statusInReview = inReview;
     this.state.status = analyzing ? `正在分析 ${analyzing[1]} / ${analyzing[2]} 个片段，已完成 ${analyzing[3]} 个。` : complete ? `已完成 ${complete[1]} / ${complete[2]} 个片段。建议仍需核对当前适用性。` : text;
     this.controls();
   }
   controls() {
     this.ui.render({...this.state, selected: [...this.selected], previous: Boolean(this.selectionPrevious), next: Boolean(this.selectionHasMore),
-      running: Boolean(this.organization.running), previewing: Boolean(this.previewing), configured: Boolean(this.configured),
+      running: Boolean(this.organization.running), previewing: Boolean(this.previewing), canceling: Boolean(this.canceling), configured: Boolean(this.configured),
       covered: this.organization.covered || 0, batches: this.organization.batches || [], settingsPending: Boolean(this.settingsPending)});
   }
   invalidate() {
@@ -172,13 +178,14 @@ export class OrganizeScreen {
   }
   resetSelection(fromShow = false) {
     if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
-    this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.candidateError = null; this.renderCandidates(); this.invalidate();
+    this.session = (this.session || 0) + 1; this.previewing = false; this.canceling = null; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.inventoryLoading = true; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = null; this.activeCandidate = null; this.candidateError = null; this.reviewSectionError = ''; this.candidateLoadFailed = false; this.renderCandidates(); this.invalidate();
   }
-  async attempt(operation, owns, candidateId) {
+  async attempt(operation, owns, {candidateId, reviewSection} = {}) {
     const owner = document.activeElement, session = this.session;
     const current = owns || (() => session === this.session);
     if (candidateId) this.candidateError = null;
+    if (reviewSection) { this.reviewSectionError = ''; this.renderCandidates(); }
     try { await operation(); } catch (error) {
       if (!current()) return;
       const diagnostic = error.message;
@@ -198,7 +205,11 @@ export class OrganizeScreen {
         this.candidateError = {id: candidateId, message};
         this.renderCandidates();
       }
-      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), candidateId ? 'candidate-failed' : 'failed');
+      if (reviewSection) {
+        this.reviewSectionError = message;
+        this.renderCandidates();
+      }
+      this.status(message + (this.organization.covered && !candidateId && !reviewSection ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), 'failed', Boolean(candidateId || reviewSection));
     } finally {
       this.controls();
       if (current() && document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
@@ -208,6 +219,7 @@ export class OrganizeScreen {
     const request = this.showRequest = (this.showRequest || 0) + 1;
     const current = () => request === this.showRequest;
     $('#organize-tools').hidden = false; $('#view-title').textContent = '整理'; $('#items').replaceChildren();
+    this.candidateLoadFailed = false; this.renderCandidates();
     await this.attempt(async () => {
       const previousWorkspace = this.repository.workspaceId;
       await this.repository.open(); if (!current()) return;
@@ -217,6 +229,7 @@ export class OrganizeScreen {
       let recoveryError;
       try { await this.review.recover(); } catch (error) { recoveryError = error; }
       if (!current()) return;
+      await this.candidates(); if (!current()) return;
       try { await this.settings(); } catch { this.configured = false; this.state.service = '服务状态暂不可用。可继续选择来源或核对已保存的建议，设置时重试。'; }
       if (!current()) return;
       this.library = library; await library.open(); if (!current()) return;
@@ -224,14 +237,18 @@ export class OrganizeScreen {
       this.state.directories = library.directories || [];
       if (!['*', '', ...this.state.directories].includes(this.state.directory)) this.state.directory = '*';
       await this.inventory(); if (!current()) return;
-      await this.candidates(); if (!current()) return; this.controls(); if (recoveryError) throw recoveryError; this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '可先选择来源并预览；发送前请设置 AI 服务，已有建议仍可核对。');
+      if (recoveryError) throw recoveryError; this.status(this.configured ? '请选择来源笔记，或继续核对已保存的建议。' : '可先选择来源并预览；发送前请设置 AI 服务，已有建议仍可核对。');
     }, current);
-    if (current()) $('#index-state').textContent = '';
+    if (current()) {
+      this.candidateLoadFailed = !this.candidateRecords;
+      this.renderCandidates();
+      $('#index-state').textContent = '';
+    }
   }
   async inventory() {
     const request = ++this.inventoryRequest, workspace = this.library.workspaceId;
     const current = () => request === this.inventoryRequest && workspace === this.library.workspaceId;
-    this.state.inventory = '正在查找本机索引…'; this.state.retry = false; this.controls();
+    this.state.inventory = '正在查找本机索引…'; this.state.inventoryLoading = true; this.state.retry = false; this.controls();
     try {
       const result = await this.library.query({search: this.state.search.slice(0, 200), directory: this.state.directory, offset: this.selectionOffset, limit: 50});
       if (!current()) return;
@@ -242,7 +259,7 @@ export class OrganizeScreen {
       this.selectionPrevious = Boolean(this.selectionOffset); this.selectionHasMore = false; this.state.notes = [];
       this.state.inventory = '查找未完成，已选笔记仍保留。'; this.state.retry = true;
       throw error;
-    } finally { if (current()) this.controls(); }
+    } finally { if (current()) { this.state.inventoryLoading = false; this.controls(); } }
   }
   candidateDraftKey(id) { return `candidate-draft:${this.repository.workspaceId}:${id}`; }
   clearCandidateDraft(id) { localStorage.removeItem(this.candidateDraftKey(id)); }
@@ -256,11 +273,22 @@ export class OrganizeScreen {
   }
   renderCandidates() {
     if (!this.candidateUI) return;
-    this.candidateUI.render({cards: (this.candidateRecords || []).map(record => ({record,
+    const records = this.candidateRecords || [];
+    const error = this.candidateError;
+    const errorHasCard = records.some(record => record.entityId === error?.id);
+    const feedback = $('#ai-review-feedback'), message = this.reviewSectionError || (!errorHasCard && error?.message) || '';
+    if (feedback.textContent !== message) feedback.textContent = message;
+    this.candidateUI.render({cards: records.map(record => ({record,
       description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description,
       dirty: this.drafts.has(record.entityId), recovered: this.recoveredDrafts.has(record.entityId), stale: this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision, target: this.candidateContext.get(record.entityId)?.target || '', disclosures: this.candidateContext.get(record.entityId)?.disclosures || {}})),
       destinations: this.destinations || [], busy: Boolean(this.reviewing),
-      pendingId: this.reviewing || undefined, error: this.candidateError});
+      pendingId: this.reviewing || undefined, error,
+      availability: this.candidateLoadFailed ? 'failed' : this.candidateRecords ? undefined : 'loading'});
+  }
+  pageCandidates(delta) {
+    if (this.reviewing) return;
+    this.offset = Math.max(0, this.offset + delta);
+    this.attempt(() => this.candidates(), undefined, {reviewSection: true});
   }
   captureCandidates() {
     for (const card of $('#ai-results').querySelectorAll('[data-candidate]')) {

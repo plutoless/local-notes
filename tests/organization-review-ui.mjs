@@ -11,14 +11,22 @@ await writeFile(fixture.root + '/reference.md', text);
 const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
 const initiative = (await initiatives.save({title:'合成事项', goal:'验证关联', progress:'', status:'active', sources:[]})).record;
 const browser = await chromium.launch({headless:true, executablePath:process.env.CHROME_PATH});
-let mode = 'partial', requests = 0, pending, failTarget = false, delayRead = false, releaseRead;
+const responseFor = batch => ({text:JSON.stringify({candidates:Array.from({length:6}, (_, i) => ({
+ type:'action', content:`合成建议 ${i} · ${batch.start}`, placement:'独立行动', reasoning:'来源明确提及核对证据',
+ relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]
+}))})});
+let mode = 'partial', requests = 0, pending, failTarget = false, delayRead = false, releaseRead, releaseCancel;
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
  const errors = []; page.on('pageerror', e => errors.push(e.message));
  await page.exposeFunction('bridge', async request => {
   try {
    if (request.cmd === 'aiSettings') return {address:'http://127.0.0.1/controlled', model:'controlled', configured:true};
-   if (request.cmd === 'aiCancel') { pending?.({error:'Canceled'}); pending = null; return {}; }
+   if (request.cmd === 'aiCancel') {
+    pending?.({error:'Canceled'}); pending = null;
+    await new Promise(resolve => releaseCancel = resolve);
+    return {};
+   }
    if (request.cmd === 'aiAnalyze') {
     requests++;
     outbound.push(request.messages);
@@ -27,7 +35,7 @@ try {
     if (mode === 'invalid') return {text:'{invalid'};
     if (mode === 'partial' && requests === 2) return {error:'Rate limited; retry explicitly'};
     const batch = JSON.parse(request.messages[1].content);
-    return {text:JSON.stringify({candidates:Array.from({length:6}, (_, i) => ({type:'action', content:`合成建议 ${i} · ${batch.start}`, placement:'独立行动', reasoning:'来源明确提及核对证据', relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]}))})};
+    return responseFor(batch);
    }
    if (request.cmd === 'read') {
     assert.equal(request.workspaceId, initiative.workspaceId);
@@ -84,9 +92,14 @@ try {
  assert.equal(await page.locator('#ai-input').textContent(), '服务地址：http://127.0.0.1/controlled\n模型：controlled\nstream: false\n\n系统消息：\n'
   + outbound[1][0].content + '\n\n用户消息（每个片段一次请求）：\n' + outbound[1][1].content);
  assert.deepEqual(await page.locator('#ai-readable article p').allTextContents(), ['已完成', '待完成']);
- mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2');
+ mode = 'hold'; await page.locator('#ai-send').click(); await status('正在分析');
+ await page.locator('#ai-input').focus();
+ pending(responseFor(JSON.parse(outbound[1][1].content))); pending = null;
+ await status('已完成 2 / 2');
  assert.equal(requests, 3);
  assert.deepEqual(outbound[2], outbound[1], 'Continuing sends only the unfinished request');
+ assert.equal(await page.locator('#ai-input').evaluate(node => node === document.activeElement), true);
+ assert.equal(await page.locator('#ai-input').getAttribute('aria-label'), '本次已发送的请求');
  await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12);
  assert.equal(await page.locator('.suggestion-card').count(), 12);
  await card(0).getByText('确认前编辑建议', {exact:true}).click();
@@ -106,6 +119,7 @@ try {
  await writeFile(fixture.root + '/reference.md', '来源已被外部修改');
  await page.reload(); await organize(); await status('来源已变化');
  await card(5).getByRole('button', {name:/^恢复已确认的决定/}).focus(); await page.keyboard.press('Enter'); await status('来源已变化');
+ await page.waitForFunction(() => /来源已变化/.test(document.querySelector('#ai-review-feedback').textContent));
  await page.waitForFunction(() => document.activeElement.getAttribute('aria-label')?.startsWith('恢复已确认的决定'));
  await writeFile(fixture.root + '/reference.md', text);
  await card(5).getByRole('button', {name:/^恢复已确认的决定/}).focus(); await page.keyboard.press('Enter'); await card(5).getByText('处理决定：确认，已保存').waitFor();
@@ -117,7 +131,11 @@ try {
  await card(1).getByRole('button', {name:/^确认此建议：/}).click(); await status('来源已变化');
  await writeFile(fixture.root + '/reference.md', text);
  mode = 'hold'; await preview(); await page.locator('#ai-send').click(); await status('正在分析');
- assert.equal(await page.locator('#ai-preview').isDisabled(), true); await page.locator('#ai-cancel').click(); await status('已取消');
+ assert.equal(await page.locator('#ai-preview').isDisabled(), true); await page.locator('#ai-cancel').click();
+ await status('已取消');
+ assert.equal(await page.locator('#ai-send').isDisabled(), true, 'Send stays disabled until cancellation settles');
+ releaseCancel();
+ await page.waitForFunction(() => !document.querySelector('#ai-send').disabled);
  mode = 'invalid'; await page.locator('#ai-send').click(); await status('返回的建议无法核验');
  mode = 'offline'; await page.locator('#ai-send').click(); await status('连接失败');
  assert.equal(await page.locator('.suggestion-card').count(), 12);
@@ -162,4 +180,4 @@ try {
  assert.deepEqual(errors, []);
  console.log('Organization review UI passed: exact preview, invalidation, partial retry, edited confirmation, later, attachment, reference, ignore, pending recovery, persistence, source-change rejection, cancellation, invalid response, offline retention, 393px, keyboard focus; contrast ratios on white:', ratios);
 } catch (error) { console.error('Organization review failure before cleanup:', error); throw error;
-} finally { delayRead = false; releaseRead?.(); pending?.({error:'Canceled'}); await browser.close(); await fixture.close(); }
+} finally { delayRead = false; releaseRead?.(); releaseCancel?.(); pending?.({error:'Canceled'}); await browser.close(); await fixture.close(); }

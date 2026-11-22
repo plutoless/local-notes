@@ -223,7 +223,9 @@ details { overflow-wrap: anywhere; }
 .organization-stage > p { margin: 0 0 12px; }
 .organization-stage :is(pre, ul), .suggestion-card :is(pre, ul) { white-space: pre-wrap; overflow-wrap: anywhere; }
 .organization-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.organization-filters [data-slot="field"] { gap: 4px; }
+.organization-filters > .ui-field { margin: 0; }
+.organization-filters > :is(.ui-field, [data-slot="field"]) { gap: 4px; line-height: 1.5; }
+.organization-filters [data-slot="field-label"] { line-height: inherit; }
 .organization-filters :is(select, input) { width: 100%; min-height: var(--target-height); }
 #ai-inventory-state, #ai-selection-state, .organization-service p, .candidate-empty {
   color: var(--workspace-muted); font-size: 13px;
@@ -284,8 +286,9 @@ details { overflow-wrap: anywhere; }
 .candidate-decisions [data-slot="field"] { margin-block: 8px; }
 .suggestion-card textarea { width: 100%; min-height: 5em; resize: vertical; }
 .candidate-receipt, .candidate-error { font-size: 13px; margin: 8px 0; }
+#ai-review-feedback { font-size: 13px; margin: 8px 0; }
 .candidate-receipt:not([data-state]) { color: var(--workspace-muted); }
-.candidate-error:empty { margin: 0; }
+.candidate-error:empty, #ai-review-feedback:empty { margin: 0; }
 @media (min-width: 900px) {
   .candidate-context { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
 }
