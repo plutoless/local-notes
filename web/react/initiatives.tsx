@@ -78,7 +78,9 @@ interface ContextLink extends InitiativeSource {warning?:string;resolvedPath?:st
 export function InitiativeLinks({sources,open,selected,empty}:{sources:ContextLink[];open:(path:string,opener:HTMLButtonElement)=>unknown;selected?:string;empty?:string}){
   return <>{sources.map((source,index)=>{
     const path = source.resolvedPath || source.path;
-    return <Button key={`${source.path}:${index}`} className={`quiet ui-row initiative-source-link${selected===path?' selected':''}`} aria-current={selected===path?'true':'false'} data-path={path} aria-label={`打开${source.role==='reference'?'参考资料':'工作笔记'}：${path}`} onClick={event=>open(path,event.currentTarget)}>
+    const identity = JSON.stringify([source.role, source.path, index]);
+    const current = selected === identity || selected === path;
+    return <Button key={identity} className={`quiet ui-row initiative-source-link${current?' selected':''}`} aria-current={current?'true':'false'} data-path={path} data-source-role={source.role} data-initiative-source={identity} aria-label={`打开${source.role==='reference'?'参考资料':'工作笔记'}：${path}`} onClick={event=>open(path,event.currentTarget)}>
       <span>{path}</span>{source.warning&&<small>{source.warning}</small>}
     </Button>;
   })}{!sources.length&&empty}</>;

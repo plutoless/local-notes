@@ -14,6 +14,7 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
+  let pauseActionQuery;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
@@ -21,6 +22,11 @@ try {
     try {
       bridgeCalls.push(request.cmd);
       if (request.cmd.startsWith('ai')) throw Error('Unexpected AI request');
+      if (request.cmd === 'actionQuery' && request.entityType === 'action' && request.initiativeId && pauseActionQuery) {
+        const pause = pauseActionQuery;
+        pauseActionQuery = null;
+        await pause(request.id);
+      }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await fixture.adapter(request.cmd, request);
         return result;
@@ -42,7 +48,13 @@ try {
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
+  await page.addInitScript(() => {
+    window.NotesNative = {request: async message => {
+      const request = JSON.parse(message);
+      window.nativeReply(request.id, await window.bridge(request));
+      if (request.cmd === 'actionQuery' && request.initiativeId) window.lastInitiativeActionReply = request.id;
+    }};
+  });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
@@ -50,7 +62,10 @@ try {
   });
 
   const repository=new InitiativeRepository(fixture.adapter); await repository.open();
-  const record=(await repository.save({title:'长期中文事项与资料核对'.repeat(6),goal:'逐字保留原文与任务标记'.repeat(12),progress:'核对中'.repeat(18),status:'active',sources:[{path:'reference.md',quote:'Run the sample command',fingerprint:'',role:'reference'}]})).record;
+  const record=(await repository.save({title:'长期中文事项与资料核对'.repeat(6),goal:'逐字保留原文与任务标记'.repeat(12),progress:'核对中'.repeat(18),status:'active',sources:[
+    {path:'reference.md',quote:'Run the sample command',fingerprint:'',role:'working-note'},
+    {path:'reference.md',quote:'Run the sample command',fingerprint:'',role:'reference'}
+  ]})).record;
   const started=performance.now();
   await page.goto('https://notes.test/');
   await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
@@ -107,7 +122,14 @@ try {
     await page.locator('#editor').waitFor({state:'visible'});
     await page.locator('#workspace-references [data-path="moved-reference.md"][aria-current="true"]').waitFor({state:'attached'});
     assert.equal(await moved.getAttribute('aria-current'),'true');
-    await page.locator('#editor').waitFor({state:'visible'});
+    assert.equal(await page.locator('#workspace-notes [data-path="moved-reference.md"]').getAttribute('aria-current'), 'false');
+    fixture.fail((cmd, args) => cmd === 'actionQuery' && args.entityType === 'action' && args.initiativeId === record.entityId);
+    await page.locator('#reader-edit-initiative').click();
+    await page.locator('#notice').waitFor({state:'visible'});
+    assert.equal(await page.locator('#editor').isVisible(), true);
+    assert.equal(await page.locator('#initiative-drawer').isHidden(), true);
+    assert.equal(await page.evaluate(() => document.activeElement.id), 'reader-edit-initiative');
+    await page.getByRole('button', {name:'关闭提示'}).click();
     // Shared reader back is the production control, not a simulated navigation callback.
     await page.locator('#back').click();
     await page.locator('#editor').waitFor({state:'hidden'});
@@ -126,12 +148,15 @@ try {
     await page.locator('#capture-body').fill('原样保留\n\n- [ ] 合成检查项');
     fixture.fail((cmd, args) => cmd === 'actionWrite' && args.entityType === 'initiative' && args.path.startsWith('revisions/'));
     await page.locator('#note-task-drawer button[type=submit]').click();
-    await page.locator('#note-task-status').getByText('笔记已创建，关联尚待确认。请核对内容后重试。').waitFor();
+    await page.locator('#note-task-status').getByText('笔记已创建。请重试关联。').waitFor();
+    assert.equal(await page.locator('#capture-title').inputValue(), '事项工作记录');
+    assert.equal(await page.locator('#capture-title').evaluate(node => node.readOnly), true);
+    await page.locator('#capture-title').press('X');
     assert.equal(await page.locator('#capture-title').inputValue(), '事项工作记录');
     assert.equal((await readdir(join(fixture.root, 'Notes'))).length, 1);
     await page.locator('#note-task-drawer button[type=submit]').click();
     await page.locator('#editor').waitFor({state:'visible'});
-    const workingNote = (await allRecords(repository)).find(item => item.entityId === record.entityId).sources.find(source => source.role === 'working-note');
+    const workingNote = (await allRecords(repository)).find(item => item.entityId === record.entityId).sources.find(source => source.role === 'working-note' && source.path.startsWith('Notes/'));
     assert.ok(workingNote?.path.startsWith('Notes/'));
     assert.deepEqual(await readdir(join(fixture.root, 'Notes')), [workingNote.path.split('/').pop()]);
     assert.equal(await readFile(join(fixture.root, workingNote.path), 'utf8'), '# 事项工作记录\n\n原样保留\n\n- [ ] 合成检查项');
@@ -169,6 +194,14 @@ try {
     assert.equal((await allRecords(actions))[0].status, 'completed');
     const afterFailure=await allRecords(repository);
     assert.equal(afterFailure.find(item=>item.entityId===record.entityId).status,'active');
+    await page.locator('#initiative-discard').click();
+    const leave = page.locator('#task-leave-decision');
+    await leave.getByText(/已保存版本仍保留/).waitFor();
+    await leave.getByRole('button', {name:'继续编辑'}).click();
+    fixture.fail((cmd, args) => cmd === 'actionWrite' && args.path.startsWith(`revisions/${record.entityId}/`));
+    await page.locator('#initiative-save').click();
+    await page.locator('#initiative-save-state details').waitFor();
+    assert.match(await page.locator('#initiative-save-state').textContent(), /已保存的行动处理仍然有效/);
     await page.locator('#initiative-save').click();
     await page.locator('#initiative-drawer').waitFor({state:'hidden'});
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status,'ended');
@@ -187,6 +220,20 @@ try {
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status, 'active');
     assert.equal((await allRecords(actions))[0].status, 'completed');
     assert.equal((await actions.history(created.entityId)).length, 3);
+    let releaseQuery;
+    const held = new Promise(started => {
+      pauseActionQuery = id => new Promise(resolve => { releaseQuery = resolve; started(id); });
+    });
+    await page.locator('#initiative-new-note').click();
+    await page.locator('#capture-title').fill('导航期间保存的工作笔记');
+    await page.locator('#note-task-drawer button[type=submit]').click();
+    const heldId = await held;
+    await page.locator('[data-view=actions]').click();
+    await page.waitForFunction(() => document.querySelector('#view-title').textContent === '行动');
+    releaseQuery();
+    await page.waitForFunction(id => window.lastInitiativeActionReply === id, heldId);
+    assert.equal(await page.locator('#editor').isHidden(), true);
+    assert.ok((await allRecords(repository)).find(item => item.entityId === record.entityId).sources.some(source => source.quote === '# 导航期间保存的工作笔记'));
     assert.deepEqual(errors,[]);
     console.log('PASS actual application: real storage reload, note return, shared Action and explicit ending retry with immutable partial commit; source bytes preserved.');
 } finally { await browser.close(); await fixture.close(); }

@@ -8,6 +8,7 @@ export class InitiativeScreen {
   constructor(actions, notice, openNote, createNote, listReferences, beforeEdit = async () => true) {
     this.beforeEdit = beforeEdit; this.detailKind = 'overview'; this.listReferences = listReferences; this.actions = actions; this.notice = notice; this.openNote = openNote; this.createNote = createNote; this.repository = new InitiativeRepository(native); this.active = false; this.dirty = false; this.offset = 0; this.search = ''; this.listGeneration = 0;
     this.receipt = receiptView(() => $('#initiative-save-state'));
+    this.endingCommitted = new Set();
     this.setupDrawer();
     $('#initiative-recover').onclick = async () => {
       const draft = recoverTaskDraft('initiative', this.repository.workspaceId);
@@ -146,7 +147,7 @@ export class InitiativeScreen {
   }
   leaveDrawer() { return this.drawer.panel.open ? requestTaskLeave(this.task()) : Promise.resolve(true); }
   task() {
-    return {label: '事项', pending: () => this.saving, dirty: () => this.dirty || this.recoveryPending, committed: () => Boolean(this.retry || this.recoveryPending),
+    return {label: '事项', pending: () => this.saving, dirty: () => this.dirty || this.recoveryPending, committed: () => Boolean(this.retry || this.recoveryPending || this.endingCommitted.size),
       save: () => this.save(), discard: () => {
         localStorage.removeItem(this.key()); this.dirty = false; this.recoveredDraft = false; this.retry = null;
         this.editGeneration = (this.editGeneration || 0) + 1;
@@ -167,19 +168,30 @@ export class InitiativeScreen {
     this.selectedContext = key;
     for (const view of Object.values(this.contextViews)) view.select(key);
   }
+  selectNote(path) {
+    const origin = this.contextReturn;
+    this.selectContext(origin?.path === path ? origin.source || path : path);
+  }
 
   rememberContext(node = document.activeElement) {
     if (this.detailKind !== 'overview') return;
     if (!$('#workspace-context').contains(node)) return;
-    this.contextReturn = {id: node?.id, action: node?.dataset.actionId, path: node?.dataset.path, scroll: $('#workspace-context').scrollTop, mainScroll: $('main').scrollTop};
+    this.contextReturn = {
+      id: node.id, action: node.dataset.actionId, path: node.dataset.path,
+      sourceRole: node.dataset.sourceRole, source: node.dataset.initiativeSource,
+      mainScroll: $('main').scrollTop
+    };
   }
   restoreContext() {
     this.detailKind = 'overview';
     $('.app').classList.remove('detail-open');
     const origin = this.contextReturn;
-    if (origin?.action || origin?.path) this.selectContext(origin.action || origin.path);
     const controls = [...$('#workspace-context').querySelectorAll('button')];
-    const node = origin && controls.find(node => origin.id ? node.id === origin.id : origin.action ? node.dataset.actionId === origin.action : origin.path && node.dataset.path === origin.path);
+    const node = origin && (controls.find(node => origin.id ? node.id === origin.id
+      : origin.action ? node.dataset.actionId === origin.action
+      : origin.source && node.dataset.initiativeSource === origin.source)
+      || controls.find(node => origin.path && node.dataset.path === origin.path && node.dataset.sourceRole === origin.sourceRole));
+    if (origin?.action || origin?.path) this.selectContext(origin.action || node?.dataset.initiativeSource || origin.path);
     (node || $('#workspace-title')).focus({preventScroll: true});
     $('main').scrollTop = origin?.mainScroll || 0;
   }
@@ -203,6 +215,7 @@ export class InitiativeScreen {
     if (result.warnings.length) this.notice(result.warnings.join('\n'));
     const recovered = recoverTaskDraft('initiative', this.repository.workspaceId);
     this.draftKey = recovered?.key; const draft = recovered?.value;
+    this.endingCommitted = new Set(draft?.committedActions);
     if (draft) { this.form(draft.previous || {}, draft.previous); const baseline = this.baseline; this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; await this.details(); this.state('已恢复事项草稿，请核对后保存。'); }
   }
   async show() {
@@ -248,7 +261,7 @@ export class InitiativeScreen {
       sources: [...document.querySelectorAll('.initiative-source')].map(row => ({path: row.querySelector('input').value.trim(), quote: row.querySelector('textarea').value, role: row.querySelector('select').value, fingerprint: row.dataset.fingerprint || ''}))};
   }
   changed() { this.recoveredDraft = false; const edited = JSON.stringify(this.fields()) !== this.baseline; this.dirty = Boolean(this.retry) || edited; if (edited) this.retry = null; this.draft(); this.state(this.dirty ? '事项草稿尚未保存' : '已保存到本地'); }
-  draft() { if (!this.dirty) { localStorage.removeItem(this.key()); return; } localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, decisions: this.decisions()})); }
+  draft() { if (!this.dirty) { localStorage.removeItem(this.key()); return; } localStorage.setItem(this.key(), JSON.stringify({fields: this.fields(), previous: this.previous, retry: this.retry, decisions: this.decisions(), committedActions: [...this.endingCommitted]})); }
   nameSource(row) {
     const identity = row.querySelector('input').value.trim() || `新关联 ${row.dataset.ordinal}`;
     row.setAttribute('role', 'group'); row.setAttribute('aria-label', `来源关联：${identity}`);
@@ -315,20 +328,39 @@ export class InitiativeScreen {
     };
     this.draftKey = recovered?.key || `initiative-draft:${this.repository.workspaceId}:${record?.entityId || 'new'}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
-    this.retry = null; this.form(record || {}, record); const baseline = this.baseline;
+    this.retry = null; this.endingCommitted = new Set(draft?.committedActions);
+    this.form(record || {}, record); const baseline = this.baseline;
     if (draft) { this.form(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; }
     this.recoveredDraft = Boolean(draft); this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline;
     this.state(draft ? '已恢复事项草稿，请核对后保存。' : record ? '已保存到本地' : '新建事项');
-    await this.details();
+    if (metadata) this.restoreDrawerLayout(this.drawerContext);
+    try {
+      await this.details();
+    } catch (error) {
+      if (metadata && ownsOpen()) {
+        const context = this.drawerContext;
+        this.previous = context.previous;
+        this.detailKind = context.detailKind;
+        this.restoreDrawerLayout(context);
+        this.selectContext(context.selectedContext);
+        this.drawerContext = null;
+        origin?.focus({preventScroll: true});
+      }
+      throw error;
+    }
     if (!ownsOpen()) { this.drawerContext = null; return; }
     if (metadata) {
-      for (const [selector, hidden] of Object.entries(this.drawerContext.hidden)) $(selector).hidden = hidden;
-      $('.app').className = this.drawerContext.classes;
-      this.restoreSnapshot(this.drawerContext.views);
-      for (const [selector, text] of Object.entries(this.drawerContext.text)) $(selector).textContent = text;
-      this.selectInitiative(this.drawerContext.previous);
+      this.restoreDrawerLayout(this.drawerContext);
       this.openDrawer(origin);
     } else this.restoreContext();
+  }
+  restoreDrawerLayout(context) {
+    for (const [selector, hidden] of Object.entries(context.hidden)) $(selector).hidden = hidden;
+    $('.app').className = context.classes;
+    this.restoreSnapshot(context.views);
+    for (const [selector, text] of Object.entries(context.text)) $(selector).textContent = text;
+    for (const [selector, scroll] of Object.entries(context.scroll)) $(selector).scrollTop = scroll;
+    this.selectInitiative(context.previous);
   }
   renderContext() {
     const record = this.previous;
@@ -383,7 +415,7 @@ export class InitiativeScreen {
       const rows = [...document.querySelectorAll('.initiative-source')];
       // A recovered private draft may already contain the uniquely repaired path.
       // Resolve persisted context independently; never match an ambiguous edited row.
-      const exact = rows.find(row => row.querySelector('input').value === source.path);
+      const exact = rows.find(row => row.querySelector('input').value === source.path && row.querySelector('select').value === source.role);
       const matching = rows.filter(row => source.fingerprint && row.dataset.fingerprint === source.fingerprint && row.querySelector('textarea').value === source.quote && row.querySelector('select').value === source.role);
       const row = exact || (matching.length === 1 ? matching[0] : null);
       const view = this.contextViews[source.role === 'reference' ? '#workspace-references' : '#workspace-notes'];
@@ -434,7 +466,6 @@ export class InitiativeScreen {
       await Promise.resolve();
       $('#initiative-form').inert = true; $('#initiative-save').disabled = true; this.state('正在保存事项…');
       let committed = null;
-      const committedActions = new Set();
       try {
         const fields = this.fields();
         for (const source of fields.sources) if (!source.fingerprint) {
@@ -452,11 +483,13 @@ export class InitiativeScreen {
           if (this.drawerContext) this.drawerContext.refreshWorkspace = true;
           if (this.drawerContext?.actionId) this.drawerContext.refreshAction = this.drawerContext.actionId;
           result = await endInitiative(this.repository, this.actions.repository, this.previous, decisions, fields, record => {
-            committedActions.add(record.entityId);
+            this.endingCommitted.add(record.entityId);
+            this.draft();
             if (record.entityId === this.actions.previous?.entityId && this.drawerContext) this.drawerContext.committedAction = record;
           });
         } else result = await this.repository.save(fields, this.previous, this.retry);
         committed = result.record; this.rememberCommit(result.record);
+        this.endingCommitted.clear();
         this.recoveredDraft = false; this.dirty = false; this.retry = null; localStorage.removeItem(this.key()); this.draftKey = `initiative-draft:${this.repository.workspaceId}:${result.record.entityId}`; this.form(result.record, result.record);
         this.state(result.recovered ? '已恢复并保存到本地' : '已保存到本地'); await this.list(); await this.details();
         if (this.drawerContext) this.drawerContext.refreshWorkspace = false;
@@ -477,19 +510,19 @@ export class InitiativeScreen {
         }
         const saved = committed || (error.revisionSaved && error.record?.entityType === 'initiative' ? error.record : null);
         this.retry = saved; if (saved) { this.previous = saved; this.baseline = JSON.stringify(this.fields()); this.rememberCommit(saved); }
+        if (error.revisionSaved && error.record?.entityType === 'action') this.endingCommitted.add(error.record.entityId);
         this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; this.draft();
         const endingRequired = /Choose how to handle|Actions changed|destination initiative/.test(error.message);
         if (endingRequired) $('#initiative-ending').open = true;
-        if (error.revisionSaved && error.record?.entityType === 'action') committedActions.add(error.record.entityId);
         for (const input of $('#initiative-decisions').querySelectorAll('select')) {
-          if (!committedActions.has(input.dataset.action)) continue;
+          if (input.disabled || !this.endingCommitted.has(input.dataset.action)) continue;
           input.disabled = true;
           const receipt = document.createElement('small');
           receipt.textContent = '此项处理已保存';
           input.after(receipt);
         }
-        if (committedActions.size && !saved) this.ending();
-        const partial = committedActions.size > 0;
+        if (this.endingCommitted.size && !saved) this.ending();
+        const partial = this.endingCommitted.size > 0;
         const message = partial && !saved ? '事项尚未结束。已保存的行动处理仍然有效。未保存的编辑仍保留，可重试。'
           : endingRequired ? '尚未结束事项。请为每项未完成行动选择处理方式，再保存；可选择「暂不结束」。'
           : saved ? '版本已保存，恢复尚未完成。可重试恢复，或关闭并保留已保存版本。' : undefined;
