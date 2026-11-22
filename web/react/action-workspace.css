@@ -1,0 +1,114 @@
+/* The Action list uses the full content column; editing lives in its drawer. */
+@media (min-width: 701px) {
+  .app:not(.workspace):has(> .collection #action-tools:not([hidden])) {
+    grid-template-columns: minmax(196px, 20%) minmax(0, 1fr);
+  }
+}
+.app:not(.workspace):has(> .collection #action-tools:not([hidden])) > main:not(:has(#editor:not([hidden]))) {
+  display: none;
+}
+
+.collection:has(> #action-tools:not([hidden])) {
+  --action-gutter: clamp(20px, 5%, 56px);
+  border: 0;
+  color: var(--workspace-ink);
+}
+
+.collection:has(> #action-tools:not([hidden])) > :is(header, #action-tools, #items, #index-state) {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding-inline: var(--action-gutter);
+}
+
+.collection:has(> #action-tools:not([hidden])) > header {
+  padding-block: 36px 8px;
+}
+.collection:has(> #action-tools:not([hidden])) #view-title {
+  font-size: clamp(25px, 4.35vw, 39px);
+  font-weight: 680;
+  line-height: 1.18;
+  margin-bottom: 12px;
+}
+.collection:has(> #action-tools:not([hidden])) > header .ui-field {
+  margin-block: 0;
+  max-width: 480px;
+}
+.collection:has(> #action-tools:not([hidden])) #search { background: var(--surface); }
+
+.collection #action-tools {
+  display: grid;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-color: var(--workspace-divider);
+}
+#action-tools .action-list-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px 16px;
+  max-width: 480px;
+}
+#action-tools .action-list-filters > label {
+  flex: 1 1 140px;
+  margin-block: 0;
+}
+#action-tools .action-list-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0 8px; }
+#action-tools #action-new { width: auto; }
+#action-tools .action-pagination { width: auto; margin-inline-start: auto; }
+.collection:has(> #action-tools:not([hidden])) > #items { padding-top: 8px; }
+
+.ui-action.action-list-row {
+  border-radius: var(--radius);
+  border-color: var(--workspace-divider);
+  padding: 10px 12px;
+  color: var(--workspace-ink);
+}
+.ui-action.action-list-row[aria-current="true"] {
+  background: var(--workspace-current);
+  color: var(--workspace-current-text);
+}
+.ui-action.action-list-row[aria-current="true"]:hover:not(:disabled) { background: var(--workspace-current-hover); }
+.ui-action.action-list-row[aria-current="true"]:active:not(:disabled) { background: var(--workspace-current-pressed); }
+#items .action-list-meta { align-items: baseline; color: var(--workspace-muted); }
+
+.action-status {
+  display: inline-block;
+  padding-inline: 6px;
+  border-radius: var(--radius);
+  color: var(--workspace-muted);
+  background: var(--canvas);
+  font-size: 12px;
+  font-weight: 600;
+}
+.action-status[data-status="in-progress"] { color: var(--accent-hover); background: var(--passage-selected); }
+.action-status[data-status="waiting"] { color: var(--warning); }
+.action-status[data-status="completed"] { color: var(--success); background: var(--workspace-current); }
+
+.ui-drawer#action-drawer {
+  border-radius: var(--radius-panel) 0 0 var(--radius-panel);
+}
+#action-drawer :is(.ui-drawer-header, .ui-drawer-footer) {
+  padding-block: 8px;
+  border-color: var(--workspace-divider);
+}
+#action-drawer .ui-drawer-body { overscroll-behavior: contain; }
+#action-drawer #action-form { gap: 16px; }
+#action-form > :is(#action-options, #action-source-options),
+#action-form .action-utilities {
+  border-top: 1px solid var(--workspace-divider);
+  padding: 0;
+}
+#action-drawer #action-form :is(input, textarea, select):focus-visible {
+  border-color: var(--line);
+  box-shadow: none;
+}
+#action-form .ui-disclosure > summary { color: var(--workspace-muted); }
+#action-form .ui-disclosure[open] > summary { color: var(--workspace-ink); }
+#action-form .action-utilities .ui-disclosure { margin: 0; }
+#action-form :is(#action-source-options, .action-utilities) .ui-action { margin-block: 0; }
+
+@media (max-width: 700px) {
+  .ui-drawer#action-drawer { border-radius: 0; }
+  #action-drawer :is(.ui-drawer-header, .ui-drawer-body, .ui-drawer-footer) { padding-inline: 16px; }
+}
