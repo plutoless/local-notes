@@ -82,6 +82,10 @@ try {
           assert.equal(clipboard,expanded); assert.ok(original.includes(clipboard));
           evidence.checks.push({journey:'search expand, browser selection/Copy and bridge Copy',browserCopy:await page.evaluate(() => searchCopyEvents),bridgeTextSHA256:digest(clipboard),sourceSHA256:digest(original)});
         }
+        await input.focus(); await page.keyboard.press('ArrowDown');
+        const selectedSource = page.locator('.search-result[data-selected=true] .search-source');
+        const selection = await selectedSource.textContent();
+        assert.notEqual(selection,await page.locator('.search-source').first().textContent(),'The journey selects a result beyond the first');
         await page.locator('.search-results').evaluate(n => n.scrollTop = 25);
         const scroll = await page.locator('.search-results').evaluate(n=>n.scrollTop);
         await open(label);
@@ -97,6 +101,8 @@ try {
         if (scope === 'action') assert.equal(await page.locator('#action-description').inputValue(),'latency 行动');
         await back();
         assert.equal(await page.evaluate(()=>document.activeElement.textContent),label,'Source return restores the activated source control');
+        assert.equal(await page.locator(`[data-scope=${scope}]`).getAttribute('aria-pressed'),'true');
+        assert.equal(await selectedSource.textContent(),selection,'Source return retains the selected passage');
         assert.equal(await page.locator('.search-result pre').first().textContent(),expanded);
         assert.equal(await page.locator('.search-results').evaluate(n=>n.scrollTop),scroll);
         if (origin === 'actions') assert.equal(await page.locator('#view-title').textContent(),'行动');
