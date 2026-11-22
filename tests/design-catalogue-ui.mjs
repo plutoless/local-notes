@@ -88,6 +88,24 @@ try {
  await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-393.png` : 'docs/validation/issue31/catalogue-393.png',fullPage:true});
  await page.emulateMedia({reducedMotion:'reduce'});
  assert.equal(await page.locator('#actions button').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');
+ const rgb = hex => 'rgb(' + hex.slice(1).match(/../g).map(value=>parseInt(value,16)).join(', ') + ')';
+ for (const [label,hover,pressed] of [
+  ['主要操作','--accent-hover','--accent-hover'],
+  ['保存笔记','--hover','--pressed'],
+ ]) {
+  const button=page.locator('#react-library').getByRole('button',{name:label,exact:true}).first();
+  await button.hover();
+  const fill=async token=>button.evaluate((node,property)=>[
+    getComputedStyle(node).backgroundColor,
+    getComputedStyle(document.documentElement).getPropertyValue(property).trim(),
+  ],token);
+  const [hoverFill,hoverToken]=await fill(hover);
+  assert.equal(hoverFill,rgb(hoverToken));
+  await page.mouse.down();
+  const [pressedFill,pressedToken]=await fill(pressed);
+  await page.mouse.up();
+  assert.equal(pressedFill,rgb(pressedToken));
+ }
  assert.equal(errors.length,0,errors.join('\n'));
  console.log('Catalogue rendering, live tokens, contrast minima, dialog restoration, 393px and reduced motion passed',ratios);
 } finally {await browser.close();}

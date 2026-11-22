@@ -1,4 +1,4 @@
-import {requestTaskLeave, bindModal, icon} from './presentation.js';
+import {requestTaskLeave, bindModal, escapeInComposition, icon} from './presentation.js';
 import {syncView, syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft, actionControl} from './assets/react-host.js';
 
 const types = {action:'行动',initiative:'事项',topic:'主题',candidate:'建议'};
@@ -12,9 +12,17 @@ export class SyncScreen {
     this.panel=document.createElement('dialog');
     this.panel.className='sync-panel ui-panel ui-modal'; this.panel.setAttribute('aria-label','同步检查');
     document.body.append(this.panel);
-    bindModal(this.panel, () => this.close());
+    const imeOwnsEscape = escapeInComposition(this.panel);
+    bindModal(this.panel, event => { if (!imeOwnsEscape(event)) this.close(); });
     this.view=syncView(this.panel,{close:()=>this.close(),refresh:()=>this.refresh(true),jump:key=>this.jump(key),choose:(key,revision)=>this.choose(key,revision),edit:(key,field,value)=>this.edit(key,field,value),discard:key=>this.discard(key),save:key=>this.saveResolution(key),recover:key=>this.recoverDraft(key)});
-    this.panel.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopImmediatePropagation();this.close();}else if(event.key==='Escape'){event.stopImmediatePropagation();}},true);
+    this.panel.addEventListener('keydown', event => {
+      if (event.key !== 'Escape') return;
+      event.stopImmediatePropagation();
+      if (!imeOwnsEscape(event)) {
+        event.preventDefault();
+        this.close();
+      }
+    }, true);
     // The modal may close before the check finishes. Its opener stays focusable.
     const opener=actionControl('同步检查',()=>{void this.refresh(true);},{icon:icon('sync')}); this.opener=opener.control;
     document.querySelector('#shell-utilities').append(opener.host);

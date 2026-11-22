@@ -644,9 +644,9 @@ async function revealCapturedNote(path) {
     const origin = {browse: ['notes','favorites'].includes(view) ? libraryScreen.captureContext() : null, view, actionReturn: actions.returnToFocus, opener: document.activeElement, initiative: view === 'initiatives' ? initiatives.previous : null, action: view === 'actions' ? actions.previous : null, note: !$('#editor').hidden ? current : null, reading: readMode};
     focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-    const page = pageGeneration, request = ++noteLoadRequest;
+    const page = pageGeneration, request = ++noteLoadRequest, opening = shortTaskOpening;
     const owns = () => workspace === workspaceGeneration && page === pageGeneration
-      && request === noteLoadRequest && !document.querySelector('dialog[open]');
+      && request === noteLoadRequest && opening === shortTaskOpening && !document.querySelector('dialog[open]');
     await validateReferences();
     if (!owns()) return;
     await refresh();
@@ -675,9 +675,13 @@ function closeShortTask() {
   return true;
 }
 function shortTaskAdapter() {
+  const task = shortTask;
+  const owns = () => task === shortTask;
   return {label: shortDrawer.panel.querySelector('h2')?.textContent || '当前编辑',
-    dirty: shortDirty, pending: () => shortSaving, committed: () => Boolean(shortTask?.committed),
-    save: () => saveShortTask(false), discard: () => closeShortTask(), close: () => closeShortTask()};
+    dirty: () => owns() && shortDirty(), pending: () => owns() ? shortSaving : undefined,
+    committed: () => Boolean(task?.committed),
+    save: () => !owns() || saveShortTask(false),
+    discard: () => !owns() || closeShortTask(), close: () => !owns() || closeShortTask()};
 }
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
 function openShortTask({title, controls, key, values, save, opener, submit = '保存'}) {
@@ -941,16 +945,19 @@ function copyConflict() {
   if (noteConflictPending) return noteConflictPending;
   clearTimeout(timer);
   const source=current, workspaceId=currentWorkspace, generation=noteGeneration;
+  const page = pageGeneration, request = ++noteLoadRequest;
   const key=draftKey(), text=content(), path=source.replace(/\.md$/i,`-conflict-${Date.now()}.md`);
-  const owns=()=>source===current && workspaceId===currentWorkspace && workspaceId===rootKey && generation===noteGeneration;
+  const owns = () => source === current && workspaceId === currentWorkspace && workspaceId === rootKey
+    && generation === noteGeneration && page === pageGeneration && request === noteLoadRequest;
   noteConflictPending=(async()=>{
     try {
       await note('create',{path,text,workspaceId});
       if(!owns())return true;
-      localStorage.removeItem(key);dirty=false;blocked=false;noteConflict.close();$('#mode').focus();
+      localStorage.removeItem(key);dirty=false;blocked=false;noteConflict.close();
+      $('#mode').focus({preventScroll:true});
       await validateReferences();if(!owns())return true;
       await refresh();if(!owns())return true;
-      await load(path);return true;
+      await load(path, null, request);return true;
     } catch(error) {if(owns()) { if(noteConflict.open) feedback($('#file-conflict-status'),'副本未能保存。请检查目录后重试；编辑仍保留。',error.message); else notice(error.message); }return false;}
   })().finally(()=>{noteConflictPending=null;});
   return noteConflictPending;

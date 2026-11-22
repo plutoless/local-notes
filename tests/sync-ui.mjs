@@ -16,6 +16,13 @@ const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PA
 await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  const screenshot = async path => {
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
+    await page.screenshot({path,animations:'disabled'});
+  };
   const bridgeCalls = [];
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
@@ -102,11 +109,11 @@ try {
     }
   }
   console.log('Sync initial inspection:',JSON.stringify({elapsedMs:Math.round(performance.now()-startTime),markdownReads:bridgeCalls.filter(cmd=>cmd==='read').length,bridgeCommands:bridgeCalls.length}));
-  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
+  await screenshot(`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`);
   await page.setViewportSize({width:393,height:852});
   assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px-long.png`});
+  await screenshot(`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px-long.png`);
   await page.setViewportSize({width:1180,height:800});
   async function capture(state) {
     if (!process.env.ISSUE86) return;
@@ -114,7 +121,7 @@ try {
       await page.setViewportSize({width,height});
       await panel.evaluate(el=>{if(el.contains(document.activeElement)) document.activeElement.scrollIntoView({block:'nearest'});});
       assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
-      await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-${state}-${size}.png`});
+      await screenshot(`${evidenceDir}/${process.env.PHASE || 'after'}-${state}-${size}.png`);
     }
     await page.setViewportSize({width:1180,height:800});
   }
@@ -139,6 +146,13 @@ try {
   const firstVersion = panel.getByRole('button', {name: /选择版本 /}).first();
   if(process.env.ISSUE101)await page.evaluate(()=>{window.restoreSyncCache=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('sync-draft:'))throw Error('Injected quota failure');return window.restoreSyncCache.call(this,key,value);};});
   await firstVersion.click();
+  if(process.env.PHASE !== 'before') {
+    const content = panel.getByLabel('内容',{exact:true});
+    await content.dispatchEvent('compositionstart',{bubbles:true});
+    await panel.dispatchEvent('cancel',{cancelable:true});
+    assert.equal(await page.locator('#task-leave-decision').count(),0,'IME cancellation must not close or prompt to leave Sync');
+    await content.dispatchEvent('compositionend',{bubbles:true});
+  }
   if(process.env.ISSUE101){await panel.getByText('本机草稿暂不能保留。当前编辑仍在，请保存到本地或保持窗口打开后重试。').waitFor();assert.equal(await firstVersion.getAttribute('aria-pressed'),'true');await page.evaluate(()=>{Storage.prototype.setItem=window.restoreSyncCache;});}
 
   await capture('pointer-selected');

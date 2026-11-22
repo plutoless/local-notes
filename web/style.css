@@ -45,7 +45,7 @@ button:active { background: var(--pressed); }
 button:disabled { color: var(--muted); background: var(--sidebar); cursor: default; }
 button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible, [tabindex="-1"]:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .primary { background: var(--accent); color: white; font-weight: 600; }
-.primary:hover { background: var(--accent-hover); color: white; }
+.primary:not(.ui-compact):is(:hover, :active):not(:disabled) { background: var(--accent-hover); color: white; }
 .icon { width: 19px; height: 19px; flex: 0 0 19px; vertical-align: middle; }
 .app { display: grid; grid-template-columns: 196px minmax(250px, 300px) minmax(0, 1fr); height: 100dvh; }
 .app > *, #workspace-detail { min-width: 0; min-height: 0; }
@@ -360,6 +360,8 @@ details { overflow-wrap: anywhere; }
 
 /* Shared presentation contract; see docs/design/README.md. */
 .ui-action.secondary { border-color: var(--line); background: var(--surface); }
+.ui-action.secondary:not(.ui-compact):hover:not(:disabled) { background: var(--hover); }
+.ui-action.secondary:not(.ui-compact):active:not(:disabled) { background: var(--pressed); }
 .ui-action.quiet { color: var(--accent); }
 .ui-action.danger { color: var(--danger); border-color: var(--danger); }
 .ui-action.icon-action { display: inline-flex; align-items: center; justify-content: center; width: 44px; padding: 10px; }

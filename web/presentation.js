@@ -55,6 +55,22 @@ export function bindModal(panel, dismiss) {
   });
 }
 
+// WebKit can end composition just before delivering its cancelling Escape.
+export function escapeInComposition(target) {
+  let composing = false, endedThisTurn = false, timer;
+  target.addEventListener('compositionstart', () => {
+    composing = true;
+    endedThisTurn = false;
+    clearTimeout(timer);
+  });
+  target.addEventListener('compositionend', () => {
+    composing = false;
+    endedThisTurn = true;
+    timer = setTimeout(() => { endedThisTurn = false; }, 0);
+  });
+  return event => composing || endedThisTurn || event.isComposing || event.keyCode === 229;
+}
+
 // Icons are fixed presentation assets, never generated from user content.
 export function icon(name) {
   const paths = {

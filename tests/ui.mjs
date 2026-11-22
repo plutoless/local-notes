@@ -1,5 +1,4 @@
 import {enterNoteEditing} from './form-journeys.js';
-import {saveAndLeave} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -155,13 +154,13 @@ try {
   await rename(sourcePath, join(fixture.root, 'relocated.md'));
   await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源已移动', {exact: true}).waitFor();
-  assert.equal(await page.locator('.source-path').inputValue(), 'relocated.md');
-  await page.getByRole('button', {name: /^打开来源：/}).click(); await saveAndLeave(page);
+  assert.equal(await page.locator('.source-path').inputValue(), 'reference.md');
+  await page.getByRole('button', {name:'打开来源：relocated.md', exact:true}).click();
   await page.waitForFunction(() => document.querySelector('#file-path').textContent === 'relocated.md');
   await rename(join(fixture.root, 'relocated.md'), sourcePath);
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
-  await page.getByText('来源已移动', {exact: true}).waitFor();
+  await page.getByRole('button', {name:'打开来源：reference.md', exact:true}).waitFor();
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await readFile(sourcePath, 'utf8'), currentSource);

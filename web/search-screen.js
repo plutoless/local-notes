@@ -1,6 +1,6 @@
 import {native} from './bridge.js';
 import {WorkspaceSearch} from './global-search.js';
-import {bindModal} from './presentation.js';
+import {bindModal, escapeInComposition} from './presentation.js';
 import {searchView, searchRows} from './assets/react-host.js';
 
 export class SearchScreen {
@@ -23,15 +23,7 @@ export class SearchScreen {
     this.results = panel.querySelector('.search-results');
     this.include = panel.querySelector('.search-attribution input');
     document.body.append(panel);
-    // WebKit may end IME composition before delivering its cancelling Escape.
-    // Protect that same event turn, without swallowing a later ordinary Escape.
-    let composing = false, compositionEndedThisTurn = false, compositionTurn;
-    this.input.addEventListener('compositionstart', () => { composing = true; compositionEndedThisTurn = false; clearTimeout(compositionTurn); });
-    this.input.addEventListener('compositionend', () => {
-      composing = false; compositionEndedThisTurn = true;
-      compositionTurn = setTimeout(() => { compositionEndedThisTurn = false; }, 0);
-    });
-    const imeOwnsEscape = event => composing || compositionEndedThisTurn || event.isComposing || event.keyCode === 229;
+    const imeOwnsEscape = escapeInComposition(this.input);
     this.input.oninput = () => { this.offset = 0; this.query(); };
     bindModal(panel, event => { if (!imeOwnsEscape(event)) this.close(); });
     panel.addEventListener('keydown', event => {

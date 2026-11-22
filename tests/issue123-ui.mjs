@@ -1,4 +1,4 @@
-import {readFile, writeFile, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, mkdir, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -7,6 +7,7 @@ const evidence = process.env.ISSUE123_EVIDENCE || 'build/validation/123/after';
 const before=process.env.ISSUE123_PHASE==='before';
 let failSave=false;
 let failRead=false;
+let holdMetadata;
 const io=[];
 const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
@@ -27,6 +28,12 @@ try {
     try {
       if(request.cmd==='save' && failSave) throw Error('Controlled issue123 failed save');
       if(request.cmd==='read' && failRead) throw Error('Controlled unavailable disk version');
+      if(request.cmd==='leaveResult') return {};
+      if(request.cmd==='metadata' && holdMetadata) {
+        const hold = holdMetadata;
+        holdMetadata = undefined;
+        await hold();
+      }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await fixture.adapter(request.cmd, request);
         return result;
@@ -42,7 +49,11 @@ try {
       }
     } catch (error) { return {error: error.message}; }
   });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
+  await page.addInitScript(() => { window.NotesNative = {request: async message => {
+    const request = JSON.parse(message);
+    window.nativeReply(request.id, await window.bridge(request));
+    if (request.cmd === 'leaveResult') window.conflictLeaveFinished = true;
+  }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
@@ -140,6 +151,31 @@ try {
     await page.locator('#reading').getByText('磁盘上的原文。',{exact:true}).waitFor();
     assert.equal(await page.locator('#mode').evaluate(node=>node===document.activeElement),true);
     assert.equal(await readFile(sourcePath,'utf8'),external);
+
+    await page.locator('#mode').click();
+    const newerDisk = '# 更新的外部版本\n\n磁盘上的新原文。';
+    await writeFile(sourcePath,newerDisk);
+    await body.fill('已另存为副本的本机编辑');
+    await conflict.waitFor();
+    let releaseMetadata;
+    const metadataHeld = new Promise(resolve => {
+      holdMetadata = () => new Promise(release => { releaseMetadata = release; resolve(); });
+    });
+    await conflict.getByRole('button',{name:'将我的编辑另存为副本'}).click();
+    await metadataHeld;
+    await conflict.waitFor({state:'hidden'});
+    await body.fill('另存后开始的编辑');
+    await page.evaluate(() => window.requestNativeLeave('copy-return-check'));
+    releaseMetadata();
+    await page.waitForFunction(() => window.conflictLeaveFinished || document.querySelector('#task-leave-decision'));
+    assert.equal(await page.locator('#file-path').textContent(),'reference.md');
+    assert.equal(await body.inputValue(),'另存后开始的编辑');
+    await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
+    const copies=(await readdir(fixture.root)).filter(name=>name.startsWith('reference-conflict-'));
+    assert.equal(copies.length,1);
+    assert.match(await readFile(join(fixture.root,copies[0]),'utf8'),/已另存为副本的本机编辑/);
+    assert.equal(await readFile(sourcePath,'utf8'),newerDisk);
+    console.log('PASS file conflict containment, failed read and retry, copy readback, and newer edit ownership');
   }
   assert.deepEqual(errors,[]);
   await writeFile(join(evidence,'measurements.json'),JSON.stringify({phase:before?'before':'after',startupAndListMs:listed-started,openMs:opened-opening,io,adapterCalls:fixture.calls,sourcePreserved:true,persistedReadback:true,failedSaveDiscard:true},null,2));
