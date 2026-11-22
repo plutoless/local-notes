@@ -45,7 +45,7 @@ try:
  assert c("return document.activeElement.dataset.revision===syncLeft.revision || document.activeElement.dataset.revision===syncRight.revision || document.activeElement.dataset.revision===syncBase.revision")
  c("document.querySelector('.sync-version button').id='native-version'")
  key('Return')
- c("const n=document.querySelector('.sync-editor textarea');n.value='人工合并并保留来源';n.dispatchEvent(new Event('input',{bubbles:true}));[...document.querySelectorAll('.sync-panel button')].find(n=>n.textContent==='3. 保存解决结果到本地').id='native-save'")
+ c("const n=document.querySelector('.sync-editor textarea');n.value='人工合并并保留来源';n.dispatchEvent(new Event('input',{bubbles:true}));[...document.querySelectorAll('.sync-panel button')].find(n=>n.textContent==='保存解决结果到本地').id='native-save'")
  click('#native-save');w("document.querySelector('.sync-panel').textContent.includes('现有版本中未发现待处理冲突。')")
  outcome=c("await syncRepo.recover();const history=await syncRepo.history(syncBase.entityId);return {history,record:(await syncRepo.query()).actions.find(n=>n.entityId===syncBase.entityId),expected:[syncLeft.revision,syncRight.revision]}")
  assert len(outcome['history'])==4 and set(outcome['record']['parents'])==set(outcome['expected']) and outcome['record']['description']=='人工合并并保留来源'
@@ -53,7 +53,7 @@ try:
  c("document.querySelector('.sync-panel button').focus()")
  key('Shift+Tab');state('modal-last');key('Tab');state('modal-first')
  assert c("return document.activeElement===document.querySelector('.sync-panel button')")
- key('Escape');w("document.querySelector('.sync-panel').hidden");state('keyboard-opener-return')
+ key('Escape');w("!document.querySelector('.sync-panel').open");state('keyboard-opener-return')
  assert c("return document.activeElement.id==='native-sync-open' && document.activeElement.matches(':focus-visible')")
  assert hashlib.sha256((m.OUT/'Sync/note-00.md').read_bytes()).hexdigest()==source_hash
  log.append({'sourcePreservedSHA256':source_hash,'input':'External OS-injected pointer/keyboard; DOM setup/inspection explicitly separated; physical input unrun'})

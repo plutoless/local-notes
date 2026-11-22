@@ -8,12 +8,12 @@ Support remains macOS 13.3/WebKit 16.4 and Android API26/WebView111+.
 | Surface | DOM owner | State, bridge and persistence authority |
 | --- | --- | --- |
 | Synchronization opener | Stable `SyncScreen` utility island | Existing shell utility registration |
-| Modal section boundary | `SyncScreen` and existing `bindDialog` | Shared `requestTaskLeave`; no second trap or native exit registration |
+| Native modal boundary | `SyncScreen` and existing `bindModal` | Shared `requestTaskLeave`; no second trap or native exit registration |
 | All comparison/editor/status/navigation descendants | `SyncContent` / `ConflictComparison` | Controller supplies snapshot and callbacks; existing typed host bundle |
 | Record recovery, resolution and retry | No presentation ownership | Existing repositories, revision graph and serialized bridge writes |
 | Private unsubmitted resolution candidates | `sync-drafts.js` + controller | Workspace/type/entity-scoped localStorage; explicit recovery only |
 | Reader file-conflict descendants | `fileConflictView` | Existing note expected-source guard, save-as-copy and reload callbacks in `app.js` |
-| File-conflict visibility and focus containment | Existing boundary in `app.js` / `bindDialog` | Existing note task and central leave lifecycle |
+| File-conflict visibility and focus containment | Existing boundary in `app.js` / `bindModal` | Existing note task and central leave lifecycle |
 | Unmigrated Initiative/Organization/etc. | Existing stable consumers | Their own controllers; no ownership acquired by #101 |
 
 React presentation does not call repositories or initiate AI. The controller no

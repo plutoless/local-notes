@@ -6,7 +6,7 @@ import {Feedback} from './presentation';
 import {LeaveContent} from './overlays';
 import {renderMarkdown} from '../core.js';
 
-const tokens=['text','muted','surface','canvas','sidebar','accent','selected','selected-text','line','divider','focus','success','warning','danger','space','target-height','button-surface','field-surface','control-inset','radius','radius-panel'];
+const tokens=['text','muted','surface','canvas','sidebar','accent','accent-hover','hover','pressed','selected','selected-text','passage-selected','line','divider','focus','success','warning','danger','space','target-height','button-surface','field-surface','control-inset','radius','radius-panel','backdrop'];
 function FoundationCatalogue({openPanel}:{openPanel:()=>unknown}) {
   const [receipt,setReceipt]=useState('');
   return <><h1>Production primitives and states</h1><p>Maintainer reference using consumed production components and semantic tokens. No storage, model request or retrieval.</p>

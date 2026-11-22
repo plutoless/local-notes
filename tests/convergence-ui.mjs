@@ -1,6 +1,7 @@
 import {captureNote,closeNoteInfo,closeSavedAction} from './form-journeys.js';
 import {ActionRepository} from '../web/actions.js';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
+import {join} from 'node:path';
 import {createHash,randomUUID} from 'node:crypto';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
@@ -27,7 +28,7 @@ try {
   return await fixture.adapter(request.cmd,request);
  }catch(e){return {error:e.message};}});
  await page.addInitScript(()=>{window.NotesNative={request:async message=>{const r=JSON.parse(message);window.nativeReply(r.id,await window.bridge(r));}};});
- await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(new URL('../build/web/'+name,import.meta.url)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
+ await page.route('https://notes.test/**',async route=>{const name=new URL(route.request().url()).pathname.slice(1)||'index.html';await route.fulfill({body:await readFile(join(process.env.CONVERGENCE_ASSETS || 'build/web',name)),contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html'});});
  await page.goto('https://notes.test/');await page.locator('.home-tools').waitFor();
  const started=performance.now();
  await captureNote(page,'汇合捕获','- [ ] 历史计划，需要逐条确认。\n\n[[source|核对来源]]');
@@ -71,7 +72,13 @@ try {
  await card('关联：确认的来源关联').getByLabel('已有事项',{exact:true}).selectOption(initiatives.actions.find(record=>record.title==='确认的事项').entityId);
  await card('关联：确认的来源关联').getByRole('button',{name:/^确认此建议：/}).click();await card('关联：确认的来源关联').getByText('处理决定：确认，已保存',{exact:true}).waitFor();
  await card('行动：明确拒绝的行动').getByRole('button',{name:/^忽略：/}).click();await card('行动：明确拒绝的行动').getByText('处理决定：忽略，已保存',{exact:true}).waitFor();
- await page.reload();await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的行动',exact:true})}).click();await page.waitForFunction(()=>document.querySelector('#action-description').value==='确认的行动');
+ const confirmedActions=(await fixture.adapter('actionQuery',{workspaceId:repo.workspaceId,entityType:'action'})).actions;
+ const confirmedAction=confirmedActions.find(record=>record.description==='确认的行动');
+ assert.ok(confirmedAction);
+ await page.reload();await page.getByRole('button',{name:'全部行动',exact:true}).click();
+ const confirmedRow=page.locator('#items [data-entity-id]').filter({hasText:'确认的行动'});
+ assert.equal(await confirmedRow.getAttribute('data-entity-id'),confirmedAction.entityId);
+ await confirmedRow.click();await page.waitForFunction(()=>document.querySelector('#action-description').value==='确认的行动');
  await page.locator('#action-drawer').getByRole('button',{name:/^关闭/}).click();
  await page.locator('[data-view=initiatives]').click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的事项',exact:true})}).click();
  await page.getByRole('button',{name:/source.md/}).first().waitFor();
@@ -88,14 +95,18 @@ try {
  await page.getByRole('button',{name:'同步检查',exact:true}).click();const panel=page.getByRole('dialog',{name:'同步检查',exact:true});
  await panel.getByRole('button',{name:/选择版本 /}).first().click();await panel.getByLabel('内容',{exact:true}).fill('汇合行动人工解决');
  fixture.fail((cmd,args)=>cmd==='actionWrite'&&args.path.startsWith('revisions/'));
- await panel.getByRole('button',{name:'3. 保存解决结果到本地',exact:true}).click();await panel.getByText('解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。',{exact:true}).waitFor();
+ const saveResolution=panel.getByRole('button',{name:'保存解决结果到本地',exact:true});
+ await saveResolution.click();await panel.getByText('解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。',{exact:true}).waitFor();
  assert.equal(await panel.getByLabel('内容',{exact:true}).inputValue(),'汇合行动人工解决');
- await panel.getByRole('button',{name:'3. 保存解决结果到本地',exact:true}).click();await panel.getByText('现有版本中未发现待处理冲突。',{exact:true}).waitFor();
+ await saveResolution.click();await panel.getByText('现有版本中未发现待处理冲突。',{exact:true}).waitFor();
+ await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
+ assert.equal(await page.getByRole('button',{name:'同步检查',exact:true}).evaluate(node=>node===document.activeElement),true);
  await actions.recover();const resolved=(await actions.query()).actions.find(record=>record.entityId===base.entityId);
  assert.equal(resolved.description,'汇合行动人工解决');assert.deepEqual(new Set(resolved.parents),new Set([left.revision,right.revision]));
  await page.reload();await page.locator('.home-tools').waitFor();
  const restarted=new ActionRepository(fixture.adapter);await restarted.open();assert.equal((await restarted.query()).actions.find(record=>record.entityId===base.entityId).revision,resolved.revision);
  assert.equal(await readFile(fixture.root+'/'+capturedPath,'utf8'),capturedText);assert.equal(await readFile(fixture.root+'/source.md','utf8'),text);assert.deepEqual(errors,[]);
- await mkdir('build/issue102',{recursive:true});await writeFile('build/issue102/convergence-readback.json',JSON.stringify({records,resolved,capturedPath,capturedSHA256:createHash('sha256').update(capturedText).digest('hex'),sourceSHA256:createHash('sha256').update(text).digest('hex'),sourceUnchanged:true,elapsedMs:performance.now()-started,calls:fixture.calls.map(({cmd})=>cmd),transport:'Browser NotesNative -> real isolated Swift storage/SQLite; no WKWebView or OS input'},null,2));
+ const evidence=process.env.CONVERGENCE_EVIDENCE || 'build/issue102';
+ await mkdir(evidence,{recursive:true});await writeFile(join(evidence,'convergence-readback.json'),JSON.stringify({records,resolved,capturedPath,capturedSHA256:createHash('sha256').update(capturedText).digest('hex'),sourceSHA256:createHash('sha256').update(text).digest('hex'),sourceUnchanged:true,elapsedMs:performance.now()-started,calls:fixture.calls.map(({cmd})=>cmd),transport:'Browser NotesNative -> real isolated Swift storage/SQLite; no WKWebView or OS input'},null,2));
  console.log('PASS coherent capture/classification/Library/wiki/Action/Initiative/search-return/candidate/conflict/reload journey: real persisted Action/Initiative/Topic/link readback, reload and delivered entrypoints, explicit rejection, no analysis, unchanged source');
 } finally {await browser.close();await fixture.close();}

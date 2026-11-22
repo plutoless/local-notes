@@ -1,5 +1,4 @@
 import {enterNoteEditing} from './form-journeys.js';
-import {saveAndLeave} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -14,6 +13,9 @@ const leaveReceipts=[];
 let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
+const actionRow = (page, title) => page.locator('#items button[data-entity-id]').filter({
+  has: page.getByText(title, {exact:true}),
+});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
@@ -80,20 +82,20 @@ try {
   assert.equal(await readFile(sourcePath, 'utf8'), original);
   assert.equal(bridgeCalls.filter(command => command === 'list').length, 0);
   await page.reload(); await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor(); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-status').inputValue(), 'waiting');
   assert.equal(await page.locator('#action-waiting').inputValue(), 'Reviewer feedback');
   assert.equal(await page.locator('#action-description').evaluate(node => node.closest('.ui-field') !== null), true);
   await page.screenshot({path:'docs/validation/issue32/after-browser.png'});
   await page.locator('#action-back').click();
   assert.equal(await page.locator('#items .ui-row[aria-current=true]').evaluate(node => node === document.activeElement), true);
-  await page.getByRole('heading', {name:'Follow up with the reviewer', exact:true}).click();
+  await actionRow(page, 'Follow up with the reviewer').click();
   await page.locator('#action-status').selectOption('completed'); await page.locator('#action-save').click();
   await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   await closeSavedAction(page);
-  await page.locator('#action-filter').selectOption('todo'); await page.getByText('没有符合条件的行动。请调整搜索词或筛选条件。').waitFor(); assert.equal(await page.locator('.card').count(), 0);
+  await page.locator('#action-filter').selectOption('todo'); await page.getByText('没有符合条件的行动。请调整搜索词或筛选条件。').waitFor(); assert.equal(await page.locator('#items [data-entity-id]').count(), 0);
   await page.locator('#action-filter').selectOption('completed');
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state, #initiative-save-state').filter({hasText: /^已保存到本地$/}).filter({visible: true}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-history').click(); await page.waitForFunction(() => document.querySelectorAll('#action-revisions p').length === 3);
@@ -102,7 +104,7 @@ try {
   await page.locator('#action-status').selectOption('in-progress'); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('#action-filter').selectOption('');
-  await page.getByRole('heading', {name:'Follow up with the reviewer', exact:true}).click();
+  await actionRow(page, 'Follow up with the reviewer').click();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click(); await page.getByRole('button', {name: '移出当前重点', exact: true}).waitFor();
   await page.getByRole('button', {name: /^打开来源：/}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click(); await page.getByRole('button', {name: '加入当前重点', exact: true}).waitFor();
@@ -110,20 +112,20 @@ try {
   await page.locator('#action-save').click(); await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Unsaved navigation is saved before leaving', exact: true}).click();
+  await actionRow(page, 'Unsaved navigation is saved before leaving').click();
   await page.locator('#action-description').fill('Follow up with the reviewer');
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-history').click();
   await page.waitForFunction(() => document.querySelectorAll('#action-revisions details').length >= 8);
-  assert.equal(await page.locator('#items .card[aria-current="true"]').count(), 1);
+  assert.equal(await page.locator('#items [data-entity-id][aria-current="true"]').count(), 1);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click();
   await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   assert.equal(await page.locator('#reading input').first().isDisabled(),true); await page.locator('#mode').click(); await page.locator('#body').fill((await page.locator('#body').inputValue()).replace('[ ]','[x]'));
   await page.locator('#note-save').click();
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('todo');
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-status').inputValue(), 'todo');
   assert.equal(await page.locator('.source-quote').inputValue(), 'Run the sample command');
   await page.getByText('来源已修改，请核对引用', {exact:true}).waitFor();
@@ -137,11 +139,11 @@ try {
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   await rename(sourcePath, join(fixture.root, 'unavailable.fixture'));
   await closeSavedAction(page);
-  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源不可用，请重新关联', {exact:true}).waitFor();
   await rename(join(fixture.root, 'unavailable.fixture'), sourcePath);
   await closeSavedAction(page);
-  await page.getByRole('heading', {name:'Follow up with the reviewer',exact:true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   // Recover an externally moved source using the reference inventory fingerprints.
   const currentSource = await readFile(sourcePath, 'utf8');
   await page.locator('.action-source summary').click();
@@ -150,15 +152,15 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page);
   await rename(sourcePath, join(fixture.root, 'relocated.md'));
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.getByText('来源已移动', {exact: true}).waitFor();
-  assert.equal(await page.locator('.source-path').inputValue(), 'relocated.md');
-  await page.getByRole('button', {name: /^打开来源：/}).click(); await saveAndLeave(page);
+  assert.equal(await page.locator('.source-path').inputValue(), 'reference.md');
+  await page.getByRole('button', {name:'打开来源：relocated.md', exact:true}).click();
   await page.waitForFunction(() => document.querySelector('#file-path').textContent === 'relocated.md');
   await rename(join(fixture.root, 'relocated.md'), sourcePath);
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Follow up with the reviewer', exact: true}).click(); await page.locator('#action-drawer').waitFor({state:'visible'});
-  await page.getByText('来源已移动', {exact: true}).waitFor();
+  await actionRow(page, 'Follow up with the reviewer').click(); await page.locator('#action-drawer').waitFor({state:'visible'});
+  await page.getByRole('button', {name:'打开来源：reference.md', exact:true}).waitFor();
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   assert.equal(await readFile(sourcePath, 'utf8'), currentSource);
@@ -187,7 +189,7 @@ try {
   await page.locator('#note-info-open').click();
   const beforeInvalidRename = await readFile(sourcePath, 'utf8');
   await moveNote(page, '../outside.md');
-  await page.getByText('路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。', {exact: true}).waitFor();
+  await page.getByText('路径无效。请填写以 .md 结尾的相对路径。', {exact: true}).waitFor();
   assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
   assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
@@ -206,11 +208,11 @@ try {
   assert.ok(releaseConflictCopy,'copy submission reached the isolated bridge');
   holdConflictCopy=false;releaseConflictCopy();
   assert.equal((await left).allowed,true);
-  await page.waitForFunction(() => document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
+  await page.waitForFunction(() => !document.querySelector('#conflict').open && document.querySelector('#file-path').textContent.includes('-conflict-'));
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click(); await page.locator('#action-filter').selectOption('');
   await page.screenshot({path: 'build/actions-desktop.png'});
   await page.setViewportSize({width: 393, height: 852});
-  await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).click();
+  await actionRow(page, 'Draft retained after a failed save').click();
   await page.locator('#action-drawer').waitFor({state:'visible'});
   await page.locator('#action-description').focus();
   await page.keyboard.press('Tab');
@@ -272,12 +274,12 @@ try {
   holdActionQuery = false; releaseHeldQuery();
   await page.waitForFunction(() => window.__heldQueryDelivered === true);
   await page.waitForFunction(() => document.querySelector('#root-label').textContent === '正在打开目录…');
-  assert.equal(await page.locator('.card').count(), 0); assert.equal(await page.locator('#action-drawer').isVisible(), false);
+  assert.equal(await page.locator('#items [data-entity-id]').count(), 0); assert.equal(await page.locator('#action-drawer').isVisible(), false);
   const aWorkspace = (await fixture.adapter('workspace')).workspaceId;
   const aActions = (await fixture.adapter('actionQuery', {workspaceId: aWorkspace})).actions;
   assert.ok(aActions.every(action => action.entityId !== bAction.entityId));
   await page.locator('#search').fill(''); await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
-  await page.getByRole('heading', {name: 'Draft retained after a failed save', exact: true}).waitFor();
+  await actionRow(page, 'Draft retained after a failed save').waitFor();
   assert.deepEqual(errors, []);
   console.log('PASS: empty actions, offline create/edit/restart, state filters/reopen/history, source independence, draft recovery, note conflict preservation, mobile layout (Chromium UI + native Mac file/SQLite adapter; not WKWebView or Android SAF).');
 } finally { await browser.close(); await fixture.close(); await otherFixture.close(); }

@@ -3,6 +3,7 @@ import {flushSync} from 'react-dom';
 import {Button} from './components';
 import {Input} from './ui/input';
 import {Textarea} from './ui/textarea';
+import {Feedback} from './presentation';
 import {actionLabels, initiativeLabels, statusLabel} from '../presentation-labels.js';
 
 export interface Revision {revision:string; title?:string; description?:string; modifiedAt?:string; deleted?:boolean; [key:string]:unknown}
@@ -24,7 +25,6 @@ export function syncValue(key:string,value:unknown):string {
   if(key==='deleted')return value?'已删除':'保留';
   return typeof value==='object'?JSON.stringify(value,null,2):String(value);
 }
-function Feedback({message,detail=''}:{message:string;detail?:string}) {return <>{message&&<p>{message}</p>}{detail&&<details><summary>查看技术详情</summary><pre>{detail}</pre></details>}</>;}
 export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:ConflictRecord;callbacks:SyncCallbacks;inert?:boolean}) {
   const blocked=r.incomplete||r.cyclic;
   const keys=r.type==='initiative'?['title','goal','progress','status']:r.type==='action'?['description','status','dueDate','waitingOn','initiativeId','focusPosition']:r.type==='topic'?['description']:['description','placement','reasoning','relevance'];
@@ -58,7 +58,7 @@ export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:Co
     <div className="sync-branches">{r.tips.map(versionDetails)}</div>
     {history.length > 0 && <div className="sync-history"><h5>历史版本</h5>{history.map(versionDetails)}</div>}
     {r.hasDraft&&!r.selected&&<Button onClick={()=>c.recover(r.key)}>恢复未保存解决内容</Button>}
-    <h4>审核与编辑解决内容</h4><div id={statusId} role="status" data-state={r.saving?'saving':undefined}><Feedback message={r.invalid && !r.saving ? '' : r.message} detail={r.detail}/></div>
+    <h4>审核与编辑解决内容</h4><div id={statusId} role="status" data-state={r.saving?'saving':undefined}><Feedback message={r.invalid && !r.saving ? '' : r.message} diagnostic={r.detail}/></div>
     <div className="sync-editor grid min-w-0">{keys.map(key=><label className="ui-field" key={key}><span>{syncFields[key]}</span>{key==='status'?<select aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onChange={e=>c.edit(r.key,key,e.currentTarget.value)}>{Object.entries(r.type==='initiative'?initiativeLabels:actionLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select>:['dueDate','focusPosition'].includes(key)?<Input aria-label={syncFields[key]} type={key==='dueDate'?'date':'number'} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>:<Textarea rows={2} aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>}</label>)}</div>
     <details className="ui-disclosure" data-sync-json>
       <summary>高级：完整 JSON 与版本诊断{r.invalid && ' · JSON 格式无效'}</summary>
@@ -87,9 +87,9 @@ export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:Syn
     <div className="sync-controls"><Button onClick={c.close}>关闭检查</Button><Button className="secondary" data-sync-refresh disabled={m.running || Boolean(m.active)} onClick={c.refresh}>重新检查</Button></div>
   </header>
   <div className="sync-body">
-  <div role="status" className="ui-feedback" data-sync-status><Feedback message={m.message} detail={m.detail}/></div>
+  <div role="status" className="ui-feedback" data-sync-status><Feedback message={m.message} diagnostic={m.detail}/></div>
   {m.cacheWarning&&<p role="status" className="ui-feedback">{m.cacheWarning}</p>}
-  {m.warnings.length>0&&<div className="ui-feedback"><Feedback message="部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。" detail={m.warnings.join('\n')}/></div>}
+  {m.warnings.length>0&&<div className="ui-feedback"><Feedback message="部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。" diagnostic={m.warnings.join('\n')}/></div>}
   {m.records.length > 0 && <nav className="sync-records" aria-label="冲突记录"><h3>冲突记录</h3>
     {m.records.map(r => <Button key={r.key} className="quiet ui-row" disabled={m.running || Boolean(m.active && m.active !== r.key) || r.saving} onClick={() => c.jump(r.key)}>{r.name}</Button>)}
   </nav>}
@@ -98,4 +98,16 @@ export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:Syn
   </div>
 </>;}
 export function syncView(container:HTMLElement,callbacks:SyncCallbacks) {const root=createRoot(container);return {render(model:SyncModel){flushSync(()=>root.render(<SyncContent model={model} callbacks={callbacks}/>));}};}
-export function fileConflictView(container:HTMLElement,copy:()=>unknown,reload:()=>unknown) {const root=createRoot(container);flushSync(()=>root.render(<div className="dialog ui-panel ui-dialog"><h2 id="conflict-heading">文件在其他地方发生了修改</h2><p>你的编辑还在这里。可以另存一份，也可以查看磁盘上的版本。</p><Button busyOnAction id="copy" className="primary" onClick={copy}>将我的编辑另存为副本</Button><Button busyOnAction id="reload" onClick={reload}>载入磁盘版本（放弃当前编辑）</Button></div>));}
+export function FileConflictContent({copy,reload}:{copy:()=>unknown;reload:()=>unknown}) {
+  return <><h2 id="conflict-heading">文件已在外部修改</h2>
+    <p>当前编辑仍保留。可以另存一份，或载入磁盘版本。</p>
+    <div id="file-conflict-status" role="status"/>
+    <div className="sync-controls">
+      <Button busyOnAction id="copy" className="primary" onClick={copy}>将我的编辑另存为副本</Button>
+      <Button busyOnAction id="reload" onClick={reload}>载入磁盘版本（放弃当前编辑）</Button>
+    </div></>;
+}
+export function fileConflictView(container:HTMLElement,copy:()=>unknown,reload:()=>unknown) {
+  const root=createRoot(container);
+  flushSync(()=>root.render(<FileConflictContent copy={copy} reload={reload}/>));
+}

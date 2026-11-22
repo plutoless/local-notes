@@ -215,7 +215,10 @@ try {
   await page.locator('#action-form').evaluate(node=>{node.dispatchEvent(new Event('submit',{cancelable:true}));node.dispatchEvent(new Event('submit',{cancelable:true}));});
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),true);
   releaseAction(); await page.locator('#action-drawer').waitFor({state:'hidden'});
-  await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  const savedAction = page.locator('#items button[data-entity-id]').filter({
+    has: page.getByText('抽屉行动真实保存', {exact:true}),
+  });
+  await savedAction.click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   for (const [width,height] of [[1180,800],[393,800],[393,340]]) {
     await page.setViewportSize({width,height});
@@ -227,7 +230,7 @@ try {
   await page.keyboard.press('Escape');
   await page.locator('#action-new').click(); await page.locator('#action-back').click();
   assert.equal(await page.locator('#action-new').evaluate(node=>node===document.activeElement),true,'Clean cancel restores the New action opener, not the prior selection');
-  await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  await savedAction.click();
   await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-description').inputValue(),'抽屉行动真实保存');
   await page.keyboard.press('Escape');
@@ -326,6 +329,28 @@ try {
   await topics.recover();
   const movedTopic = (await topics.query()).actions.find(topic => topic.entityId === linkedTopic.entityId);
   assert.deepEqual(movedTopic.sources.map(source => source.path),['moved.md']);
+  // A previously submitted capture owns its leave result even if another task opens.
+  await page.locator('[data-view=focus]').click();
+  await page.locator('#new').click();
+  await page.locator('#capture-title').fill('保存后延迟返回的笔记');
+  holdCreate = true;
+  await page.getByRole('button',{name:'创建笔记',exact:true}).click();
+  await page.waitForFunction(() => document.querySelector('#note-task-form').inert);
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => window.captureLeavePending());
+  const delayedReveal = new Promise(resolve => { revealReached = resolve; });
+  holdReveal = true;
+  releaseCreate();
+  await delayedReveal;
+  await page.locator('#new').click();
+  await page.locator('#capture-title').fill('后打开的草稿');
+  releaseReveal();
+  await page.waitForFunction(() => !window.captureLeavePending() || document.querySelector('#task-leave-decision'));
+  assert.equal(await page.locator('#task-leave-decision').count(),0, 'The earlier leave cannot ask to save or discard the new draft');
+  assert.equal(await page.locator('#capture-title').inputValue(),'后打开的草稿');
+  assert.equal(await page.locator('#capture-title').evaluate(node=>node===document.activeElement),true);
+  await page.keyboard.press('Escape');
+  await page.getByRole('button',{name:'放弃更改并离开', exact:true}).click();
   const hashes = async (root, prefix = '') => {
     const entries = [];
     for (const name of await readdir(join(root, prefix))) {
@@ -337,7 +362,7 @@ try {
   };
   await mkdir('build/issue105', {recursive:true});
   await writeFile('build/issue105/application-storage.json', JSON.stringify({
-    captureMarkdownReadback:true, recoveredCommittedNoDuplicate:true, draftReload:true,
+    captureMarkdownReadback:true, recoveredCommittedNoDuplicate:true, draftReload:true, newerCaptureRetained:true,
     readerDiscardSourceUnchanged:true, readerReopen:true, topicRecordRecoveryReadback:true,
     sharedBridge:'NotesNative.request -> exposed bridge -> isolated filesystem / Swift StorageHarness',
     nativeTransportExercised:false, synchronizedFiles:await hashes(fixture.root), privateIndexFiles:await hashes(fixture.privateRoot),

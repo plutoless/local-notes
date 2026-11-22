@@ -104,7 +104,9 @@ try {
   await page.locator('#editor').waitFor({state:'visible'});
   await page.locator('#note-info-open').click();
   await page.locator('#star').click();
-  assert.equal(await page.locator('#star').getAttribute('aria-label'), '取消收藏笔记');
+  const removeFavorite = page.getByRole('button', {name:'取消收藏笔记', exact:true});
+  await removeFavorite.waitFor();
+  assert.equal(await removeFavorite.getAttribute('aria-pressed'), 'true');
   await closeNoteInfo(page); await page.locator('#back').click();
   await page.locator('[data-view=favorites]').click();
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).waitFor();
@@ -149,7 +151,7 @@ try {
   await page.locator('#mode').click(); await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('我的编辑仍保留');
   const movedPath=join(fixture.root,'工作资料/中文长路径笔记.md'); await writeFile(movedPath,'# 外部版本\n\n外部修改');
   await page.locator('#conflict').waitFor({state:'visible'}); await page.screenshot({path:join(evidence, 'after-conflict.png')});
-  await page.locator('#copy').click(); await page.waitForFunction(()=>document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
+  await page.locator('#copy').click(); await page.waitForFunction(()=>!document.querySelector('#conflict').open && document.querySelector('#file-path').textContent.includes('-conflict-'));
   assert.equal(await readFile(movedPath,'utf8'),'# 外部版本\n\n外部修改');
   const copied=await page.locator('#file-path').textContent();
   // Explicitly seed a recoverable draft to model process loss before autosave.
@@ -200,21 +202,25 @@ try {
     const {fingerprint} = await import('../web/initiatives.js');
     const repository = new ActionRepository(fixture.adapter); await repository.open();
     const sourceText = await readFile(join(fixture.root,path),'utf8');
-    await repository.save({description:'从行动打开资料再返回',status:'todo',sources:[{path,quote:sourceText.trim(),fingerprint:fingerprint(sourceText)}]});
+    const {record} = await repository.save({description:'从行动打开资料再返回',status:'todo',sources:[{path,quote:sourceText.trim(),fingerprint:fingerprint(sourceText)}]});
     await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
     await page.locator('#search').fill('打开资料');
-    await page.getByRole('heading',{name:'从行动打开资料再返回',exact:true}).click();
+    const savedAction = page.locator(`#items button[data-entity-id="${record.entityId}"]`).filter({
+      has:page.getByText('从行动打开资料再返回',{exact:true}),
+    });
+    const sourceControl = page.getByRole('button',{name:`打开来源：${path}`,exact:true});
+    await savedAction.click();
     await page.locator('#action-source-options').evaluate(node=>node.open=true);
-    await page.getByRole('button',{name:/^打开来源：/}).click();
+    await sourceControl.click();
     await page.locator('#editor').waitFor({state:'visible'});
     await closeNoteInfo(page); await page.locator('#back').click();
     await page.locator('#action-drawer').waitFor({state:'visible'});
     await page.waitForFunction(()=>document.querySelector('#search').value==='打开资料');
     assert.equal(await page.locator('#search').inputValue(),'打开资料');
     assert.equal(await page.locator('#action-description').inputValue(),'从行动打开资料再返回');
-    assert.equal(await page.locator('#action-description').evaluate(node=>node===document.activeElement),true);
+    await page.waitForFunction(path=>document.activeElement.dataset.actionSourcePath===path,path);
     await page.locator('#action-source-options').evaluate(node=>node.open=true);
-    await page.getByRole('button',{name:/^打开来源：/}).click();
+    await sourceControl.click();
     await page.locator('#editor').waitFor({state:'visible'});
     alternateFixture = await storageFixture();
     await page.locator('.directory-details').evaluate(node=>node.open=true);

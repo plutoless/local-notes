@@ -1,11 +1,12 @@
 import {createRoot} from 'react-dom/client';
 import {Input} from './ui/input';
+import {Button} from './components';
 import {flushSync} from 'react-dom';
 /** Mount-once document slots: feature views own their descendants. */
 export function mountDocument(container:HTMLElement) {
   const root=createRoot(container);
   flushSync(()=>root.render(<>
-    <header className="global-header"><button id="global-search-open" className="ui-action quiet ui-compact" aria-haspopup="dialog" aria-controls="global-search" aria-keyshortcuts="Meta+K Control+K">搜索内容 <kbd aria-hidden="true">⌘K</kbd></button></header>
+    <header className="global-header"><Button id="global-search-open" className="quiet ui-compact" aria-haspopup="dialog" aria-controls="global-search" aria-keyshortcuts="Meta+K Control+K">搜索内容 <kbd aria-hidden="true">⌘K</kbd></Button></header>
     <div className="app home">
       <aside id="shell" className="shell"></aside>
       <section className="collection">
@@ -24,7 +25,7 @@ export function mountDocument(container:HTMLElement) {
             <h2 id="ai-review-title">核对已保存的建议</h2>
             <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
             <div id="ai-results"></div>
-            <div className="organization-actions ui-pagination"><button id="ai-results-previous" className="ui-action secondary">上一页建议</button><button id="ai-results-next" className="ui-action secondary">下一页建议</button></div>
+            <div className="organization-actions ui-pagination"><Button id="ai-results-previous" className="secondary">上一页建议</Button><Button id="ai-results-next" className="secondary">下一页建议</Button></div>
           </section>
         </div>
 
@@ -38,27 +39,20 @@ export function mountDocument(container:HTMLElement) {
         <div id="workspace-detail">
         <div id="empty" className="empty">
           <h2>尚未打开内容</h2>
-          <p>从列表选择内容，或使用「新建」开始记录。</p>
+          <p>从列表选择内容，或打开「随手记」。</p>
         </div>
         <div id="editor" hidden={true}>
 
         </div>
         <div id="action-editor" hidden={true}></div>
         <div id="initiative-editor" hidden={true}>
-          <div className="toolbar"><button className="ui-action quiet" id="initiative-back">‹ 行动与资料</button></div>
+          <div className="toolbar"><Button id="initiative-back">‹ 行动与资料</Button></div>
 
         </div>
         </div>
       </main>
     </div>
     <div id="notice" role="status" hidden={true}></div>
-    <div
-      id="conflict"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="conflict-heading"
-      hidden={true}
-    >
-    </div>
+    <dialog id="conflict" className="ui-panel ui-modal" aria-labelledby="conflict-heading"/>
 </>));
 }

@@ -8,7 +8,7 @@ import {SearchContent} from './search';
 import type {SearchRow, SearchScope} from './search-model';
 import {Button} from './components';
 import {CandidateReviewContent} from './candidate-review';
-import {ConflictComparison, type ConflictRecord, type SyncCallbacks} from './sync';
+import {FileConflictContent, SyncContent, type ConflictRecord, type SyncCallbacks} from './sync';
 import {ReferenceDesk} from './reader';
 import {LeaveContent} from './overlays';
 import {Input} from './ui/input';
@@ -39,13 +39,13 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const alternateRevision={...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'};
   const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,alternateRevision],tips:[revision,alternateRevision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
-  root.render(<><h2>React 笔记库组件</h2><p>实际生产按钮、列表行与语义样式；不访问笔记或保存记录。</p>
+  root.render(<><h2>Library and reading</h2>
     <div className="flex flex-wrap gap-2"><Button className="primary">主要操作</Button><Button className="secondary">保存笔记</Button><Button className="quiet ui-compact">次要操作</Button><Button disabled>暂不可用</Button></div>
-    <h2>阅读来源与离开决定</h2><ReferenceDesk path="研究/同名资料/中文长路径.md" hidden={false} collapse={noop} organize={noop}/>
+    <h3>Reference desk</h3><ReferenceDesk path="研究/同名资料/中文长路径.md" hidden={false} collapse={noop} organize={noop}/>
     <label>笔记标题<Input aria-label="示例笔记标题" defaultValue="明确编辑与阅读"/></label><label>Markdown 正文<Textarea aria-label="示例笔记正文" defaultValue="## 保留原文"/></label>
     <LeaveContent model={{label:'笔记',failure:'保存失败，编辑仍保留。',committed:false}} choose={noop}/>
     <LibraryRows notes={[{path:'研究/中文长路径.md',title:'这是用于检查长中文标题换行与键盘选中状态的笔记标题',excerpt:'逐字保留来源摘要；生产列表不会在组件内访问存储。',modified:1000}]} directories={[]} selectedPath="研究/中文长路径.md" empty="" root={false} open={()=>{}} browse={()=>{}}/>
-    <h2>React 随手记、位置与主题归类</h2>
+    <h2>Capture, location and classification</h2>
     <section className="note-task-sheet">
       <div className="ui-drawer-body">
       <form id="catalogue-note-task" className="note-task-form" onSubmit={event => event.preventDefault()}>
@@ -61,7 +61,7 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
       </div>
       <div className="ui-drawer-footer"><TaskFormActions formId="catalogue-note-task" cancel={noop} submitLabel="保存"/></div>
     </section>
-    <h2>React 行动组件</h2>
+    <h2>Actions, sources and history</h2>
     <ActionRows rows={[
       {entityId:'catalogue-action',description:'核对研究资料并记录下一步'.repeat(5),status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'},
       {entityId:'catalogue-action-done',description:'核对来源路径',status:'completed',sources:[],overdue:false,initiativeName:'研究事项'}
@@ -72,26 +72,28 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <section aria-label="行动历史示例">
       <ActionHistory records={[{...revision,entityId:'catalogue-action',workspaceId:'synthetic',focusPosition:null,sources:[],parents:[]}]}/>
     </section>
-    <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
+    <h2>Navigation and Current Focus</h2>
     <div className="app home"><aside className="shell"><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><div id="items"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[{entityId:'catalogue-waiting',description:'等待确认资料范围',status:'waiting',waitingOn:'等待对方回复',focusPosition:null}],hasMore:false},initiatives:{actions:[{entityId:'catalogue-current',title:'核对研究资料',progress:'已整理目录，下一步核对来源。'}],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}},{path:'归档/'+ '长文件名'.repeat(16)+'.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></div></section></div>
-    <h2>整理来源与发送预览</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/>
-    <h2>设备服务设置</h2><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
-    <h2>React 建议证据审核</h2><CandidateReviewContent model={{busy:false,destinations:[{entityId:'example',title:'已有的长期研究事项'}],cards:[{record:{entityId:'catalogue-candidate',workspaceId:'synthetic',revision:'example',description:'逐条核对历史计划与长中文证据后再明确确认下一步'.repeat(3),candidateType:'action',placement:'独立行动',reasoning:'原文提到核对资料，未确认当前承诺。',relevance:'当前适用性无法确认',sources:[{path:'研究/长中文来源.md',quote:'- [ ] 历史计划仅供核对，不会自动转成行动',start:0,end:30,fingerprint:'synthetic-fingerprint',fragmentId:'synthetic'}]},description:'',target:'example',dirty:true,disclosures:{'确认前编辑建议':true}}]}} callbacks={{activate:noop,edit:noop,target:noop,disclosure:noop,source:noop,decide:noop,recover:noop}}/>
-    <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
+    <h2>Organization and outbound preview</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/>
+    <h3>Device service settings</h3><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
+    <h3>Candidate evidence review</h3><CandidateReviewContent model={{busy:false,destinations:[{entityId:'example',title:'已有的长期研究事项'}],cards:[{record:{entityId:'catalogue-candidate',workspaceId:'synthetic',revision:'example',description:'逐条核对历史计划与长中文证据后再明确确认下一步'.repeat(3),candidateType:'action',placement:'独立行动',reasoning:'原文提到核对资料，未确认当前承诺。',relevance:'当前适用性无法确认',sources:[{path:'研究/长中文来源.md',quote:'- [ ] 历史计划仅供核对，不会自动转成行动',start:0,end:30,fingerprint:'synthetic-fingerprint',fragmentId:'synthetic'}]},description:'',target:'example',dirty:true,disclosures:{'确认前编辑建议':true}}]}} callbacks={{activate:noop,edit:noop,target:noop,disclosure:noop,source:noop,decide:noop,recover:noop}}/>
+    <h2>Synchronization and file conflicts</h2>
+    <section className="sync-panel ui-panel"><SyncContent model={{records:[conflict],warnings:[],running:false,checked:true,active:conflict.key,message:'',detail:''}} callbacks={syncCallbacks}/></section>
+    <section className="ui-panel" aria-labelledby="conflict-heading"><FileConflictContent copy={noop} reload={noop}/></section>
 
     <section aria-label="事项工作区示例">
-      <h2>React 事项上下文</h2>
+      <h2>Initiative workspace</h2>
       <InitiativeRows records={[initiative]} selected={initiative.entityId} empty="" open={noop}/>
       <InitiativeSummary record={initiative}/>
       <InitiativeLinks sources={[
         {path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'},
         {path:'归档/迁移前资料.md',quote:'保留原文',fingerprint:'example',role:'reference',warning:'来源已移至 归档/迁移后资料.md，请核对后保存。',resolvedPath:'归档/迁移后资料.md'}
       ]} selected="研究/长中文参考资料.md" open={noop}/>
-      <h3>事项编辑与结束</h3>
+      <h3>Editing and lifecycle decisions</h3>
       <div className="ui-drawer-body"><InitiativeEditor example/></div>
       <InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
     </section>
-    <h2>React 全局搜索</h2><SearchCatalogue/>
+    <h2>Global search</h2><SearchCatalogue/>
   </>);
   return ()=>root.unmount();
 }

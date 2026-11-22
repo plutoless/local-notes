@@ -10,7 +10,7 @@ export function actionControl(text:string, run:()=>unknown, {variant='quiet',lab
   return {host, control:host.querySelector<HTMLButtonElement>('button')!, dispose(){flushSync(()=>root.unmount());host.remove();}};
 }
 export function Feedback({message,diagnostic=''}:{message:string;diagnostic?:string}) {
-  return <><p>{message}</p>{diagnostic&&<details><summary>查看技术详情</summary><pre>{diagnostic}</pre></details>}</>;
+  return <>{message&&<p>{message}</p>}{diagnostic&&<details><summary>查看技术详情</summary><pre>{diagnostic}</pre></details>}</>;
 }
 const receipts=new WeakMap<HTMLElement,Root>();
 /** The target is a controller-owned receipt slot; React owns only its content host. */

@@ -18,11 +18,8 @@ export function drawerContent(panel: HTMLDialogElement, id: string, initialTitle
   // Stable empty slots preserve nested view roots through title changes.
   const render = (title:string) => flushSync(() => root.render(<><header className="ui-drawer-header">
     <h2 className="ui-heading" id={`${id}-title`}>{title}</h2>
-    <button type="button" className="ui-action quiet ui-compact" aria-label={`关闭${title}`} ref={node => { close = node; }} onClick={async event => {
-      const control = event.currentTarget;
-      control.disabled = true;
-      try { await dismiss(); } finally { control.disabled = false; }
-    }}>关闭</button>
+    <Button className="quiet ui-compact" aria-label={`关闭${title}`} ref={node => { close = node; }}
+      busyOnAction onClick={dismiss}>关闭</Button>
   </header><div className="ui-drawer-body" ref={node => { body = node; }}/><footer className="ui-drawer-footer" ref={node => { footer = node; }}/></>));
   render(initialTitle);
   return {body: body!, footer: footer!, close: close!, setTitle: render};
@@ -42,5 +39,5 @@ export function LeaveContent({model, choose}: {model: LeaveModel; choose: (choic
 export function leaveContent(panel: HTMLDialogElement, model: LeaveModel, choose: (choice: LeaveChoice) => void) {
   const root = createRoot(panel);
   flushSync(() => root.render(<LeaveContent model={model} choose={choose}/>));
-  return {keep: panel.querySelector<HTMLButtonElement>('button')!, footer: panel.querySelector<HTMLElement>('.ui-actions')!, dispose() {flushSync(() => root.unmount());}};
+  return {keep: panel.querySelector<HTMLButtonElement>('button')!, dispose() {flushSync(() => root.unmount());}};
 }

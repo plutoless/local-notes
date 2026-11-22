@@ -63,7 +63,7 @@ try {
   const css=getComputedStyle(document.documentElement);
   const luminance=hex=>{const c=hex.trim().slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
   const ratio=(a,b)=>{const [x,y]=[luminance(css.getPropertyValue('--'+a)),luminance(css.getPropertyValue('--'+b))].sort((a,b)=>b-a);return (x+.05)/(y+.05);};
-  return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected'].map(bg=>ratio(t,bg)))]));
+  return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected','passage-selected','hover','pressed'].map(bg=>ratio(t,bg)))]));
  });
  for(const [token,ratio] of Object.entries(ratios))assert.ok(ratio>=(['line','focus'].includes(token)?3:4.5),`${token}: ${ratio}`);
  const selected=page.locator('#react-library .ui-row.selected').first();await selected.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');
@@ -88,6 +88,24 @@ try {
  await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-393.png` : 'docs/validation/issue31/catalogue-393.png',fullPage:true});
  await page.emulateMedia({reducedMotion:'reduce'});
  assert.equal(await page.locator('#actions button').first().evaluate(n=>getComputedStyle(n).transitionDuration),'0s');
+ const rgb = hex => 'rgb(' + hex.slice(1).match(/../g).map(value=>parseInt(value,16)).join(', ') + ')';
+ for (const [label,hover,pressed] of [
+  ['主要操作','--accent-hover','--accent-hover'],
+  ['保存笔记','--hover','--pressed'],
+ ]) {
+  const button=page.locator('#react-library').getByRole('button',{name:label,exact:true}).first();
+  await button.hover();
+  const fill=async token=>button.evaluate((node,property)=>[
+    getComputedStyle(node).backgroundColor,
+    getComputedStyle(document.documentElement).getPropertyValue(property).trim(),
+  ],token);
+  const [hoverFill,hoverToken]=await fill(hover);
+  assert.equal(hoverFill,rgb(hoverToken));
+  await page.mouse.down();
+  const [pressedFill,pressedToken]=await fill(pressed);
+  await page.mouse.up();
+  assert.equal(pressedFill,rgb(pressedToken));
+ }
  assert.equal(errors.length,0,errors.join('\n'));
  console.log('Catalogue rendering, live tokens, contrast minima, dialog restoration, 393px and reduced motion passed',ratios);
 } finally {await browser.close();}

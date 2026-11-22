@@ -7,7 +7,7 @@ Search uses the delivered pinned React/TypeScript/Tailwind pipeline and the exis
 | Surface / contract | Owner | Boundary |
 | --- | --- | --- |
 | Dialog contents, input, scopes, result rows/highlighting, status, paging, attribution | `SearchContent` / `searchView` in `web/react/search.tsx` | One React root in the dialog; data and callbacks only, no storage, requests or global listeners |
-| Native HTML dialog element, show/close, input/composition events, one document Command+K handler and reference-change subscription | Application-lifetime `SearchScreen` | Existing `bindDialog` contains Tab; no new overlay family or competing trap |
+| Native HTML dialog element, show/close, input/composition events, one document Command+K handler and reference-change subscription | Application-lifetime `SearchScreen` | Existing `bindModal` contains Tab; no new overlay family or competing trap |
 | Query, selected source, expansion, scroll, clipboard receipts and source-return continuation | `SearchScreen`, typed `SearchModel`, `SearchRow` and `SearchNavigation` contracts | The controller may address stable input/checkbox values, focus, scroll and result inertness; it never constructs or writes React content |
 | Exact typed source identities and expanded-context reuse | `SearchResult` discriminated note/record union; `searchRows` | Expansion survives only the same workspace/type/entity/passage identity, source fingerprint/revision and query |
 | Bounded keyword/multi-entity indexes, source validation, reads, copy bridge request | Unchanged `WorkspaceSearch`, repositories and existing native bridge | Existing generation fences, revisions, grounding and error handling remain authoritative |
