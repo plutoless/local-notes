@@ -36,6 +36,11 @@ try {
  await search.getByRole('button',{name:'事项',exact:true}).click();
  assert.equal(await search.getByRole('status').textContent(),'没有匹配的内容');
  await search.getByRole('button',{name:'笔记',exact:true}).click();
+ const action=page.locator('[data-entity-id="catalogue-action"]');
+ assert.equal(await action.getAttribute('aria-current'),'true');
+ for(const label of ['等待中','已逾期','等待：等待对方确认']) assert.ok((await action.textContent()).includes(label));
+ assert.equal(await page.getByRole('region',{name:'行动来源示例'}).locator('blockquote').textContent(),'- [ ] 核对 **原始研究资料**\n  再确认具体行动。');
+ assert.match(await page.getByRole('region',{name:'行动历史示例'}).textContent(),/创建行动/);
  const home=page.locator('#react-library .home #items');
  assert.equal(await home.evaluate(node=>getComputedStyle(node).display),'grid');
  const reading=home.getByRole('button',{name:'继续阅读：保留原文身份并继续阅读',exact:true});
