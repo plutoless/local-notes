@@ -67,7 +67,13 @@ try {
   + outbound[0][0].content + '\n\n用户消息（每个片段一次请求）：\n'
   + outbound.map(messages => messages[1].content).join('\n\n'));
  await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 6); assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
- mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2'); await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12); assert.equal(await page.locator('.suggestion-card').count(), 12);
+ assert.match(await page.locator('#ai-help').textContent(), /只会向所设服务发送剩余 1 个片段/);
+ assert.deepEqual(await page.locator('#ai-readable article p').allTextContents(), ['已完成', '待完成']);
+ mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2');
+ assert.equal(requests, 3);
+ assert.deepEqual(outbound[2], outbound[1], 'Continuing sends only the unfinished request');
+ await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12);
+ assert.equal(await page.locator('.suggestion-card').count(), 12);
  await card(0).getByText('确认前编辑建议', {exact:true}).click();
  await card(0).getByLabel('编辑建议', {exact:true}).fill('');
  await card(0).getByRole('button', {name:/^确认此建议：/}).click(); await status('建议内容不能为空');

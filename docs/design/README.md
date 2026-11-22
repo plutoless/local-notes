@@ -115,7 +115,8 @@ record details. Device settings retain the shared contextual task.
 
 Organization consumes the existing shadcn/ui Input, Textarea and Field ports,
 with the existing semantic border, error and keyboard focus rules. See the
-[shared source and adaptations](issue123/ADOPTION.md). Native selects, checkboxes
+[Input and Textarea adaptations](issue123/ADOPTION.md) and
+[Field provenance](form-entry-points.md). Native selects, checkboxes
 and disclosures retain their platform semantics and existing controller ports.
 The production catalogue includes selected scope, a populated preview, device
 credentials in their saved state, and an invalid Candidate edit with source
