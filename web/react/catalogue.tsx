@@ -36,7 +36,8 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const organizationCallbacks:OrganizationCallbacks={search:noop,directory:noop,select:noop,page:noop,retry:noop,preview:noop,send:noop,cancel:noop,configure:noop,setting:noop,save:noop};
   const revision={revision:'catalogue-revision',description:'逐字保留需要人工核对的长中文来源与行动内容'.repeat(3),status:'todo',modifiedAt:'2026-11-20'};
   const initiative:InitiativeRecord={entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(4),goal:'核对原文',progress:'已核对来源路径。',status:'active',sources:[]};
-  const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,{...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'}],tips:[revision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
+  const alternateRevision={...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'};
+  const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,alternateRevision],tips:[revision,alternateRevision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
   root.render(<><h2>React 笔记库组件</h2><p>实际生产按钮、列表行与语义样式；不访问笔记或保存记录。</p>
     <div className="flex flex-wrap gap-2"><Button className="primary">主要操作</Button><Button className="secondary">保存笔记</Button><Button className="quiet ui-compact">次要操作</Button><Button disabled>暂不可用</Button></div>

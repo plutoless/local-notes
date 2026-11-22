@@ -1,6 +1,8 @@
 import {createRoot} from 'react-dom/client';
 import {flushSync} from 'react-dom';
 import {Button} from './components';
+import {Input} from './ui/input';
+import {Textarea} from './ui/textarea';
 import {actionLabels, initiativeLabels, statusLabel} from '../presentation-labels.js';
 
 export interface Revision {revision:string; title?:string; description?:string; modifiedAt?:string; deleted?:boolean; [key:string]:unknown}
@@ -26,32 +28,74 @@ function Feedback({message,detail=''}:{message:string;detail?:string}) {return <
 export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:ConflictRecord;callbacks:SyncCallbacks;inert?:boolean}) {
   const blocked=r.incomplete||r.cyclic;
   const keys=r.type==='initiative'?['title','goal','progress','status']:r.type==='action'?['description','status','dueDate','waitingOn','initiativeId','focusPosition']:r.type==='topic'?['description']:['description','placement','reasoning','relevance'];
-  const disabled=blocked||!r.selected||r.committed;
+  const editorDisabled=!r.selected||r.committed||r.saving;
+  const saveDisabled=blocked||!r.selected;
   const statusId=`sync-resolution-${r.type}-${r.id}`;
-  return <article aria-label={r.name} data-sync-key={r.key} data-record-id={r.id} data-entity-type={r.type} data-selected-revision={r.selected||undefined} inert={inert||r.saving}>
-    <h3 tabIndex={-1}>{r.name}</h3><p>{r.cyclic?'版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。':r.incomplete?'缺少前序版本，暂不能保存。请等待文件到达后重新检查。':'发现冲突版本，请比较后选择或合并。'}</p><h4>1. 比较版本</h4>
-    {r.versions.map((version,index)=><details className="sync-version ui-disclosure" key={version.revision} open={r.tips.some(t=>t.revision===version.revision)||undefined}>
-      <summary>版本 {index+1} · {version.title||version.description} · {r.tips.some(t=>t.revision===version.revision)?'待解决分支':'历史版本'}</summary>
-      <p>修改时间：{version.modifiedAt}；{version.deleted?'已删除':'保留记录'}</p><dl>{Object.entries(syncFields).filter(([key])=>Object.hasOwn(version,key)).map(([key,label])=><div key={key} className={`ui-comparison-row${r.versions.some(other=>JSON.stringify(other[key])!==JSON.stringify(version[key]))?' changed':''}`}><dt>{label}{r.versions.some(other=>JSON.stringify(other[key])!==JSON.stringify(version[key]))?' · 有差异':''}</dt><dd>{syncValue(key,version[key])}</dd></div>)}</dl>
-      <Button className="secondary" disabled={blocked||r.committed} aria-label={`${r.name}：选择版本 ${index+1}`} data-revision={version.revision} aria-pressed={r.selected===version.revision} onClick={()=>c.choose(r.key,version.revision)}>选择版本 {index+1}</Button>
-    </details>)}
-    {r.hasDraft&&!r.selected&&<Button onClick={()=>c.recover(r.key)} disabled={blocked}>恢复未保存解决内容</Button>}
-    <h4>2. 审核与编辑解决内容</h4><div id={statusId} role="status" data-state={r.saving?'saving':undefined}><Feedback message={r.message} detail={r.detail}/></div>
-    <div className="sync-editor grid min-w-0">{keys.map(key=><label className="ui-field" key={key}><span>{syncFields[key]}</span>{key==='status'?<select aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={disabled||r.invalid} onChange={e=>c.edit(r.key,key,e.currentTarget.value)}>{Object.entries(r.type==='initiative'?initiativeLabels:actionLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select>:['dueDate','focusPosition'].includes(key)?<input aria-label={syncFields[key]} type={key==='dueDate'?'date':'number'} data-field={key} value={String(r.value[key]??'')} disabled={disabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>:<textarea aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={disabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>}</label>)}</div>
-    <details className="ui-disclosure"><summary>高级：完整 JSON 与版本诊断</summary><pre>{JSON.stringify({entityId:r.id,tips:r.tips.map(t=>t.revision),versions:r.versions},null,2)}</pre><textarea rows={12} aria-label="合并版本 JSON" aria-describedby={statusId} aria-invalid={r.invalid} disabled={disabled} value={r.json} onInput={e=>c.edit(r.key,'json',e.currentTarget.value)} onChange={()=>{}}/></details>
-    <Button className="danger" disabled={!r.selected||r.saving} onClick={()=>c.discard(r.key)}>放弃编辑</Button>
-    <p>保存会创建引用全部待解决分支的新版本；原始历史和来源笔记均保留。删除状态、来源引用和审核决定沿用所选版本，可在高级详情核对。</p>
-    <Button className="primary" disabled={disabled&&!r.committed} onClick={()=>c.save(r.key)}>3. 保存解决结果到本地</Button>
+  const tips = new Set(r.tips.map(version => version.revision));
+  const differences = new Set(Object.keys(syncFields).filter(key =>
+    r.tips.some(version => JSON.stringify(version[key]) !== JSON.stringify(r.tips[0]?.[key]))));
+  function versionDetails(version:Revision) {
+    const index = r.versions.findIndex(entry => entry.revision === version.revision);
+    const tip = tips.has(version.revision);
+    const selected = r.selected === version.revision;
+    return <details className="sync-version ui-disclosure" data-selected={selected || undefined} key={version.revision} open={tip || undefined}>
+      <summary>版本 {index + 1} · {tip ? '待解决分支' : '历史版本'}{selected && ' · 已选择'}</summary>
+      <p className="sync-version-meta">{version.modifiedAt || '时间未知'} · {version.deleted ? '已删除' : '保留记录'}</p>
+      <dl>{Object.entries(syncFields).filter(([key]) => Object.hasOwn(version,key) || (tip && differences.has(key))).map(([key,label]) =>
+        <div key={key} className={`ui-comparison-row${tip && differences.has(key) ? ' changed' : ''}`}>
+          <dt>{label}{tip && differences.has(key) && ' · 有差异'}</dt><dd>{syncValue(key,version[key])}</dd>
+        </div>)}</dl>
+      <Button className="secondary" disabled={blocked || r.committed || r.saving || Boolean(r.selected && !selected)}
+        aria-label={`${r.name}：选择版本 ${index + 1}`} data-revision={version.revision} aria-pressed={selected}
+        onClick={() => c.choose(r.key,version.revision)}>选择版本 {index + 1}</Button>
+    </details>;
+  }
+  const history = r.versions.filter(version => !tips.has(version.revision));
+  return <article aria-label={r.name} data-sync-key={r.key} data-record-id={r.id} data-entity-type={r.type} data-selected-revision={r.selected||undefined} inert={inert}>
+    <h3 tabIndex={-1}>{r.name}</h3>
+    <p className="sync-record-state" data-blocked={blocked || undefined}>{r.cyclic?'版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。':r.incomplete?'缺少前序版本，暂不能保存。请等待文件到达后重新检查。':'发现冲突版本，请比较后选择或合并。'}</p>
+    <h4>比较版本</h4>
+    <div className="sync-branches">{r.tips.map(versionDetails)}</div>
+    {history.length > 0 && <div className="sync-history"><h5>历史版本</h5>{history.map(versionDetails)}</div>}
+    {r.hasDraft&&!r.selected&&<Button onClick={()=>c.recover(r.key)}>恢复未保存解决内容</Button>}
+    <h4>审核与编辑解决内容</h4><div id={statusId} role="status" data-state={r.saving?'saving':undefined}><Feedback message={r.invalid && !r.saving ? '' : r.message} detail={r.detail}/></div>
+    <div className="sync-editor grid min-w-0">{keys.map(key=><label className="ui-field" key={key}><span>{syncFields[key]}</span>{key==='status'?<select aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onChange={e=>c.edit(r.key,key,e.currentTarget.value)}>{Object.entries(r.type==='initiative'?initiativeLabels:actionLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select>:['dueDate','focusPosition'].includes(key)?<Input aria-label={syncFields[key]} type={key==='dueDate'?'date':'number'} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>:<Textarea rows={2} aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>}</label>)}</div>
+    <details className="ui-disclosure" data-sync-json>
+      <summary>高级：完整 JSON 与版本诊断{r.invalid && ' · JSON 格式无效'}</summary>
+      <pre>{JSON.stringify({entityId:r.id,tips:r.tips.map(t=>t.revision),versions:r.versions},null,2)}</pre>
+      <Textarea className="sync-json" rows={8} aria-label="合并版本 JSON"
+        aria-describedby={r.invalid ? `${statusId}-json-error` : statusId} aria-invalid={r.invalid} disabled={editorDisabled}
+        value={r.json} onInput={e=>c.edit(r.key,'json',e.currentTarget.value)} onChange={()=>{}}/>
+      <div id={`${statusId}-json-error`} className="sync-json-error" role="status">
+        {r.invalid && 'JSON 格式无效。请修正后保存，编辑仍保留。'}
+      </div>
+    </details>
+    <footer className="sync-resolution-actions">
+      <p>{r.committed
+        ? '重试会恢复已保留的本机版本。'
+        : '保存会创建引用全部待解决分支的新版本，原始历史和来源笔记均保留。请在高级详情核对删除状态、来源引用和审核决定。'}</p>
+      <div className="sync-controls">
+        <Button className="secondary" disabled={!r.selected||r.saving} onClick={()=>c.discard(r.key)}>放弃编辑</Button>
+        <Button className="primary" disabled={saveDisabled} aria-disabled={r.saving || undefined} onClick={()=>c.save(r.key)}>{r.committed ? '重试本地恢复' : '保存解决结果到本地'}</Button>
+      </div>
+    </footer>
   </article>;
 }
 export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:SyncCallbacks}) {return <>
-  <h2 className="ui-heading">同步检查</h2><p>这里只检查本地版本；无法确认其他设备是否收到。</p><Button className="secondary" onClick={c.close}>关闭检查</Button><Button data-sync-refresh disabled={m.running} onClick={c.refresh}>重新检查</Button>
+  <header className="sync-header">
+    <div><h2 className="ui-heading">同步检查</h2><p>这里只检查本地版本；无法确认其他设备是否收到。</p></div>
+    <div className="sync-controls"><Button onClick={c.close}>关闭检查</Button><Button className="secondary" data-sync-refresh disabled={m.running || Boolean(m.active)} onClick={c.refresh}>重新检查</Button></div>
+  </header>
+  <div className="sync-body">
   <div role="status" className="ui-feedback" data-sync-status><Feedback message={m.message} detail={m.detail}/></div>
   {m.cacheWarning&&<p role="status" className="ui-feedback">{m.cacheWarning}</p>}
   {m.warnings.length>0&&<div className="ui-feedback"><Feedback message="部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。" detail={m.warnings.join('\n')}/></div>}
-  <nav aria-label="冲突记录">{m.records.map(r=><Button key={r.key} className="quiet ui-row" onClick={()=>c.jump(r.key)}>{r.name}</Button>)}</nav>
+  {m.records.length > 0 && <nav className="sync-records" aria-label="冲突记录"><h3>冲突记录</h3>
+    {m.records.map(r => <Button key={r.key} className="quiet ui-row" disabled={m.running || Boolean(m.active && m.active !== r.key) || r.saving} onClick={() => c.jump(r.key)}>{r.name}</Button>)}
+  </nav>}
   {m.records.map(r=><ConflictComparison key={r.key} record={r} callbacks={c} inert={m.running||Boolean(m.active&&m.active!==r.key)}/>)}
-  {!m.records.length&&m.checked&&<p>{m.warnings.length?'未发现可解决的冲突，请先核对上方异常详情。':'现有版本中未发现待处理冲突。'}</p>}
+  {!m.records.length&&m.checked&&!m.running&&!m.detail&&<p>{m.warnings.length?'未发现可解决的冲突，请先核对上方异常详情。':'现有版本中未发现待处理冲突。'}</p>}
+  </div>
 </>;}
 export function syncView(container:HTMLElement,callbacks:SyncCallbacks) {const root=createRoot(container);return {render(model:SyncModel){flushSync(()=>root.render(<SyncContent model={model} callbacks={callbacks}/>));}};}
 export function fileConflictView(container:HTMLElement,copy:()=>unknown,reload:()=>unknown) {const root=createRoot(container);flushSync(()=>root.render(<div className="dialog ui-panel ui-dialog"><h2 id="conflict-heading">文件在其他地方发生了修改</h2><p>你的编辑还在这里。可以另存一份，也可以查看磁盘上的版本。</p><Button busyOnAction id="copy" className="primary" onClick={copy}>将我的编辑另存为副本</Button><Button busyOnAction id="reload" onClick={reload}>载入磁盘版本（放弃当前编辑）</Button></div>));}

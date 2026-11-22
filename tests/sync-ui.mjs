@@ -10,6 +10,7 @@ const fixture = await storageFixture();
 const otherFixture = await storageFixture();
 let activeFixture = fixture;
 let delayFiles = false, failFiles = false;
+let heldResolution;
 let holdActionQuery = false, releaseHeldQuery, heldQueryStartedResolve;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
@@ -24,6 +25,7 @@ try {
       bridgeCalls.push(request.cmd);
       if (request.cmd === 'actionFiles' && failFiles) throw Error('Injected refresh failure');
       if (request.cmd === 'actionFiles' && delayFiles) await new Promise(resolve=>setTimeout(resolve,250));
+      if (request.cmd === 'actionWrite' && request.path.startsWith('revisions/') && heldResolution) await heldResolution;
       if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? otherFixture : fixture; return {}; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
@@ -53,7 +55,7 @@ try {
     if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', (process.env.ISSUE86 ? 'a3a5e2943537480a6efe7780fa8e4ba8f86e9ca3' : 'e8a869b') + ':web/' + name]) : await readFile(new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
-  const evidenceDir = process.env.ISSUE86_EVIDENCE_DIR || (process.env.ISSUE86 ? 'docs/validation/issue86' : 'docs/validation/issue36');
+  const evidenceDir = process.env.ISSUE86_EVIDENCE_DIR || 'build/validation/sync-ui';
   await mkdir(evidenceDir, {recursive:true});
   const startTime=performance.now();
   await page.goto('https://notes.test/');
@@ -62,9 +64,11 @@ try {
   const {randomUUID} = await import('node:crypto');
   const repo = new ActionRepository(fixture.adapter); await repo.open();
   const base = (await repo.save({description: '核对长期事项中需要保留的来源、下一步行动和人工解决记录'.repeat(5), focusPosition: 1})).record;
-  const local = (await repo.save({...base, description: 'Local description'}, base)).record;
+  const local = (await repo.save({...base, description: base.description + ' 本机分支'}, base)).record;
   const remote = {...base, revision: randomUUID(), parents: [base.revision], description: 'Remote description', status: 'completed', focusPosition: null};
   await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `revisions/${base.entityId}/${remote.revision}.json`, text: JSON.stringify(remote)});
+  const revisionFile = revision => join(fixture.root, 'LocalNotesData', 'revisions', base.entityId, revision + '.json');
+  const oldRevisions = await Promise.all([base, local, remote].map(record => readFile(revisionFile(record.revision))));
   await closeSavedAction(page); await page.getByRole('button', {name: '同步检查'}).click();
   const panel = page.getByRole('dialog', {name: '同步检查'});
   await panel.waitFor();
@@ -72,6 +76,12 @@ try {
     assert.equal(await panel.evaluate(el=>el.contains(document.activeElement)),true,'First open must focus a modal control');
   }
   await panel.getByText('发现冲突版本，请比较后选择或合并。').waitFor();
+  if (process.env.PHASE !== 'before') {
+    await panel.getByText('这里只检查本地版本；无法确认其他设备是否收到。').waitFor();
+    for (const record of [local, remote]) {
+      await panel.locator('.sync-branches').getByText(record.description, {exact:true}).waitFor();
+    }
+  }
   console.log('Sync initial inspection:',JSON.stringify({elapsedMs:Math.round(performance.now()-startTime),markdownReads:bridgeCalls.filter(cmd=>cmd==='read').length,bridgeCommands:bridgeCalls.length}));
   await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-desktop.png`,fullPage:true});
   await page.setViewportSize({width:393,height:852});
@@ -105,7 +115,7 @@ try {
     await page.waitForFunction(()=>document.querySelector('.sync-panel').getAttribute('aria-busy')==='false');
     assert.equal(await panel.getByLabel('内容',{exact:true}).isDisabled(),true);
     await panel.getByRole('navigation',{name:'冲突记录'}).getByRole('button').first().click();
-    assert.equal(await panel.locator('h3').first().evaluate(el=>el===document.activeElement),true);
+    assert.equal(await panel.locator('article').first().getByRole('heading',{level:3}).evaluate(el=>el===document.activeElement),true);
   }
   const firstVersion = panel.getByRole('button', {name: /选择版本 /}).first();
   if(process.env.ISSUE101)await page.evaluate(()=>{window.restoreSyncCache=Storage.prototype.setItem;Storage.prototype.setItem=function(key,value){if(key.startsWith('sync-draft:'))throw Error('Injected quota failure');return window.restoreSyncCache.call(this,key,value);};});
@@ -136,13 +146,17 @@ try {
   await page.waitForFunction(async()=>!(await import('/presentation.js')).taskLeavePending());
   await page.keyboard.press('Escape'); await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click(); assert.equal(await panel.isVisible(), true);
   await panel.getByText('高级：完整 JSON 与版本诊断', {exact:true}).click();
+  if (process.env.PHASE !== 'before') {
+    const diagnostics = panel.locator('[data-sync-json] pre');
+    for (const record of [local, remote]) assert.ok((await diagnostics.innerText()).includes(record.revision));
+  }
   await editor.fill('{bad json');
   await capture('invalid-focused');
   if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
     assert.equal(await editor.getAttribute('aria-invalid'),'true');
     assert.equal(await editor.evaluate(el=>document.getElementById(el.getAttribute('aria-describedby'))?.textContent.includes('JSON 格式无效')),true);
   }
-  await panel.getByRole('button', {name: '3. 保存解决结果到本地'}).click();
+  await panel.getByRole('button', {name: /保存解决结果到本地$/}).click();
   await panel.getByText('解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。').waitFor();
   assert.equal(await editor.inputValue(), '{bad json');
   await editor.fill(JSON.stringify({...local, description: 'Merged explicitly'}));
@@ -154,15 +168,32 @@ try {
 
   assert.equal(JSON.parse(await editor.inputValue()).waitingOn,'保留高级编辑');
   fixture.fail((cmd,args)=>cmd==='actionWrite' && args.path.startsWith('revisions/'));
-  await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).click();
+  await panel.getByRole('button',{name:/保存解决结果到本地$/}).click();
   await panel.getByText('解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。').waitFor();
   assert.match(await editor.inputValue(),/Merged explicitly/);
-  await panel.getByRole('button', {name: '3. 保存解决结果到本地'}).click();
+  const saveResolution = panel.getByRole('button', {name: /保存解决结果到本地$/});
+  let releaseResolution;
+  if (process.env.PHASE !== 'before') heldResolution = new Promise(resolve => { releaseResolution = resolve; });
+  try {
+    await saveResolution.click();
+    if (releaseResolution) {
+      await panel.getByRole('status').filter({hasText:'正在保存解决结果…'}).waitFor();
+      assert.equal(await saveResolution.evaluate(el => el === document.activeElement), true);
+      assert.equal(await saveResolution.isDisabled(), true);
+      assert.equal(await editor.isDisabled(), true);
+    }
+  } finally {
+    releaseResolution?.();
+    heldResolution = null;
+  }
   await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
+  await panel.getByText('解决结果已保存到本地；无法确认其他设备是否收到。').waitFor();
   await repo.recover();
   const result = (await repo.query()).actions[0];
   assert.equal(result.description, 'Merged explicitly'); assert.deepEqual(new Set(result.parents), new Set([local.revision, remote.revision]));
   assert.equal((await repo.history(base.entityId)).length, 4);
+  assert.deepEqual(await Promise.all([base, local, remote].map(record => readFile(revisionFile(record.revision)))), oldRevisions);
+  assert.equal(JSON.parse(await readFile(revisionFile(result.revision), 'utf8')).entityId, base.entityId);
   if(process.env.ISSUE101) {
     await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
     await page.reload();await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
@@ -193,13 +224,18 @@ try {
     await panel.getByRole('button',{name:'重新检查',exact:true}).click();
     const article=panel.locator('article').filter({hasText:original.title||original.description});
     await article.getByRole('heading',{level:3}).waitFor();
-    await article.getByRole('button',{name:/选择版本/}).first().click();
+    if (process.env.PHASE !== 'before' && original.sources?.length) {
+      await article.locator('.sync-branches').getByText('reference.md：测试引用',{exact:true}).first().waitFor();
+    }
+    if (process.env.PHASE === 'before') await article.getByRole('button',{name:/选择版本/}).first().click();
+    else await article.locator(`[data-revision="${left.revision}"]`).click();
     await article.getByLabel(field,{exact:true}).fill('已人工核对的中文内容');
-    await article.getByRole('button',{name:'3. 保存解决结果到本地'}).click();
+    await article.getByRole('button',{name:/保存解决结果到本地$/}).click();
     await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
     await typed.recover();const resolved=(await typed.query()).actions[0];
     assert.deepEqual(new Set(resolved.parents),new Set([left.revision,right.revision]));
     assert.equal((await typed.history(original.entityId)).length,4);
+    if (original.sources?.length) assert.deepEqual(resolved.sources, original.sources);
   }
   if (process.env.PHASE !== 'before') {
     const extra=(await repo.save({description:'部分失败恢复样本'})).record;
@@ -208,10 +244,10 @@ try {
     await panel.getByRole('button',{name:'重新检查',exact:true}).click();
     await panel.getByRole('button',{name:/选择版本/}).first().click();
     fixture.fail((cmd,args)=>cmd==='actionIndex' && args.record.entityId===extra.entityId,2);
-    await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).click();
+    await panel.getByRole('button',{name:/保存解决结果到本地$/}).click();
     await panel.getByText('版本已保留，恢复尚未完成。请点击保存重试恢复；已保留的内容暂不能编辑。').waitFor();
     assert.equal(await panel.getByLabel('内容',{exact:true}).isDisabled(),true);
-    await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).click();
+    await panel.getByRole('button',{name:'重试本地恢复'}).click();
     await panel.getByText('现有版本中未发现待处理冲突。').waitFor();
     assert.equal((await repo.history(extra.entityId)).length,3);
     await fixture.adapter('actionWrite',{workspaceId:repo.workspaceId,path:`actions/${randomUUID()}.json`,text:'{broken json'});
@@ -224,8 +260,19 @@ try {
   await capture('warnings');
   await panel.getByText('缺少前序版本，暂不能保存。请等待文件到达后重新检查。').waitFor();
   await panel.getByText('版本历史形成循环，暂不能保存。请从保留的副本恢复历史，再重新检查。').waitFor();
-  for(const save of await panel.getByRole('button',{name:'3. 保存解决结果到本地'}).all()) assert.equal(await save.isDisabled(),true);
+  for(const save of await panel.getByRole('button',{name:/保存解决结果到本地$/}).all()) assert.equal(await save.isDisabled(),true);
   if(process.env.PHASE !== 'before') {
+    await page.evaluate(record => {
+      localStorage.setItem(`sync-draft:${record.workspaceId}:action:${record.entityId}`,
+        JSON.stringify({json:JSON.stringify(record),selected:record.revision,tips:[record.revision]}));
+    }, missing);
+    await panel.getByRole('button',{name:'重新检查',exact:true}).click();
+    const incomplete = panel.locator('article').filter({hasText:missing.description});
+    await incomplete.getByRole('button',{name:'恢复未保存解决内容'}).click();
+    await incomplete.getByLabel('内容',{exact:true}).fill('等待历史补齐前的草稿');
+    assert.equal(await incomplete.getByRole('button',{name:/保存解决结果到本地$/}).isDisabled(),true);
+    await incomplete.getByRole('button',{name:'放弃编辑'}).click();
+    assert.equal(await incomplete.getByRole('button',{name:'恢复未保存解决内容'}).count(),0);
     const blocked=panel.locator('article').last();
     await blocked.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
     const lastEnabled=blocked.locator('summary').last();
@@ -243,12 +290,18 @@ try {
   await panel.getByRole('button',{name:'重新检查',exact:true}).click();
   const first=panel.locator('article').filter({hasText:'多冲突键盘检查0'});
   await first.getByRole('button',{name:/选择版本/}).first().click();
+  if (process.env.PHASE !== 'before') {
+    const other = panel.locator('article').filter({hasText:'多冲突键盘检查1'});
+    assert.equal(await other.evaluate(el=>el.inert), true);
+    assert.equal(await panel.getByRole('navigation',{name:'冲突记录'}).getByRole('button',{name:/多冲突键盘检查1/}).isDisabled(), true);
+    assert.equal(await panel.getByRole('button',{name:'重新检查',exact:true}).isDisabled(), true);
+  }
   await panel.getByRole('button',{name:'关闭检查',exact:true}).click();
   await page.getByRole('button',{name:'继续编辑',exact:true}).waitFor();
   assert.match(await page.locator('#task-leave-decision').innerText(),/当前编辑尚未保存/);
   assert.doesNotMatch(await page.locator('#task-leave-decision').innerText(),/版本已保存，恢复尚未完成/);
   await page.getByRole('button',{name:'继续编辑',exact:true}).click();
-  await first.getByRole('button',{name:'3. 保存解决结果到本地'}).focus(); await page.keyboard.press('Tab');
+  await first.getByRole('button',{name:/保存解决结果到本地$/}).focus(); await page.keyboard.press('Tab');
   assert.equal(await panel.getByRole('button',{name:'关闭检查',exact:true}).evaluate(el=>el===document.activeElement),true);
   if(process.env.ISSUE101) {
     await first.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
@@ -256,7 +309,7 @@ try {
     await page.reload();await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
     await page.getByRole('button',{name:'同步检查',exact:true}).click();
     await first.getByRole('button',{name:'恢复未保存解决内容',exact:true}).click();
-    await first.getByText('高级：完整 JSON 与版本诊断',{exact:true}).click();
+    await first.getByText(/^高级：完整 JSON 与版本诊断/).click();
     assert.equal(await first.getByLabel('合并版本 JSON').inputValue(),'{重启保留的无效草稿');
     assert.equal(await first.getByLabel('合并版本 JSON').getAttribute('aria-invalid'),'true');
   }

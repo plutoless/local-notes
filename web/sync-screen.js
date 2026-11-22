@@ -12,7 +12,7 @@ export class SyncScreen {
     this.panel=document.createElement('section'); this.panel.hidden=true;
     this.panel.className='sync-panel ui-panel ui-dialog'; this.panel.setAttribute('aria-label','同步检查'); this.panel.setAttribute('role','dialog'); this.panel.setAttribute('aria-modal','true');
     document.body.append(this.panel); this.dialog=bindDialog(this.panel);
-    this.view=syncView(this.panel,{close:()=>this.close(),refresh:()=>this.refresh(true),jump:key=>{const article=this.article(key);article?.scrollIntoView({block:'start'});article?.querySelector('h3')?.focus();},choose:(key,revision)=>this.choose(key,revision),edit:(key,field,value)=>this.edit(key,field,value),discard:key=>this.discard(key),save:key=>this.saveResolution(key),recover:key=>this.recoverDraft(key)});
+    this.view=syncView(this.panel,{close:()=>this.close(),refresh:()=>this.refresh(true),jump:key=>this.jump(key),choose:(key,revision)=>this.choose(key,revision),edit:(key,field,value)=>this.edit(key,field,value),discard:key=>this.discard(key),save:key=>this.saveResolution(key),recover:key=>this.recoverDraft(key)});
     this.panel.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopImmediatePropagation();this.close();}else if(event.key==='Escape'){event.stopImmediatePropagation();}},true);
     const opener=actionControl('同步检查',()=>this.refresh(true),{icon:icon('sync')}); this.opener=opener.control;
     document.querySelector('#shell-utilities').append(opener.host);
@@ -21,6 +21,12 @@ export class SyncScreen {
   }
   render(){this.view.render(this.model);this.refreshButton=this.panel.querySelector('[data-sync-refresh]');this.status=this.panel.querySelector('[data-sync-status]');this.panel.setAttribute('aria-busy',String(this.model.running));}
   article(key){return [...this.panel.querySelectorAll('article')].find(node=>node.dataset.syncKey===key);}
+  jump(key){
+    const article=this.article(key);
+    if(!article||article.inert)return;
+    article.scrollIntoView({block:'start'});
+    article.querySelector('h3')?.focus({preventScroll:true});
+  }
   record(key){return this.model.records.find(r=>r.key===key);}
   message(message,detail=''){Object.assign(this.model,{message,detail});this.render();}
   canLeave(){if(!this.dirty&&!this.savePending)return true;this.panel.hidden=false;this.message('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');return false;}
@@ -46,28 +52,53 @@ export class SyncScreen {
     finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(!this.panel.hidden&&restore&&document.activeElement===document.body)this.refreshButton.focus();}}
   }
   choose(key,revision){
-    if(this.dirty){this.message('选择其他版本会替换尚未保存的编辑。请先保存，或点击「放弃编辑」。');return;}
-    const r=this.record(key);if(!r||r.incomplete||r.cyclic)return;
-    r.reviewedHeads=r.tips.map(t=>t.revision);r.selected=revision;r.value=structuredClone(r.versions.find(v=>v.revision===revision));r.json=JSON.stringify(r.value,null,2);r.invalid=false;r.committed=false;this.resolutionCommitted=false;this.markDirty(r);this.article(key)?.querySelector('textarea,input,select')?.focus();
+    const r=this.record(key);
+    if(this.model.running||this.savePending||!r||r.incomplete||r.cyclic)return;
+    if(this.dirty){
+      if(this.model.active===key&&r.selected===revision)this.article(key)?.querySelector('textarea:not(:disabled),input:not(:disabled),select:not(:disabled)')?.focus();
+      return;
+    }
+    const version=r.versions.find(v=>v.revision===revision);if(!version)return;
+    r.reviewedHeads=r.tips.map(t=>t.revision);r.selected=revision;r.value=structuredClone(version);r.json=JSON.stringify(r.value,null,2);r.invalid=false;r.committed=false;this.resolutionCommitted=false;this.markDirty(r);this.article(key)?.querySelector('textarea,input,select')?.focus();
   }
   markDirty(r){this.dirty=true;this.model.active=r.key;r.message='解决内容尚未保存。原版本均会保留。';r.detail='';this.persistDraft(r);this.render();}
   persistDraft(r){r.hasDraft=updateSyncDraft(localStorage,r.draftKey,{json:r.json,selected:r.selected,tips:r.reviewedHeads||r.tips.map(t=>t.revision),retryRecord:r.retryRecord||null});if(!r.hasDraft)this.model.cacheWarning='本机草稿暂不能保留。当前编辑仍在，请保存到本地或保持窗口打开后重试。';}
   clearDraft(r){const cleared=updateSyncDraft(localStorage,r.draftKey,null);if(!cleared)this.model.cacheWarning='本机草稿暂不能移除。已保存的版本仍保留；再次恢复草稿前请核对历史。';return cleared;}
-  recoverDraft(key){const r=this.record(key);if(!r||this.dirty||this.savePending)return;const draft=readSyncDraft(localStorage,r.draftKey,{workspaceId:r.repo.workspaceId,entityType:r.type,entityId:r.id});if(!draft)return;r.selected=draft.selected;r.reviewedHeads=draft.tips;r.retryRecord=draft.retryRecord;r.committed=Boolean(draft.retryRecord);this.resolutionCommitted=r.committed;Object.assign(r,editSyncValue(r.value,'json',draft.json));this.markDirty(r);r.message=r.committed?'版本已保留，恢复尚未完成。请点击保存重试恢复；已保留的内容暂不能编辑。':r.invalid?'JSON 格式无效。请修正后保存，编辑仍保留。':'已恢复未保存解决内容；请核对后保存。';this.render();this.article(key)?.querySelector('textarea:not(:disabled),button:not(:disabled)')?.focus();}
-  edit(key,field,value){const r=this.record(key);if(!r||r.committed||r.key!==this.model.active)return;
+  recoverDraft(key){
+    const r=this.record(key);
+    if(!r||this.model.running||this.dirty||this.savePending)return;
+    const draft=readSyncDraft(localStorage,r.draftKey,{workspaceId:r.repo.workspaceId,entityType:r.type,entityId:r.id});
+    if(!draft)return;
+    r.selected=draft.selected;r.reviewedHeads=draft.tips;r.retryRecord=draft.retryRecord;
+    r.committed=Boolean(draft.retryRecord);this.resolutionCommitted=r.committed;
+    Object.assign(r,editSyncValue(r.value,'json',draft.json));this.markDirty(r);
+    r.message=r.committed?'版本已保留，恢复尚未完成。已保留的内容暂不能编辑。':'已恢复未保存的解决草稿。';
+    this.render();
+    const article=this.article(key);
+    const target=r.invalid?article?.querySelector('[data-sync-json] > summary'):
+      article?.querySelector('.sync-editor :is(textarea,input,select):not(:disabled)');
+    if(target)target.focus();else this.jump(key);
+  }
+  edit(key,field,value){const r=this.record(key);if(!r||r.committed||this.savePending||r.key!==this.model.active)return;
     Object.assign(r,editSyncValue(r.value,field,value));
     this.markDirty(r);if(r.invalid){r.message='JSON 格式无效。请修正后保存，编辑仍保留。';this.render();}
   }
-  discard(key,restore=true){const r=this.record(key),revision=r?.selected;this.dirty=false;this.resolutionCommitted=false;this.saved='';this.model.active='';if(r){r.hasDraft=!this.clearDraft(r);r.selected='';r.committed=false;r.retryRecord=null;r.invalid=false;r.message='尚未选择解决版本。请先选择，再审核与编辑。';r.detail='';r.value=structuredClone(r.tips[0]||r.versions[0]);r.json=JSON.stringify(r.value,null,2);}this.model.message='';this.model.detail='';this.render();if(restore){const opener=[...(this.article(key)?.querySelectorAll('[data-revision]')||[])].find(n=>n.dataset.revision===revision);if(opener){opener.closest('details').open=true;opener.focus();}}}
+  discard(key,restore=true){if(!key||this.model.active!==key||this.savePending)return;const r=this.record(key),revision=r?.selected;this.dirty=false;this.resolutionCommitted=false;this.saved='';this.model.active='';if(r){r.hasDraft=!this.clearDraft(r);r.selected='';r.committed=false;r.retryRecord=null;r.invalid=false;r.message='尚未选择解决版本。请先选择，再审核与编辑。';r.detail='';r.value=structuredClone(r.tips[0]||r.versions[0]);r.json=JSON.stringify(r.value,null,2);}this.model.message='';this.model.detail='';this.render();if(restore){const opener=[...(this.article(key)?.querySelectorAll('[data-revision]')||[])].find(n=>n.dataset.revision===revision);if(opener){opener.closest('details').open=true;opener.focus();}else this.jump(key);}}
   saveResolution(key){
     if(this.savePending)return this.savePending;
-    const r=this.record(key);if(!r?.selected||r.incomplete||r.cyclic)return false;
+    const r=this.record(key);if(!r?.selected||this.model.active!==key||this.model.running||r.incomplete||r.cyclic)return false;
     const repo=r.repo,workspaceId=repo.workspaceId,generation=this.generation;
     const owned=()=>generation===this.generation&&this.record(key)===r&&this.repositories().includes(repo)&&repo.workspaceId===workspaceId;
+    const control=document.activeElement;
     const work=(async()=>{await Promise.resolve();r.saving=true;r.message='正在保存解决结果…';this.render();
       try{const result=r.retryRecord?await repo.save({},null,await verifiedSyncRetry(repo,r.retryRecord,{workspaceId,entityType:r.type,entityId:r.id})):await repo.resolve(r.id,JSON.parse(r.json),(r.reviewedHeads||r.tips.map(t=>t.revision)));if(!owned())return false;this.clearDraft(r);this.dirty=false;this.resolutionCommitted=false;this.saved=(result.recovered||r.retryRecord)?'解决结果已从保留版本恢复并保存到本地；无法确认其他设备是否收到。':'解决结果已保存到本地；无法确认其他设备是否收到。';}
       catch(error){if(!owned())return false;if(error.revisionSaved){r.committed=true;this.resolutionCommitted=true;r.retryRecord=error.record;this.persistDraft(r);}r.message=r.retryRecord?'版本已保留，恢复尚未完成。请点击保存重试恢复；已保留的内容暂不能编辑。':'未保存 · 编辑仍保留';this.model.message=r.retryRecord?'版本已保留，本地恢复未完成。请点击保存重试恢复；无法确认其他设备是否收到。':'解决结果未保存。请核对内容和目录后重试；编辑仍保留。若版本已变化，请放弃编辑并重新检查。';this.model.detail=error.message;}
-      finally{if(owned()){r.saving=false;this.render();}}
+      finally{
+        if(owned()){
+          r.saving=false;this.render();
+          if(this.dirty&&!this.panel.hidden&&document.activeElement===document.body&&this.article(key)?.contains(control))control.focus();
+        }
+      }
       return !this.dirty;
     })();
     this.savePending=work.then(async saved=>{if(saved&&owned())await this.refresh(!this.panel.hidden,true);return saved;}).finally(()=>{this.savePending=null;});
