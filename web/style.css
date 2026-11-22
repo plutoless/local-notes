@@ -299,6 +299,7 @@ details { overflow-wrap: anywhere; }
 .sync-version[data-selected] > summary,
 .sync-version button[aria-pressed="true"],
 .sync-records .ui-row[aria-current="true"] { background: var(--workspace-current); color: var(--workspace-current-text); font-weight: 600; }
+.sync-version[data-selected] > summary .sync-version-kind { color: inherit; }
 .sync-version[data-selected] > summary:hover,
 .sync-panel .sync-version button[aria-pressed="true"]:hover:not(:disabled),
 .sync-records .ui-row[aria-current="true"]:hover { background: var(--workspace-current-hover); }

@@ -178,6 +178,16 @@ try {
   await page.mouse.down();
   await waitForSelectedFill('rgb(214, 224, 214)');
   await page.mouse.up();
+  const selectedSummary = sync.locator('.sync-version[data-selected] > summary');
+  await selectedSummary.hover();
+  await page.mouse.down();
+  try {
+    await page.waitForFunction(() => getComputedStyle(document.querySelector('.sync-version[data-selected] > summary')).backgroundColor === 'rgb(214, 224, 214)');
+    assert.equal(await selectedSummary.locator('.sync-version-kind').evaluate(label => getComputedStyle(label).color), 'rgb(45, 69, 57)');
+  } finally {
+    await page.mouse.move(0, 0);
+    await page.mouse.up();
+  }
   await content.fill('合并：保留资料，补齐缺项');
   await content.evaluate(node => node.setSelectionRange(1, 3));
   await page.keyboard.press('Escape');
