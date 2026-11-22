@@ -41,6 +41,7 @@ export class InitiativeScreen {
     $('#initiative-back').onclick = () => this.returnContext();
     $('#workspace-back').onclick = async () => {
       if (!await this.beforeEdit()) return;
+      this.editGeneration = (this.editGeneration || 0) + 1;
       $('.app').classList.remove('editing', 'detail-open');
       $('#workspace-context').hidden = true;
       $('#initiative-editor').hidden = true;
@@ -130,7 +131,7 @@ export class InitiativeScreen {
         for (const [selector, hidden] of Object.entries(context.hidden)) $(selector).hidden = hidden;
         $('.app').className = context.classes;
         for (const [selector, scroll] of Object.entries(context.scroll)) $(selector).scrollTop = scroll;
-        $('#initiative-new-action').disabled = !this.previous || this.previous.status === 'ended';
+        this.updateActionAvailability();
         $('#initiative-new-note').disabled = !this.previous;
         this.drawerContext = null;
         if (context.committedAction) { this.actions.showForm(context.committedAction, context.committedAction); this.actions.dirty = false; this.actions.state('已保存到本地'); }
@@ -163,6 +164,14 @@ export class InitiativeScreen {
   state(message) {
     const target = $('#initiative-save-state'); target.textContent = message;
     target.dataset.state = /恢复/.test(message) ? 'recovered' : /正在保存/.test(message) ? 'saving' : /尚未保存|新建/.test(message) ? 'dirty' : 'saved';
+  }
+  recoveredMessage() {
+    return this.endingCommitted.size ? '已恢复事项草稿。已保存的行动处理仍然有效。' : '已恢复事项草稿，请核对后保存。';
+  }
+  updateActionAvailability(record = this.previous) {
+    const disabled = !record || record.status === 'ended';
+    $('#initiative-new-action').disabled = disabled;
+    this.onActionAvailability?.(disabled);
   }
   selectContext(key = '') {
     this.selectedContext = key;
@@ -216,7 +225,7 @@ export class InitiativeScreen {
     const recovered = recoverTaskDraft('initiative', this.repository.workspaceId);
     this.draftKey = recovered?.key; const draft = recovered?.value;
     this.endingCommitted = new Set(draft?.committedActions);
-    if (draft) { this.form(draft.previous || {}, draft.previous); const baseline = this.baseline; this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; await this.details(); this.state('已恢复事项草稿，请核对后保存。'); }
+    if (draft) { this.form(draft.previous || {}, draft.previous); const baseline = this.baseline; this.recoveredDraft = true; this.form(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline; await this.details(); this.state(this.recoveredMessage()); }
   }
   async show() {
     $('.app').classList.remove('library-view', 'home'); $('.app').classList.add('workspace');
@@ -225,6 +234,7 @@ export class InitiativeScreen {
     $('#library-tools').hidden = true;
     if (!this.repository.ready) await this.openWorkspace();
     this.active = true;
+    if (this.recoveredDraft && !this.drawer.panel.open) $('.app').classList.remove('editing');
     const wasEditing = $('.app').classList.contains('editing');
     if (this.previous && !this.dirty) {
       const latest = (await allRecords(this.repository)).find(i => i.entityId === this.previous.entityId);
@@ -297,7 +307,7 @@ export class InitiativeScreen {
     $('#initiative-editor').hidden = false; $('#action-editor').hidden = true; $('#editor').hidden = true; $('#empty').hidden = true; $('.app').classList.add('editing');
     this.baseline = JSON.stringify(this.fields());
     this.ending();
-    $('#initiative-new-action').disabled = !previous || previous.status === 'ended'; $('#initiative-new-note').disabled = !previous;
+    this.updateActionAvailability(previous); $('#initiative-new-note').disabled = !previous;
   }
   async edit(record, metadata = false, recovered = null, origin = document.activeElement) {
     if (this.opening) return;
@@ -332,7 +342,7 @@ export class InitiativeScreen {
     this.form(record || {}, record); const baseline = this.baseline;
     if (draft) { this.form(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; this.pendingDecisions = draft.decisions || {}; }
     this.recoveredDraft = Boolean(draft); this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline;
-    this.state(draft ? '已恢复事项草稿，请核对后保存。' : record ? '已保存到本地' : '新建事项');
+    this.state(draft ? this.recoveredMessage() : record ? '已保存到本地' : '新建事项');
     if (metadata) this.restoreDrawerLayout(this.drawerContext);
     try {
       await this.details();
@@ -344,6 +354,7 @@ export class InitiativeScreen {
         this.restoreDrawerLayout(context);
         this.selectContext(context.selectedContext);
         this.drawerContext = null;
+        $('#workspace-overview').disabled = false;
         origin?.focus({preventScroll: true});
       }
       throw error;
@@ -361,6 +372,7 @@ export class InitiativeScreen {
     for (const [selector, text] of Object.entries(context.text)) $(selector).textContent = text;
     for (const [selector, scroll] of Object.entries(context.scroll)) $(selector).scrollTop = scroll;
     this.selectInitiative(context.previous);
+    this.updateActionAvailability(context.previous);
   }
   renderContext() {
     const record = this.previous;
@@ -445,6 +457,9 @@ export class InitiativeScreen {
     const ending = $('#initiative-status').value === 'ended' && this.previous?.status !== 'ended';
     $('#initiative-ending').open = ending;
     const count = $('#initiative-decisions').querySelectorAll('select:not(:disabled)').length;
+    const committed = $('#initiative-committed-actions');
+    committed.hidden = this.endingCommitted.size === 0;
+    committed.textContent = committed.hidden ? '' : `已保存 ${this.endingCommitted.size} 项行动处理，重试时仍然有效。`;
     $('#initiative-ending-help').textContent = count ? `还有 ${count} 项未完成行动。必须为每项选择处理方式，才可结束事项。` : '没有未完成行动。保存后结束事项，之后仍可将状态改为「进行中」或「以后再做」重新开启。';
     const reopening = this.previous?.status === 'ended' && $('#initiative-status').value !== 'ended';
     $('#initiative-reopening').hidden = !reopening;

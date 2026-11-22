@@ -171,7 +171,6 @@ details { overflow-wrap: anywhere; }
 .workspace #workspace-context { width: 100%; max-width: 800px; min-width: 0; margin-inline: auto; padding: 12px 48px 40px; }
 .workspace.detail-open #workspace-context,
 .workspace:not(.detail-open):has(#workspace-context:not([hidden])) #workspace-detail { display: none; }
-.workspace:has(#initiative-new-action:disabled) #reader-new-initiative-action { display: none; }
 .workspace-context-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--divider); padding-bottom: 12px; }
 .initiative-summary { padding: 24px 0; }
 .initiative-summary h1 { margin: 0; font-size: 30px; line-height: 1.5; }

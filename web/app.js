@@ -40,6 +40,7 @@ reader.initiative(
   opener => initiatives.edit(initiatives.previous, true, null, opener).catch(error => notice(error.message)),
   opener => initiatives.createAction(opener).catch(error => notice(error.message))
 );
+initiatives.onActionAvailability = initiativeActionDisabled => reader.set({initiativeActionDisabled});
 actions.initiatives = initiatives;
 actions.openLinkedNote = openLinkedNote;
 const organize = new OrganizeScreen(async (path, opener) => {
@@ -596,7 +597,7 @@ async function revealCapturedNote(path) {
   } catch (error) { notice(error.message); }
 }
 // Short tasks retain their own private draft and delegate writes to existing adapters.
-let shortTask = null, shortSaving = false;
+let shortTask = null, shortSaving = false, shortTaskOpening = 0;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
 shortDrawer.panel.classList.add('note-task-sheet');
 const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',cancel:()=>leaveShortTask()});
@@ -618,6 +619,7 @@ function shortTaskAdapter() {
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
 function openShortTask({title, controls, key, values, save, opener, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
+  shortTaskOpening++;
   shortFields.show(controls);
   shortStatus.replaceChildren();
   shortStatus.removeAttribute('data-state');
@@ -720,9 +722,12 @@ async function openCapture(initiative = null, opener = $('#new')) {
         if (error.revisionSaved) linkedRevision = error.record;
         throw error;
       }
-      const request = noteLoadRequest, page = pageGeneration;
+      const request = noteLoadRequest, page = pageGeneration, initiativeEdit = initiatives.editGeneration;
+      const nextAction = actions.openRequest, nextShortTask = shortTaskOpening;
       const owns = () => request === noteLoadRequest && page === pageGeneration && workspaceId === rootKey &&
-        view === 'initiatives' && initiative.entityId === initiatives.previous?.entityId;
+        view === 'initiatives' && initiative.entityId === initiatives.previous?.entityId &&
+        initiativeEdit === initiatives.editGeneration && nextAction === actions.openRequest &&
+        nextShortTask === shortTaskOpening && !document.querySelector('dialog[open]');
       return async () => {
         try {
           if (!owns()) return;
