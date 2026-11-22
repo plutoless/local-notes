@@ -194,6 +194,7 @@ try {
   await page.locator('#back').click();
   await page.waitForFunction(() => document.activeElement?.matches('#initiative-actions button'));
   await page.locator('#workspace-return-action').click();
+  await page.locator('#action-drawer[open]').waitFor();
   assert.equal(await page.locator('#action-description').inputValue(), 'Verify the release');
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="notes"]').click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
