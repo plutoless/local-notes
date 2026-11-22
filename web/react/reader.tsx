@@ -22,7 +22,8 @@ export function readerView(container:HTMLElement) {
     return <><div className="toolbar">
       <Button id="back" className="quiet" onClick={invoke('back')}>{model.initiative?'‹ 返回事项':'‹ 返回列表'}</Button>
       <Button id="reader-edit-initiative" hidden={!model.initiative} onClick={event=>editInitiative(event.currentTarget)}>编辑事项</Button>
-      <Button id="reader-new-initiative-action" hidden={!model.initiative} disabled={model.initiativeActionDisabled} onClick={event=>newInitiativeAction(event.currentTarget)}>新建事项行动</Button>
+      <Button id="reader-new-initiative-action" hidden={!model.initiative} disabled={model.initiativeActionDisabled} aria-describedby={model.initiativeActionDisabled ? 'reader-initiative-action-help' : undefined} onClick={event=>newInitiativeAction(event.currentTarget)}>新建事项行动</Button>
+      {model.initiative && model.initiativeActionDisabled && <span id="reader-initiative-action-help">重新开启事项后可新建行动。</span>}
       <Button id="capture-return" className="quiet" hidden={!model.capture} onClick={invoke('capture')}>保存并返回原任务</Button>
       <Button id="note-save" className="secondary" hidden={model.saveHidden} onClick={invoke('save')}>保存笔记</Button>
       <Button id="note-info-open" onClick={event => openInfo(event.currentTarget)}>笔记信息与整理</Button>

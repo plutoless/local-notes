@@ -305,7 +305,7 @@ async function openContextNote(path, reading = true, actionSource, ownsOrigin = 
   try {
     if (!owns() || !await flush(false, true) || !owns()) return;
     const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId, request = ++noteLoadRequest;
-    owns = () => ownsAction() && request === noteLoadRequest && workspaceId === rootKey &&
+    owns = () => ownsOrigin(request) && ownsAction() && request === noteLoadRequest && workspaceId === rootKey &&
       initiativeId === initiatives.previous?.entityId && view === 'initiatives';
     const loaded = await note('read', {path});
     if (!owns()) return;
@@ -654,6 +654,7 @@ function saveShortTask(openSaved) {
   if (shortSaving) return shortSaving;
   if (!shortTask) return Promise.resolve(true);
   const task = shortTask;
+  let reveal;
   shortSaving = (async () => {
     await Promise.resolve();
     shortForm.inert = true; shortSubmit.disabled = true; shortStatus.removeAttribute('data-state'); shortStatus.textContent = '正在保存…';
@@ -667,7 +668,7 @@ function saveShortTask(openSaved) {
       task.initial = shortInput(); localStorage.removeItem(task.key);
       // Explicit submit may reveal its saved note. A leave intent must finish
       // the originally requested navigation/termination instead.
-      if (openSaved) { shortSaving = false; closeShortTask(); await afterSave?.(); }
+      if (openSaved) { shortSaving = false; closeShortTask(); reveal = afterSave; }
       return true;
     } catch (error) {
       if (task.committed) feedback(shortStatus, '笔记已创建。请重试关联。', error.message);
@@ -684,7 +685,10 @@ function saveShortTask(openSaved) {
       }
     }
   })();
-  return shortSaving;
+  return openSaved ? shortSaving.then(async saved => {
+    if (saved) await reveal?.();
+    return saved;
+  }) : shortSaving;
 }
 async function openCapture(initiative = null, opener = $('#new')) {
   if (!await flush()) return;
@@ -724,7 +728,7 @@ async function openCapture(initiative = null, opener = $('#new')) {
       }
       const request = noteLoadRequest, page = pageGeneration, initiativeEdit = initiatives.editGeneration;
       const nextAction = actions.openRequest, nextShortTask = shortTaskOpening;
-      const owns = () => request === noteLoadRequest && page === pageGeneration && workspaceId === rootKey &&
+      const owns = (expectedRequest = request) => expectedRequest === noteLoadRequest && page === pageGeneration && workspaceId === rootKey &&
         view === 'initiatives' && initiative.entityId === initiatives.previous?.entityId &&
         initiativeEdit === initiatives.editGeneration && nextAction === actions.openRequest &&
         nextShortTask === shortTaskOpening && !document.querySelector('dialog[open]');
