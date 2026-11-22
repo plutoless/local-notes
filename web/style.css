@@ -596,7 +596,7 @@ button { transition: background-color 100ms; }
 .note-task-form + [role="alert"] { margin-top: 8px; }
 .note-task-sheet [role="status"] { margin-block: 0 12px; }
 .note-task-sheet [data-slot="field-label"] { color: var(--text); }
-.ui-drawer.note-task-sheet :is(input[data-slot="input"], textarea[data-slot="textarea"]):focus {
+.ui-drawer.note-task-sheet :is(input[data-slot="input"], textarea[data-slot="textarea"]):focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
   box-shadow: none;

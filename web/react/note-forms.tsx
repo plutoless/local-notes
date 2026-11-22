@@ -35,7 +35,7 @@ export interface ClassificationItem {id:string; title:string; checked:boolean; d
 export function Classification({items,kind,create,change}:{items:ClassificationItem[];kind:'topic'|'initiative';create?:()=>unknown;change:(id:string,checked:boolean)=>unknown}) {
   return <div className="note-classification">{!items.length&&<p>{kind==='topic'?'暂无主题。':'暂无事项。'}</p>}
     {create&&<Button id="note-create-topic" className="secondary ui-compact" onClick={create}>新建并关联主题</Button>}
-    {items.map(item=><div key={item.id} className="note-classification-row"><label className="ui-selection"><input type="checkbox" data-topic-id={kind==='topic'?item.id:undefined} data-initiative-id={kind==='initiative'?item.id:undefined} checked={item.checked} disabled={item.disabled} onChange={e=>change(item.id,e.currentTarget.checked)}/><span>{item.title}</span></label>{item.checked&&item.open&&<Button className="quiet ui-compact" onClick={item.open}>打开事项<span className="sr-only">：{item.title}</span></Button>}</div>)}</div>;
+    {items.map(item=><div key={item.id} className="note-classification-row"><label className="ui-selection"><input type="checkbox" data-topic-id={kind==='topic'?item.id:undefined} data-initiative-id={kind==='initiative'?item.id:undefined} checked={item.checked} disabled={item.disabled} onChange={e=>change(item.id,e.currentTarget.checked)}/><span>{item.title}</span></label>{item.checked&&item.open&&<Button className="quiet ui-compact" aria-label={`打开事项：${item.title}`} onClick={item.open}>打开事项</Button>}</div>)}</div>;
 }
 export function classificationView(container:HTMLElement) {
   const content=document.createElement('div'), receipts=document.createElement('div');
@@ -44,9 +44,12 @@ export function classificationView(container:HTMLElement) {
   const render=()=>flushSync(()=>root.render(<Classification key={revision} {...model} change={(id,checked)=>{model={...model,items:model.items.map(item=>item.id===id?{...item,checked}:item)};render();model.change(id,checked);}}/>));
   return {receipts,show(props:typeof model){receipts.replaceChildren();model=props;revision++;render();},set(id:string|null,patch:Partial<ClassificationItem>){model={...model,items:model.items.map(item=>id===null||item.id===id?{...item,...patch}:item)};render();}};
 }
+type AssociationState = 'loading' | 'ready' | 'failed';
+
 export function noteInformationView(container:HTMLElement) {
   const root=createRoot(container);
-  let model={path:'',starred:false,repair:false};const callbacks:Record<string,()=>unknown>={};
+  let model:{path:string; starred:boolean; repair:boolean; topics:AssociationState; initiatives:AssociationState} =
+    {path:'',starred:false,repair:false,topics:'ready',initiatives:'ready'};const callbacks:Record<string,()=>unknown>={};
   const render=()=>flushSync(()=>root.render(<>
     <section className="note-info-section">
       <h3>来源位置</h3>
@@ -57,10 +60,33 @@ export function noteInformationView(container:HTMLElement) {
         <Button id="repair-links" className="secondary ui-compact" hidden={!model.repair} onClick={()=>callbacks.repair?.()}>重试更新关联</Button>
       </div>
     </section>
-    <section className="note-info-section"><h3>主题归类</h3><p className="note-info-help">关联不会移动原文。</p><div id="note-topics"/></section>
-    <section className="note-info-section"><h3>关联事项</h3><div id="note-initiatives"/></section>
+    <section className="note-info-section">
+      <h3>主题归类</h3><p className="note-info-help">关联不会移动原文。</p>
+      <AssociationStatus state={model.topics} retry={() => callbacks.topics?.()}/>
+      <div id="note-topics" hidden={model.topics !== 'ready'}/>
+    </section>
+    <section className="note-info-section">
+      <h3>关联事项</h3>
+      <AssociationStatus state={model.initiatives} retry={() => callbacks.initiatives?.()}/>
+      <div id="note-initiatives" hidden={model.initiatives !== 'ready'}/>
+    </section>
   </>));
   render();return {set(patch:Partial<typeof model>){model={...model,...patch};render();},on(action:string,callback:()=>unknown){callbacks[action]=callback;}};
+}
+
+function AssociationStatus({state,retry}:{state:AssociationState;retry:()=>unknown}) {
+  if (state === 'ready') return null;
+  if (state === 'loading') return <p role="status" className="note-info-help">正在载入…</p>;
+  return <><p role="alert">关联暂不可用。</p><Button className="secondary ui-compact" onClick={retry}>重试载入</Button></>;
+}
+
+export function TaskFormActions({formId,cancelId,cancel,submitLabel}:{
+  formId:string; cancelId?:string; cancel:()=>unknown; submitLabel?:string;
+}) {
+  return <>
+    <Button id={cancelId} className="quiet ui-compact" busyOnAction onClick={cancel}>取消</Button>
+    <OfficialButton type="submit" form={formId} variant="default" className="ui-action primary ui-compact">{submitLabel}</OfficialButton>
+  </>;
 }
 
 export interface TaskFormOptions {id:string;statusId:string;errorId?:string;cancelId?:string;cancel:()=>unknown}
@@ -72,6 +98,6 @@ export function taskFormView(body:HTMLElement,footer:HTMLElement,options:TaskFor
     <form id={options.id} className="note-task-form" noValidate/>
     {options.errorId && <FieldError id={options.errorId} tabIndex={-1}/>}
   </>));
-  flushSync(()=>actions.render(<><Button id={options.cancelId} className="quiet ui-compact" busyOnAction onClick={options.cancel}>取消</Button><OfficialButton type="submit" form={options.id} variant="default" className="ui-action primary ui-compact"/></>));
+  flushSync(()=>actions.render(<TaskFormActions formId={options.id} cancelId={options.cancelId} cancel={options.cancel}/>));
   return {form:body.querySelector<HTMLFormElement>('form')!,status:body.querySelector<HTMLElement>(`#${options.statusId}`)!,error:options.errorId?body.querySelector<HTMLElement>(`#${options.errorId}`)!:null,submit:footer.querySelector<HTMLButtonElement>('button[type=submit]')!};
 }

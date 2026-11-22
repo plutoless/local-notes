@@ -2,7 +2,7 @@ import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiative
 import {ActionRows} from './actions';
 import {createRoot} from 'react-dom/client';
 import {OrganizationContent, OrganizationSettings, type OrganizationModel, type OrganizationCallbacks} from './organization';
-import {NoteFields,Classification} from './note-forms';
+import {NoteFields,Classification,TaskFormActions} from './note-forms';
 import {SearchContent} from './search';
 import {Button} from './components';
 import {CandidateReviewContent} from './candidate-review';
@@ -30,17 +30,20 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <LeaveContent model={{label:'笔记',failure:'保存失败，编辑仍保留。',committed:false}} choose={noop}/>
     <LibraryRows notes={[{path:'研究/中文长路径.md',title:'这是用于检查长中文标题换行与键盘选中状态的笔记标题',excerpt:'逐字保留来源摘要；生产列表不会在组件内访问存储。',modified:1000}]} directories={[]} selectedPath="研究/中文长路径.md" empty="" root={false} open={()=>{}} browse={()=>{}}/>
     <h2>React 随手记、位置与主题归类</h2>
-    <section className="note-task-sheet ui-drawer-body">
-      <div className="note-task-form">
+    <section className="note-task-sheet">
+      <div className="ui-drawer-body">
+      <form id="catalogue-note-task" className="note-task-form" onSubmit={event => event.preventDefault()}>
         <NoteFields fields={[
           {id:'catalogue-capture',label:'标题',optional:true,help:'标题或正文至少填一项。',value:'保留中文标题与文本选择'},
           {id:'catalogue-body',label:'正文',optional:true,multiline:true,value:'保留 Markdown 正文'},
           {id:'catalogue-location',label:'笔记相对路径',value:'研究/很长的中文目录/资料.md',help:'以 .md 结尾，路径相对于笔记目录。'},
           {id:'catalogue-topic',label:'主题名称',required:true,invalid:true,error:'请填写主题名称。'}
         ]}/>
-      </div>
+      </form>
       <Classification kind="topic" items={[{id:'example',title:'跨目录研究资料归类与长中文内容',checked:true}]} create={noop} change={noop}/>
       <Classification kind="initiative" items={[{id:'example',title:'研究事项',checked:true,open:noop},{id:'other',title:'另一项研究',checked:false,disabled:true}]} change={noop}/>
+      </div>
+      <div className="ui-drawer-footer"><TaskFormActions formId="catalogue-note-task" cancel={noop} submitLabel="保存"/></div>
     </section>
     <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
