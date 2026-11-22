@@ -598,6 +598,7 @@ async function revealCapturedNote(path) {
 }
 // Short tasks retain their own private draft and delegate writes to existing adapters.
 let shortTask = null, shortSaving = false, shortTaskOpening = 0;
+initiatives.taskOwner = () => `${noteLoadRequest}:${actions.openRequest}:${shortTaskOpening}`;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
 shortDrawer.panel.classList.add('note-task-sheet');
 const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',cancel:()=>leaveShortTask()});

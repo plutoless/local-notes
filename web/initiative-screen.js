@@ -346,7 +346,9 @@ export class InitiativeScreen {
     this.state(draft ? this.recoveredMessage() : record ? '已保存到本地' : '新建事项');
     if (metadata) this.restoreDrawerLayout(this.drawerContext);
     const preparation = this.editGeneration;
-    const ownsPreparation = () => ownsOpen() && preparation === this.editGeneration;
+    const taskOwner = this.taskOwner?.();
+    const ownsPreparation = () => ownsOpen() && preparation === this.editGeneration &&
+      (!metadata || (taskOwner === this.taskOwner?.() && !document.querySelector('dialog[open]')));
     try {
       await this.details();
     } catch (error) {
