@@ -45,7 +45,11 @@ export class ActionScreen {
         const records = await repository.history(entityId);
         if (repository !== this.repository || entityId !== this.previous?.entityId || request !== this.editRequest || !this.drawer.panel.open) return;
         this.historyView(records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt)));
-      } catch (error) { if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); }
+      } catch (error) {
+        if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) {
+          this.historyView('历史暂不可用，请重试。');
+        }
+      }
     };
   }
   async changeFocus() {
@@ -322,12 +326,17 @@ export class ActionScreen {
     const request = this.editRequest, action = this.previous;
     const owns = () => repository === this.repository && owner === this.owner?.() &&
       request === this.editRequest && this.drawer.panel.open && !this.dirty;
-    await this.openLinkedNote(path, {action, index, owns});
+    const verify = text => {
+      if (path !== source.path && fingerprint(text) !== source.fingerprint) {
+        throw Error('移动后的来源已更改，请重新打开行动并核对来源。');
+      }
+    };
+    await this.openLinkedNote(path, {action, index, owns, verify});
   }
 
   sourceControl(index, path) {
     const control = this.drawer.body.querySelector(`[data-action-source-index="${index}"]`);
-    return control?.getAttribute('aria-label') === `打开来源：${path}` ? control : null;
+    return control?.dataset.actionSourcePath === path ? control : null;
   }
 
   async save() {

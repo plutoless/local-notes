@@ -73,7 +73,7 @@ export function actionSources(container:HTMLElement, changed:()=>void, open:(pat
   function render(){flushSync(()=>root.render(<>{sources.map((source,index)=><div className="action-source" data-fingerprint={source.fingerprint} key={source.key}>
     <ActionSourceEvidence source={source}/>
     <SourceOptions initiallyOpen={!source.path}><summary>编辑来源引用</summary><ActionField label="笔记相对路径"><Input className="source-path" value={source.path} onChange={e=>update(index,'path',e.target.value)}/></ActionField><ActionField label="引用原文"><Textarea className="source-quote" rows={2} value={source.quote} onChange={e=>update(index,'quote',e.target.value)}/></ActionField><Button className="danger" aria-label={`移除引用：${source.path||'新来源'}`} onClick={()=>{sources.splice(index,1);render();changed();document.getElementById('action-add-source')?.focus();}}>移除引用</Button></SourceOptions>
-    {source.state&&<p className="action-source-state">{source.state}</p>}{source.resolvedPath&&<Button aria-label={`打开来源：${source.resolvedPath}`} data-action-source-index={index} onClick={()=>open(source.resolvedPath!,index)}>打开来源</Button>}
+    {source.state&&<p className="action-source-state">{source.state}</p>}{source.resolvedPath&&<Button aria-label={`打开来源：${source.resolvedPath}`} data-action-source-index={index} data-action-source-path={source.resolvedPath} onClick={()=>open(source.resolvedPath!,index)}>打开来源</Button>}
   </div>)}</>));}
   function update(index:number,key:'path'|'quote',value:string){sources[index]={...sources[index],[key]:value,fingerprint:'',state:undefined,resolvedPath:undefined};render();changed();}
   return {set(value:ActionSource[]){sources=value.map(s=>({...s,key:++sequence}));render();},add(source:ActionSource){sources.push({...source,key:++sequence});render();},
@@ -87,8 +87,9 @@ function revisionChanges(record:ActionRecord,older?:ActionRecord) {
   if(!older)return '上一版本不可用';
   return (Object.keys(historyFields) as (keyof typeof historyFields)[]).filter(key=>JSON.stringify(record[key])!==JSON.stringify(older[key])).map(key=>historyFields[key]).join('、')||'保存记录';
 }
-export function ActionHistory({records}:{records:ActionRecord[]|null}) {
+export function ActionHistory({records}:{records:ActionRecord[]|string|null}) {
   if (records === null) return '正在载入历史…';
+  if (typeof records === 'string') return records;
   if (!records.length) return '暂无可用历史。';
   const revisions = new Map(records.map(record => [record.revision, record]));
   return records.map(record => <article className="action-revision" key={record.revision}>
@@ -101,7 +102,7 @@ export function ActionHistory({records}:{records:ActionRecord[]|null}) {
 }
 export function actionHistory(container:HTMLElement) {
   const root=createRoot(container);
-  return (records:ActionRecord[]|null)=>flushSync(()=>root.render(<ActionHistory records={records}/>));
+  return (records:ActionRecord[]|string|null)=>flushSync(()=>root.render(<ActionHistory records={records}/>));
 }
 
 export function actionOptions(container:HTMLSelectElement,empty:string) {
