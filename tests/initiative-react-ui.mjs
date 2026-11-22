@@ -296,6 +296,16 @@ try {
       await page.waitForFunction(id => document.activeElement.dataset.initiativeId === id, record.entityId);
     });
     assert.equal(await page.locator('#initiative-drawer').isHidden(), true);
+    await initiativeRow.click();
+    const metadataBeforeCapture = hold(pause => { pauseActionQuery = pause; });
+    await page.locator('#workspace-overview').click();
+    await metadataBeforeCapture(async () => {
+      await page.locator('#initiative-new-note').click();
+      await page.locator('#capture-title').fill('保留后打开的笔记任务');
+    });
+    assert.equal(await page.locator('#initiative-drawer').isHidden(), true);
+    assert.equal(await page.locator('#capture-title').inputValue(), '保留后打开的笔记任务');
+    await page.waitForFunction(() => document.activeElement.id === 'capture-title');
     assert.deepEqual(errors,[]);
     console.log('PASS actual application: real storage reload, note return, shared Action and explicit ending retry with immutable partial commit; source bytes preserved.');
 } finally { await browser.close(); await fixture.close(); }
