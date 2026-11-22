@@ -29,8 +29,12 @@ try {
     const batch = JSON.parse(request.messages[1].content);
     return {text:JSON.stringify({candidates:Array.from({length:6}, (_, i) => ({type:'action', content:`合成建议 ${i} · ${batch.start}`, placement:'独立行动', reasoning:'来源明确提及核对证据', relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]}))})};
    }
-   if (request.cmd === 'read' && delayRead) await new Promise(resolve => releaseRead = resolve);
-   if (request.cmd === 'read') return {text:await readFile(fixture.root + '/' + request.path, 'utf8')};
+   if (request.cmd === 'read') {
+    assert.equal(request.workspaceId, initiative.workspaceId);
+    assert.equal(request.path, 'reference.md');
+    if (delayRead) await new Promise(resolve => releaseRead = resolve);
+    return {text:await readFile(fixture.root + '/reference.md', 'utf8')};
+   }
    if (failTarget && request.cmd === 'actionWrite' && request.path.startsWith('revisions/') && JSON.parse(request.text).entityType === 'action') { failTarget = false; return {error:'Synthetic target write failure'}; }
    return await fixture.adapter(request.cmd, request);
   } catch (error) { return {error:error.message}; }
@@ -43,6 +47,15 @@ try {
  const card = i => page.locator('.suggestion-card').filter({has:page.getByRole('heading', {name:`行动：合成建议 ${i} · 0`, exact:true})});
  await page.goto('https://notes.test/'); await organize();
  assert.equal(await page.locator('#ai-cancel').isDisabled(), true);
+ assert.equal(await page.locator('#ai-send').isDisabled(), true);
+ await page.locator('#ai-review-jump').press('Enter');
+ assert.equal(await page.locator('#ai-review-title').evaluate(node => node === document.activeElement), true);
+ await page.locator('#ai-configure').press('Enter');
+ await page.locator('#ai-settings-drawer[open]').waitFor();
+ assert.equal(await page.locator('#ai-address').evaluate(node => node === document.activeElement), true);
+ await page.keyboard.press('Escape');
+ await page.locator('#ai-settings-drawer[open]').waitFor({state:'hidden'});
+ assert.equal(await page.locator('#ai-configure').evaluate(node => node === document.activeElement), true);
  delayRead = true; await page.locator('#ai-selection input').check(); await page.locator('#ai-preview').click();
  await page.waitForFunction(() => document.querySelector('#ai-selection').inert);
  assert.equal(await page.locator('#ai-directory').isDisabled(), true);
@@ -68,6 +81,8 @@ try {
   + outbound.map(messages => messages[1].content).join('\n\n'));
  await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 6); assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
  assert.match(await page.locator('#ai-help').textContent(), /只会向所设服务发送剩余 1 个片段/);
+ assert.equal(await page.locator('#ai-input').textContent(), '服务地址：http://127.0.0.1/controlled\n模型：controlled\nstream: false\n\n系统消息：\n'
+  + outbound[1][0].content + '\n\n用户消息（每个片段一次请求）：\n' + outbound[1][1].content);
  assert.deepEqual(await page.locator('#ai-readable article p').allTextContents(), ['已完成', '待完成']);
  mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2');
  assert.equal(requests, 3);
@@ -84,6 +99,7 @@ try {
  await card(1).getByRole('button', {name:/^留待以后：/}).click(); await card(1).getByText('处理决定：留待以后，已保存').waitFor();
  await card(2).getByLabel('已有事项', {exact:true}).selectOption(initiative.entityId); await card(2).getByRole('button', {name:/^关联到事项：/}).click(); await card(2).getByText('处理决定：关联事项，已保存').waitFor();
  await card(3).getByRole('button', {name:/^作为参考资料：/}).click(); await status('请先选择一个已有事项');
+ await card(3).getByText('请先选择一个已有事项，再保存这个决定。', {exact:true}).waitFor();
  await card(3).getByLabel('已有事项', {exact:true}).selectOption(initiative.entityId); await card(3).getByRole('button', {name:/^作为参考资料：/}).click(); await card(3).getByText('处理决定：作为参考，已保存').waitFor();
  await card(4).getByRole('button', {name:/^忽略：/}).click(); await card(4).getByText('处理决定：忽略，已保存').waitFor();
  failTarget = true; await card(5).getByRole('button', {name:/^确认此建议：/}).click(); await card(5).getByRole('button', {name:/^恢复已确认的决定/}).waitFor();
@@ -111,7 +127,14 @@ try {
  await page.locator('#ai-preview').focus(); await page.keyboard.press('Tab');
  const focus = await page.evaluate(() => ({tag:document.activeElement.tagName, outline:getComputedStyle(document.activeElement).outlineWidth, name:document.activeElement.textContent}));
  assert.equal(focus.tag, 'BUTTON'); assert.equal(focus.outline, '3px'); assert.match(focus.name, /设置 AI 服务/);
+ await page.keyboard.press('Tab');
+ assert.equal(await page.locator('#ai-readable').evaluate(node => node === document.activeElement), true);
  await page.keyboard.press('Tab'); assert.equal(await page.evaluate(()=>document.activeElement.tagName),'SUMMARY');
+ assert.equal(await card(1).evaluate(node => {
+  const evidence = node.querySelector('blockquote').getBoundingClientRect();
+  const decision = node.querySelector('.candidate-decisions').getBoundingClientRect();
+  return evidence.bottom < decision.top && node.scrollWidth <= node.clientWidth;
+ }), true, 'Narrow Candidate review keeps evidence above the decision controls without overflow');
  await page.screenshot({path:'build/issue98-review/after-web-393px.png'});
  const primaryTargets = await page.locator('#organize-tools button.primary').evaluateAll(nodes => nodes.map(n => n.getBoundingClientRect().height));
  assert.ok(primaryTargets.every(height => height >= 44));

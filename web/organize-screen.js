@@ -1,7 +1,7 @@
 import {organizationView, candidateReviewView, readCandidateDraft, actionControl} from './assets/react-host.js';
 import {drawer, requestTaskLeave, pageAvailability} from './presentation.js';
 import {native} from './bridge.js';
-import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
+import {CandidateRepository, Organization, CandidateReview} from './organization.js';
 import {allRecords} from './initiatives.js';
 const $ = selector => document.querySelector(selector);
 const invalidSettings = '请修正服务地址或模型后再保存。';
@@ -32,9 +32,18 @@ export class OrganizeScreen {
       send: () => this.attempt(async () => {
         const generation = this.session;
         const operation = this.organization.run(text => { if (generation === this.session) this.status(text); }); this.controls();
-        try { await operation; } finally { if (generation === this.session) { this.controls(); await this.candidates(); } }
+        try { await operation; } finally {
+          if (generation === this.session) {
+            this.state.request = this.organization.requestPreview(this.savedSettings);
+            this.controls(); await this.candidates();
+          }
+        }
       }),
-      cancel: () => this.attempt(async () => { await this.organization.cancel(); this.controls(); this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`); })
+      cancel: () => this.attempt(async () => {
+        await this.organization.cancel();
+        this.state.request = this.organization.requestPreview(this.savedSettings);
+        this.status(`已取消。已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段，已保存的建议仍保留。`);
+      })
     });
     this.candidateUI = candidateReviewView($('#ai-results'), {
       activate: id => { this.activeCandidate = id; },
@@ -46,31 +55,39 @@ export class OrganizeScreen {
         if (this.reviewing) return;
         if (this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision) throw Error('Candidate changed; review again');
         const session = this.session;
-        this.reviewing = true; this.renderCandidates();
+        this.reviewing = record.entityId; this.renderCandidates();
         try {
           await this.review.decide(record, decision, {description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description, targetId: this.candidateContext.get(record.entityId)?.target || ''});
           if (session !== this.session) return;
           this.drafts.delete(record.entityId); this.clearCandidateDraft(record.entityId);
           this.status('决定已保存到本地。每条建议都需要单独确认。');
         } finally { this.reviewing = false; this.renderCandidates(); if (session === this.session) await this.candidates({owner}); }
-      }),
-      recover: owner => this.attempt(async () => { if (this.reviewing) return; this.reviewing = true; this.renderCandidates(); try { await this.review.recover(); } finally { this.reviewing = false; await this.candidates({owner}); } })
+      }, undefined, record.entityId),
+      recover: owner => {
+        const id = owner.closest('[data-candidate]').dataset.candidate;
+        return this.attempt(async () => {
+          if (this.reviewing) return;
+          this.reviewing = id; this.renderCandidates();
+          try { await this.review.recover(); } finally { this.reviewing = false; await this.candidates({owner}); }
+        }, undefined, id);
+      }
     });
     const settingsSave = actionControl('保存设备设置', () => this.attempt(() => this.saveSettings()), {variant: 'primary'});
     this.settingsSave = settingsSave.control;
     this.settingsDrawer.footer.append(actionControl('取消设置', () => this.leaveSettings()).host, settingsSave.host);
     this.controls();
+    $('#ai-review-jump').onclick = () => $('#ai-review-title').focus();
     $('#ai-results-next').onclick = () => { this.offset += 50; this.candidates(); };
     $('#ai-results-previous').onclick = () => { this.offset = Math.max(0, this.offset - 50); this.candidates(); };
   }
   async preview() {
     if (this.organization.running || this.previewing) throw Error('请先等待当前操作完成');
     const session = this.session;
-    this.previewing = true; this.status('正在读取所选内容…');
+    this.previewing = true; this.status('正在读取所选内容…', 'loading');
     try {
       const paths = [...this.selected], batches = await this.organization.preview(paths);
       if (session !== this.session) return;
-      this.state.request = `服务地址：${this.savedSettings?.address || ''}\n模型：${this.savedSettings?.model || ''}\nstream: false\n\n系统消息：\n${SYSTEM_PROMPT}\n\n用户消息（每个片段一次请求）：\n` + batches.map(batch => JSON.stringify(batch)).join('\n\n');
+      this.state.request = this.organization.requestPreview(this.savedSettings);
       this.status(batches.length ? `预览已就绪：${paths.length} 篇笔记，${batches.length} 个片段。请核对后发送。` : '所选笔记没有可发送的正文，请重新选择。');
     } finally { if (session === this.session) { this.previewing = false; this.controls(); } }
   }
@@ -156,11 +173,12 @@ export class OrganizeScreen {
   resetSelection(fromShow = false) {
     if (!fromShow) this.showRequest = (this.showRequest || 0) + 1;
     this.session = (this.session || 0) + 1; this.previewing = false; this.inventoryRequest++; this.organization.generation++; this.selected.clear(); this.selectionOffset = 0;
-    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.renderCandidates(); this.invalidate();
+    this.state.search = ''; this.state.directory = '*'; this.state.notes = []; this.state.token = ''; this.selectionHasMore = false; this.selectionPrevious = false; this.drafts.clear(); this.draftRevisions.clear(); this.recoveredDrafts.clear(); this.candidateContext.clear(); this.offset = 0; this.candidateRecords = []; this.activeCandidate = null; this.candidateError = null; this.renderCandidates(); this.invalidate();
   }
-  async attempt(operation, owns) {
+  async attempt(operation, owns, candidateId) {
     const owner = document.activeElement, session = this.session;
     const current = owns || (() => session === this.session);
+    if (candidateId) this.candidateError = null;
     try { await operation(); } catch (error) {
       if (!current()) return;
       const diagnostic = error.message;
@@ -176,7 +194,11 @@ export class OrganizeScreen {
       else if (/suggestion needs text/i.test(diagnostic)) message = '建议内容不能为空，请填写后再确认。';
       else if (/conflict|changed|workspace/i.test(diagnostic)) message = '工作目录或内容已变化，请重新打开并核对。';
       if (this.settingsDrawer.panel.open) this.state.settingsError = diagnostic === invalidSettings ? '' : message;
-      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), 'failed');
+      if (candidateId) {
+        this.candidateError = {id: candidateId, message};
+        this.renderCandidates();
+      }
+      this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), candidateId ? 'candidate-failed' : 'failed');
     } finally {
       this.controls();
       if (current() && document.activeElement === document.body && owner?.isConnected && !owner.closest('[hidden], [inert]') && !owner.disabled) owner.focus({preventScroll: true});
@@ -237,7 +259,8 @@ export class OrganizeScreen {
     this.candidateUI.render({cards: (this.candidateRecords || []).map(record => ({record,
       description: this.drafts.get(record.entityId) ?? record.review?.suggestion ?? record.description,
       dirty: this.drafts.has(record.entityId), recovered: this.recoveredDrafts.has(record.entityId), stale: this.drafts.has(record.entityId) && this.draftRevisions.get(record.entityId) !== record.revision, target: this.candidateContext.get(record.entityId)?.target || '', disclosures: this.candidateContext.get(record.entityId)?.disclosures || {}})),
-      destinations: this.destinations || [], busy: Boolean(this.reviewing)});
+      destinations: this.destinations || [], busy: Boolean(this.reviewing),
+      pendingId: this.reviewing || undefined, error: this.candidateError});
   }
   captureCandidates() {
     for (const card of $('#ai-results').querySelectorAll('[data-candidate]')) {
