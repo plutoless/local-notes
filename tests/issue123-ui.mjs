@@ -6,18 +6,27 @@ import {storageFixture} from './action-adapter.js';
 const evidence = process.env.ISSUE123_EVIDENCE || 'build/validation/123/after';
 const before=process.env.ISSUE123_PHASE==='before';
 let failSave=false;
+let failRead=false;
 const io=[];
 const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  const screenshot = async name => {
+    await page.evaluate(async () => {
+      await document.fonts.ready;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    });
+    await page.screenshot({path:join(evidence,name),animations:'disabled'});
+  };
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     io.push({cmd:request.cmd,path:request.path,at:performance.now()});
     try {
       if(request.cmd==='save' && failSave) throw Error('Controlled issue123 failed save');
+      if(request.cmd==='read' && failRead) throw Error('Controlled unavailable disk version');
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await fixture.adapter(request.cmd, request);
         return result;
@@ -47,7 +56,7 @@ try {
   const started=performance.now();await page.goto('https://notes.test/');
   await page.locator('[data-view=notes]').click();await page.locator('#items .card').first().waitFor();
   const listed=performance.now();
-  await page.screenshot({path:join(evidence,'library.png')});
+  await screenshot('library.png');
   const readsBefore=io.filter(c=>c.cmd==='read').length;
   const opening=performance.now();
   await page.locator('#items [data-path="reference.md"]').click();await page.locator('#reading').waitFor({state:'visible'});
@@ -64,12 +73,12 @@ try {
   }
   for(const viewport of [{width:1180,height:800},{width:393,height:852},{width:800,height:400}]) {
     await page.setViewportSize(viewport);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-    await page.screenshot({path:join(evidence,`reader-${viewport.width}.png`)});
+    await screenshot(`reader-${viewport.width}.png`);
     if(!before) {
       await page.locator('#note-reference-open').click();await page.locator('#note-reference').waitFor({state:'visible'});
       assert.equal(await page.locator('#note-reference dd').textContent(),'reference.md');
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-      await page.screenshot({path:join(evidence,`reference-${viewport.width}.png`)});
+      await screenshot(`reference-${viewport.width}.png`);
       await page.locator('#note-reference').getByRole('button',{name:'收起',exact:true}).click();
       assert.equal(await page.locator('#note-reference-open').evaluate(n=>n===document.activeElement),true);
     }
@@ -93,10 +102,45 @@ try {
   await page.locator('#back').click();await page.getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.getByRole('alert').filter({hasText:'保存尚未完成'}).waitFor();
   assert.equal(await body.inputValue(),'不得写入的失败草稿');assert.equal(await readFile(sourcePath,'utf8'),saved);
-  await page.screenshot({path:join(evidence,'failed-save.png')});
+  await screenshot('failed-save.png');
   await page.getByRole('button',{name:'继续编辑',exact:true}).click();assert.equal(await body.inputValue(),'不得写入的失败草稿');
   await page.locator('#back').click();await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();failSave=false;
   assert.equal(await readFile(sourcePath,'utf8'),saved);
+  if (!before) {
+    await page.locator('#items [data-path="reference.md"]').click();
+    await page.locator('#mode').click();
+    const external = '# 外部版本\n\n磁盘上的原文。';
+    await writeFile(sourcePath,external);
+    await body.fill('需要保留的本机编辑');
+    const conflict=page.locator('#conflict');
+    await conflict.waitFor();
+    await page.setViewportSize({width:393,height:480});
+    const reload=conflict.getByRole('button',{name:'载入磁盘版本（放弃当前编辑）'});
+    await reload.focus();
+    const contained=await conflict.evaluate(node=>{
+      document.querySelector('#global-search-open').focus();
+      return node.contains(document.activeElement);
+    });
+    assert.equal(contained,true,'note file conflict makes global search inert');
+    await page.keyboard.press('Tab');
+    assert.equal(await conflict.evaluate(node=>node.contains(document.activeElement)),true);
+    await page.keyboard.press('Escape');
+    assert.equal(await conflict.isVisible(),true);
+    failRead=true;
+    await reload.click();
+    await conflict.getByText('未能载入磁盘版本。请检查目录后重试；编辑仍保留。',{exact:true}).waitFor();
+    assert.equal(await body.inputValue(),'需要保留的本机编辑');
+    assert.equal(await readFile(sourcePath,'utf8'),external);
+    assert.equal(await conflict.evaluate(node=>node.scrollWidth<=node.clientWidth),true);
+    assert.ok(await reload.evaluate(node=>node.getBoundingClientRect().height>=44));
+    await screenshot('file-conflict-failure-393-short.png');
+    failRead=false;
+    await reload.click();
+    await conflict.waitFor({state:'hidden'});
+    await page.locator('#reading').getByText('磁盘上的原文。',{exact:true}).waitFor();
+    assert.equal(await page.locator('#mode').evaluate(node=>node===document.activeElement),true);
+    assert.equal(await readFile(sourcePath,'utf8'),external);
+  }
   assert.deepEqual(errors,[]);
   await writeFile(join(evidence,'measurements.json'),JSON.stringify({phase:before?'before':'after',startupAndListMs:listed-started,openMs:opened-opening,io,adapterCalls:fixture.calls,sourcePreserved:true,persistedReadback:true,failedSaveDiscard:true},null,2));
   console.log('PASS issue123 same-state Library/Markdown/reference, wiki return, stable editor receiver, real save/reload and failed-save/continue/discard');

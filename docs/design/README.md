@@ -1,344 +1,91 @@
-# Local Notes presentation reference
+# Local Notes production design
 
-This is the authoritative presentation contract for issue #31 and downstream page work. The approved structure is direction 09's contextual workspace with direction 01's restrained native light finish, delivered by #26/#30. This contract consolidates that baseline; it does not authorize redesigning #32–#37.
+The production app follows the maintainer-selected Page-first workspace with an
+optional right-hand Reference desk. The [selected direction](issue122/SELECTED.md)
+records the review and alternatives. This document records the production
+contract. See the [screen and state inventory](journeys.md) for delivered owners
+and regression coverage, and the [content structure specification](../superpowers/specs/2026-11-15-content-structure-design.md)
+for data and decision boundaries.
 
-Open the [rendered catalogue](catalogue.html) through a repository-root HTTP server (`python3 -m http.server 8091`, then `/docs/design/catalogue.html`). Run `npm ci && npm run build:web` first. It imports the real `web/style.css`, `web/presentation.js` and compiled production React components; it is not a product route and must never enter primary navigation. English headings are maintainer guidance; Chinese controls demonstrate application copy. No native bridge or user workspace is required.
+Build with `npm ci && npm run build:web`. Serve the repository root locally
+and open [the catalogue](catalogue.html). It imports the production stylesheet,
+compiled React components and shared drawer. Its fixtures are synthetic, its
+callbacks perform no writes or requests, and the application has no catalogue
+route.
 
-## Tokens and hierarchy
+## Shared tokens and geometry
 
-The `:root` declarations in `web/style.css` are the implemented source of truth. The catalogue reads their computed values rather than maintaining a second palette.
-
-| Purpose | Token | Rule |
-| --- | --- | --- |
-| Reading / canvas / sidebar | `--surface`, `--canvas`, `--sidebar` | Neutral light surfaces; no decorative colored cards |
-| Text / secondary text | `--text`, `--muted` | Secondary does not mean illegible; normal text ≥4.5:1 |
-| Action / selection | `--accent`, `--selected`, `--selected-text`, `--hover` | Restrained blue; selection also uses weight and `aria-current` |
-| Status | `--success`, `--warning`, `--danger` | Always pair color with a Chinese receipt, warning or failure message |
-| Interactive / decorative boundaries | `--line`, `--divider` | `--line` ≥3:1 on light surfaces; `--divider` only separates noninteractive regions |
-| Keyboard indicator | `--focus` | Keyboard actions: 3px outline, ≥3:1; 2px offset on controls, inset 3px on scrollable rows. Contextual editable fields use the 2px active boundary described below; pointer buttons remain restrained |
-| Rhythm | `--space-small`, `--space`, `--space-section` | 4/8/24px; 16px field margin, 24–32px document padding |
-| Shape / elevation | `--radius`, `--radius-panel`, `--shadow-panel` | 8px controls, 14px panels; elevation only for overlays |
-
-Typography uses system UI with PingFang SC / Microsoft YaHei fallback. Body 14px/1.6, note body 16px/1.9, page title 23–28px/1.4, section heading 18px/1.5, row title 14–15px/1.65, secondary metadata 12–13px. Use weight 500–650, not letterspaced Chinese slogans. User text wraps anywhere when needed; do not truncate the only actionable title. Textarea resizing and reading scroll remain available. SVG icons are 19px, stroke 1.6, aligned at the text center; narrow navigation uses 16px icons, retaining 44px targets. Icons supplement labels; icon-only actions require an explicit Chinese accessible name.
-
-Controls have 44px minimum hit height. Issue #45 supersedes the earlier blanket comfortable-density direction: density follows the control role. Home actions use compact 32px visible surfaces inside reserved 44px targets; navigation, row openers, disclosures, icons and fields retain their own geometry. Other existing consumers retain their current density until their task adopts this contract. Hover uses `--hover`, press uses a restrained blue fill. Disabled controls remain visible and explain prerequisites near the control. Motion is limited to 120ms feedback; reduced-motion disables transitions, animation and smooth scrolling. No idle animation or automatic rearrangement.
-
-## Implemented primitives and state contract
-
-`web/react/` owns all production content through typed presentation ports. The
-mount-once document, form, Action/Initiative controls and empty view slots retain
-stable receivers; controllers own values, task lifecycle and persistence. The
-shared `presentation.js` now owns modal lifetime, focus/selection restoration,
-leave decisions and receipt publication only. Its old button, field, disclosure,
-heading, selection-row, pagination and comparison constructors are retired.
-React components receive data/callbacks and never read records, open workspaces,
-save revisions or initiate model requests. All views consume the same semantic
-CSS tokens. See [final ownership](../architecture/renderer-convergence.md).
-
-| Primitive | Consumer / usage | State behavior |
-| --- | --- | --- |
-| `Button`, `actionControl` / `.ui-action` | Page and stable controller control ports | Primary, secondary, quiet and danger; async busy guard; retained nodes |
-| `NoteFields`, `ActionField` / `.ui-field` | Forms and shell search | Associated labels, invalid state/help and retained caret |
-| React browse rows / `.ui-row` | Library, Focus, Actions and Initiatives | Selected identity independent from keyboard focus; bounded queries |
-| Native details / `.ui-disclosure` | Per-page utilities | Native disclosure keyboard behavior; no custom menu owner |
-| `Feedback`, `receiptView` / `.ui-feedback` | Save/error/retry receipts | Chinese message, optional diagnostic and truthful saved/recovered state |
-| `drawerContent`, `LeaveContent`, existing modal controller | C sheets, Save/Discard/Continue | One modal lifetime, containment and opener/selection restoration |
-| Shell navigation | Document shell | Selected/current fill independent from hover/focus |
-| Per-page React pagination / `.ui-pagination` | Bounded collections | Explicit previous/next, disabled unavailable directions |
-
-The catalogue's disabled/invalid examples are deliberate fixtures, not promises of new product behavior. Status is never conveyed by color alone. Form-level invalid errors retain input and supply a retry path. Failed note saves keep private local drafts and block task return; explicit Save retries the existing write. Autosave and Save share the same serialization and expected-base protection. Reopen reads the saved body; a recovered draft is visibly identified. A local-save receipt never implies remote receipt.
-
-A new variant requires a real consumer, an interaction/state need that existing primitives cannot express, a reference entry and catalogue example, keyboard/narrow/contrast evidence, and a review explaining the distinction. Do not add an unused theme system, variant taxonomy or page-specific replacement for shared controls.
-
-## Approved layout families
-
-- **Lightweight home:** one title and primary next action, seven initial focused actions, subordinate waiting/initiative summaries, management in per-row disclosures. Home queries metadata/records, never every note body.
-- **List/detail browsing:** bounded list with search/filter/pagination; readable selected note in a separate detail surface. At narrow widths use list/back instead of compressing columns.
-- **Initiative overview and linked reading:** show the goal, recorded progress, Actions and source links in one document column. Linked notes use the shared reader and return to the exact source row and prior scroll position. Narrow windows show the list, overview and reader in succession.
-- **Staged organization:** select → inspect exact sending scope → send → individually review. Privacy decisions, uncertainty and source evidence stay visible. Do not turn it into a generic editor column.
-- **Focused dialog/panel review:** local conflict/candidate decision with explicit close/back and draft guards. Details contain IDs, full paths, raw diagnostics and full versions. Keep source comparisons readable and scrollable.
-
-These are families, not a requirement to put every page into one narrow three-column template.
-
-## Content audit and adoption contract
-
-| Existing content | Decision | Reason |
-| --- | --- | --- |
-| Brand `拾记`, task titles, action descriptions | Retain | Product identity and actionable/user-authored content |
-| Duplicate home heading in hidden collection header | Retain hidden only | One visible heading; shared collection header needed elsewhere |
-| `尚未打开内容` / creation hint | Retain outside home | Explains the empty detail pane without a slogan |
-| Home empty focus/waiting/initiative hints | Shorten to one actionable sentence | Avoid repeated onboarding while retaining next step |
-| Full root path, source path, IDs, raw error | Move/keep in details | Reachable for diagnosis without dominating task surface |
-| Save state, recovered drafts, external-change warnings | Retain | Prevent data-loss ambiguity |
-| Source quotes, fingerprints/history, missing-source warnings | Retain details/evidence | Preserve source protection and uncertainty |
-| AI service privacy, exact request scope, confirmation decisions | Retain | Necessary sending and review decisions, not filler |
-| Local save vs remote receipt, conflict branch information | Retain | No unsupported synchronization promise |
-| Generic progress fallback / repeated descriptions | Shorten only where no evidence is lost | No fabricated progress; “尚未记录进展” is sufficient |
-| Decorative slogans, AI filler, blanket safety promises | Prohibited | No such additions are needed; do not replace real failure/privacy evidence |
-
-Downstream #32–#37 must:
-
-- Import these tokens and primitives; cite the closest real shell/Focus/capture example and catalogue state.
-- Preserve Chinese application copy/accessibility names, user text/paths/protocol names and persisted enums; keep project prose English.
-- Audit copy with retain/remove/shorten/details decisions. No slogans, repeated onboarding, raw internal errors as the primary message, or unsupported promises.
-- Choose the appropriate family; show selected context and reachable back paths at 393px. No fixed narrow three-column mandate or private control palette.
-- Exercise applicable normal, empty, loading, invalid, failure/retry, disabled, dirty/saving and recovered states. Verify focus/restoration, ≥44px targets, contrast and long Chinese content.
-- Preserve bounded queries, durable revisions, rebuildable indexes, source guards, workspace isolation, private drafts and recovery. Presentation code cannot own storage changes.
-- Preserve delivered organization/candidate/sync behavior; run shared local conflict/revision checks. Record browser/native evidence separately and all deferred checks honestly.
-
-## Conflict comparison rows
-
-The delivered `ConflictComparison` renders definition-list field rows with
-`.ui-comparison-row`, wrapping long evidence and marking differences in Chinese.
-Rows are read-only; version selection uses production `Button` controls, and the
-React conflict editor owns labeled resolution fields. Blocked incomplete/cyclic
-histories retain readable evidence with disabled controls. The production
-catalogue renders this same component. Sync record-jump navigation consumes
-`Button` with `.ui-row`; the old #36 `comparisonRow()`, `field()` and
-`selectionRow()` constructors were retired by #102.
-
-`bindDialog()` additionally returns `open()` for callers that need to capture an opener synchronously before focusing a newly visible panel. Existing hidden-attribute consumers remain supported. Closing restores that opener without replacing the underlying editor or its scroll surface.
-
-## Organization adoption (#35)
-
-Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
-
-The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, one 3px keyboard-only label outline (the child checkbox does not draw a second outline), and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
-
-### Selected workspace adoption (#129)
-
-The Organization page groups source selection, service and outbound preview, and
-saved Candidate review in document flow. Review pairs assessment with verbatim
-evidence where space permits, then follows with editable fields and explicit
-decisions. Source offsets remain beside the opener and fingerprints remain in
-record details. Device settings retain the shared contextual task.
-
-Organization consumes the existing shadcn/ui Input, Textarea and Field ports,
-with the existing semantic border, error and keyboard focus rules. See the
-[Input and Textarea adaptations](issue123/ADOPTION.md) and
-[Field provenance](form-entry-points.md). Native selects, checkboxes
-and disclosures retain their platform semantics and existing controller ports.
-The production catalogue includes selected scope, a populated preview, device
-credentials in their saved state, and an invalid Candidate edit with source
-evidence. Its request is synthetic and its callbacks perform no writes or sends.
-
-## Integrated journeys (#37)
-
-Use the [screen/state/content inventory and contributor checklist](journeys.md) for cross-page changes. It maps real shared primitives and catalogue states to maintained journey suites, including unavailable-source recovery and the quiet return-to-original-action control. Visible navigation selection and accessible current-page announcements must change together.
-
-
-## Selected C contextual forms (issue #45)
-
-This is the authoritative reconciliation of the maintainer-selected C structure with the older comfortable-density baseline. C governs contextual creation and short editing forms; its dimensions remain proposed defaults until demonstrated by the dependent real flows (#46–#48). Issue #45 implements home controls and catalogue examples only, not drawer primitives or topic/initiative journeys. The content and persistence boundaries in [the content structure design](../superpowers/specs/2026-11-15-content-structure-design.md) remain authoritative.
-
-Open a single modal task from the right edge of its current content surface, keeping the list/workspace visible and inert behind a restrained backdrop and subtle left divider/shadow. Never insert form fields into browsing toolbars, shift the list vertically, or stack drawers. Preserve search, filters, selection, pagination and scroll across save/cancel; expose a newly created record without resetting unrelated browsing state. Long-form notes retain their document surface; conflicts and AI review retain specialized protected layouts.
-
-| Element | Proposed default / rule |
+| Concern | Production rule |
 | --- | --- |
-| Short topic form | About 390px, clamped to available surface width |
-| Multi-field form | About 460px; full width if readable background context cannot remain |
-| Header | 20–24px vertical / 24px horizontal; one task title, optional parent context, accessible close |
-| Body | 24px horizontal, 20px field-group gaps; consistent label/field/disclosure/feedback left edge |
-| Footer | 12–16px vertical / 24px horizontal, 8px action gaps; reachable while body scrolls, never covering final fields/errors |
-| Button | `--button-surface: 32px`; `--target-height: 44px`, `--control-inset: 6px` |
-| Single-line field | `--field-surface: 40px`; label target reserves at least 44px |
-| Labels / shape | 8px label gap, subordinate optional marker; existing 8px radius and semantic tokens |
+| Canvas and context | White reading surface, neutral canvas and sidebar, quiet dividers. Elevation is reserved for overlays and temporary notices. |
+| Text | System UI with PingFang SC and Microsoft YaHei fallbacks. UI text 14px/1.6, metadata 12–13px, note body 16px/1.95, reader title 30px/1.5 and 26px on narrow layouts. Source text, paths, codes and record IDs wrap or scroll within their own surface. |
+| Spacing and shape | 4/8px base, 24px section rhythm, 6px control radius and 10px panel radius. Reader outer width up to 800px, with 48px desktop and 20px narrow horizontal padding. |
+| Targets | Ordinary buttons and labeled controls reserve at least 44px. Compact buttons paint a 32px surface inside the target. A compact 40px field is enclosed by its 44px label target. Narrow full-width sheets preserve separate header, scrolling body and footer. |
+| Color and selection | `--accent` signals action, with `--accent-hover` for stronger feedback. `--hover` and `--pressed` are neutral. `--selected` pairs with weight and current/pressed state. Search uses `--passage-selected`, the chosen blue tint, with a boundary and pressed state. Status uses explicit Chinese text with `--success`, `--warning` or `--danger`. |
+| Contrast and focus | Normal text target ≥4.5:1. Interactive lines and focus ≥3:1 on adjacent surfaces. One solid 3px keyboard outline with 2px offset, inset on scrolling rows. The drawer field boundary, checkbox-row label and compact form label keep one focus cue. Invalid borders and associated receipt text remain available. |
+| Motion | 100ms background feedback. Opening and closing are immediate. Reduced motion removes transitions, animation and smooth scrolling. |
+| Icons | Fixed local SVG vocabulary, 19px with 1.6 stroke and 16px in narrow navigation. An icon-only control has a Chinese accessible name. |
 
-Production `Button` and `actionControl` use `.ui-compact` for compact actions;
-home was the first screen consumer. Its pseudo-element paints only the surface
-and receives no pointer events; the actual button reserves all target space in
-normal flow and keeps its focus outline. Wrapped labels increase both target
-and surface height. No negative margins or overlapping invisible hit extensions.
-Row openers remain full text targets, aligned with management summaries;
-navigation and icon actions remain at least 44px. Production `ActionField`
-reserves the padded label target around its native 40px field. The catalogue
-consumes it directly. Presentation ports never own storage/index operations;
-the old `button()`/`field()` constructors are retired.
+`web/style.css` defines these runtime tokens. `web/react/styles.css` maps
+them into Tailwind 4 without preflight. The catalogue displays computed
+values and exercises focus, geometry and reduced motion.
 
-Use vertically arranged labeled fields, not placeholder-only names. Optional metadata/source links use disclosures unless hiding them would conceal an actionable warning. Long Chinese text, paths and validation wrap without horizontal scrolling. Footer Cancel is quiet and precedes the sole primary Create/Save action; save/error feedback has a separate readable region. Destructive discard is not an equal primary beside Save.
+## Components and ownership
 
-Opening captures the opener and focuses the first meaningful field or heading. Tab/Shift+Tab stay within the drawer; closing restores the opener or a meaningful surviving replacement. Close, Cancel, Escape, backdrop, navigation and native termination share existing unsaved guards. Backdrop never silently discards. Dirty tasks always offer Save and leave, Discard changes and leave, or Continue editing through the [task lifecycle](task-lifecycle.md). Clean cancellation creates no record; repeated submission creates no duplicates; reopening reads saved data. Recovery stays scoped to workspace/entity. Preserve source guards, serialized writes, immutable revisions and conflicts.
-
-| State | Required behavior and text evidence |
+| Component | Production adaptation and consumer |
 | --- | --- |
-| Normal | One task title, concise labels and appropriate Create/Save verb |
-| Dirty | Retain inputs and show editing status; all exits honor guards |
-| Saving | Disable duplicate submission, retain values, show saving status |
-| Invalid | Explain beside field; focus first invalid input and keep values |
-| Failed | Keep form/input intact, readable retryable error; no success receipt |
-| Saved | Announce local success only after persistence; preserve browsing context |
-| Recovered | Distinguish recovered draft from saved data, sources and conflicts |
+| Button | Official shadcn/ui new-york-v4 native button through the shared `Button` facade. The finite native variant map covers consumed styles. The facade retains controller callbacks, stable receivers and optional pending-action protection. |
+| Input, Textarea, Field | Pinned new-york-v4 source retains native props and slots. The vertically composed Field associates help and errors with the control. The reader owns stable editing receivers, and short tasks and record editors reuse the field styles. |
+| Alert Dialog content | Pinned new-york-v4 header, title, description and footer inside the native protected leave dialog. Save requires the controller result. Continue restores selection and a deferred fallback yields to newer keyboard, pointer or input intent. |
+| Sheet and centered dialogs | Right-side drawer composition follows the official Sheet header/body/footer. Search, file conflict, record conflict and protected leave share native top-layer modality and `bindModal` keyboard handling. Controllers still decide when each task can close and where focus returns. |
+| Native select, checkbox and disclosure | Finite scope/status choices and checked source rows keep native semantics. Details expose optional fields, versions, paths or diagnostics. A checked row has one keyboard cue through its label. |
+| Record rows, Markdown and search passages | Domain-driven content uses shared controls, selection, feedback and geometry. The safe reader and original-passage search preserve source identity and text. Search remains a scoped lookup with result/passage controls and explicit return. |
+| Feedback and comparison | Shared receipts state what happened and keep raw diagnostics in details. The conflict comparison uses definition lists, and the active resolution uses real fields. Record versions and the local-only save boundary stay explicit. |
 
-Around 700px and below, or whenever context becomes unreadable, use a full-width task surface with visible close/back. Verify 393px and reduced-height windows directly. Scroll the body independently and keep the footer reachable; on-screen keyboards must not cover active fields, errors or final actions. These drawer interaction and responsive requirements are contracts for dependent implementations, not claims that a drawer ships here.
+The pinned source, MIT license and native adaptations are documented in
+[Library adoption](issue123/ADOPTION.md) and [form entry points](form-entry-points.md).
+The [selected preview provenance](issue122/PROVENANCE.md) records supplementary
+design references. Production ships the existing component family and local
+assets. Store or index calls remain behind controller interfaces.
 
-Application copy/accessibility labels remain Simplified Chinese; user text, enums, paths and quotations remain intact. Retain privacy, source, unsaved, recovery and conflict evidence. Remove slogans, duplicate instructions, blanket promises and implementation explanations from normal flow. Catalogue state fixtures demonstrate shared primitives, not simulated persistence acceptance.
+Native dialogs own background inertness. The shared Tab handling keeps
+controls reachable under the WebView text-field-only setting and skips closed
+disclosures. Search preserves composition-aware Escape. An external-file
+conflict stays protected until an explicit copy, disk reload or applicable
+active-task discard. Synchronization can be closed while an inspection runs
+and returns focus to its opener. A dirty resolution uses Save/Discard/Continue.
+A temporary leave decision acts on the captured task and awaits submitted work
+before offering destructive choices.
 
-### Consumed drawer: topic creation and rename (#46)
+## Production layout families
 
-`presentation.drawer()` supplies a native modal `<dialog>` in the top layer with a titled header/close control, independently scrolling body and reachable fixed footer. `LibraryScreen` is its first real consumer; the initiative and action consumers are described below. Native dialog semantics make the workspace inert and contain keyboard focus. Dismissal is delegated to the consumer, which waits for submitted writes and offers the shared three-way decision for dirty input. Navigation and native termination await the same task-scoped decision. Private workspace/entity-scoped drafts recover on reopening after process loss, retaining the original revision for conflict safety. Invalid and failed saves retain input, with in-drawer accessible feedback and retry. Creation never resets the active topic filter; the new topic appears in the filter selector.
+- **Shell and Current Focus.** Keep navigation stable, one page heading and
+  one obvious next action. Start with seven focused actions and offer more.
+  Use bounded summaries and explicit resume. Keep directory paths in a
+  disclosure and make workspace changes intentional.
+- **Library and Favorites.** Filter and page bounded rows with a title,
+  excerpt and contextual path. Page-first reading gives the document the
+  main column and exposes an explicit return to browsing. The collapsed
+  Reference desk can open at the right and follows the document in narrow
+  flow. Long editing stays in the reader. Keep safe Markdown, read-only task
+  markers and keyboard-scrollable wide tables.
+- **Action and Initiative.** Action rows display status, timing and origin.
+  Retain originating record and note selection during detours. An Initiative
+  presents goal, progress, actions and linked notes in document order. Ending
+  an Initiative requires explicit decisions for unfinished Actions.
+- **Organization.** Keep source selection, service configuration, exact
+  outbound preview, Send and stored Candidate review distinct. Each Candidate
+  decision is explicit. Show uncertainty and verbatim evidence, with
+  evidence before editing decisions at narrow widths.
+- **Conflict review.** Record revisions compare side by side when space
+  permits and stack at narrow widths. Keep full versions and exact revision
+  IDs in diagnostics. Readers with external source changes choose to copy
+  their edit or reload the disk version.
 
-The rendered catalogue imports the same constructor. Topic surfaces use 390px on desktop and full width below 700px, 24px body padding, shared compact fields/actions, and independent body scrolling at reduced heights. Record current validation results in the PR and retain raw evidence outside Git under the [validation policy](../agents/validation.md).
-
-### Consumed drawer: initiative metadata (#47)
-
-`InitiativeScreen` reuses `presentation.drawer()` with the wide 460px surface and the shared header/body/footer rhythm. Selecting an initiative retains the contextual action/reference workspace; its metadata action opens the drawer. Title, goal, progress and status share vertically labeled field groups. Sources and lifecycle decisions remain disclosures that open automatically for actionable warnings. Cancellation restores the prior selected document/action and browsing context; successful creation makes the record reachable in the existing list. The existing initiative repository, source evidence and end/reopen transaction behavior remain unchanged. Dirty close, Cancel, Escape, backdrop, navigation and native termination share the asynchronous Save/Discard/Continue task decision. See [issue #47](https://github.com/plutoless/local-notes/issues/47) for the delivery discussion. Retain raw validation evidence outside Git under the project policy.
-
-### Remaining short-form consumers (#48)
-
-The [finite entry-point inventory](form-entry-points.md) records the scope and concrete retained-layout exceptions. Action creation and metadata editing use the existing wide drawer; Home retains its contextual page behind the task. Source navigation waits for a successful read before hiding that task, so unavailable sources retain the editable origin. Quick capture now collects title/body before creating a file; its private draft retains the create path to recover an interrupted submission without creating a second note. After successful persistence, the existing document editor and return route remain available. The note-information drawer keeps existing individually persisted favorite/topic actions; its Done action returns to the document. Naming/location is a separate short task using the existing expected-text move and link-repair receipt, never a nested drawer.
-
-Long Markdown editing, candidate review, privacy/request scope and multi-version conflict comparison remain in their documented layout families. The shared compact fields/actions and drawer-body rhythm cover short forms, including working-note creation in an Initiative. Source/history disclosures retain evidence. Finishing one task precedes opening another; modal tasks cannot stack background conflict review. Recovered action drafts are never implicitly confirmed just by navigating to another page.
-
-The catalogue demonstrates the same wide constructor and field geometry without persistence. Keep browser/storage results, controlled native journeys and production close/quit evidence separate in PR summaries and retained artifacts. See [issue #48](https://github.com/plutoless/local-notes/issues/48) for the delivery discussion; the catalogue does not establish acceptance. Async openers can pass `drawer.open(first, origin)` explicitly when disabling the trigger would otherwise blur it in WKWebView.
-
-## Notes-only compact search (issue #58)
-
-The shared top-right entry opens a native modal in the compact single-column A family. `SearchScreen` consumes the existing `field`, `button`, `.ui-panel` and `bindDialog` behavior; the native dialog makes the underlying task inert. Repeated Command+K refocuses its input, Escape closes and restores its opener, and an existing protected modal retains ownership. Lookup never calls the current page's save or leave handler. Library filters remain independent.
-
-`NoteSearch` owns workspace-aware query/context access and incremental reference-index reconciliation. Descriptors are bounded to 20 results and 900 excerpt characters, title matches precede body-only matches, context loads on demand and verifies the source fingerprint. Keyword results include eligible archive paths; the path distinguishes duplicate titles. Render original text through text nodes and safe marks, keeping list/table/link notation selectable. The bordered passage is precisely the copy range, including after expansion. Attribution starts off and adds title plus workspace-relative path; no shareable URL is implied. Clipboard receipts follow the native write result.
-
-Loading, updating/partial cache, empty, query failure, unavailable/changed context and clipboard failure have distinct Chinese status text and a refresh path. This delivery exposes only Notes. Source navigation, multi-entity scopes and meaning retrieval belong to #60, #59 and #61 respectively. The catalogue below demonstrates presentation states only; real retrieval evidence comes from isolated storage journeys.
-
-
-### Task-scoped leave decisions (#55)
-
-[The editing-task lifecycle](task-lifecycle.md) is authoritative for baseline,
-private recovery, autosave, submitted writes and explicit discard. A centered
-confirmation dialog asks about the captured active task; it does not stack another
-contextual editing drawer. Continue restores input and focus; Save and leave
-persists that task only; Discard and leave bypasses its invalid/failed/conflicted
-save while retaining completed writes and other tasks' private drafts. A clean
-visible page ignores hidden recovered editors.
-
-## Scoped compact search (issue #59)
-
-The same compact A dialog now starts with All content and exposes 全部内容 / 笔记 / 事项 / 行动 inside the modal. Scope buttons use shared actions with `aria-pressed`, wrap at narrow widths and retain the query. Same-workspace reopen retains the session; workspace reset clears scope/query and fences delayed replies. `WorkspaceSearch` extends the existing query/context boundary with typed workspace/entity/passage identities and bounded merging of private reference and confirmed-record index results. The library remains note-only and independent.
-
-Formal results expose original title/goal/progress or action description/waiting text as separately identifiable passages. Expansion and verified copying use the same selection, keyboard, attribution and receipt flow. Read-only reconciliation may update private indexes but never repairs or writes synchronized records. Conflicted/incomplete records are omitted with an incomplete-index receipt. Source opening remains #60 and meaning retrieval remains #61. No new frontend assets or presentation primitives are introduced.
-
-## Inline reader navigation (#67)
-
-`.wiki-link` is the reader's inline local-navigation button. The normal quiet action's toolbar padding and UI font would interrupt sentence rhythm, so this real reader consumer uses inherited reading typography, underlining and 4px horizontal padding while retaining the shared accent, focus outline and minimum 44px target. The catalogue renders its example through the production Markdown renderer. Native button Tab/Enter semantics and Chinese accessible names distinguish aliases from plain text without interpreting source markup as HTML. Desktop/393px browser and native keyboard/selection/scroll return checks are recorded under issue67 validation; the shared accent/surface contrast is covered by the design-system suite.
-
-## Browse focus roles and modality (issue #81)
-
-This supersedes the blanket outline/focus-within interpretation for shared browse controls. Use native `:focus-visible` for buttons, sidebar navigation, disclosures and pagination. Pointer activation and pointer-driven programmatic return retain actual focus without forcing a keyboard frame; Tab/Shift+Tab and keyboard returns expose position. Mac WKWebView explicitly enables Tab navigation through buttons and links independently of Safari preferences. Text fields keep their native caret and existing visible focus treatment, including invalid fields; invalid borders/messages never become selection or focus state.
-
-Scrollable `.ui-row` controls draw the shared 3px outline inward so the scrollport cannot clip the cue. Selected fill, weight and `aria-current` remain present with or without transient keyboard focus. Composite checkbox labels use `:has(input:focus-visible)` rather than `:focus-within`, with a single label outline and independent checked fill. Never outline a broad field/form/container merely because a child is active. Programmatically focused return headings retain a visible keyboard cue.
-
-Real consumers are Current Focus row openers and management disclosures, shell sidebar, Library/Favorites rows, Initiative/Action rows and their existing pagination. Rerender restoration uses stable record identity and never takes focus from another active surface. Preserve both collection and row-list scrolling on return. Drawer lifecycle, drafts, source selection and storage remain owned by existing consumers. Catalogue examples demonstrate role states; native OS input evidence is separate from browser/DOM setup. Other feature journeys (#82–#86) are outside this slice.
-
-## Search focus adoption (issue #84)
-
-The compact A search dialog reuses issue #81's native `:focus-visible` treatment for scopes, result openers and child actions. Result selection (`aria-current` and selected fill), pressed scope (`aria-pressed`) and keyboard focus remain independent. Focusing Copy or Open source does not outline the containing result; these scrollport child actions use the shared inward offset so the cue cannot be clipped. Attribution reuses `.ui-selection` for one keyboard outline on its checkbox label and independent checked fill, retaining its existing 44px target and spacing. Arrow selection keeps the search input/caret available; repeated Command+K refocuses that input. A delayed refresh restores a result control only when its previous focus was displaced by the inert results, never over a newly chosen input/control. Source return retains the actual Open source control before the shared action disables it, then restores that control or the search input if it no longer exists. Search has no invalid-field state; unavailable sources and copy failures use the existing status/retry receipts.
-
-## Reader focus adoption (issue #82)
-
-The reader reuses issue #81's modality contract for inline wiki buttons and its toolbar. Source-location blocks and the read-only reading container retain programmatic focus and source hooks without a decorative outline; search matches retain their existing text highlight. These are reading destinations rather than operable controls. Keyboard Tab proceeds to the existing operable controls, whose focus cues remain visible. Horizontally scrollable Markdown tables use the shared 3px focus token with an inset cue. Editable title/body fields retain their caret, selection and field focus treatment, including pointer entry. No focus operation writes Markdown or confirmed records. The note source editor has no invalid-field validation state; conflict and failed-save feedback retain their existing separate meanings.
-
-## Contextual form focus (issue #83)
-
-Contextual drawers reuse the shared focus token for a single 2px active editable-field boundary (border plus 1px inset). This replaces the text field's outer outline for pointer and keyboard editing while retaining the caret. Invalid fields retain their danger border and message alongside the blue inset; invalid is never a focus or selection state. Buttons, disclosure summaries and the three-way leave decision keep the #81 keyboard-only 3px outline. No form, label or drawer receives a competing parent frame. Checkbox rows retain the existing single keyboard label outline and independent checked fill.
-
-Tab containment excludes controls inside closed disclosures, even when the browser reports layout rectangles for those descendants. Opening a disclosure makes its controls reachable in document order. First meaningful focus, task ownership, recovery, submitted-write waiting and native close/quit decisions remain with existing consumers. The catalogue topic drawer demonstrates normal and invalid fields using the same production styles.
-
-The drawer declares its requested first receiver with native `autofocus` while open, in addition to synchronous focus. This prevents WKWebView keyboard reopening from choosing the header Close button after a previous Tab cycle. Closing removes only an autofocus attribute introduced by the drawer; pre-existing attributes remain intact.
-
-## Shell and Current Focus React adoption (#93)
-
-`ShellContent` and `FocusContent` consume the delivered Button and semantic token
-system, with compiled Tailwind utilities and no preflight. Existing compact actions,
-keyboard-only browse outlines, inward row focus, selected navigation and independent
-field/invalid state remain authoritative. The live catalogue imports these actual
-components, including long Chinese content and reading continuation. Storage, modal
-focus/leave decisions, search and capture remain with their existing controllers;
-see `docs/architecture/shell-react.md` for the explicit ownership inventory.
-
-## Organization React adoption (#98)
-
-The source selector, exact request preview and device settings use production
-`OrganizationContent` / `OrganizationSettings` with the existing Button, semantic
-styles, checkbox-label focus role and contextual drawer. Checked state is independent
-from the single keyboard label cue. Keyed fields preserve caret and native disclosure
-state during model refresh. The live catalogue imports these same components;
-candidate review uses the typed `CandidateReviewContent` production component after #99. See
-`docs/architecture/organization-react.md` for bridge, service and overlay ownership.
-## Synchronization React adoption (#101)
-
-The production `SyncContent` and `ConflictComparison` render complete field evidence,
-source references and diagnostics through the existing comparison/field/disclosure
-styles. The selected source uses pressed fill independently of keyboard focus. Raw
-invalid JSON retains the danger border, field focus and editable content. Other
-records become inert only while one explicit resolution is active. The live catalogue
-imports the production comparison with long Chinese content and invalid/selected
-states. The stable controller retains repository guards, committed recovery and the
-shared modal leave/focus owner; see [the ownership inventory](../architecture/sync-react.md).
-
-
-
-## Favorites and contextual note forms React adoption (#94)
-
-Favorites consumes the shared Library/reader with independent browsing snapshots.
-Capture, location and Topic inputs use production `NoteFields`; Topic/Initiative
-classification uses `Classification`, also imported by the catalogue. The existing
-C sheet owner retains focus, protected leave decisions and repositories. See
-`docs/architecture/note-forms-react.md` for the explicit DOM/receipt ownership.
-
-## Action React adoption (#95)
-
-Issue #95 consumes production React Action rows, static form controls, source
-references and immutable history with the existing wide contextual drawer. The
-[Action ownership inventory](../architecture/actions-react.md) records the stable
-legacy control/entry ports and single lifecycle/overlay authority. The catalogue
-uses the same selected, overdue, waiting and long-Chinese Action row component.
-
-## Global search React adoption (#97)
-
-Compact A global search consumes production `SearchContent`, `SearchPassage` and
-`Button` through the typed view in `web/react/search.tsx`. The catalogue imports the
-same component with a long Chinese selected note and grounded highlighted excerpt.
-Existing semantic tokens and `.search-*` focus/selection/attribution rules remain
-authoritative. Scope selection, keyboard focus and pointer treatment are distinct;
-there is one existing native-dialog/Tab owner. Presentation never reads the index,
-copies through the bridge or navigates independently. See
-[search ownership](../architecture/search-react.md) and issue97 validation for the
-actual-app source/return, selection, narrow/short, reduced-motion and contrast checks.
-
-## Initiative React adoption (#96)
-
-Production `InitiativeRows`, `InitiativeLinks` and `InitiativeDecisions` also render
-in the live catalogue with long Chinese/selected context and explicit ending
-choices. The mount-once metadata/source control ports preserve existing contextual
-field focus, invalid receipts and source quote editing. The existing wide drawer
-retains one leave/focus owner and the shared Action editor remains authoritative.
-See [Initiative ownership](../architecture/initiatives-react.md).
-
-
-## Final convergence (#102)
-
-The catalogue now renders production React foundations and feature components.
-The old standalone constructor examples and handwritten search mockup are retired.
-Its contextual panel consumes the actual drawer controller, NoteFields and action
-control port. Document/form scaffolds and the reader information entry use React;
-there is no pre-React note-information DOM island. Legacy storage draft recovery
-keys remain data compatibility, not alternate renderers. See the final ownership
-inventory and issue102 validation for exact evidence and native limits.
-
-## Maintainer-selected follow-on direction (#122)
-
-The maintainer rejected #122's first A/B/C exploration and selected **round-2
-01 Page-first workspace + 08 Reference desk**: stable common navigation, a calm
-document-centered reading area, and an optional **right-hand context panel,
-collapsed by default**. Top-right global search / Command+K, independent Notes,
-Actions and Initiatives, existing routes/data, and the current single modal/task
-owner remain authoritative. This choice is recorded in #122 and relayed by the
-coordinator; no further direction selection is needed.
-
-[Selected semantic rules and explicit old-rule reconciliation](issue122/SELECTED.md)
-govern subsequent separately scoped visual adoption, including typography,
-surfaces, focus, geometry and replacing blanket 120ms feedback with a finite
-100ms color-feedback rule. The [durable isolated preview](issue122/COMPARISON.md)
-shows the composition with synthetic data. Earlier values above still describe
-implemented production styles until their assigned adoption slices change them.
-This preparation changes neither production tokens nor navigation/storage and
-does not dispatch dependent work. Preview evidence is not product/native acceptance.
+Use concise Simplified Chinese for application-owned labels, accessibility
+names and statuses. Keep source text and protocol identifiers verbatim.
+Distinct loading, partial, empty, unavailable and failed states must retain
+the next action, diagnostics and applicable privacy or data-loss consequences.
+A local save receipt makes no claim about receipt by other devices. For
+changes to these surfaces, use the [validation policy](../agents/validation.md)
+and record evidence boundaries in the PR.

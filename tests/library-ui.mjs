@@ -149,7 +149,7 @@ try {
   await page.locator('#mode').click(); await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('我的编辑仍保留');
   const movedPath=join(fixture.root,'工作资料/中文长路径笔记.md'); await writeFile(movedPath,'# 外部版本\n\n外部修改');
   await page.locator('#conflict').waitFor({state:'visible'}); await page.screenshot({path:join(evidence, 'after-conflict.png')});
-  await page.locator('#copy').click(); await page.waitForFunction(()=>document.querySelector('#conflict').hidden && document.querySelector('#file-path').textContent.includes('-conflict-'));
+  await page.locator('#copy').click(); await page.waitForFunction(()=>!document.querySelector('#conflict').open && document.querySelector('#file-path').textContent.includes('-conflict-'));
   assert.equal(await readFile(movedPath,'utf8'),'# 外部版本\n\n外部修改');
   const copied=await page.locator('#file-path').textContent();
   // Explicitly seed a recoverable draft to model process loss before autosave.

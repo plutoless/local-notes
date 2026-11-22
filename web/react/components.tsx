@@ -1,7 +1,7 @@
 import {OfficialButton} from './ui/button';
 import {flushSync} from 'react-dom';
-import {useState, type ButtonHTMLAttributes, type MouseEvent} from 'react';
-type ButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'> & {
+import {useState, type ComponentProps, type MouseEvent} from 'react';
+type ButtonProps = Omit<ComponentProps<'button'>, 'onClick'> & {
   busyOnAction?:boolean;
   onClick?: (event:MouseEvent<HTMLButtonElement>)=>unknown;
 };

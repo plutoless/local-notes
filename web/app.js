@@ -1,7 +1,7 @@
 import {readerView, noteReply, shellView, shellUpdate, fileConflictView, noteFieldsView, classificationView, noteInformationView, actionControl, mountDocument, taskFormView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
-import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindDialog, icon, drawer} from './presentation.js';
+import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindModal, icon, drawer} from './presentation.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -12,7 +12,9 @@ import {allRecords, moveReferences, fingerprint} from './initiatives.js';
 import {FocusScreen} from './focus-screen.js';
 import {ActionScreen} from './action-screen.js';
 mountDocument(document.querySelector('#application-root'));
-const $=s=>document.querySelector(s);let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
+const $=s=>document.querySelector(s);
+const noteConflict = $('#conflict');
+let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
 const reader = readerView($('#editor'));
 function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=actionControl('关闭提示',()=>$('#notice').hidden=true);$('#notice').append(close.host);}
 const shell = shellView($('#shell'), {navigate: next => navigate(next).catch(error => notice(error.message)), capture: () => openCapture(), choose: () => chooseWorkspace(), icon});
@@ -296,9 +298,57 @@ if(view==='focus'){
   return;
 }if(view==='initiatives'){initiatives.release();await actions.show({recover:false});actions.active=false;actions.release();await prepareInitiatives();await initiatives.show();return;}if(view==='actions'){await actions.show();await prepareInitiatives();await actions.assignments();if(generation===workspaceGeneration)rootKey=actions.repository.workspaceId;return;}const workspace=await native('workspace');if(generation!==workspaceGeneration)return;rootKey=workspace.workspaceId;legacyRoot=workspace.root==='Sample'?'Sample · 样本笔记':workspace.root||'';await libraryScreen.show();}
 function render(){if(['notes','favorites'].includes(view))libraryScreen.render().catch(e=>notice(e.message));}
-async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation){reader.set({capture:false});const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;rememberReading();readingOwner=null;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;reader.text('title', titleOf(r.text,path));reader.text('body', r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));reader.set({path, initiative: view === 'initiatives' && Boolean(initiatives.previous)});infoUI.set({path});updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=recover ? readDraft() : null;if(draft){reader.text('title', titleOf(draft.text,path));reader.text('body', draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}readerSelection = null;setNoteMode(!draft);for(const selector of readingScrollSelectors) $(selector).scrollTop=0;committed();
-readingOwner={workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
-rememberReading();render();await noteInitiatives(path);if(request!==noteLoadRequest)return false;await libraryScreen.noteTopics(path);return request===noteLoadRequest;}
+async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation) {
+  reader.set({capture:false});
+  const workspaceId = rootKey;
+  const r = loaded || await note('read', {path});
+  if (workspaceId !== rootKey || request !== noteLoadRequest) return false;
+  rememberReading();
+  readingOwner = null;
+  clearTimeout(timer);
+  noteGeneration++;
+  currentWorkspace = workspaceId;
+  current = path;
+  base = r.text;
+  savedText = r.text;
+  dirty = false;
+  blocked = false;
+  const resolvingConflict = noteConflict.open;
+  noteConflict.close();
+  reader.text('title', titleOf(r.text, path));
+  reader.text('body', r.text.replace(/^# .+\r?\n?/m, '').replace(/^\r?\n/, ''));
+  reader.set({path, initiative: view === 'initiatives' && Boolean(initiatives.previous)});
+  infoUI.set({path});
+  updateStar();
+  libraryScreen.selectedPath = path;
+  $('#empty').hidden = true;
+  $('#editor').hidden = false;
+  $('.app').classList.add('editing');
+  state('已保存到本地');
+  noteBaseline = content();
+  const draft = recover ? readDraft() : null;
+  if (draft) {
+    reader.text('title', titleOf(draft.text, path));
+    reader.text('body', draft.text.replace(/^# .+\r?\n?/m, '').replace(/^\r?\n/, ''));
+    dirty = content() !== noteBaseline;
+    base = draft.base;
+    blocked = base !== r.text;
+    state(blocked ? '发现未保存草稿和外部修改' : '已恢复未保存草稿');
+  }
+  readerSelection = null;
+  setNoteMode(!draft);
+  for (const selector of readingScrollSelectors) $(selector).scrollTop = 0;
+  committed();
+  showNoteConflict();
+  if (resolvingConflict && !noteConflict.open) $('#mode').focus({preventScroll:true});
+  readingOwner = {workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
+  rememberReading();
+  render();
+  await noteInitiatives(path);
+  if (request !== noteLoadRequest) return false;
+  await libraryScreen.noteTopics(path);
+  return request === noteLoadRequest;
+}
 async function openContextNote(path, reading = true, actionSource, ownsOrigin = () => true) {
   const ownsAction = () => !actionSource || actionSource.owns();
   let owns = () => ownsOrigin() && ownsAction();
@@ -348,7 +398,7 @@ async function save() {
     } catch (error) {
       if (generation !== noteGeneration) return false;
       state('未保存 · 编辑仍保留');
-      if (error.message.includes('CONFLICT')) { blocked = true; $('#conflict').hidden = false; }
+      if (error.message.includes('CONFLICT')) { blocked = true; showNoteConflict(); }
       else notice(error.message);
       return false;
     } finally { saving = null; }
@@ -364,7 +414,7 @@ function noteTask() {
       base = savedText; blocked = false; dirty = false;
       reader.text('title', titleOf(savedText, current));
       reader.text('body', savedText.replace(/^# .+\r?\n?/m, '').replace(/^\r?\n/, ''));
-      noteBaseline = content(); $('#conflict').hidden = true; state('已放弃未保存更改'); updateReading();
+      noteBaseline = content(); noteConflict.close(); state('已放弃未保存更改'); updateReading();
     }};
 }
 function activeTask() {
@@ -375,7 +425,7 @@ function activeTask() {
   if (libraryScreen.topicDrawer.panel.open) return libraryScreen.topicTask();
   if (actions.drawer.panel.open) return actions.task();
   if (initiatives.drawer.panel.open) return initiatives.task();
-  if (!syncScreen.panel.hidden) return syncScreen.task();
+  if (syncScreen.panel.open) return syncScreen.task();
   if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
     suspend: () => { noteInfo.body.inert = true; },
     resume: () => { noteInfo.body.inert = false; },
@@ -589,11 +639,23 @@ $('#search').oninput=()=>{if(view==='initiatives'){initiatives.search=$('#search
 
 async function revealCapturedNote(path) {
   try {
-    if (!await flush()) return;
+    const workspace = workspaceGeneration, originPage = pageGeneration;
+    if (!await flush() || workspace !== workspaceGeneration || originPage !== pageGeneration) return;
     const origin = {browse: ['notes','favorites'].includes(view) ? libraryScreen.captureContext() : null, view, actionReturn: actions.returnToFocus, opener: document.activeElement, initiative: view === 'initiatives' ? initiatives.previous : null, action: view === 'actions' ? actions.previous : null, note: !$('#editor').hidden ? current : null, reading: readMode};
     focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
     $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-    await validateReferences();await refresh(); await load(path); captureOrigin ||= origin; reader.set({capture:Boolean(captureOrigin)}); if (readMode) $('#mode').click(); $('#title').focus(); $('#title').select();
+    const page = pageGeneration, request = ++noteLoadRequest;
+    const owns = () => workspace === workspaceGeneration && page === pageGeneration
+      && request === noteLoadRequest && !document.querySelector('dialog[open]');
+    await validateReferences();
+    if (!owns()) return;
+    await refresh();
+    if (!owns() || !await load(path, null, request) || !owns()) return;
+    captureOrigin ||= origin;
+    reader.set({capture:true});
+    if (readMode) $('#mode').click();
+    $('#title').focus();
+    $('#title').select();
   } catch (error) { notice(error.message); }
 }
 // Short tasks retain their own private draft and delegate writes to existing adapters.
@@ -656,7 +718,7 @@ function saveShortTask(openSaved) {
   if (!shortTask) return Promise.resolve(true);
   const task = shortTask;
   let reveal;
-  shortSaving = (async () => {
+  const write = (async () => {
     await Promise.resolve();
     shortForm.inert = true; shortSubmit.disabled = true; shortStatus.removeAttribute('data-state'); shortStatus.textContent = '正在保存…';
     try {
@@ -686,10 +748,12 @@ function saveShortTask(openSaved) {
       }
     }
   })();
-  return openSaved ? shortSaving.then(async saved => {
+  // A leave already waiting on this submission also tracks the saved-note reveal.
+  shortSaving = openSaved ? write.then(async saved => {
     if (saved) await reveal?.();
     return saved;
-  }) : shortSaving;
+  }) : write;
+  return shortSaving;
 }
 async function openCapture(initiative = null, opener = $('#new')) {
   if (!await flush()) return;
@@ -883,11 +947,11 @@ function copyConflict() {
     try {
       await note('create',{path,text,workspaceId});
       if(!owns())return true;
-      localStorage.removeItem(key);dirty=false;blocked=false;$('#conflict').hidden=true;
+      localStorage.removeItem(key);dirty=false;blocked=false;noteConflict.close();$('#mode').focus();
       await validateReferences();if(!owns())return true;
       await refresh();if(!owns())return true;
       await load(path);return true;
-    } catch(error) {if(owns())notice(error.message);return false;}
+    } catch(error) {if(owns()) { if(noteConflict.open) feedback($('#file-conflict-status'),'副本未能保存。请检查目录后重试；编辑仍保留。',error.message); else notice(error.message); }return false;}
   })().finally(()=>{noteConflictPending=null;});
   return noteConflictPending;
 }
@@ -902,7 +966,7 @@ function reloadConflict() {
       localStorage.removeItem(key);
       if(!await load(path,loaded,request,false))return false;
       await refresh();return true;
-    } catch(error) {if(generation===noteGeneration)notice(error.message);return false;}
+    } catch(error) {if(generation===noteGeneration) { if(noteConflict.open) feedback($('#file-conflict-status'),'未能载入磁盘版本。请检查目录后重试；编辑仍保留。',error.message); else notice(error.message); }return false;}
   })().finally(()=>{noteConflictPending=null;});
   return noteConflictPending;
 }
@@ -991,5 +1055,12 @@ document.addEventListener('invalid', event => {
   if (event.target.matches('input, textarea, select')) event.target.setCustomValidity('请填写有效内容后重试。');
 }, true);
 document.addEventListener('input', event => event.target.setCustomValidity?.(''));
-fileConflictView($('#conflict'), copyConflict, reloadConflict);
-bindDialog($('#conflict'));
+function showNoteConflict() {
+  if (!blocked || !visibleNote() || document.querySelector('dialog[open]')) return;
+  feedback($('#file-conflict-status'), '');
+  noteConflict.showModal();
+}
+
+fileConflictView(noteConflict, copyConflict, reloadConflict);
+bindModal(noteConflict, () => {});
+document.addEventListener('close', showNoteConflict, true);

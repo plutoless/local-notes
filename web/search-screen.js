@@ -1,6 +1,6 @@
 import {native} from './bridge.js';
 import {WorkspaceSearch} from './global-search.js';
-import {bindDialog} from './presentation.js';
+import {bindModal} from './presentation.js';
 import {searchView, searchRows} from './assets/react-host.js';
 
 export class SearchScreen {
@@ -9,7 +9,7 @@ export class SearchScreen {
     this.navigation = navigation;
     this.service = new WorkspaceSearch(native, () => { if (this.panel.open && !this.openingSource) this.query(); });
     this.scope = 'all'; this.sequence = 0; this.session = 0; this.ready = false; this.rows = []; this.offset = 0;
-    const panel = this.panel = document.createElement('dialog'); panel.id = 'global-search'; panel.className = 'ui-panel search-dialog';
+    const panel = this.panel = document.createElement('dialog'); panel.id = 'global-search'; panel.className = 'ui-panel ui-modal search-dialog';
     panel.setAttribute('aria-labelledby', 'global-search-title');
     this.message = ''; this.hasNext = false;
     this.view = searchView(panel, {
@@ -22,7 +22,7 @@ export class SearchScreen {
     this.input = panel.querySelector('#global-search-input');
     this.results = panel.querySelector('.search-results');
     this.include = panel.querySelector('.search-attribution input');
-    document.body.append(panel); bindDialog(panel);
+    document.body.append(panel);
     // WebKit may end IME composition before delivering its cancelling Escape.
     // Protect that same event turn, without swallowing a later ordinary Escape.
     let composing = false, compositionEndedThisTurn = false, compositionTurn;
@@ -33,7 +33,7 @@ export class SearchScreen {
     });
     const imeOwnsEscape = event => composing || compositionEndedThisTurn || event.isComposing || event.keyCode === 229;
     this.input.oninput = () => { this.offset = 0; this.query(); };
-    panel.addEventListener('cancel', event => { event.preventDefault(); if (!imeOwnsEscape(event)) this.close(); });
+    bindModal(panel, event => { if (!imeOwnsEscape(event)) this.close(); });
     panel.addEventListener('keydown', event => {
       if (event.key === 'Escape') { event.preventDefault(); if (!imeOwnsEscape(event)) this.close(); return; }
       if (event.isComposing || event.keyCode === 229 || event.altKey || event.ctrlKey || event.shiftKey) return;
@@ -52,7 +52,7 @@ export class SearchScreen {
   async open() {
     if (this.continuation) return this.returnToSearch();
     if (this.panel.open) { this.input.focus(); return; }
-    if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])')) return;
+    if (document.querySelector('dialog[open]')) return;
     this.invocation = this.navigation.capture?.();
     this.opener = document.activeElement; this.panel.showModal(); this.input.focus();
     const session = ++this.session; this.ready = false; this.setStatus('正在打开搜索…', 'loading');
@@ -111,7 +111,7 @@ export class SearchScreen {
     finally { row.expanding = undefined; }
   }
   resume(focus = this.input) {
-    if (document.querySelector('dialog[open], [aria-modal="true"]:not([hidden])')) return false;
+    if (document.querySelector('dialog[open]')) return false;
     this.panel.showModal();
     this.panel.scrollTop = this.savedPanelScroll;
     this.results.scrollTop = this.savedScroll;

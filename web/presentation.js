@@ -33,27 +33,26 @@ export function progressLabel(message) {
   return match ? `正在载入：${match[1]} / ${match[2]} 个文件` : /index ready/.test(message) ? '' : /Reading confirmed|Rebuilding|Building .* index/.test(message) ? '正在载入本地记录…' : message;
 }
 
-// Bind after the modal exists; return focus to its opener on every close path.
-export function bindDialog(panel) {
-  let origin;
-  const controls = () => [...panel.querySelectorAll('button:not(:disabled), input, textarea, select, summary')].filter(node => !node.matches(':disabled') && node.getClientRects().length && !node.closest('[inert]'));
-  new MutationObserver(() => {
-    if (panel.hidden) { origin?.focus(); origin = null; }
-    else if (!panel.contains(document.activeElement)) { origin ||= document.activeElement; controls()[0]?.focus(); }
-  }).observe(panel, {attributes: true, attributeFilter: ['hidden']});
+// The native top layer owns inertness. Step through controls explicitly for
+// WKWebView's text-fields-only Tab setting.
+export function bindModal(panel, dismiss) {
+  panel.addEventListener('cancel', event => { event.preventDefault(); dismiss(event); });
   panel.addEventListener('keydown', event => {
-    if (event.key === 'Escape' && panel.classList.contains('sync-panel')) { panel.hidden = true; return; }
-    const nodes = controls(), index = nodes.indexOf(document.activeElement);
-    if (event.key === 'Tab' && nodes.length && ((event.shiftKey && index <= 0) || (!event.shiftKey && index === nodes.length - 1))) {
-      event.preventDefault(); nodes[event.shiftKey ? nodes.length - 1 : 0].focus();
-    }
+    if (event.key !== 'Tab') return;
+    const closed = [...panel.querySelectorAll('details:not([open])')];
+    const controls = [...panel.querySelectorAll('a[href], button, input, select, textarea, summary, [tabindex]')]
+      .filter(node => node.tabIndex >= 0 && !node.matches(':disabled') && node.getClientRects().length
+        && !node.closest('[inert]') && !closed.some(detail =>
+          detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
+    if (!controls.length) return;
+    const index = controls.indexOf(document.activeElement);
+    const direction = event.shiftKey ? -1 : 1;
+    const next = index < 0
+      ? (event.shiftKey ? controls.length - 1 : 0)
+      : (index + direction + controls.length) % controls.length;
+    event.preventDefault();
+    controls[next].focus();
   });
-  return {open() {
-    if (!panel.hidden) return;
-    origin = document.activeElement;
-    panel.hidden = false;
-    controls()[0]?.focus();
-  }};
 }
 
 // Icons are fixed presentation assets, never generated from user content.
@@ -82,21 +81,7 @@ export function drawer({id, title, onDismiss}) {
   const content = drawerContent(panel, id, title, onDismiss);
   const {body, footer, close} = content;
   document.body.append(panel);
-  panel.addEventListener('cancel', event => { event.preventDefault(); onDismiss(); });
-  panel.addEventListener('keydown', event => {
-    if (event.key !== 'Tab') return;
-    const controls = [...panel.querySelectorAll('button, input, select, textarea, summary, [tabindex]')]
-      .filter(node => !node.matches(':disabled') && node.tabIndex >= 0 && node.getClientRects().length && !node.closest('[inert]')
-        // Closed disclosure descendants can have layout rectangles but cannot receive focus.
-        && ![...panel.querySelectorAll('details:not([open])')].some(detail => detail.contains(node) && !detail.querySelector(':scope > summary')?.contains(node)));
-    const index = controls.indexOf(document.activeElement);
-    if (controls.length) {
-      // WKWebView can skip buttons under the system text-fields-only Tab setting.
-      // Advance explicitly so every short-task control stays reachable and contained.
-      const next = index < 0 ? (event.shiftKey ? controls.length - 1 : 0) : (index + (event.shiftKey ? -1 : 1) + controls.length) % controls.length;
-      event.preventDefault(); controls[next].focus();
-    }
-  });
+  bindModal(panel, onDismiss);
   panel.addEventListener('click', event => {
     const rect = panel.getBoundingClientRect();
     if (event.target === panel && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) onDismiss();
@@ -146,19 +131,12 @@ function taskLeaveChoice(label, failure, committed, focusOrigin) {
     const origin = focusOrigin || document.activeElement;
     const selection = typeof origin?.selectionStart === 'number'
       ? [origin.selectionStart, origin.selectionEnd, origin.selectionDirection] : null;
-    const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel';
+    const panel = document.createElement('dialog'); panel.id = 'task-leave-decision'; panel.className = 'task-leave-decision ui-panel ui-modal';
     panel.setAttribute('aria-labelledby', 'task-leave-title');
     const content = leaveContent(panel, {label, failure, committed:Boolean(committed)}, finish);
-    const {keep, footer} = content;
+    const {keep} = content;
     document.body.append(panel);
-    panel.addEventListener('cancel', event => { event.preventDefault(); finish('continue'); });
-    panel.addEventListener('keydown', event => {
-      if (event.key !== 'Tab') return;
-      const controls = [...footer.querySelectorAll('button')], index = controls.indexOf(document.activeElement);
-      if (event.shiftKey ? index <= 0 : index === controls.length - 1) {
-        event.preventDefault(); controls[event.shiftKey ? controls.length - 1 : 0].focus();
-      }
-    });
+    bindModal(panel, () => finish('continue'));
     function finish(choice) {
       const restoreSelection = () => {
         if (choice === 'continue' && selection && document.activeElement === origin) origin.setSelectionRange(...selection);

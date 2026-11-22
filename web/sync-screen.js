@@ -1,4 +1,4 @@
-import {requestTaskLeave, bindDialog, icon} from './presentation.js';
+import {requestTaskLeave, bindModal, icon} from './presentation.js';
 import {syncView, syncDraftKey, readSyncDraft, editSyncValue, verifiedSyncRetry, updateSyncDraft, actionControl} from './assets/react-host.js';
 
 const types = {action:'行动',initiative:'事项',topic:'主题',candidate:'建议'};
@@ -9,12 +9,14 @@ export class SyncScreen {
     this.repositories=repositories; this.notice=notice; this.changed=changed;
     this.model={records:[],warnings:[],running:false,checked:false,active:'',message:'',detail:''};
     this.generation=0; this.dirty=false;
-    this.panel=document.createElement('section'); this.panel.hidden=true;
-    this.panel.className='sync-panel ui-panel ui-dialog'; this.panel.setAttribute('aria-label','同步检查'); this.panel.setAttribute('role','dialog'); this.panel.setAttribute('aria-modal','true');
-    document.body.append(this.panel); this.dialog=bindDialog(this.panel);
+    this.panel=document.createElement('dialog');
+    this.panel.className='sync-panel ui-panel ui-modal'; this.panel.setAttribute('aria-label','同步检查');
+    document.body.append(this.panel);
+    bindModal(this.panel, () => this.close());
     this.view=syncView(this.panel,{close:()=>this.close(),refresh:()=>this.refresh(true),jump:key=>this.jump(key),choose:(key,revision)=>this.choose(key,revision),edit:(key,field,value)=>this.edit(key,field,value),discard:key=>this.discard(key),save:key=>this.saveResolution(key),recover:key=>this.recoverDraft(key)});
     this.panel.addEventListener('keydown',event=>{if(event.key==='Escape'&&!event.isComposing&&event.keyCode!==229){event.preventDefault();event.stopImmediatePropagation();this.close();}else if(event.key==='Escape'){event.stopImmediatePropagation();}},true);
-    const opener=actionControl('同步检查',()=>this.refresh(true),{icon:icon('sync')}); this.opener=opener.control;
+    // The modal may close before the check finishes. Its opener stays focusable.
+    const opener=actionControl('同步检查',()=>{void this.refresh(true);},{icon:icon('sync')}); this.opener=opener.control;
     document.querySelector('#shell-utilities').append(opener.host);
     const refresh=()=>this.refresh(false); window.addEventListener('focus',refresh);window.addEventListener('reference-change',refresh);
     this.render();
@@ -29,12 +31,18 @@ export class SyncScreen {
   }
   record(key){return this.model.records.find(r=>r.key===key);}
   message(message,detail=''){Object.assign(this.model,{message,detail});this.render();}
-  canLeave(){if(!this.dirty&&!this.savePending)return true;this.panel.hidden=false;this.message('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');return false;}
-  task(){return {label:'冲突解决',committed:()=>Boolean(this.resolutionCommitted),dirty:()=>this.dirty,pending:()=>this.savePending,save:()=>this.saveResolution(this.model.active),discard:()=>this.discard(this.model.active,false),close:()=>{document.querySelector('.app').inert=false;this.panel.hidden=true;}};}
+  canLeave(){if(!this.dirty&&!this.savePending)return true;this.message('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');return false;}
+  task(){return {label:'冲突解决',committed:()=>Boolean(this.resolutionCommitted),dirty:()=>this.dirty,pending:()=>this.savePending,save:()=>this.saveResolution(this.model.active),discard:()=>this.discard(this.model.active,false),close:()=>{
+    this.panel.close();
+    this.opener.focus({preventScroll:true});
+  }};}
   close(){return requestTaskLeave(this.task());}
   owned(repos,generation){return generation===this.generation&&repos.every((repo,i)=>repo===this.repositories()[i]&&(!this.workspaceIds[i]||repo.workspaceId===this.workspaceIds[i]));}
   async refresh(show, afterSave=false){
-    if(show){if(this.panel.hidden)this.opener.focus({preventScroll:true});this.dialog.open();document.querySelector('.app').inert=true;}
+    if(show&&!this.panel.open){
+      if(document.querySelector('dialog[open]'))return;
+      this.panel.showModal();
+    }
     if(this.boundRepositories && !this.owned(this.boundRepositories,this.generation) && !this.dirty && !this.savePending){this.generation++;this.model.running=false;this.model.records=[];this.model.checked=false;this.saved='';}
     if(this.model.running||(this.savePending&&!afterSave))return;
     if(this.dirty){if(show)this.canLeave();return;}
@@ -49,7 +57,7 @@ export class SyncScreen {
       for(const repo of repos)for(const [id,conflict]of repo.conflicts||[]){const name=conflict.versions.find(v=>v.title||v.description);const value=structuredClone(conflict.tips[0]||conflict.versions[0]);records.push({key:`${repo.entityType}:${id}`,id,type:repo.entityType,repo,draftKey:syncDraftKey(repo.workspaceId,repo.entityType,id),hasDraft:Boolean(readSyncDraft(localStorage,syncDraftKey(repo.workspaceId,repo.entityType,id),{workspaceId:repo.workspaceId,entityType:repo.entityType,entityId:id})),...conflict,name:`${types[repo.entityType]}：${name?.title||name?.description||'未命名记录'}`,selected:'',value,json:JSON.stringify(value,null,2),invalid:false,committed:false,saving:false,message:'尚未选择解决版本。请先选择，再审核与编辑。',detail:''});}
       Object.assign(this.model,{records,warnings,checked:true,active:'',message:this.saved||'',detail:''});this.render();await this.changed();
     }catch(error){if(this.owned(repos,generation))this.message('检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。',error.message);}
-    finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(!this.panel.hidden&&restore&&document.activeElement===document.body)this.refreshButton.focus();}}
+    finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(this.panel.open&&restore&&[document.body,this.panel].includes(document.activeElement))this.refreshButton.focus();}}
   }
   choose(key,revision){
     const r=this.record(key);
@@ -96,12 +104,12 @@ export class SyncScreen {
       finally{
         if(owned()){
           r.saving=false;this.render();
-          if(this.dirty&&!this.panel.hidden&&document.activeElement===document.body&&this.article(key)?.contains(control))control.focus();
+          if(this.dirty&&this.panel.open&&[document.body,this.panel].includes(document.activeElement)&&this.article(key)?.contains(control))control.focus();
         }
       }
       return !this.dirty;
     })();
-    this.savePending=work.then(async saved=>{if(saved&&owned())await this.refresh(!this.panel.hidden,true);return saved;}).finally(()=>{this.savePending=null;});
+    this.savePending=work.then(async saved=>{if(saved&&owned())await this.refresh(this.panel.open,true);return saved;}).finally(()=>{this.savePending=null;});
     return this.savePending;
   }
 }

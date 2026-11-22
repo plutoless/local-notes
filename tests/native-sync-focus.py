@@ -53,7 +53,7 @@ try:
  c("document.querySelector('.sync-panel button').focus()")
  key('Shift+Tab');state('modal-last');key('Tab');state('modal-first')
  assert c("return document.activeElement===document.querySelector('.sync-panel button')")
- key('Escape');w("document.querySelector('.sync-panel').hidden");state('keyboard-opener-return')
+ key('Escape');w("!document.querySelector('.sync-panel').open");state('keyboard-opener-return')
  assert c("return document.activeElement.id==='native-sync-open' && document.activeElement.matches(':focus-visible')")
  assert hashlib.sha256((m.OUT/'Sync/note-00.md').read_bytes()).hexdigest()==source_hash
  log.append({'sourcePreservedSHA256':source_hash,'input':'External OS-injected pointer/keyboard; DOM setup/inspection explicitly separated; physical input unrun'})

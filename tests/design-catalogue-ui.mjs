@@ -63,7 +63,7 @@ try {
   const css=getComputedStyle(document.documentElement);
   const luminance=hex=>{const c=hex.trim().slice(1).match(/../g).map(v=>parseInt(v,16)/255).map(c=>c<=.04045?c/12.92:((c+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
   const ratio=(a,b)=>{const [x,y]=[luminance(css.getPropertyValue('--'+a)),luminance(css.getPropertyValue('--'+b))].sort((a,b)=>b-a);return (x+.05)/(y+.05);};
-  return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected'].map(bg=>ratio(t,bg)))]));
+  return Object.fromEntries(['text','muted','accent','success','warning','danger','line','focus'].map(t=>[t,Math.min(...['surface','canvas','sidebar','selected','passage-selected','hover','pressed'].map(bg=>ratio(t,bg)))]));
  });
  for(const [token,ratio] of Object.entries(ratios))assert.ok(ratio>=(['line','focus'].includes(token)?3:4.5),`${token}: ${ratio}`);
  const selected=page.locator('#react-library .ui-row.selected').first();await selected.focus();await page.keyboard.press('Tab');await page.keyboard.press('Shift+Tab');

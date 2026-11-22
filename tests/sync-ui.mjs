@@ -69,8 +69,27 @@ try {
   await fixture.adapter('actionWrite', {workspaceId: repo.workspaceId, path: `revisions/${base.entityId}/${remote.revision}.json`, text: JSON.stringify(remote)});
   const revisionFile = revision => join(fixture.root, 'LocalNotesData', 'revisions', base.entityId, revision + '.json');
   const oldRevisions = await Promise.all([base, local, remote].map(record => readFile(revisionFile(record.revision))));
-  await closeSavedAction(page); await page.getByRole('button', {name: '同步检查'}).click();
+  await closeSavedAction(page);
+  const syncOpener = page.getByRole('button', {name: '同步检查', exact: true});
   const panel = page.getByRole('dialog', {name: '同步检查'});
+  if (process.env.PHASE !== 'before') {
+    delayFiles = true;
+    await syncOpener.click();
+    await panel.getByText('正在检查本地版本…').waitFor();
+    const contained = await panel.evaluate(node => {
+      document.querySelector('#global-search-open').focus();
+      return node.contains(document.activeElement);
+    });
+    await panel.getByRole('button', {name:'关闭检查', exact:true}).focus();
+    await page.keyboard.press('Escape');
+    await panel.waitFor({state:'hidden'});
+    const returned = await syncOpener.evaluate(node => node === document.activeElement);
+    await page.waitForFunction(() => document.querySelector('.sync-panel').getAttribute('aria-busy') === 'false');
+    delayFiles = false;
+    assert.deepEqual({contained, returned}, {contained:true, returned:true},
+      'Sync should contain focus and return to its opener even when closed during refresh');
+  }
+  await syncOpener.click();
   await panel.waitFor();
   if(process.env.ISSUE86 && process.env.PHASE !== 'before') {
     assert.equal(await panel.evaluate(el=>el.contains(document.activeElement)),true,'First open must focus a modal control');
@@ -87,7 +106,7 @@ try {
   await page.setViewportSize({width:393,height:852});
   assert.equal(await panel.evaluate(el=>el.scrollWidth<=el.clientWidth),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px-long.png`,fullPage:true});
+  await page.screenshot({path:`${evidenceDir}/${process.env.PHASE || 'after'}-web-393px-long.png`});
   await page.setViewportSize({width:1180,height:800});
   async function capture(state) {
     if (!process.env.ISSUE86) return;

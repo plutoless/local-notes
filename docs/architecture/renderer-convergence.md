@@ -74,7 +74,7 @@ The table above records the starting inventory. Final changes are:
   Constructor-only illustrations and handwritten duplicate search UI are gone.
 
 The remaining DOM construction in JavaScript creates lifecycle containers
-(dialogs, a sync section, source-row hosts and receipt slots), not page content.
+(dialogs, source-row hosts and receipt slots), not page content.
 Search's `highlight` port is **still consumed** by `reader.highlight` in app.js:
 it decorates a detached, safe Markdown fragment, never a second live reader.
 Range/TreeWalker operations capture source/selection identity. They are retained.
@@ -86,3 +86,7 @@ controller consumers and are not falsely retired as unused adapters.
 No native source, resource handler, schema, domain repository, index format or
 AI request boundary changes. Shipped HTML/JS/CSS changes require packaging and
 manifest checks; they do not establish WKWebView/OS-input runtime acceptance.
+
+#131 moved synchronization and external-file conflict into the existing native
+dialog top layer. `bindModal` shares keyboard containment with the drawer,
+search and leave decision. Controllers retain dismissal and return policy.

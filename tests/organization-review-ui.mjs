@@ -120,7 +120,7 @@ try {
  await page.setViewportSize({width:1180,height:800});
  await page.locator('#organize-tools').evaluate(n => n.scrollTop = 0);
  await page.screenshot({path:'build/issue98-review/after-desktop.png'});
- const colors = await page.evaluate(() => ['--text','--muted','--green','--line','--focus'].map(n => getComputedStyle(document.documentElement).getPropertyValue(n).trim()));
+ const colors = await page.evaluate(() => ['--text','--muted','--accent','--line','--focus'].map(n => getComputedStyle(document.documentElement).getPropertyValue(n).trim()));
  const lum = hex => { const rgb = hex.match(/[\da-f]{2}/gi).map(v => parseInt(v,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4); return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722; };
  const ratios = colors.map(c => (1.05)/(lum(c)+.05)); assert.ok(ratios[0]>=4.5 && ratios[1]>=4.5 && ratios[2]>=4.5 && ratios[3]>=3 && ratios[4]>=3);
  // Open the confirmed record through the ordinary Action route after reload.

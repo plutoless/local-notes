@@ -215,7 +215,10 @@ try {
   await page.locator('#action-form').evaluate(node=>{node.dispatchEvent(new Event('submit',{cancelable:true}));node.dispatchEvent(new Event('submit',{cancelable:true}));});
   await page.keyboard.press('Escape'); assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),true);
   releaseAction(); await page.locator('#action-drawer').waitFor({state:'hidden'});
-  await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  const savedAction = page.locator('#items button[data-entity-id]').filter({
+    has: page.getByText('抽屉行动真实保存', {exact:true}),
+  });
+  await savedAction.click();
   await page.locator('#action-save-state').filter({hasText:/^已保存到本地$/}).waitFor();
   for (const [width,height] of [[1180,800],[393,800],[393,340]]) {
     await page.setViewportSize({width,height});
@@ -227,7 +230,7 @@ try {
   await page.keyboard.press('Escape');
   await page.locator('#action-new').click(); await page.locator('#action-back').click();
   assert.equal(await page.locator('#action-new').evaluate(node=>node===document.activeElement),true,'Clean cancel restores the New action opener, not the prior selection');
-  await page.getByRole('heading',{name:'抽屉行动真实保存',exact:true}).click();
+  await savedAction.click();
   await page.locator('#action-drawer').waitFor({state:'visible'});
   assert.equal(await page.locator('#action-description').inputValue(),'抽屉行动真实保存');
   await page.keyboard.press('Escape');
