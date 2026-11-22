@@ -5,7 +5,8 @@ import {OfficialButton} from './ui/button';
 import {Input} from './ui/input';
 import {Textarea} from './ui/textarea';
 import {statusLabel} from '../presentation-labels.js';
-import type {ActionRecord, ActionEntryPort} from './actions';
+import {ActionStatus, type ActionRecord, type ActionEntryPort} from './actions';
+import './initiative-workspace.css';
 
 export interface InitiativeSource {path:string;quote:string;fingerprint:string;role:'working-note'|'reference'}
 export interface InitiativeFields {title:string;goal:string;progress:string;status:'active'|'later'|'ended';sources:InitiativeSource[]}
@@ -56,8 +57,12 @@ export function InitiativeSummary({record}: {record?:InitiativeRecord}) {
     </dl>
   </header>;
 }
-export function InitiativeContext(){return <>          <Button id="workspace-return-action" hidden>‹ 返回原行动</Button>
-          <div className="workspace-context-heading"><Button id="workspace-back">‹ 事项列表</Button><Button id="workspace-overview" className="secondary">编辑事项</Button></div>
+export function InitiativeContext(){return <>
+          <div className="workspace-context-heading">
+            <Button id="workspace-back" className="quiet ui-compact">‹ 事项列表</Button>
+            <Button id="workspace-return-action" className="quiet ui-compact" hidden>‹ 返回原行动</Button>
+            <Button id="workspace-overview" className="quiet ui-compact">编辑事项</Button>
+          </div>
           <InitiativeSummary/>
           <section className="workspace-section"><div className="section-heading"><h2>行动</h2><Button className="quiet" id="initiative-new-action" aria-describedby="initiative-help">新建行动</Button></div>
             <p id="initiative-help">先保存事项，再添加行动或笔记；已结束事项不能添加行动。</p>
@@ -69,12 +74,21 @@ export function InitiativeContext(){return <>          <Button id="workspace-ret
             <h3>工作笔记</h3><div id="workspace-notes"></div><h3>参考资料</h3><div id="workspace-references"></div>
           </section>
 </>;}
-export function InitiativeTools(){return <><Button id="initiative-new" className="primary">新建事项</Button><Button id="initiative-previous" className="quiet">上一页</Button><Button id="initiative-next" className="quiet">下一页</Button><Button id="initiative-recover">恢复事项草稿</Button></>;}
+export function InitiativeTools() {
+  return <>
+    <Button id="initiative-new" className="primary ui-compact">新建事项</Button>
+    <div className="ui-pagination">
+      <Button id="initiative-previous" className="quiet ui-compact">上一页</Button>
+      <Button id="initiative-next" className="quiet ui-compact">下一页</Button>
+    </div>
+    <Button id="initiative-recover" className="quiet ui-compact">恢复事项草稿</Button>
+  </>;
+}
 export function mountInitiativeControls(body:HTMLElement,footer:HTMLElement,tools:HTMLElement,context:HTMLElement){
   const roots=[createRoot(body),createRoot(footer),createRoot(tools),createRoot(context)];
   flushSync(()=>{roots[0].render(<InitiativeEditor/>);roots[1].render(<><Button id="initiative-discard" className="quiet ui-compact">取消</Button><OfficialButton id="initiative-save" type="submit" form="initiative-form" className="ui-action primary ui-compact">保存事项</OfficialButton></>);roots[2].render(<InitiativeTools/>);roots[3].render(<InitiativeContext/>);});
 }
-export function InitiativeRows({records,selected,empty,open}:{records:InitiativeRecord[];selected?:string;empty:string;open:(record:InitiativeRecord)=>unknown}){return <>{records.map(record=><Button key={record.entityId} className={`quiet ui-row card${selected===record.entityId?' selected':''}`} data-initiative-id={record.entityId} aria-current={selected===record.entityId?'true':'false'} onClick={()=>open(record)}><h3>{record.title}</h3><p>{statusLabel(record.status)}</p></Button>)}{!records.length&&empty}</>;}
+export function InitiativeRows({records,selected,empty,open}:{records:InitiativeRecord[];selected?:string;empty:string;open:(record:InitiativeRecord)=>unknown}){return <>{records.map(record=><Button key={record.entityId} className={`quiet ui-row card initiative-list-row${selected===record.entityId?' selected':''}`} data-initiative-id={record.entityId} aria-current={selected===record.entityId?'true':'false'} onClick={()=>open(record)}><h3>{record.title}</h3><p>{statusLabel(record.status)}</p></Button>)}{!records.length && <p className="no-items">{empty}</p>}</>;}
 interface ContextLink extends InitiativeSource {warning?:string;resolvedPath?:string}
 export function InitiativeLinks({sources,open,selected,empty}:{sources:ContextLink[];open:(path:string,opener:HTMLButtonElement)=>unknown;selected?:string;empty?:string}){
   return <>{sources.map((source,index)=>{
@@ -86,7 +100,7 @@ export function InitiativeLinks({sources,open,selected,empty}:{sources:ContextLi
     </Button>;
   })}{!sources.length&&empty}</>;
 }
-export function InitiativeActions({actions,open,empty,selected}:{actions:ActionRecord[];open:(action:ActionRecord,opener:HTMLButtonElement)=>unknown;empty:string;selected?:string}){return <>{actions.map(action=><Button key={action.entityId} className={`quiet ui-row${selected===action.entityId?' selected':''}`} aria-current={selected===action.entityId?'true':'false'} data-action-id={action.entityId} onClick={event=>open(action,event.currentTarget)}>{action.description} · {statusLabel(action.status)}</Button>)}{!actions.length&&empty}</>;}
+export function InitiativeActions({actions,open,empty,selected}:{actions:ActionRecord[];open:(action:ActionRecord,opener:HTMLButtonElement)=>unknown;empty:string;selected?:string}){return <>{actions.map(action=><Button key={action.entityId} className={`quiet ui-row${selected===action.entityId?' selected':''}`} aria-current={selected===action.entityId?'true':'false'} data-action-id={action.entityId} onClick={event=>open(action,event.currentTarget)}><span>{action.description}</span><ActionStatus status={action.status}/></Button>)}{!actions.length&&empty}</>;}
 export interface EndingChoice {action:ActionRecord;value:string}
 export function InitiativeDecisions({choices,targets}:{choices:EndingChoice[];targets:InitiativeRecord[]}){return <>{choices.map(({action,value})=><label key={`${action.entityId}:${value}`} className="ui-field">结束时处理：{action.description}<select data-action={action.entityId} defaultValue={value}><option value="">请选择处理方式…</option><option value="completed">完成</option><option value="canceled">取消</option><option value="independent">保留为独立行动</option>{targets.map(target=><option key={target.entityId} value={`move:${target.entityId}`}>移至 {target.title}</option>)}</select></label>)}</>;}
 /** Each view retains presentation data for metadata detours, never detached DOM. */
