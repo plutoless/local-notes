@@ -102,6 +102,13 @@ try {
   assert.equal(await page.locator('#global-search').evaluate(n=>n.getBoundingClientRect().width <= innerWidth),true);
   await page.locator('#global-search button').last().focus(); await page.keyboard.press('Tab'); assert.equal(await input.evaluate(n=>n===document.activeElement),true); await page.keyboard.press('Shift+Tab'); assert.equal(await page.locator('#global-search button').last().evaluate(n=>n===document.activeElement),true);
   await mkdir('build/issue58', {recursive:true}); await page.screenshot({path:'build/issue58/narrow.png'});
+  await page.keyboard.press('Escape');
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await page.keyboard.press('Control+k');
+  await input.waitFor();
+  assert.equal(await input.evaluate(node=>document.activeElement===node),true);
+  assert.equal(await page.locator('[data-scope=note]').evaluate(node=>getComputedStyle(node).transitionDuration),'0s');
+  await page.emulateMedia({reducedMotion:'no-preference'});
   await page.locator('[data-scope=note]').click();
   failQuery = true; await input.fill('alpha'); await page.getByText('搜索失败，请刷新重试',{exact:true}).waitFor(); failQuery = false; await input.fill('latency'); await page.locator('.search-result').first().waitFor();
   let release; delay = new Promise(resolve=>release=resolve); await input.fill('alpha'); await page.keyboard.press('Escape'); release(); delay = null; await page.waitForTimeout(150); assert.equal(await page.locator('#global-search').evaluate(n=>n.open),false);

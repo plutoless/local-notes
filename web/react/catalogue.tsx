@@ -1,9 +1,11 @@
 import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
 import {ActionRows} from './actions';
+import {useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {OrganizationContent, OrganizationSettings, type OrganizationModel, type OrganizationCallbacks} from './organization';
 import {NoteFields,Classification,TaskFormActions} from './note-forms';
 import {SearchContent} from './search';
+import type {SearchRow, SearchScope} from './search-model';
 import {Button} from './components';
 import {CandidateReviewContent} from './candidate-review';
 import {ConflictComparison, type ConflictRecord, type SyncCallbacks} from './sync';
@@ -53,7 +55,46 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
     <h2>React 事项上下文</h2><InitiativeRows records={[{entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(6),goal:'核对原文',progress:'进行中',status:'active',sources:[]}]} selected="catalogue-initiative" empty="" open={noop}/><InitiativeLinks sources={[{path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'}]} selected="研究/长中文参考资料.md" open={noop}/><InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
-    <h2>React 全局搜索</h2><section className="search-dialog ui-panel" aria-label="搜索组件示例"><SearchContent model={{scope:'note',selected:'catalogue-search',status:'本页 1 条结果',previous:false,next:false,rows:[{note:{identity:'catalogue-search',workspaceId:'synthetic',type:'note',path:'研究/中文长路径.md',passageStart:1,fingerprint:'synthetic',entityId:'研究/中文长路径.md',title:'核对长期事项与资料来源的完整中文标题以及下一步行动安排'.repeat(3),contextLabel:'研究/中文长路径.md · 1',passage:'保留来源片段与只读任务标记 - [ ] 核对资料',locator:'研究/中文长路径.md'},query:'来源',text:'保留来源片段与只读任务标记 - [ ] 核对资料'}]}} callbacks={{scope:noop,close:noop,page:noop,refresh:noop,expand:noop,copy:noop,open:noop}}/></section>
+    <h2>React 全局搜索</h2><SearchCatalogue/>
   </>);
   return ()=>root.unmount();
+}
+
+const cataloguePassage = '保留来源片段与只读任务标记 - [ ] 核对资料';
+const catalogueContext = `# 研究资料\n\n${cataloguePassage}\n\n下次继续核对来源。`;
+const catalogueSearchRow: SearchRow = {
+  note: {
+    identity:'catalogue-search', workspaceId:'synthetic', type:'note', path:'研究/中文长路径.md',
+    passageStart:1, fingerprint:'synthetic', entityId:'研究/中文长路径.md',
+    title:'核对长期事项与资料来源的完整中文标题以及下一步行动安排'.repeat(3),
+    contextLabel:'研究/中文长路径.md · 1', passage:cataloguePassage, locator:'研究/中文长路径.md'
+  },
+  query:'来源', text:cataloguePassage
+};
+
+function SearchCatalogue() {
+  const [scope, setScope] = useState<SearchScope>('note');
+  const [expanded, setExpanded] = useState(false);
+  const [state, setState] = useState<'loading'|'partial'|'unavailable'|'error'>();
+  const available = scope === 'all' || scope === 'note';
+  const tone = state === 'partial' || state === 'unavailable' ? 'warning' : state;
+  const statuses = {
+    loading:'正在搜索…',
+    partial:'索引未完整更新，请刷新重试',
+    unavailable:'来源已改变或不可读取，请刷新重试',
+    error:'搜索失败，请刷新重试'
+  };
+  const status = state ? statuses[state] : available ? '本页 1 条结果' : '没有匹配的内容';
+  return <section className="search-dialog ui-panel" aria-label="搜索组件示例">
+    <div className="search-actions" aria-label="搜索状态示例">
+      <Button onClick={()=>setState(undefined)}>就绪</Button>
+      <Button onClick={()=>setState('loading')}>加载中</Button>
+      <Button onClick={()=>setState('partial')}>部分结果</Button>
+      <Button onClick={()=>setState('error')}>失败</Button>
+    </div>
+    <SearchContent model={{scope, initialQuery:'来源', selected:catalogueSearchRow.note.identity, tone, status, previous:false, next:false,
+      rows:available && tone!=='error' ? [{...catalogueSearchRow, expanded, text:expanded?catalogueContext:cataloguePassage}] : []}}
+      callbacks={{scope:setScope, close:()=>setScope('note'), page:()=>{}, refresh:()=>setState(undefined),
+        expand:(_row,toggle)=>setExpanded(value=>toggle?!value:true), copy:()=>{}, open:()=>setState('unavailable')}}/>
+  </section>;
 }
