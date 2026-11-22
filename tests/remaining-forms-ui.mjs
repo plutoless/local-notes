@@ -72,21 +72,31 @@ try {
   if (process.env.FORM_BASELINE) {
     await page.locator('#new').click();
     for (const width of [1180,393]) { await page.setViewportSize({width,height:800}); await screenshot(join(evidence,`before-capture-${width}.png`)); }
-    await page.locator('[data-view=focus]').click(); await page.getByRole('button',{name:'全部行动',exact:true}).click();
-    await page.locator('#action-new').click();
-    for (const width of [1180,393]) { await page.setViewportSize({width,height:800}); await screenshot(join(evidence,`before-action-${width}.png`)); }
-    await page.getByText('放弃编辑',{exact:true}).click(); await page.locator('#action-discard').click();
-    await page.locator('[data-view=notes]').click(); await page.locator('#items [data-path="reference.md"]').click();
-    await page.locator('#note-details').evaluate(node=>node.open=true);
+    await page.keyboard.press('Escape');
+    await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+    await page.locator('#items [data-path="reference.md"]').click();
+    await page.locator('#note-info-open').click();
     for (const width of [1180,393]) { await page.setViewportSize({width,height:800}); await screenshot(join(evidence,`before-note-info-${width}.png`)); }
     console.log('PASS baseline real-storage browser captures at starting SHA');
   } else {
   assert.equal(await page.locator('#library-rename-topic').isDisabled(),true);
   await page.locator('#new').click(); await page.locator('#note-task-drawer .ui-drawer-footer button').first().click();
   assert.equal(createCalls,0,'Clean cancellation must not create a file');
+  const browsePath = await page.locator('#items .card').first().getAttribute('data-path');
   await page.locator('#new').click();
+  assert.equal(await page.locator('#capture-title').evaluate(node => node === document.activeElement),true);
+  assert.equal(await page.locator('dialog[open]').count(),1);
+  const backgroundClick = await page.locator(`#items [data-path="${browsePath}"]`).evaluate(node => {
+    const rect = node.getBoundingClientRect();
+    return !node.contains(document.elementFromPoint(rect.left + 5, rect.top + 5));
+  });
+  assert.ok(backgroundClick, 'The open task prevents pointer interaction with the browsing origin');
   await page.getByRole('button', {name: '创建笔记', exact: true}).click();
   await page.locator('#note-task-drawer [role=status]').filter({hasText: '内容需要核对'}).waitFor();
+  const invalid = page.locator('#capture-title');
+  await page.waitForFunction(() => document.activeElement.id === 'capture-title');
+  assert.equal(await invalid.getAttribute('aria-invalid'),'true');
+  assert.ok((await invalid.getAttribute('aria-describedby')).split(' ').includes('note-task-status'));
   await page.locator('#capture-title').fill('短表单真实存储');
   await page.locator('#capture-body').fill('保留正文与草稿。'.repeat(80));
   const releaseReturn = async () => {
@@ -146,6 +156,7 @@ try {
     await page.setViewportSize({width,height});
     const footer = page.locator('#note-task-drawer .ui-drawer-footer');
     assert.ok(await footer.evaluate(node => node.getBoundingClientRect().bottom <= innerHeight));
+    assert.ok(await page.locator('#note-task-drawer').evaluate(node => node.scrollWidth === node.clientWidth));
     await page.locator('#note-task-drawer .ui-drawer-body').evaluate(node => node.scrollTop = node.scrollHeight);
     await screenshot(join(evidence,`capture-${width}-${height}.png`));
   }

@@ -26,6 +26,7 @@ export class LibraryScreen {
   }
   setupTopicDrawer() {
     this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
+    this.topicDrawer.panel.classList.add('note-task-sheet');
     const {form,status,error,submit} = taskFormView(this.topicDrawer.body,this.topicDrawer.footer,{id:'topic-form',statusId:'topic-status',errorId:'topic-error',cancelId:'topic-cancel',cancel:()=>this.leaveTopic()});
     this.topicFields = noteFieldsView(form);
     this.topicFields.show([{id:'topic-name',label:'主题名称',required:true,describedBy:'topic-error topic-status'}]);
