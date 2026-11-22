@@ -19,12 +19,13 @@ export function ShellContent({model:m, callbacks:c}:{model:ShellModel; callbacks
   return <>
     <div className="brand"><span aria-hidden="true">拾</span>拾记</div>
     <div className="shell-commands">
-      <Button id="new" className="quiet ui-compact" onClick={c.capture}>
+      <Button id="new" className="quiet ui-compact" aria-haspopup="dialog" aria-controls="note-task-drawer" onClick={c.capture}>
         <span className="contents" dangerouslySetInnerHTML={{__html:c.icon('plus')}}/>随手记
       </Button>
       <Button id="global-search-open" className="quiet ui-compact" aria-haspopup="dialog"
         aria-controls="global-search" aria-keyshortcuts="Meta+K Control+K" onClick={c.search}>
         <span className="contents" dangerouslySetInnerHTML={{__html:c.icon('search')}}/>搜索
+        <kbd className="search-shortcut" aria-hidden="true">{navigator.platform.startsWith('Mac') ? '⌘K' : 'Ctrl+K'}</kbd>
       </Button>
       <span id="shell-search-return" className="contents"/>
     </div>
