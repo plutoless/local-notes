@@ -2,24 +2,44 @@ import {readFile, writeFile, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
+import {ActionRepository} from '../web/actions.js';
 import {storageFixture} from './action-adapter.js';
-const evidence = 'build/issue68-browser';
-const fixture = await storageFixture();
-const secondFixture = await storageFixture();
-let activeFixture = fixture;
+const evidence = process.env.READING_EVIDENCE || 'build/validation/124/reading';
+let fixture, secondFixture, activeFixture;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
-let delayPath, releaseRead, readBegan, failSave = false, failTopics = false;
+let delayPath, releaseRead, readBegan;
+const lateWrites = [];
+async function waitForGatedRead(started, path) {
+  let timeout;
+  try {
+    await Promise.race([started, new Promise((_, reject) => {
+      timeout = setTimeout(() => reject(new Error(`Expected a gated read of ${path}`)), 10_000);
+    })]);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+const notices = [];
 try {
+  fixture = await storageFixture();
+  secondFixture = await storageFixture();
+  activeFixture = fixture;
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  await page.exposeFunction('recordReadingNotice', message => notices.push(message));
+  await page.addInitScript(() => addEventListener('DOMContentLoaded', () => {
+    const notice = document.querySelector('#notice');
+    if (notice) new MutationObserver(() => {
+      if (!notice.hidden) window.recordReadingNotice(notice.textContent);
+    }).observe(notice, {attributes: true, childList: true, subtree: true});
+  }));
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   await page.exposeFunction('bridge', async request => {
     try {
+      if (request.cmd === 'referencePut' && request.record.path === 'new-reference.md') lateWrites.push(request);
       if (request.cmd === 'choose') { activeFixture = activeFixture === fixture ? secondFixture : fixture; return {}; }
-      if (request.cmd === 'save' && failSave) throw Error('Controlled failed save');
-      if (request.cmd === 'referenceQuery' && request.exactPath === 'folder/Second.md' && failTopics) throw Error('Controlled secondary query failure');
-      if (request.cmd === 'read' && request.path === delayPath) { delayPath = null; const text = await readFile(join(activeFixture.root,request.path),'utf8'); readBegan(); await new Promise(resolve => releaseRead = resolve); return {text}; }
+      if (request.cmd === 'read' && request.path === delayPath) { delayPath = null; const text = await readFile(join(activeFixture.root,request.path),'utf8'); await new Promise(resolve => { releaseRead = resolve; readBegan(); }); return {text}; }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
         const result = await activeFixture.adapter(request.cmd, request);
         return result;
@@ -44,6 +64,9 @@ try {
 
   const text = '# Long synthetic note\n\n' + 'Readable paragraph for continuation.\n\n'.repeat(200);
   await writeFile(sourcePath,text);
+  const actions = new ActionRepository(fixture.adapter); await actions.open();
+  for(let i=0;i<7;i++) await actions.save({description:'保留重点行动与滚动上下文 '+i,status:'todo',focusPosition:i+1});
+  await mkdir(evidence,{recursive:true});
   await page.goto('https://notes.test/');
   assert.equal(await page.locator('.recent-reading').count(),0);
   await page.locator('[data-view=notes]').click();
@@ -56,23 +79,31 @@ try {
   await page.locator('[data-view=focus]').click();
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).waitFor();
   await page.reload();
+  await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).waitFor();
+  await page.locator('#items').evaluate(n=>n.scrollTop=n.scrollHeight);
+  const homeListScroll=await page.locator('#items').evaluate(n=>n.scrollTop);
+  assert.ok(homeListScroll>0);
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>document.activeElement.id==='mode');
   assert.equal(await page.locator('main').evaluate(n=>n.scrollTop),scroll);
   assert.equal(await page.locator('#reading').isVisible(),true);
   await page.locator('#back').click();
   await page.waitForFunction(()=>document.activeElement.dataset.readingPath==='reference.md');
+  assert.equal(await page.locator('#items').evaluate(n=>n.scrollTop),homeListScroll,'Home list scroll survives reading return');
+  await page.screenshot({path:join(evidence,'returned-home.png')});
   await page.waitForTimeout(1200);
   assert.equal(await page.evaluate(()=>document.activeElement.dataset.readingPath),'reference.md');
   await writeFile(sourcePath,text+'\nChanged externally');
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('原文已更改'));
   assert.equal(await page.locator('main').evaluate(n=>n.scrollTop),0);
+  await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('#back').click();
   await rename(sourcePath,join(fixture.root,'moved.md'));
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('暂不可用'));
   assert.equal(await page.locator('#editor').isVisible(),false);
+  await page.getByRole('button',{name:'关闭提示',exact:true}).click();
   await page.locator('.recent-reading summary').click();
   await page.getByRole('button',{name:'移除此阅读入口',exact:true}).click();
   await page.waitForFunction(()=>!document.querySelector('.recent-reading'));
@@ -82,7 +113,7 @@ try {
   await page.locator('#reading').waitFor({state:'visible'});
   await page.locator('[data-view=focus]').click();
   const begun = new Promise(resolve => readBegan = resolve); delayPath='reference.md';
-  await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click(); await begun;
+  await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click(); await waitForGatedRead(begun, 'reference.md');
   await page.locator('[data-view=notes]').click(); releaseRead();
   await page.waitForTimeout(100);
   assert.equal(await page.locator('#editor').isVisible(),false);
@@ -94,8 +125,12 @@ try {
   await fixture.removeIndex();
 
   // Home remains usable while the existing Library indexer awaits one source body.
-  const indexingStarted = new Promise(resolve => readBegan = resolve); delayPath='reference.md';
-  await page.locator('[data-view=notes]').click(); await indexingStarted;
+  const unindexedPath = 'new-reference.md';
+  await writeFile(join(secondFixture.root, unindexedPath), '# New synthetic reference\n');
+  const indexingStarted = new Promise(resolve => readBegan = resolve);
+  delayPath = unindexedPath;
+  await page.locator('[data-view=notes]').click();
+  await waitForGatedRead(indexingStarted, unindexedPath);
   await page.locator('[data-view=focus]').click();
   await page.locator('.home-tools').waitFor();
   assert.equal(await page.locator('#editor').isVisible(),false);
@@ -108,6 +143,21 @@ try {
   await page.locator('#note-info-open').click();
   await page.getByRole('button',{name:'新建并关联主题',exact:true}).waitFor();
   await page.locator('#note-info-drawer').getByRole('button',{name:'完成',exact:true}).click();
+  const {workspaceId} = await fixture.adapter('workspace');
+  const {notes: indexed} = await fixture.adapter('referenceQuery', {workspaceId, exactPath: 'reference.md'});
+  assert.equal(indexed[0]?.title, 'Long synthetic note');
+  assert.equal(await readFile(sourcePath, 'utf8'), text + '\nChanged externally');
+  assert.equal(lateWrites.length, 0, 'An indexer from the previous workspace never writes the delayed source');
+  assert.equal(await page.locator('#notice').isHidden(), true);
   assert.deepEqual(errors,[]);
   console.log('PASS private continuation reload, scroll/focus, changed/missing recovery, remove, late-read fence and workspace isolation');
-} finally { await browser.close(); await fixture.close(); await secondFixture.close(); }
+} catch (error) {
+  console.error('Reading notices:', notices);
+  throw error;
+} finally {
+  try {
+    await browser.close();
+  } finally {
+    await Promise.all([fixture?.close(), secondFixture?.close()]);
+  }
+}
