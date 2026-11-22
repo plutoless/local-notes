@@ -29,7 +29,7 @@ export function isOverdue(action, today = new Date().toLocaleDateString('en-CA')
 // The adapter is the file/index boundary. All commits on this device are serialized here.
 export class ActionRepository {
   constructor(adapter, {newId = newUUID, now = () => new Date().toISOString(), entityType = 'action', validate = validateAction} = {}) {
-    this.entityType = entityType; this.validate = validate; this.collection = entityType === 'action' ? 'actions' : entityType === 'topic' ? 'topics' : entityType === 'candidate' ? 'candidates' : 'initiatives'; this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.heads = new Map(); this.ready = false;
+    this.entityType = entityType; this.validate = validate; this.collection = entityType === 'action' ? 'actions' : entityType === 'topic' ? 'topics' : entityType === 'candidate' ? 'candidates' : 'initiatives'; this.adapter = adapter; this.newId = newId; this.now = now; this.queue = Promise.resolve(); this.workspaceId = null; this.workspaceGeneration = 0; this.heads = new Map(); this.ready = false;
   }
   serialize(operation) {
     const result = this.queue.then(operation);
@@ -37,9 +37,20 @@ export class ActionRepository {
     return result;
   }
   request(cmd, args = {}) { return this.adapter(cmd, {workspaceId: this.workspaceId, entityType: this.entityType, ...args}); }
-  async open({cached = false, progress = () => {}} = {}) {
+  open(options) { return this.serialize(() => this.#openWorkspace(options)); }
+  async #openWorkspace({cached = false, progress = () => {}} = {}) {
     this.ready = false; this.indexedSnapshot = null;
     const workspace = await this.adapter('workspace');
+    if (workspace.workspaceId !== this.workspaceId) {
+      this.workspaceGeneration++;
+      this.fileCache = undefined;
+      this.fileStamps = undefined;
+      this.parsedFiles = new Map();
+      this.heads = new Map();
+      this.conflicts = new Map();
+      this.needsRefresh = false;
+      this.resolving = null;
+    }
     this.workspaceId = workspace.workspaceId;
     this.progress = progress;
     if (cached) {
@@ -57,8 +68,19 @@ export class ActionRepository {
     return {...workspace, ...recovery};
   }
   async recover({readOnly = false} = {}) {
+    const workspace = this.workspaceId, generation = this.workspaceGeneration;
+    const checkWorkspace = () => {
+      if (generation !== this.workspaceGeneration) throw Error('Workspace changed during record recovery');
+    };
+    const request = async (cmd, args) => {
+      checkWorkspace();
+      try { return await this.request(cmd, {...args, workspaceId: workspace}); }
+      finally { checkWorkspace(); }
+    };
     this.progress?.('Reading confirmed revisions…');
-    const result = await this.request('actionFiles', {known: this.fileStamps || {}});
+    const result = await request('actionFiles', {known: this.fileStamps || {}});
+    // A workspace bind can run between the adapter's guard and this continuation.
+    checkWorkspace();
     const fileWarnings = result.warnings || [];
     const files = result.stamps ? Object.fromEntries(Object.keys(result.stamps).map(path => [path, result.files[path] ?? this.fileCache?.[path]]).filter(([,text]) => text !== undefined)) : result.files;
     for (const warning of fileWarnings) if (warning.path.endsWith('/')) {
@@ -73,7 +95,11 @@ export class ActionRepository {
     const damaged = new Set(fileWarnings.map(warning => warning.path));
     let processed = 0; const fileCount = Object.keys(files).length;
     for (const [path, text] of Object.entries(files)) {
-      if (++processed % 50 === 0) { this.progress?.(`Indexing ${this.collection}: ${processed}/${fileCount} files`); await new Promise(resolve => setTimeout(resolve, 0)); }
+      if (++processed % 50 === 0) {
+        this.progress?.(`Indexing ${this.collection}: ${processed}/${fileCount} files`);
+        await new Promise(resolve => setTimeout(resolve, 0));
+        checkWorkspace();
+      }
       try {
         const cached = this.parsedFiles.get(path);
         const parsed = cached?.text === text ? cached.record : JSON.parse(text);
@@ -83,7 +109,7 @@ export class ActionRepository {
           continue;
         }
         const record = this.validate(parsed);
-        if (record.workspaceId !== this.workspaceId) throw Error('Record belongs to another workspace');
+        if (record.workspaceId !== workspace) throw Error('Record belongs to another workspace');
         const revisionPath = `revisions/${record.entityId}/${record.revision}.json`;
         const canonical = path === revisionPath || path === `${this.collection}/${record.entityId}.json`;
         const conflictCopy = path.endsWith('.json') && (path.startsWith(`${this.collection}/`) || path.startsWith(`revisions/${record.entityId}/`));
@@ -91,11 +117,14 @@ export class ActionRepository {
         const history = revisions.get(record.entityId) || new Map();
         if (history.has(record.revision) && JSON.stringify(history.get(record.revision)) !== JSON.stringify(record)) throw Error('Revision identity has incompatible content');
         // Preserve a current file or Syncthing conflict copy before any repair can replace it.
-        if (!readOnly && path !== revisionPath && !Object.hasOwn(files, revisionPath)) await this.request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
+        if (!readOnly && path !== revisionPath && !Object.hasOwn(files, revisionPath)) {
+          await request('actionWrite', {path: revisionPath, text: JSON.stringify(record)});
+          checkWorkspace();
+        }
         history.set(record.revision, record);
         revisions.set(record.entityId, history);
         if (path === `${this.collection}/${record.entityId}.json`) currents.set(record.entityId, record);
-      } catch (error) { damaged.add(path); warnings.push(`${path}: ${error.message}`); }
+      } catch (error) { checkWorkspace(); damaged.add(path); warnings.push(`${path}: ${error.message}`); }
     }
     const records = [];
     for (const [id, history] of revisions) {
@@ -109,7 +138,8 @@ export class ActionRepository {
       }
       const record = state.tips[0];
       if (!readOnly && !damaged.has(`${this.collection}/${id}.json`) && (currents.get(id)?.revision !== record.revision || JSON.stringify(currents.get(id)) !== JSON.stringify(record))) {
-        await this.request('actionWrite', {path: `${this.collection}/${id}.json`, text: JSON.stringify(record)});
+        await request('actionWrite', {path: `${this.collection}/${id}.json`, text: JSON.stringify(record)});
+        checkWorkspace();
       }
       records.push(record);
     }
@@ -117,26 +147,28 @@ export class ActionRepository {
     if (damaged.size) {
       try {
         for (let offset = 0;; offset += 100) {
-          const page = await this.request('actionQuery', {limit: 100, offset});
+          const page = await request('actionQuery', {limit: 100, offset});
+          checkWorkspace();
           for (const old of page.actions) if (!revisions.has(old.entityId)) {
             records.push(conflictView(new Map([[old.revision, old]]), {incomplete: true}));
             this.conflicts.set(old.entityId, {incomplete: true, tips: [], versions: [old]});
           }
           if (!page.hasMore) break;
         }
-      } catch (error) { if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error; }
+      } catch (error) { checkWorkspace(); if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error; }
     }
     const snapshot = JSON.stringify(records.filter(record => !record.deleted).sort((a,b) => a.entityId.localeCompare(b.entityId)));
     if (this.indexedSnapshot !== snapshot) {
-      if (!this.indexedSnapshot) await this.request('actionIndex', {records: JSON.parse(snapshot)});
+      if (!this.indexedSnapshot) await request('actionIndex', {records: JSON.parse(snapshot)});
       else {
         const previous = new Map(JSON.parse(this.indexedSnapshot).map(record => [record.entityId, record]));
         for (const record of JSON.parse(snapshot)) {
-          if (JSON.stringify(previous.get(record.entityId)) !== JSON.stringify(record)) await this.request('actionIndex', {record});
+          if (JSON.stringify(previous.get(record.entityId)) !== JSON.stringify(record)) await request('actionIndex', {record});
           previous.delete(record.entityId);
         }
-        for (const entityId of previous.keys()) await this.request('actionIndex', {record: {entityId, deleted: true}});
+        for (const entityId of previous.keys()) await request('actionIndex', {record: {entityId, deleted: true}});
       }
+      checkWorkspace();
       this.indexedSnapshot = snapshot;
     }
     this.heads = new Map(records.map(record => [record.entityId, record.revision]));
@@ -145,12 +177,28 @@ export class ActionRepository {
   }
   async query(options = {}) {
     if (!this.ready) throw Error('Workspace is not ready; reopen it');
-    try { const page = await this.request('actionQuery', options); for (const record of page.actions) if (!this.heads.has(record.entityId)) this.heads.set(record.entityId, record.revision); return page; }
+    const generation = this.workspaceGeneration;
+    const checkWorkspace = () => {
+      if (generation !== this.workspaceGeneration) throw Error('Workspace changed during record query');
+    };
+    try {
+      const page = await this.request('actionQuery', options);
+      checkWorkspace();
+      for (const record of page.actions) if (!this.heads.has(record.entityId)) this.heads.set(record.entityId, record.revision);
+      return page;
+    }
     catch (error) {
+      checkWorkspace();
       if (!/INDEX_REBUILD_REQUIRED|malformed|not a database|corrupt/i.test(error.message)) throw error;
-      this.indexedSnapshot = null;
-      await this.serialize(() => this.recover());
-      return this.request('actionQuery', options);
+      await this.serialize(() => {
+        checkWorkspace();
+        this.indexedSnapshot = null;
+        return this.recover();
+      });
+      checkWorkspace();
+      const page = await this.request('actionQuery', options);
+      checkWorkspace();
+      return page;
     }
   }
   async history(entityId) {
@@ -176,9 +224,10 @@ export class ActionRepository {
       });
   }
   save(fields, previous = null, retry = null, resolution = false) {
+    const generation = this.workspaceGeneration;
     return this.serialize(async () => {
       if (!this.ready) throw Error('Workspace is not ready; reopen it');
-      if ((previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
+      if (generation !== this.workspaceGeneration || (previous && previous.workspaceId !== this.workspaceId) || (retry && retry.workspaceId !== this.workspaceId)) throw Error('Workspace changed; reopen the action');
       if (previous || this.needsRefresh) await this.recover(); this.needsRefresh = false;
       this.resolving = null;
       if (resolution) {
