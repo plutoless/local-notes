@@ -16,15 +16,20 @@ const responseFor = batch => ({text:JSON.stringify({candidates:Array.from({lengt
  relevance:'历史计划，当前适用性待确认', sources:[{fragmentId:batch.fragmentId, quote:batch.text.slice(0,16)}]
 }))})});
 let mode = 'partial', requests = 0, pending, failTarget = false, delayRead = false, releaseRead, releaseCancel;
+// The first bounded Candidate query checks pending recovery. Fail the displayed page query.
+let candidatePageQueriesUntilFailure = 2;
+let cancelStarted;
+const cancelArrival = new Promise(resolve => cancelStarted = resolve);
 try {
  const page = await browser.newPage({viewport:{width:1180,height:800}});
  const errors = []; page.on('pageerror', e => errors.push(e.message));
  await page.exposeFunction('bridge', async request => {
   try {
    if (request.cmd === 'aiSettings') return {address:'http://127.0.0.1/controlled', model:'controlled', configured:true};
+   if (request.cmd === 'actionQuery' && request.entityType === 'candidate' && request.limit === 50
+       && --candidatePageQueriesUntilFailure === 0) return {error:'Synthetic Candidate page unavailable'};
    if (request.cmd === 'aiCancel') {
-    pending?.({error:'Canceled'}); pending = null;
-    await new Promise(resolve => releaseCancel = resolve);
+    await new Promise(resolve => { releaseCancel = resolve; cancelStarted(); });
     return {};
    }
    if (request.cmd === 'aiAnalyze') {
@@ -47,15 +52,33 @@ try {
    return await fixture.adapter(request.cmd, request);
   } catch (error) { return {error:error.message}; }
  });
- await page.addInitScript(() => { window.NotesNative = {request:async message => { const r = JSON.parse(message); window.nativeReply(r.id, await window.bridge(r)); }}; });
+ await page.addInitScript(() => { window.NotesNative = {request:async message => {
+  const r = JSON.parse(message), result = await window.bridge(r);
+  window.nativeReply(r.id, result);
+  if (r.cmd === 'aiAnalyze' && result.error === 'Canceled') window.canceledAnalyzeReply = true;
+ }}; });
  await page.route('https://notes.test/**', async route => { const name = new URL(route.request().url()).pathname.slice(1) || 'index.html'; await route.fulfill({body:await readFile(new URL('../build/web/' + name, import.meta.url)), contentType:name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'}); });
  const organize = async () => { await page.locator('[data-view=organize]').click(); await page.locator('#ai-selection input').waitFor(); };
  const preview = async () => { await page.locator('#ai-selection input').check(); await page.locator('#ai-preview').click(); await page.waitForFunction(() => !document.querySelector('#ai-send').disabled); };
  const status = async pattern => { await page.waitForFunction(pattern => new RegExp(pattern).test(document.querySelector('#ai-status').textContent), pattern); };
  const card = i => page.locator('.suggestion-card').filter({has:page.getByRole('heading', {name:`行动：合成建议 ${i} · 0`, exact:true})});
  await page.goto('https://notes.test/'); await organize();
+ await page.getByText('暂无法载入已保存的建议。请重新打开整理后重试。', {exact:true}).waitFor();
+ assert.match(await page.locator('#ai-service-state').textContent(), /服务已配置/);
+ assert.equal(await page.locator('#ai-selection input').count(), 1, 'Candidate query failures leave source selection usable');
+ await page.reload(); await organize();
+ await page.getByText(/还没有保存的建议/).waitFor();
  assert.equal(await page.locator('#ai-cancel').isDisabled(), true);
  assert.equal(await page.locator('#ai-send').isDisabled(), true);
+ const sourceRow = page.locator('#ai-selection label');
+ await sourceRow.locator('input').check(); await page.mouse.move(0, 0);
+ const fill = () => sourceRow.evaluate(node => getComputedStyle(node).backgroundColor);
+ assert.equal(await fill(), 'rgb(232, 237, 231)', 'Selected uses the workspace sage');
+ await sourceRow.hover(); assert.equal(await fill(), 'rgb(223, 231, 223)');
+ await page.mouse.down(); assert.equal(await fill(), 'rgb(214, 224, 214)');
+ await page.mouse.up();
+ await page.emulateMedia({reducedMotion:'reduce'});
+ assert.equal(await page.locator('#ai-preview').evaluate(node => getComputedStyle(node).transitionDuration), '0s');
  await page.locator('#ai-review-jump').press('Enter');
  assert.equal(await page.locator('#ai-review-title').evaluate(node => node === document.activeElement), true);
  await page.locator('#ai-configure').press('Enter');
@@ -132,11 +155,17 @@ try {
  await writeFile(fixture.root + '/reference.md', text);
  mode = 'hold'; await preview(); await page.locator('#ai-send').click(); await status('正在分析');
  assert.equal(await page.locator('#ai-preview').isDisabled(), true); await page.locator('#ai-cancel').click();
- await status('已取消');
+ await cancelArrival;
+ await page.getByRole('button', {name:'正在取消…', exact:true}).waitFor();
  assert.equal(await page.locator('#ai-send').isDisabled(), true, 'Send stays disabled until cancellation settles');
+ const canceledReply = pending;
+ pending = null;
  releaseCancel();
- await page.waitForFunction(() => !document.querySelector('#ai-send').disabled);
+ await status('已取消');
  mode = 'invalid'; await page.locator('#ai-send').click(); await status('返回的建议无法核验');
+ canceledReply({error:'Canceled'});
+ await page.waitForFunction(() => window.canceledAnalyzeReply);
+ assert.match(await page.locator('#ai-status').textContent(), /返回的建议无法核验/, 'A late canceled reply cannot overwrite a newer send');
  mode = 'offline'; await page.locator('#ai-send').click(); await status('连接失败');
  assert.equal(await page.locator('.suggestion-card').count(), 12);
  await page.setViewportSize({width:393,height:852});
