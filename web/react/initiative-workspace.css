@@ -1,0 +1,126 @@
+.app.workspace:has(> .collection #initiative-tools:not([hidden])) > .collection {
+  border-color: var(--workspace-divider);
+  background: var(--surface);
+}
+.collection:has(> #initiative-tools:not([hidden])) #view-title {
+  color: var(--workspace-ink);
+  font-weight: 680;
+  margin-bottom: 12px;
+}
+.collection:has(> #initiative-tools:not([hidden])) > header .ui-field { margin-block: 0; }
+.collection:has(> #initiative-tools:not([hidden])) #search { background: var(--surface); }
+.collection #initiative-tools { border-color: var(--workspace-divider); gap: 4px; }
+#initiative-tools .ui-pagination { gap: 0; }
+
+#items .initiative-list-row,
+.ui-action.initiative-list-row {
+  color: var(--workspace-ink);
+  padding-block: 10px;
+}
+:is(#items .initiative-list-row, #workspace-context .workspace-section .ui-row, .initiative-list-row, .initiative-source-link)[aria-current="true"] {
+  color: var(--workspace-current-text);
+  background: var(--workspace-current);
+}
+:is(#items .initiative-list-row, #workspace-context .workspace-section .ui-row, .initiative-list-row, .initiative-source-link)[aria-current="true"]:hover {
+  background: var(--workspace-current-hover);
+}
+:is(#items .initiative-list-row, #workspace-context .workspace-section .ui-row, .initiative-list-row, .initiative-source-link)[aria-current="true"]:active {
+  background: var(--workspace-current-pressed);
+}
+
+.workspace #workspace-context {
+  max-width: 675px;
+  padding: 4px clamp(22px, 7%, 62px) 48px;
+  color: var(--workspace-ink);
+}
+#workspace-context .workspace-context-heading {
+  justify-content: flex-start;
+  align-items: center;
+  padding-bottom: 0;
+  border-color: var(--workspace-divider);
+  gap: 0 4px;
+}
+#workspace-context :is(#workspace-back, #workspace-return-action) { color: var(--workspace-muted); }
+#workspace-context #workspace-overview { margin-inline-start: auto; font-weight: 600; color: var(--workspace-ink); }
+
+.initiative-summary { padding: 28px 0 8px; }
+.initiative-summary h1 {
+  font-size: clamp(25px, 4.35vw, 39px);
+  line-height: 1.18;
+  font-weight: 680;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+.initiative-summary #workspace-state {
+  display: inline-block;
+  margin-block: 12px 0;
+  padding-inline: 8px;
+  border-radius: var(--radius);
+  background: var(--canvas);
+  color: var(--workspace-muted);
+}
+.initiative-summary dd { font-size: 15px; line-height: 1.7; }
+#workspace-context .workspace-section { border-color: var(--workspace-divider); margin-top: 24px; }
+#workspace-context .workspace-section h2 { font-size: 18px; font-weight: 650; }
+#workspace-context .workspace-section .ui-row {
+  padding: 8px;
+  min-height: var(--target-height);
+  border-color: var(--workspace-divider);
+  border-radius: var(--radius);
+}
+#workspace-context :is(#initiative-actions, #initiative-retired) .ui-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.ui-drawer#initiative-drawer { border-radius: var(--radius-panel) 0 0 var(--radius-panel); }
+#initiative-drawer :is(.ui-drawer-header, .ui-drawer-footer) {
+  padding-block: 8px;
+  border-color: var(--workspace-divider);
+}
+#initiative-drawer .ui-drawer-body { overscroll-behavior: contain; }
+#initiative-drawer #initiative-form { gap: 16px; }
+#initiative-form #initiative-ending { border-color: var(--workspace-divider); }
+#initiative-form #initiative-ending > summary { font-weight: 600; }
+#initiative-form #initiative-link-details { border-color: var(--workspace-divider); }
+
+@media (max-width: 700px) {
+  .ui-drawer#initiative-drawer { border-radius: 0; }
+  #initiative-drawer :is(.ui-drawer-header, .ui-drawer-body, .ui-drawer-footer) { padding-inline: 16px; }
+}
+
+@media (min-width: 701px) {
+  .app.workspace:has(> .collection #initiative-tools:not([hidden])) {
+    grid-template-columns: minmax(196px, 20%) clamp(180px, 18.5vw, 218px) minmax(0, 1fr);
+  }
+}
+
+/* With no Initiative open, the collection is the page rather than an empty split view. */
+.app.workspace:has(> .collection #initiative-tools:not([hidden])):has(> main #workspace-context[hidden]):not(.editing) > main {
+  display: none;
+}
+.app.workspace:not(.editing):has(> main #workspace-context[hidden]) > .collection:has(> #initiative-tools:not([hidden])) {
+  border: 0;
+}
+.app.workspace:not(.editing):has(> main #workspace-context[hidden]) > .collection:has(> #initiative-tools:not([hidden])) > :is(header, #initiative-tools, #items, #index-state) {
+  width: 100%;
+  max-width: 960px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5%, 56px);
+}
+.app.workspace:not(.editing):has(> main #workspace-context[hidden]) .collection:has(> #initiative-tools:not([hidden])) #view-title {
+  font-size: clamp(25px, 4.35vw, 39px);
+  line-height: 1.18;
+}
+.app.workspace:not(.editing):has(> main #workspace-context[hidden]) .collection:has(> #initiative-tools:not([hidden])) :is(header .ui-field, #initiative-new) {
+  width: auto;
+  max-width: 480px;
+}
+@media (min-width: 701px) {
+  .app.workspace:not(.editing):has(> .collection #initiative-tools:not([hidden])):has(> main #workspace-context[hidden]) {
+    grid-template-columns: minmax(196px, 20%) minmax(0, 1fr);
+  }
+}

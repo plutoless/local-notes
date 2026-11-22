@@ -1,0 +1,82 @@
+.app.home .collection #items {
+  padding: 36px clamp(20px, 5%, 56px) 48px;
+  gap: var(--space-section) 36px;
+  color: var(--workspace-ink);
+}
+
+.home .home-tools {
+  margin: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--workspace-divider);
+}
+
+.home .home-tools > h2 {
+  font-size: clamp(25px, 4.35vw, 39px);
+  line-height: 1.18;
+  font-weight: 680;
+}
+
+.home #items > :is(.focus-priorities, .recent-reading) > h2,
+.home #items .home-side h2 {
+  margin: 0 0 8px;
+  color: var(--workspace-ink);
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.home #items .home-side { border-color: var(--workspace-divider); }
+.home #items .focus-empty {
+  margin-block: 0;
+  padding-block: 10px;
+  color: var(--workspace-muted);
+}
+.home .focus-empty p { margin: 0; }
+.home .focus-empty .ui-action { margin-inline-start: -12px; }
+
+.home #items :is(.focus-row, .recent-reading .card, .focus-initiative) {
+  padding-block: 4px;
+  border-color: var(--workspace-divider);
+}
+
+.home #items :is(.focus-row-open, .recent-reading .ui-row) {
+  min-width: 0;
+  justify-content: flex-start;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  color: var(--workspace-ink);
+}
+
+.home #items .card h3 { font-weight: 600; }
+.home #items :is(.row-meta, .waiting-condition, .focus-initiative p) { color: var(--workspace-muted); }
+.home .focus-row-open .row-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.home #items .focus-initiative > .ui-action { margin-inline-start: -12px; }
+
+.home #items .focus-disclosure > summary {
+  min-width: var(--target-height);
+  color: var(--workspace-muted);
+  text-align: start;
+}
+
+.home #items .focus-disclosure > summary::before { transition: background-color 100ms; }
+.home #items .focus-disclosure[open] > summary { --control-fill: var(--workspace-current); color: var(--workspace-current-text); }
+.home #items .focus-disclosure[open] > summary:hover { --control-fill: var(--workspace-current-hover); }
+.home #items .focus-disclosure > summary:active { --control-fill: var(--pressed); }
+.home #items .focus-disclosure[open] > summary:active { --control-fill: var(--workspace-current-pressed); }
+
+.home #items .focus-disclosure-actions {
+  display: grid;
+  min-width: min(144px, 35vw);
+  padding: 4px 6px;
+  border: 1px solid var(--workspace-divider);
+  border-radius: var(--radius-panel);
+  background: #fcfbf8;
+}
+
+/* In-flow disclosures keep the last menu in a scrolling list reachable. */
+.home #items .home-utilities[open] { background: transparent; }
+.home #items .focus-disclosure-actions .ui-action { text-align: start; }
+
+@media (min-width: 701px) {
+  .app.home { grid-template-columns: minmax(196px, 20%) minmax(0, 1fr); }
+}
