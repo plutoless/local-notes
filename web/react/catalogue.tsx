@@ -1,5 +1,5 @@
 import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
-import {ActionRows} from './actions';
+import {ActionHistory, ActionRows, ActionSourceEvidence} from './actions';
 import {useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {OrganizationContent, OrganizationSettings, type OrganizationModel, type OrganizationCallbacks} from './organization';
@@ -47,7 +47,17 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
       </div>
       <div className="ui-drawer-footer"><TaskFormActions formId="catalogue-note-task" cancel={noop} submitLabel="保存"/></div>
     </section>
-    <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>
+    <h2>React 行动组件</h2>
+    <ActionRows rows={[
+      {entityId:'catalogue-action',description:'核对研究资料并记录下一步'.repeat(5),status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'},
+      {entityId:'catalogue-action-done',description:'核对来源路径',status:'completed',sources:[],overdue:false,initiativeName:'研究事项'}
+    ]} selected="catalogue-action" empty="" open={noop}/>
+    <section className="action-source" aria-label="行动来源示例">
+      <ActionSourceEvidence source={{path:'研究/长中文来源路径.md',quote:'- [ ] 核对 **原始研究资料**\n  再确认具体行动。',fingerprint:'synthetic'}}/>
+    </section>
+    <section aria-label="行动历史示例">
+      <ActionHistory records={[{...revision,entityId:'catalogue-action',workspaceId:'synthetic',focusPosition:null,sources:[],parents:[]}]}/>
+    </section>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
     <div className="app home"><aside className="shell"><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><div id="items"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[{entityId:'catalogue-waiting',description:'等待确认资料范围',status:'waiting',waitingOn:'等待对方回复',focusPosition:null}],hasMore:false},initiatives:{actions:[{entityId:'catalogue-current',title:'核对研究资料',progress:'已整理目录，下一步核对来源。'}],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}},{path:'归档/'+ '长文件名'.repeat(16)+'.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></div></section></div>
     <h2>React 整理来源与设置</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
