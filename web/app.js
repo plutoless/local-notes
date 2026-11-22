@@ -650,7 +650,9 @@ async function revealCapturedNote(path) {
     await validateReferences();
     if (!owns()) return;
     await refresh();
-    if (!owns() || !await load(path, null, request) || !owns()) return;
+    if (!owns()) return;
+    const loaded = await note('read', {path});
+    if (!owns() || !await load(path, loaded, request) || !owns()) return;
     captureOrigin ||= origin;
     reader.set({capture:true});
     if (readMode) $('#mode').click();
@@ -945,19 +947,24 @@ function copyConflict() {
   if (noteConflictPending) return noteConflictPending;
   clearTimeout(timer);
   const source=current, workspaceId=currentWorkspace, generation=noteGeneration;
-  const page = pageGeneration, request = ++noteLoadRequest;
+  const page = pageGeneration, request = ++noteLoadRequest, opening = shortTaskOpening;
   const key=draftKey(), text=content(), path=source.replace(/\.md$/i,`-conflict-${Date.now()}.md`);
   const owns = () => source === current && workspaceId === currentWorkspace && workspaceId === rootKey
     && generation === noteGeneration && page === pageGeneration && request === noteLoadRequest;
+  const canReveal = () => owns() && opening === shortTaskOpening && !document.querySelector('dialog[open]');
   noteConflictPending=(async()=>{
     try {
       await note('create',{path,text,workspaceId});
       if(!owns())return true;
       localStorage.removeItem(key);dirty=false;blocked=false;noteConflict.close();
       $('#mode').focus({preventScroll:true});
-      await validateReferences();if(!owns())return true;
-      await refresh();if(!owns())return true;
-      await load(path, null, request);return true;
+      await validateReferences();
+      if (!canReveal()) return true;
+      await refresh();
+      if (!canReveal()) return true;
+      const loaded = await note('read', {path});
+      if (canReveal()) await load(path, loaded, request);
+      return true;
     } catch(error) {if(owns()) { if(noteConflict.open) feedback($('#file-conflict-status'),'副本未能保存。请检查目录后重试；编辑仍保留。',error.message); else notice(error.message); }return false;}
   })().finally(()=>{noteConflictPending=null;});
   return noteConflictPending;

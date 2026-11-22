@@ -189,7 +189,7 @@ try {
   await page.locator('#note-info-open').click();
   const beforeInvalidRename = await readFile(sourcePath, 'utf8');
   await moveNote(page, '../outside.md');
-  await page.getByText('路径无效。请填写笔记目录内、以 .md 结尾的相对路径，再重试。', {exact: true}).waitFor();
+  await page.getByText('路径无效。请填写以 .md 结尾的相对路径。', {exact: true}).waitFor();
   assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
   assert.equal(await readFile(sourcePath, 'utf8'), beforeInvalidRename);
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
