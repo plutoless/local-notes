@@ -558,8 +558,8 @@ async function createNote(initiativeId = null, captured = null) {
 // Short tasks retain their own private draft and delegate writes to existing adapters.
 let shortTask = null, shortSaving = false;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
-shortDrawer.panel.classList.add('ui-drawer-wide');
-const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',document:true,cancel:()=>leaveShortTask()});
+shortDrawer.panel.classList.add('note-task-sheet');
+const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',cancel:()=>leaveShortTask()});
 const shortFields = noteFieldsView(shortForm);
 function shortInput() { return JSON.stringify(Object.fromEntries(Object.entries(shortTask.values()).filter(([id]) => !shortForm.querySelector('#' + id)?.matches('input[type=hidden]')))); }
 function shortDirty() { return Boolean(shortTask && shortInput() !== shortTask.initial); }
@@ -576,10 +576,11 @@ function shortTaskAdapter() {
     save: () => saveShortTask(false), discard: () => closeShortTask(), close: () => closeShortTask()};
 }
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
-function openShortTask({title, controls, key, values, save, submit = '保存'}) {
+function openShortTask({title, controls, key, values, save, opener, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
   shortFields.show(controls);
   shortStatus.replaceChildren();
+  shortStatus.removeAttribute('data-state');
   shortTask = {key, values, save}; shortTask.initial = shortInput();
   let draft; try { draft = JSON.parse(localStorage.getItem(key)); } catch { /* Ignore invalid private drafts. */ }
   if (draft) {
@@ -587,7 +588,7 @@ function openShortTask({title, controls, key, values, save, submit = '保存'}) 
     shortStatus.textContent = '已恢复未保存草稿，请核对后保存。';
   }
   shortDrawer.setTitle(title); shortSubmit.textContent = submit;
-  shortDrawer.open(shortForm.querySelector('input:not([type=hidden]),textarea,button'));
+  shortDrawer.open(shortForm.querySelector('input:not([type=hidden]),textarea,button'), opener);
 }
 shortForm.oninput = () => {
   if (!shortTask?.key) return;
@@ -601,7 +602,7 @@ function saveShortTask(openSaved) {
   const task = shortTask;
   shortSaving = (async () => {
     await Promise.resolve();
-    shortForm.inert = true; shortSubmit.disabled = true; shortStatus.textContent = '正在保存…';
+    shortForm.inert = true; shortSubmit.disabled = true; shortStatus.removeAttribute('data-state'); shortStatus.textContent = '正在保存…';
     try {
       const afterSave = await task.save();
       if (task !== shortTask) return true;
@@ -610,8 +611,17 @@ function saveShortTask(openSaved) {
       // the originally requested navigation/termination instead.
       if (openSaved) { shortSaving = false; closeShortTask(); await afterSave?.(); }
       return true;
-    } catch (error) { errorFeedback(shortStatus, error.message); return false; }
-    finally { shortSaving = false; shortForm.inert = false; shortSubmit.disabled = false; shortForm.querySelector('[aria-invalid=true]')?.focus(); }
+    } catch (error) {
+      errorFeedback(shortStatus, error.message);
+      return false;
+    } finally {
+      shortSaving = false;
+      shortForm.inert = false;
+      shortSubmit.disabled = false;
+      if (openSaved && shortTask === task && shortStatus.dataset.state === 'failed') {
+        (shortForm.querySelector('[aria-invalid=true]') || shortStatus).focus();
+      }
+    }
   })();
   return shortSaving;
 }
@@ -619,25 +629,26 @@ async function openCapture() {
   if (!await flush()) return;
   const workspaceId = rootKey;
   const title = () => $('#capture-title'), body = () => $('#capture-body'), path = () => $('#capture-path');
-  openShortTask({title: '随手记', key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',describedBy:'note-task-status'},{id:'capture-body',label:'正文',multiline:true,describedBy:'note-task-status'}],
+  openShortTask({title: '随手记', opener: $('#new'), key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',optional:true,help:'标题或正文至少填一项。',describedBy:'note-task-status'},{id:'capture-body',label:'正文',optional:true,multiline:true,describedBy:'note-task-status'}],
     values: () => ({'capture-title': title().value, 'capture-body': body().value, 'capture-path': path().value}), submit: '创建笔记', save: async () => {
       if (!title().value.trim() && !body().value.trim()) { shortFields.set('capture-title',{invalid:true}); throw Error('请填写标题或正文。'); }
-      if (workspaceId !== rootKey) throw Error('Workspace changed');
+      if (workspaceId !== rootKey) throw Error('工作区已切换，请重新打开。');
       // Create only after explicit submission; failed writes retain all input.
-      if (!safePath(path().value)) throw Error('请使用有效的相对 Markdown 路径');
+      const target = path().value;
+      if (!safePath(target)) throw Error('请使用有效的相对 Markdown 路径');
       const text = `# ${title().value.trim() || '无标题'}\n\n${body().value}`;
-      try { await note('create', {path: path().value, text, workspaceId}); }
+      try { await note('create', {path: target, text, workspaceId}); }
       catch (error) {
-        let existing; try { existing = await note('read', {path: path().value, workspaceId}); } catch { throw error; }
+        let existing; try { existing = await note('read', {path: target, workspaceId}); } catch { throw error; }
         if (existing.text !== text) throw error;
       }
-      return () => createNote(null, {path: path().value, text, persisted: true});
+      return () => createNote(null, {path: target, text, persisted: true});
     }});
 }
 const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => flush()});
-noteInfo.panel.classList.add('ui-drawer-wide');
+noteInfo.panel.classList.add('note-task-sheet');
 const infoOpen = $('#note-info-open');
-reader.on('info', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); });
+reader.on('info', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#rename'), infoOpen); });
 const infoUI = noteInformationView(noteInfo.body);
 noteInfo.footer.append(actionControl('完成', () => flush(), {variant: 'primary', density: 'compact'}).host);
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
@@ -658,7 +669,7 @@ infoUI.on('rename', async () => {
   if (!await flush()) return;
   const original = current, expected = base, workspaceId = currentWorkspace;
   const pathInput = () => $('#note-location');
-  openShortTask({title: '移动 / 改名', controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
+  openShortTask({title: '移动 / 改名', opener: infoOpen, controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
     key: `location-draft:${workspaceId}:${original}`, values: () => ({'note-location': pathInput().value}), save: async () => {
       const path = pathInput().value.trim();
       if (!safePath(path)) { shortFields.set('note-location',{invalid:true}); throw Error('请使用有效的相对 Markdown 路径'); }

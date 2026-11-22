@@ -29,7 +29,19 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <label>笔记标题<Input aria-label="示例笔记标题" defaultValue="明确编辑与阅读"/></label><label>Markdown 正文<Textarea aria-label="示例笔记正文" defaultValue="## 保留原文"/></label>
     <LeaveContent model={{label:'笔记',failure:'保存失败，编辑仍保留。',committed:false}} choose={noop}/>
     <LibraryRows notes={[{path:'研究/中文长路径.md',title:'这是用于检查长中文标题换行与键盘选中状态的笔记标题',excerpt:'逐字保留来源摘要；生产列表不会在组件内访问存储。',modified:1000}]} directories={[]} selectedPath="研究/中文长路径.md" empty="" root={false} open={()=>{}} browse={()=>{}}/>
-    <h2>React 随手记、位置与主题归类</h2><section className="ui-drawer-body"><NoteFields fields={[{id:'catalogue-capture',label:'标题',value:'这是用于检查很长中文标题、输入位置与选择保留的真实表单组件'},{id:'catalogue-location',label:'笔记相对路径',value:'研究/很长的中文目录/资料.md',help:'以 .md 结尾，路径相对于笔记目录。'},{id:'catalogue-topic',label:'主题名称',invalid:true,help:'请填写主题名称。'}]}/><Classification kind="topic" items={[{id:'example',title:'跨目录研究资料归类与长中文内容',checked:true}]} create={noop} change={noop}/></section>
+    <h2>React 随手记、位置与主题归类</h2>
+    <section className="note-task-sheet ui-drawer-body">
+      <div className="note-task-form">
+        <NoteFields fields={[
+          {id:'catalogue-capture',label:'标题',optional:true,help:'标题或正文至少填一项。',value:'保留中文标题与文本选择'},
+          {id:'catalogue-body',label:'正文',optional:true,multiline:true,value:'保留 Markdown 正文'},
+          {id:'catalogue-location',label:'笔记相对路径',value:'研究/很长的中文目录/资料.md',help:'以 .md 结尾，路径相对于笔记目录。'},
+          {id:'catalogue-topic',label:'主题名称',required:true,invalid:true,error:'请填写主题名称。'}
+        ]}/>
+      </div>
+      <Classification kind="topic" items={[{id:'example',title:'跨目录研究资料归类与长中文内容',checked:true}]} create={noop} change={noop}/>
+      <Classification kind="initiative" items={[{id:'example',title:'研究事项',checked:true,open:noop},{id:'other',title:'另一项研究',checked:false,disabled:true}]} change={noop}/>
+    </section>
     <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
     <div className="app home"><aside className="shell"><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><div id="items"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[{entityId:'catalogue-waiting',description:'等待确认资料范围',status:'waiting',waitingOn:'等待对方回复',focusPosition:null}],hasMore:false},initiatives:{actions:[{entityId:'catalogue-current',title:'核对研究资料',progress:'已整理目录，下一步核对来源。'}],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}},{path:'归档/'+ '长文件名'.repeat(16)+'.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></div></section></div>
