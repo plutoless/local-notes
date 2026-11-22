@@ -831,3 +831,5 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   line-height: 1.6;
 }
 .action-revision h3 { margin: 0; }
+
+.search-meaning { display: grid; gap: 4px; }

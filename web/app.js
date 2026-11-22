@@ -890,7 +890,7 @@ libraryScreen.returnToNoteInfo = async (note, committed) => {
 
 
 
-async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;libraryScreen.resetCollections();organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();actions.release();initiatives.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
+async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;libraryScreen.resetCollections();organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();actions.release();initiatives.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();void globalSearch.prepareMeaning();}catch(e){notice(e.message);}};
 infoUI.on('star',()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();});
 reader.on('back', async () => {
   if (wikiHistory.length) { await returnWiki(); return; }
@@ -1013,8 +1013,11 @@ async function validateReferences(){if(!['notes','favorites'].includes(view))ret
 window.addEventListener('reference-change',validateReferences);
 window.addEventListener('focus',validateReferences);
 // Mac metadata fallback also catches nested changes missed by the root notification.
-if(window.webkit?.messageHandlers?.notes)setInterval(validateReferences,30000);
-refresh().catch(e=>notice(e.message));
+if(window.webkit?.messageHandlers?.notes)setInterval(() => {
+  validateReferences();
+  globalSearch.service.refreshMeaning();
+}, 30000);
+refresh().then(() => globalSearch.prepareMeaning()).catch(e=>notice(e.message));
 
 let noteInitiativePending = null, initiativeClassification = null;
 async function noteInitiatives(path, focusId = null, stillCurrent = () => true) {
