@@ -551,9 +551,9 @@ button { transition: background-color 100ms; }
 [data-slot="button"].ui-row:focus-visible { outline-offset: -3px; }
 
 /* #124: the shared page-first shell uses the established component tokens. */
-.shell nav button { color: var(--muted); min-width: 0; }
-.shell nav button.active { color: var(--text); --control-fill: var(--selected); font-weight: 600; }
-.shell nav button.active:hover { --control-fill: var(--hover); }
+.shell nav .ui-action { color: var(--muted); min-width: 0; }
+.shell nav .ui-action.active { color: var(--text); --control-fill: var(--selected); font-weight: 600; }
+.shell nav .ui-action.active:hover { --control-fill: var(--hover); }
 .shell nav .contents { margin-left: 0; flex: none; }
 .workspace-identity { margin-top: auto; padding: 24px 12px 4px; overflow-wrap: anywhere; }
 .workspace-identity .folder-label { display: block; margin: 0 0 4px; font-size: 12px; color: var(--muted); }
@@ -573,7 +573,7 @@ button { transition: background-color 100ms; }
   .workspace-identity { margin-top: 4px; padding: 8px 12px 4px; }
   .workspace-identity .folder-label { display: inline; margin-right: 8px; }
   #root-name { display: inline; }
-  .shell nav button { flex: 1 1 90px; }
+  .shell nav .ui-action { flex: 1 1 90px; padding-inline: 8px; }
   .home-tools > h2 { flex-basis: 100%; }
 }
 @media (max-height: 540px) and (min-width: 701px) {
