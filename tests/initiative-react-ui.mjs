@@ -14,7 +14,7 @@ await mkdir('build', {recursive: true});
 try {
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  let pauseActionQuery;
+  let pauseActionQuery, pauseNoteRead, capturePath, captureReads = 0;
   const errors = []; page.on('pageerror', error => errors.push(error.message));
   const sourcePath = join(fixture.root, 'reference.md');
   const original = await readFile(sourcePath, 'utf8');
@@ -25,6 +25,12 @@ try {
       if (request.cmd === 'actionQuery' && request.entityType === 'action' && request.initiativeId && pauseActionQuery) {
         const pause = pauseActionQuery;
         pauseActionQuery = null;
+        await pause(request.id);
+      }
+      if (request.cmd === 'create') { capturePath = request.path; captureReads = 0; }
+      if (request.cmd === 'read' && request.path === capturePath && ++captureReads === 2 && pauseNoteRead) {
+        const pause = pauseNoteRead;
+        pauseNoteRead = null;
         await pause(request.id);
       }
       if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
@@ -52,7 +58,7 @@ try {
     window.NotesNative = {request: async message => {
       const request = JSON.parse(message);
       window.nativeReply(request.id, await window.bridge(request));
-      if (request.cmd === 'actionQuery' && request.initiativeId) window.lastInitiativeActionReply = request.id;
+      (window.receivedBridgeReplies ||= new Set()).add(request.id);
     }};
   });
   await page.route('https://notes.test/**', async route => {
@@ -211,8 +217,9 @@ try {
     await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
     await page.locator('[data-view=initiatives]').click();
     await page.locator('#initiative-recover').click();
-    await page.locator('#initiative-save-state').getByText(/已恢复事项草稿。已保存的行动处理仍然有效/).waitFor();
-    await page.locator('#initiative-committed-actions').getByText(/已保存 1 项行动处理/).waitFor();
+    await page.locator('#initiative-drawer').waitFor({state:'visible'});
+    await page.locator('#initiative-save-state').filter({hasText:/已恢复事项草稿。已保存的行动处理仍然有效/}).waitFor();
+    await page.locator('#initiative-committed-actions').filter({hasText:/已保存 1 项行动处理/}).waitFor();
     await page.locator('#initiative-save').click();
     await page.locator('#initiative-drawer').waitFor({state:'hidden'});
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status,'ended');
@@ -226,6 +233,7 @@ try {
     await moved.click();
     await page.locator('#reader-new-initiative-action').waitFor({state:'visible'});
     assert.equal(await page.locator('#reader-new-initiative-action').isDisabled(), true);
+    await page.locator('#reader-initiative-action-help').waitFor({state:'visible'});
     await page.locator('#back').click();
     await page.waitForFunction(() => document.activeElement.dataset.path === 'moved-reference.md');
     await page.locator('#workspace-overview').click();
@@ -236,18 +244,24 @@ try {
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status, 'active');
     assert.equal((await allRecords(actions))[0].status, 'completed');
     assert.equal((await actions.history(created.entityId)).length, 3);
-    const captureThen = async (title, next) => {
+    const hold = setPause => {
       let releaseQuery;
       const held = new Promise(started => {
-        pauseActionQuery = id => new Promise(resolve => { releaseQuery = resolve; started(id); });
+        setPause(id => new Promise(resolve => { releaseQuery = resolve; started(id); }));
       });
+      return async next => {
+        const heldId = await held;
+        await next();
+        releaseQuery();
+        await page.waitForFunction(id => window.receivedBridgeReplies?.has(id), heldId);
+      };
+    };
+    const captureThen = async (title, next, setPause = pause => { pauseActionQuery = pause; }) => {
+      const releaseAfter = hold(setPause);
       await page.locator('#initiative-new-note').click();
       await page.locator('#capture-title').fill(title);
       await page.locator('#note-task-drawer button[type=submit]').click();
-      const heldId = await held;
-      await next();
-      releaseQuery();
-      await page.waitForFunction(id => window.lastInitiativeActionReply === id, heldId);
+      await releaseAfter(next);
       assert.equal(await page.locator('#editor').isHidden(), true);
       assert.ok((await allRecords(repository)).find(item => item.entityId === record.entityId).sources.some(source => source.quote === '# ' + title));
     };
@@ -262,6 +276,26 @@ try {
     });
     assert.equal(await page.locator('#action-description').inputValue(), '保留新任务的编辑');
     assert.equal(await page.locator('#task-leave-decision').count(), 0);
+    await page.locator('#action-back').click();
+    await page.getByRole('button', {name:'放弃更改并离开'}).click();
+    await page.locator('#action-drawer').waitFor({state:'hidden'});
+    await captureThen('读取期间保存的工作笔记', async () => {
+      await page.locator('#initiative-new-note').click();
+      await page.waitForFunction(() => document.activeElement.id === 'capture-title');
+      await page.locator('#capture-title').fill('保留新笔记任务');
+    }, pause => { pauseNoteRead = pause; });
+    assert.equal(await page.locator('#capture-title').inputValue(), '保留新笔记任务');
+    assert.equal(await page.locator('#task-leave-decision').count(), 0);
+    await page.locator('#note-task-drawer .ui-drawer-header button').click();
+    await page.getByRole('button', {name:'放弃更改并离开'}).click();
+    await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+    const metadataAfter = hold(pause => { pauseActionQuery = pause; });
+    await page.locator('#workspace-overview').click();
+    await metadataAfter(async () => {
+      await page.locator('#workspace-back').click();
+      await page.waitForFunction(id => document.activeElement.dataset.initiativeId === id, record.entityId);
+    });
+    assert.equal(await page.locator('#initiative-drawer').isHidden(), true);
     assert.deepEqual(errors,[]);
     console.log('PASS actual application: real storage reload, note return, shared Action and explicit ending retry with immutable partial commit; source bytes preserved.');
 } finally { await browser.close(); await fixture.close(); }

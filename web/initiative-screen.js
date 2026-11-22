@@ -320,13 +320,14 @@ export class InitiativeScreen {
     const ownsOpen = () => owner === this.actions.owner?.() && repository === this.repository;
     const leaving = this.previous;
     if (!await this.leaveDrawer() || !ownsOpen()) return;
+    const intent = this.editGeneration;
     const layout = metadata ? {
       classes: $('.app').className, selectedContext: this.selectedContext, detailKind: this.detailKind,
       actionOpen: this.actions.drawer.panel.open, actionDrawerContext: this.actions.drawerContext,
       hidden: Object.fromEntries(['#editor', '#action-editor', '#initiative-editor', '#workspace-context', '#empty'].map(selector => [selector, $(selector).hidden])),
       scroll: Object.fromEntries(['.collection', '#items', '#workspace-context', '#workspace-detail', 'main'].map(selector => [selector, $(selector).scrollTop]))
     } : null;
-    if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush() || !ownsOpen()) return;
+    if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush() || !ownsOpen() || intent !== this.editGeneration) return;
     if (record && record.entityId === leaving?.entityId && this.previous?.revision !== leaving.revision) record = this.previous;
     if (!metadata && !$('.app').classList.contains('editing')) this.listScroll = $('#items').scrollTop;
     if (!metadata && record?.entityId !== leaving?.entityId) this.contextReturn = null;
@@ -344,10 +345,12 @@ export class InitiativeScreen {
     this.recoveredDraft = Boolean(draft); this.dirty = Boolean(this.retry) || JSON.stringify(this.fields()) !== this.baseline;
     this.state(draft ? this.recoveredMessage() : record ? '已保存到本地' : '新建事项');
     if (metadata) this.restoreDrawerLayout(this.drawerContext);
+    const preparation = this.editGeneration;
+    const ownsPreparation = () => ownsOpen() && preparation === this.editGeneration;
     try {
       await this.details();
     } catch (error) {
-      if (metadata && ownsOpen()) {
+      if (metadata && ownsPreparation()) {
         const context = this.drawerContext;
         this.previous = context.previous;
         this.detailKind = context.detailKind;
@@ -359,7 +362,11 @@ export class InitiativeScreen {
       }
       throw error;
     }
-    if (!ownsOpen()) { this.drawerContext = null; return; }
+    if (!ownsPreparation()) { this.drawerContext = null; return; }
+    if (draft) {
+      this.recoveredDraft = true;
+      this.state(this.recoveredMessage());
+    }
     if (metadata) {
       this.restoreDrawerLayout(this.drawerContext);
       this.openDrawer(origin);
