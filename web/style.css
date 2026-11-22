@@ -528,7 +528,6 @@ dialog::backdrop { background: var(--backdrop); }
 .search-status[data-tone="error"] { color: var(--danger); }
 .search-status[data-tone="success"] { color: var(--success); }
 .search-results { max-height: min(360px, 48dvh); overflow: auto; overscroll-behavior: contain; }
-.search-results:not(:empty) { min-height: 96px; }
 .search-result { padding: 8px 0; border-bottom: 1px solid var(--workspace-divider); }
 .search-result:first-child { padding-top: 0; }
 .search-result .ui-action:focus-visible { outline-offset: -3px; }
@@ -546,6 +545,10 @@ dialog::backdrop { background: var(--backdrop); }
 .search-keys, .search-meaning small { color: var(--workspace-muted); }
 .search-meaning { display: grid; gap: var(--space-small); margin-top: var(--space); }
 @media (max-width: 600px), (max-height: 560px) { .search-dialog { padding: 8px 12px; max-height: calc(100dvh - 16px); } }
+@media (max-height: 560px) {
+  /* Keep passages readable when the result list and footer cannot both fit. */
+  .search-results { flex: none; max-height: none; overflow: visible; }
+}
 
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); }
 .task-leave-decision .ui-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
@@ -802,7 +805,7 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   border-color: var(--workspace-divider);
 }
 .quick-capture-sheet .note-task-form { gap: var(--space-section); }
-.quick-capture-sheet #capture-body { line-height: 1.7; }
+.quick-capture-sheet #capture-body { min-height: 96px; line-height: 1.7; }
 .quick-capture-sheet #note-task-status:not(:empty) {
   padding: 8px 12px;
   margin-block: 0 16px;

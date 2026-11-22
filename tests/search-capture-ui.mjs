@@ -77,6 +77,16 @@ try {
   releaseSearch();
   holdSearch = null;
   await status.filter({hasText: '本页 2 条结果'}).waitFor();
+  await page.setViewportSize({width: 393, height: 480});
+  assert.equal(await search.evaluate(node => node.clientWidth === node.scrollWidth && node.getBoundingClientRect().bottom <= innerHeight), true);
+  assert.equal(await results.locator('.search-passage').first().evaluate(node => {
+    const style = getComputedStyle(node);
+    const bottomOfFirstLine = node.getBoundingClientRect().top + parseFloat(style.paddingTop) + parseFloat(style.lineHeight);
+    return bottomOfFirstLine <= Math.min(
+      node.closest('.search-results').getBoundingClientRect().bottom,
+      node.closest('dialog').getBoundingClientRect().bottom
+    );
+  }), true, 'A short dialog shows the first excerpt line without scrolling');
   await input.press('ArrowDown');
   const selected = results.locator('[data-selected=true]');
   const selectedSource = await selected.locator('.search-source').textContent();
@@ -86,13 +96,12 @@ try {
   await title.hover();
   await page.waitForFunction(fill => getComputedStyle(document.querySelector('.search-result[data-selected=true] .search-select')).backgroundColor !== fill, selectedFill);
 
-  await page.setViewportSize({width: 393, height: 480});
   await page.emulateMedia({reducedMotion: 'reduce'});
   assert.equal(await title.evaluate(node => getComputedStyle(node).transitionDuration), '0s');
-  assert.equal(await search.evaluate(node => node.clientWidth === node.scrollWidth && node.getBoundingClientRect().bottom <= innerHeight), true);
+  assert.equal(await scope.evaluate(node => getComputedStyle(node, '::before').transitionDuration), '0s');
   const openSource = selected.getByRole('button', {name: '打开原文'});
   await openSource.scrollIntoViewIfNeeded();
-  const scroll = await results.evaluate(node => node.scrollTop);
+  const scroll = await search.evaluate(node => node.scrollTop);
   await openSource.click();
   await page.locator('#reading [aria-label="搜索匹配原文"] mark').waitFor();
   await page.locator('.search-return:visible').click();
@@ -100,7 +109,7 @@ try {
   assert.equal(await input.inputValue(), 'Quartz');
   assert.equal(await scope.getAttribute('aria-pressed'), 'true');
   assert.equal(await selected.locator('.search-source').textContent(), selectedSource);
-  assert.equal(await results.evaluate(node => node.scrollTop), scroll);
+  assert.equal(await search.evaluate(node => node.scrollTop), scroll);
   assert.equal(await focused(openSource), true);
   await input.fill('No matching synthetic text');
   await status.filter({hasText: '没有匹配的内容'}).waitFor();
@@ -119,6 +128,7 @@ try {
   await newNote.click();
   await captureTitle.waitFor();
   assert.equal(await focused(captureTitle), true);
+  assert.equal(await create.evaluate(node => getComputedStyle(node, '::before').transitionDuration), '0s');
   await create.click();
   await capture.locator('[role=alert]').filter({hasText: '请填写标题或正文'}).waitFor();
   assert.equal(await focused(captureTitle), true);
