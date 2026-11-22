@@ -31,6 +31,7 @@ export function InitiativeEditor({example = false}: {example?:boolean} = {}){ret
               <summary>结束与重新开启</summary>
               <h3>结束前处理未完成行动</h3>
               <p id="initiative-ending-help"></p>
+              <p id="initiative-committed-actions" role="status" hidden></p>
               <p>完成或取消会改变行动状态。独立保留或移至其他事项会保留状态。行动逐项保存，重试时已保存的处理仍然有效。</p>
               <div id="initiative-decisions"></div>
               <Button type="button" className="quiet ui-compact" id="initiative-cancel-ending">暂不结束</Button>

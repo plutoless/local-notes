@@ -115,6 +115,11 @@ try {
     await page.getByRole('heading',{name:'保存后重启核对',exact:true}).click();
     const moved=page.locator('#workspace-references [data-path="moved-reference.md"]');
     await page.setViewportSize({width:393,height:852});
+    fixture.fail((cmd, args) => cmd === 'actionQuery' && args.entityType === 'action' && args.initiativeId === record.entityId);
+    await page.locator('#workspace-overview').click();
+    await page.locator('#notice').waitFor({state:'visible'});
+    await page.waitForFunction(() => document.activeElement.id === 'workspace-overview');
+    await page.getByRole('button', {name:'关闭提示'}).click();
     await moved.scrollIntoViewIfNeeded();
     const contextScroll = await page.locator('main').evaluate(node => node.scrollTop);
     await moved.click();
@@ -202,6 +207,12 @@ try {
     await page.locator('#initiative-save').click();
     await page.locator('#initiative-save-state details').waitFor();
     assert.match(await page.locator('#initiative-save-state').textContent(), /已保存的行动处理仍然有效/);
+    await page.reload();
+    await page.getByRole('heading',{name:'当前重点',exact:true,level:2}).waitFor();
+    await page.locator('[data-view=initiatives]').click();
+    await page.locator('#initiative-recover').click();
+    await page.locator('#initiative-save-state').getByText(/已恢复事项草稿。已保存的行动处理仍然有效/).waitFor();
+    await page.locator('#initiative-committed-actions').getByText(/已保存 1 项行动处理/).waitFor();
     await page.locator('#initiative-save').click();
     await page.locator('#initiative-drawer').waitFor({state:'hidden'});
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status,'ended');
@@ -212,6 +223,11 @@ try {
     await page.getByRole('heading',{name:'保存后重启核对',exact:true}).click();
     await page.locator('#workspace-state').filter({hasText:'已结束'}).waitFor({state:'attached'});
     assert.equal((await repository.history(record.entityId)).length,4);
+    await moved.click();
+    await page.locator('#reader-new-initiative-action').waitFor({state:'visible'});
+    assert.equal(await page.locator('#reader-new-initiative-action').isDisabled(), true);
+    await page.locator('#back').click();
+    await page.waitForFunction(() => document.activeElement.dataset.path === 'moved-reference.md');
     await page.locator('#workspace-overview').click();
     await page.locator('#initiative-status').selectOption('active');
     await page.locator('#initiative-reopening').waitFor({state:'visible'});
@@ -220,20 +236,32 @@ try {
     assert.equal((await allRecords(repository)).find(item=>item.entityId===record.entityId).status, 'active');
     assert.equal((await allRecords(actions))[0].status, 'completed');
     assert.equal((await actions.history(created.entityId)).length, 3);
-    let releaseQuery;
-    const held = new Promise(started => {
-      pauseActionQuery = id => new Promise(resolve => { releaseQuery = resolve; started(id); });
+    const captureThen = async (title, next) => {
+      let releaseQuery;
+      const held = new Promise(started => {
+        pauseActionQuery = id => new Promise(resolve => { releaseQuery = resolve; started(id); });
+      });
+      await page.locator('#initiative-new-note').click();
+      await page.locator('#capture-title').fill(title);
+      await page.locator('#note-task-drawer button[type=submit]').click();
+      const heldId = await held;
+      await next();
+      releaseQuery();
+      await page.waitForFunction(id => window.lastInitiativeActionReply === id, heldId);
+      assert.equal(await page.locator('#editor').isHidden(), true);
+      assert.ok((await allRecords(repository)).find(item => item.entityId === record.entityId).sources.some(source => source.quote === '# ' + title));
+    };
+    await captureThen('返回列表时保存的工作笔记', async () => {
+      await page.locator('#workspace-back').click();
+      await page.waitForFunction(id => document.activeElement.dataset.initiativeId === id, record.entityId);
     });
-    await page.locator('#initiative-new-note').click();
-    await page.locator('#capture-title').fill('导航期间保存的工作笔记');
-    await page.locator('#note-task-drawer button[type=submit]').click();
-    const heldId = await held;
-    await page.locator('[data-view=actions]').click();
-    await page.waitForFunction(() => document.querySelector('#view-title').textContent === '行动');
-    releaseQuery();
-    await page.waitForFunction(id => window.lastInitiativeActionReply === id, heldId);
-    assert.equal(await page.locator('#editor').isHidden(), true);
-    assert.ok((await allRecords(repository)).find(item => item.entityId === record.entityId).sources.some(source => source.quote === '# 导航期间保存的工作笔记'));
+    await initiativeRow.click();
+    await captureThen('打开行动时保存的工作笔记', async () => {
+      await page.locator('#initiative-new-action').click();
+      await page.locator('#action-description').fill('保留新任务的编辑');
+    });
+    assert.equal(await page.locator('#action-description').inputValue(), '保留新任务的编辑');
+    assert.equal(await page.locator('#task-leave-decision').count(), 0);
     assert.deepEqual(errors,[]);
     console.log('PASS actual application: real storage reload, note return, shared Action and explicit ending retry with immutable partial commit; source bytes preserved.');
 } finally { await browser.close(); await fixture.close(); }
