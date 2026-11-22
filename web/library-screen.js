@@ -26,6 +26,7 @@ export class LibraryScreen {
   }
   setupTopicDrawer() {
     this.topicDrawer = drawer({id: 'topic-drawer', title: '新建主题', onDismiss: () => this.leaveTopic()});
+    this.topicDrawer.panel.classList.add('note-task-sheet');
     const {form,status,error,submit} = taskFormView(this.topicDrawer.body,this.topicDrawer.footer,{id:'topic-form',statusId:'topic-status',errorId:'topic-error',cancelId:'topic-cancel',cancel:()=>this.leaveTopic()});
     this.topicFields = noteFieldsView(form);
     this.topicFields.show([{id:'topic-name',label:'主题名称',required:true,describedBy:'topic-error topic-status'}]);
@@ -181,11 +182,12 @@ export class LibraryScreen {
     $('.collection').scrollTop = this.browseScroll || 0;
     $('#items').scrollTop = this.browseListScroll || 0;
   }
-  async noteTopics(path, focusId = null) {
+  async noteTopics(path, focusId = null, stillCurrent = () => true) {
     this.noteTopicPath = path;
     await this.library.open();
     const workspaceId = this.library.workspaceId;
-    const ownsNote = () => this.noteTopicPath === path && this.library.workspaceId === workspaceId;
+    const ownsNote = () => stillCurrent() && this.noteTopicPath === path && this.library.workspaceId === workspaceId;
+    if (!ownsNote()) return;
     const note = (await this.library.query({exactPath: path})).notes[0];
     if (!ownsNote()) return;
     const container = $('#note-topics');

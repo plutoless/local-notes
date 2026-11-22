@@ -334,7 +334,13 @@ function activeTask() {
   if (initiatives.drawer.panel.open) return initiatives.task();
   if (!syncScreen.panel.hidden) return syncScreen.task();
   if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
-    pending: () => libraryScreen.noteTopicPending || noteInitiativePending, close: () => noteInfo.hide()};
+    suspend: () => { noteInfo.body.inert = true; },
+    resume: () => { noteInfo.body.inert = false; },
+    pending: () => {
+      const work = [...(infoSession?.pending || []), libraryScreen.noteTopicPending, noteInitiativePending].filter(Boolean);
+      if (work.length) return Promise.all(work);
+    },
+    close: () => noteInfo.hide()};
   return organize.candidateTask() || (visibleNote() ? noteTask() : null);
 }
 async function flush(navigation = false, retainAction = false, sourceDetour = false) {
@@ -558,8 +564,8 @@ async function createNote(initiativeId = null, captured = null) {
 // Short tasks retain their own private draft and delegate writes to existing adapters.
 let shortTask = null, shortSaving = false;
 const shortDrawer = drawer({id: 'note-task-drawer', title: '随手记', onDismiss: () => leaveShortTask()});
-shortDrawer.panel.classList.add('ui-drawer-wide');
-const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',document:true,cancel:()=>leaveShortTask()});
+shortDrawer.panel.classList.add('note-task-sheet');
+const {form:shortForm,status:shortStatus,submit:shortSubmit} = taskFormView(shortDrawer.body,shortDrawer.footer,{id:'note-task-form',statusId:'note-task-status',cancel:()=>leaveShortTask()});
 const shortFields = noteFieldsView(shortForm);
 function shortInput() { return JSON.stringify(Object.fromEntries(Object.entries(shortTask.values()).filter(([id]) => !shortForm.querySelector('#' + id)?.matches('input[type=hidden]')))); }
 function shortDirty() { return Boolean(shortTask && shortInput() !== shortTask.initial); }
@@ -576,10 +582,11 @@ function shortTaskAdapter() {
     save: () => saveShortTask(false), discard: () => closeShortTask(), close: () => closeShortTask()};
 }
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
-function openShortTask({title, controls, key, values, save, submit = '保存'}) {
+function openShortTask({title, controls, key, values, save, opener, submit = '保存'}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
   shortFields.show(controls);
   shortStatus.replaceChildren();
+  shortStatus.removeAttribute('data-state');
   shortTask = {key, values, save}; shortTask.initial = shortInput();
   let draft; try { draft = JSON.parse(localStorage.getItem(key)); } catch { /* Ignore invalid private drafts. */ }
   if (draft) {
@@ -587,10 +594,13 @@ function openShortTask({title, controls, key, values, save, submit = '保存'}) 
     shortStatus.textContent = '已恢复未保存草稿，请核对后保存。';
   }
   shortDrawer.setTitle(title); shortSubmit.textContent = submit;
-  shortDrawer.open(shortForm.querySelector('input:not([type=hidden]),textarea,button'));
+  shortDrawer.open(shortForm.querySelector('input:not([type=hidden]),textarea,button'), opener);
 }
 shortForm.oninput = () => {
   if (!shortTask?.key) return;
+  if (shortForm.querySelector('#capture-title[aria-invalid=true]') && $('#capture-body').value.trim()) {
+    shortFields.set('capture-title',{invalid:false,error:undefined});
+  }
   try { if (shortDirty()) localStorage.setItem(shortTask.key, JSON.stringify(shortTask.values())); else localStorage.removeItem(shortTask.key); shortStatus.textContent = shortDirty() ? '尚未保存' : ''; }
   catch { shortStatus.textContent = '草稿无法在关闭后恢复，请保持窗口打开并保存。'; }
 };
@@ -601,17 +611,32 @@ function saveShortTask(openSaved) {
   const task = shortTask;
   shortSaving = (async () => {
     await Promise.resolve();
-    shortForm.inert = true; shortSubmit.disabled = true; shortStatus.textContent = '正在保存…';
+    shortForm.inert = true; shortSubmit.disabled = true; shortStatus.removeAttribute('data-state'); shortStatus.textContent = '正在保存…';
     try {
       const afterSave = await task.save();
+      if (afterSave === false) {
+        shortStatus.textContent = '';
+        return false;
+      }
       if (task !== shortTask) return true;
       task.initial = shortInput(); localStorage.removeItem(task.key);
       // Explicit submit may reveal its saved note. A leave intent must finish
       // the originally requested navigation/termination instead.
       if (openSaved) { shortSaving = false; closeShortTask(); await afterSave?.(); }
       return true;
-    } catch (error) { errorFeedback(shortStatus, error.message); return false; }
-    finally { shortSaving = false; shortForm.inert = false; shortSubmit.disabled = false; shortForm.querySelector('[aria-invalid=true]')?.focus(); }
+    } catch (error) {
+      errorFeedback(shortStatus, error.message);
+      return false;
+    } finally {
+      shortSaving = false;
+      shortForm.inert = false;
+      shortSubmit.disabled = false;
+      if (openSaved && shortTask === task) {
+        const invalid = shortForm.querySelector('[aria-invalid=true]');
+        if (invalid) invalid.focus();
+        else if (shortStatus.dataset.state === 'failed') shortStatus.focus();
+      }
+    }
   })();
   return shortSaving;
 }
@@ -619,33 +644,81 @@ async function openCapture() {
   if (!await flush()) return;
   const workspaceId = rootKey;
   const title = () => $('#capture-title'), body = () => $('#capture-body'), path = () => $('#capture-path');
-  openShortTask({title: '随手记', key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',describedBy:'note-task-status'},{id:'capture-body',label:'正文',multiline:true,describedBy:'note-task-status'}],
+  openShortTask({title: '随手记', opener: $('#new'), key: `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',optional:true,help:'标题或正文至少填一项。',describedBy:'note-task-status'},{id:'capture-body',label:'正文',optional:true,multiline:true,describedBy:'note-task-status'}],
     values: () => ({'capture-title': title().value, 'capture-body': body().value, 'capture-path': path().value}), submit: '创建笔记', save: async () => {
-      if (!title().value.trim() && !body().value.trim()) { shortFields.set('capture-title',{invalid:true}); throw Error('请填写标题或正文。'); }
-      if (workspaceId !== rootKey) throw Error('Workspace changed');
+      if (!title().value.trim() && !body().value.trim()) { shortFields.set('capture-title',{invalid:true,error:'请填写标题或正文。'}); return false; }
+      if (workspaceId !== rootKey) throw Error('工作区已切换，请重新打开。');
       // Create only after explicit submission; failed writes retain all input.
-      if (!safePath(path().value)) throw Error('请使用有效的相对 Markdown 路径');
+      const target = path().value;
+      if (!safePath(target)) throw Error('请使用有效的相对 Markdown 路径');
       const text = `# ${title().value.trim() || '无标题'}\n\n${body().value}`;
-      try { await note('create', {path: path().value, text, workspaceId}); }
+      try { await note('create', {path: target, text, workspaceId}); }
       catch (error) {
-        let existing; try { existing = await note('read', {path: path().value, workspaceId}); } catch { throw error; }
+        let existing; try { existing = await note('read', {path: target, workspaceId}); } catch { throw error; }
         if (existing.text !== text) throw error;
       }
-      return () => createNote(null, {path: path().value, text, persisted: true});
+      return () => createNote(null, {path: target, text, persisted: true});
     }});
 }
 const noteInfo = drawer({id: 'note-info-drawer', title: '笔记信息与整理', onDismiss: () => flush()});
-noteInfo.panel.classList.add('ui-drawer-wide');
+noteInfo.panel.classList.add('note-task-sheet');
 const infoOpen = $('#note-info-open');
-reader.on('info', async () => { if (!await flush()) return; await libraryScreen.noteTopics(current); await noteInitiatives(current); noteInfo.open($('#star'), infoOpen); });
 const infoUI = noteInformationView(noteInfo.body);
+let infoSession = null;
+const infoAssociationReaders = {
+  topics: (path, owns) => libraryScreen.noteTopics(path, null, owns),
+  initiatives: (path, owns) => noteInitiatives(path, null, owns)
+};
+function loadInfoAssociation(session, kind, restoreFocus = false) {
+  const owns = () => session && noteInfo.panel.open && infoSession === session &&
+    session.path === current && session.workspace === rootKey;
+  if (!owns() || taskLeavePending()) return;
+  infoUI.set({[kind]:'loading'});
+  // Repository loading can recover an already-committed revision. Keep that
+  // work under the active task until it settles, including on a workspace leave.
+  const pending = (async () => {
+    try {
+      await infoAssociationReaders[kind](session.path, owns);
+      if (owns()) infoUI.set({[kind]:'ready'});
+    } catch {
+      if (owns()) infoUI.set({[kind]:'failed'});
+    }
+    if (restoreFocus && owns() && document.activeElement === document.body) $('#rename').focus();
+  })();
+  session.pending.add(pending);
+  return pending.finally(() => session.pending.delete(pending));
+}
+for (const kind of Object.keys(infoAssociationReaders)) {
+  infoUI.on(kind, () => loadInfoAssociation(infoSession, kind, true));
+}
+reader.info(async opener => {
+  if (noteInfo.panel.open) return;
+  const session = {opener, path:current, workspace:rootKey, pending:new Set()};
+  if (!await flush() || !visibleNote() || current !== session.path ||
+      rootKey !== session.workspace || document.querySelector('dialog[open]')) return;
+  infoSession = session;
+  infoUI.set({topics:'loading',initiatives:'loading'});
+  noteInfo.open($('#rename'), opener);
+  await Promise.all(Object.keys(infoAssociationReaders).map(kind => loadInfoAssociation(session, kind)));
+});
 noteInfo.footer.append(actionControl('完成', () => flush(), {variant: 'primary', density: 'compact'}).host);
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
 libraryScreen.returnToNoteInfo = async (note, committed) => {
-  if (current !== note.path || currentWorkspace !== libraryScreen.library.workspaceId || $('#editor').hidden) return;
-  try { await libraryScreen.noteTopics(note.path); }
-  catch (error) { notice(committed ? '主题已保存到本地，关联列表暂未更新。请重新打开笔记信息重试。' : '关联列表暂未更新，请重新打开笔记信息重试。', true); infoOpen.focus({preventScroll: true}); return false; }
-  noteInfo.open($('#note-create-topic'), infoOpen);
+  const session = infoSession;
+  const owns = () => session && infoSession === session && visibleNote() && current === note.path &&
+    currentWorkspace === session.workspace && rootKey === session.workspace && !document.querySelector('dialog[open]');
+  if (!owns()) return;
+  const origin = session.opener;
+  try { await libraryScreen.noteTopics(note.path, null, owns); }
+  catch {
+    if (!owns()) return;
+    notice(committed ? '主题已保存到本地，关联列表暂未更新。请重新打开笔记信息重试。' : '关联列表暂未更新，请重新打开笔记信息重试。', true);
+    origin.focus({preventScroll: true});
+    return false;
+  }
+  if (!owns()) return;
+  infoUI.set({topics:'ready'});
+  noteInfo.open($('#note-create-topic'), origin);
 };
 
 
@@ -658,10 +731,10 @@ infoUI.on('rename', async () => {
   if (!await flush()) return;
   const original = current, expected = base, workspaceId = currentWorkspace;
   const pathInput = () => $('#note-location');
-  openShortTask({title: '移动 / 改名', controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
+  openShortTask({title: '移动 / 改名', opener: infoSession?.opener || infoOpen, controls: [{id:'note-location',label:'笔记相对路径',value:current,help:'以 .md 结尾，路径相对于笔记目录。',describedBy:'note-task-status'}],
     key: `location-draft:${workspaceId}:${original}`, values: () => ({'note-location': pathInput().value}), save: async () => {
       const path = pathInput().value.trim();
-      if (!safePath(path)) { shortFields.set('note-location',{invalid:true}); throw Error('请使用有效的相对 Markdown 路径'); }
+      if (!safePath(path)) { shortFields.set('note-location',{invalid:true,error:'路径无效。请填写以 .md 结尾的相对路径。'}); return false; }
       if (path === original) return;
       await repairMovedLinks();
       await note('move', {path: original, target: path, expected, workspaceId});
@@ -724,13 +797,13 @@ if(window.webkit?.messageHandlers?.notes)setInterval(validateReferences,30000);
 refresh().catch(e=>notice(e.message));
 
 let noteInitiativePending = null, initiativeClassification = null;
-async function noteInitiatives(path, focusId = null) {
+async function noteInitiatives(path, focusId = null, stillCurrent = () => true) {
   infoUI.set({repair:Boolean(localStorage.getItem('pending-note-move:'+rootKey))});
   const workspaceId = rootKey;
   await prepareInitiatives();
   await initiatives.repository.serialize(() => initiatives.repository.recover());
   const records = await allRecords(initiatives.repository);
-  const owns = () => current === path && rootKey === workspaceId;
+  const owns = () => stillCurrent() && current === path && rootKey === workspaceId;
   if (!owns()) return;
   if (initiatives.previous) initiatives.previous = records.find(record => record.entityId === initiatives.previous.entityId) || initiatives.previous;
   const container = $('#note-initiatives');

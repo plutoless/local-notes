@@ -608,3 +608,41 @@ button { transition: background-color 100ms; }
   .shell nav { margin-top: 8px; gap: 0; }
   .workspace-identity { padding-top: 12px; }
 }
+
+/* Capture, location, Topic and note information share the contextual task rhythm. */
+.ui-drawer.note-task-sheet {
+  width: min(460px, 100vw);
+  border-radius: var(--radius-panel) 0 0 var(--radius-panel);
+}
+.note-task-sheet .ui-drawer-header,
+.note-task-sheet .ui-drawer-footer { padding-block: 8px; }
+.note-task-sheet .ui-drawer-body { overscroll-behavior: contain; }
+.note-task-sheet :is(.ui-drawer-body, .ui-drawer-header, .ui-drawer-footer) { padding-inline: 24px; }
+.note-task-form { display: grid; gap: 20px; }
+.note-task-form + [role="alert"] { margin-top: 8px; }
+.note-task-sheet [role="status"] { margin-block: 0 12px; }
+.note-task-sheet [data-slot="field-label"] { color: var(--text); }
+.ui-drawer.note-task-sheet :is(input[data-slot="input"], textarea[data-slot="textarea"]):focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  box-shadow: none;
+}
+.note-task-sheet :is([data-slot="field-description"], .note-task-optional, .note-info-help, #file-path) {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.note-task-sheet [data-slot="field-error"] { color: var(--danger); }
+.note-task-sheet [data-slot="textarea"] { resize: vertical; }
+.note-info-section + .note-info-section { border-top: 1px solid var(--divider); margin-top: 20px; padding-top: 20px; }
+.note-info-section h3 { margin: 0 0 8px; font-size: 14px; }
+.note-info-section #file-path { margin: 0 0 8px; overflow-wrap: anywhere; }
+.note-classification { display: grid; gap: 4px; padding-inline: 5px; }
+.note-classification > button,
+.note-classification-row > button { justify-self: start; }
+.note-classification-row { display: grid; }
+.note-classification-row label span { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .ui-drawer.note-task-sheet { width: 100vw; border-radius: 0; }
+  .note-task-sheet :is(.ui-drawer-body, .ui-drawer-header, .ui-drawer-footer) { padding-inline: 16px; }
+}
