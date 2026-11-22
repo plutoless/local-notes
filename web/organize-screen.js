@@ -4,13 +4,14 @@ import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
 const $ = selector => document.querySelector(selector);
+const invalidSettings = '请修正服务地址或模型后再保存。';
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
     this.session = 0; this.selectionOffset = 0; this.inventoryRequest = 0; this.candidateContext = new Map(); this.recoveredDrafts = new Set(); this.draftRevisions = new Map();
     this.settingsDrawer = drawer({id: 'ai-settings-drawer', title: 'AI 服务设置', onDismiss: () => this.leaveSettings()});
     this.state = {search: '', directory: '*', directories: [], notes: [], inventory: '', retry: false,
-      request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: ''};
+      request: '', status: '', statusState: 'idle', service: '正在载入服务状态…', address: '', model: '', token: '', savedCredential: false, settingsError: '', settingsFields: {}};
     this.ui = organizationView($('#organization-react'), this.settingsDrawer.body, {
       search: value => { this.state.search = value; this.selectionOffset = 0; this.attempt(() => this.inventory()); },
       directory: value => { this.state.directory = value; this.selectionOffset = 0; this.attempt(() => this.inventory()); },
@@ -21,7 +22,11 @@ export class OrganizeScreen {
       page: direction => { this.selectionOffset = Math.max(0, this.selectionOffset + direction * 50); this.attempt(() => this.inventory()); },
       retry: () => this.attempt(() => this.inventory()),
       configure: () => this.openSettings(),
-      setting: (key, value) => { this.state[key] = value; this.controls(); },
+      setting: (key, value) => {
+        this.state[key] = value;
+        delete this.state.settingsFields[key];
+        this.controls();
+      },
       save: () => this.attempt(() => this.saveSettings()),
       preview: () => this.attempt(() => this.preview()),
       send: () => this.attempt(async () => {
@@ -91,7 +96,7 @@ export class OrganizeScreen {
     return this.attempt(async () => {
       await this.settings(false, current);
       if (!current()) return;
-      this.state.settingsError = ''; this.controls();
+      this.state.settingsError = ''; this.state.settingsFields = {}; this.controls();
       this.settingsDrawer.open($('#ai-address'), $('#ai-configure'));
     }, current);
   }
@@ -115,7 +120,23 @@ export class OrganizeScreen {
   leaveSettings() { return requestTaskLeave(this.settingsTask()); }
   saveSettings() {
     if (this.settingsPending) return this.settingsPending;
-    if (!$('#ai-settings').reportValidity()) return Promise.reject(Error('Invalid configuration fields'));
+    const address = $('#ai-address'), model = $('#ai-model');
+    const endpoint = address.validity.valid ? new URL(address.value) : null;
+    const fields = {};
+    if (!endpoint?.hostname || !(endpoint.protocol === 'https:' ||
+        (endpoint.protocol === 'http:' && endpoint.hostname === '127.0.0.1')) ||
+        endpoint.username || endpoint.password || /[?#]/.test(address.value)) {
+      fields.address = '请输入完整的 HTTPS 服务地址。本机测试可使用 127.0.0.1，地址不能包含凭证、查询或片段。';
+    }
+    if (!model.value.trim()) fields.model = '请输入模型名称。';
+    this.state.settingsFields = fields;
+    if (fields.address || fields.model) {
+      this.controls();
+      if (document.activeElement?.closest('dialog') === this.settingsDrawer.panel) {
+        (fields.address ? address : model).focus();
+      }
+      return Promise.reject(Error(invalidSettings));
+    }
     this.settingsSave.disabled = true;
     const session = this.session;
     const operation = (async () => {
@@ -154,7 +175,7 @@ export class OrganizeScreen {
       else if (/Choose an existing initiative/i.test(diagnostic)) message = '请先选择一个已有事项，再保存这个决定。';
       else if (/suggestion needs text/i.test(diagnostic)) message = '建议内容不能为空，请填写后再确认。';
       else if (/conflict|changed|workspace/i.test(diagnostic)) message = '工作目录或内容已变化，请重新打开并核对。';
-      if (this.settingsDrawer.panel.open) this.state.settingsError = message;
+      if (this.settingsDrawer.panel.open) this.state.settingsError = diagnostic === invalidSettings ? '' : message;
       this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), 'failed');
     } finally {
       this.controls();
