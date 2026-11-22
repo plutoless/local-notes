@@ -489,41 +489,53 @@ dialog::backdrop { background: var(--backdrop); }
 .search-dialog {
   width: min(640px, calc(100vw - 32px));
   max-height: calc(100dvh - 32px);
-  padding: 20px;
+  padding: 16px var(--space-section);
+  color: var(--workspace-ink);
 }
-.search-footer { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.search-dialog[open] { display: flex; flex-direction: column; }
+.search-dialog[open] > :not(.search-results) { flex: none; }
 .search-dialog h2 { margin: 0; font-size: 18px; }
-.search-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 8px; margin-block: 8px 12px; }
-.search-query { display: grid; gap: 4px; }
-.search-query input { width: 100%; border: 1px solid var(--line); border-radius: var(--radius); }
-.search-status { min-height: 1.6em; margin: 8px 0; color: var(--muted); font-size: 13px; }
+.search-toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: var(--space); }
+.search-toolbar h2 { grid-column: 1 / -1; }
+.search-query { display: grid; gap: var(--space-small); font-size: 13px; font-weight: 500; }
+.search-query input { width: 100%; font-size: 14px; font-weight: 400; }
+.search-dialog .ui-compact { min-inline-size: var(--target-height); }
+.search-dialog .ui-compact::before, .quick-capture-sheet .ui-compact::before { transition: background-color 100ms; }
+.search-status { margin: 0 0 var(--space); padding: 4px 8px; background: var(--canvas); border-radius: var(--radius); color: var(--workspace-muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+.search-status[data-tone="loading"] { color: var(--workspace-ink); }
 .search-status[data-tone="warning"] { color: var(--warning); }
 .search-status[data-tone="error"] { color: var(--danger); }
 .search-status[data-tone="success"] { color: var(--success); }
-.search-results { max-height: 48dvh; overflow: auto; }
-.search-result { padding: 8px 0; border-bottom: 1px solid var(--divider); }
+.search-results { max-height: min(360px, 48dvh); overflow: auto; overscroll-behavior: contain; }
+.search-result { padding: 8px 0; border-bottom: 1px solid var(--workspace-divider); }
+.search-result:first-child { padding-top: 0; }
 .search-result .ui-action:focus-visible { outline-offset: -3px; }
-.search-result .search-select { width: 100%; text-align: left; white-space: normal; overflow-wrap: anywhere; }
-.search-result[data-selected="true"] .search-select { background: var(--passage-selected); border-color: var(--line); font-weight: 600; }
-.search-result p { color: var(--muted); overflow-wrap: anywhere; margin: 4px 0; font-size: 13px; line-height: 1.6; }
-.search-passage-label { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; }
-.search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.75; user-select: text; margin: 4px 0; padding: 10px 12px; background: var(--canvas); border: 1px solid var(--divider); border-radius: var(--radius); }
-.search-actions { display: flex; flex-wrap: wrap; gap: 4px; }
-.search-footer { margin-top: 8px; }
+.search-result .search-select { width: 100%; text-align: left; color: var(--workspace-ink); border: 1px solid transparent; border-radius: var(--radius); font-weight: 600; }
+.search-result[data-selected="true"] .search-select { background: var(--passage-selected); border-color: var(--line); }
+.search-result[data-selected="true"] .search-select:hover { background: color-mix(in srgb, var(--passage-selected), var(--focus) 8%); }
+.search-result[data-selected="true"] .search-select:active { background: color-mix(in srgb, var(--passage-selected), var(--focus) 16%); }
+.search-result p { color: var(--workspace-muted); overflow-wrap: anywhere; margin: 4px 0; font-size: 13px; line-height: 1.6; }
+.search-passage-label { display: block; margin-top: 8px; color: var(--workspace-muted); font-size: 12px; }
+.search-passage { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; line-height: 1.7; user-select: text; margin: 4px 0; padding: 8px 12px; background: var(--canvas); border: 1px solid var(--workspace-divider); border-radius: var(--radius); }
+.search-actions { display: flex; flex-wrap: wrap; gap: var(--space-small); }
+.search-footer { display: flex; align-items: center; justify-content: space-between; gap: var(--space-small); flex-wrap: wrap; margin-top: var(--space); }
 .search-dialog .search-attribution { padding: 0 8px; border-bottom: 0; display: flex; align-items: center; min-height: 44px; gap: 8px; }
 .search-attribution input { width: auto; scroll-margin-block: 16px; }
-.search-keys { color: var(--muted); }
-@media (max-width: 600px), (max-height: 560px) { .search-dialog { padding: 12px; } }
+.search-keys, .search-meaning small { color: var(--workspace-muted); }
+.search-meaning { display: grid; gap: var(--space-small); margin-top: var(--space); }
+@media (max-width: 600px), (max-height: 560px) { .search-dialog { padding: 8px 12px; max-height: calc(100dvh - 16px); } }
+@media (max-height: 560px) {
+  /* Keep passages readable when the result list and footer cannot both fit. */
+  .search-results { flex: none; max-height: none; overflow: visible; }
+}
 
 .task-leave-decision { width: min(540px, calc(100vw - 32px)); }
 .task-leave-decision .ui-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 
-.search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); }
-.search-scopes [aria-pressed="true"]:not(:disabled) { background: var(--selected); color: var(--selected-text); font-weight: 600; }
-.search-result[data-selected="true"] .search-select:hover,
-.search-scopes [aria-pressed="true"]:hover:not(:disabled) { background: var(--hover); }
-.search-result[data-selected="true"] .search-select:active,
-.search-scopes [aria-pressed="true"]:active:not(:disabled) { background: var(--pressed); }
+.search-scopes { display: flex; flex-wrap: wrap; gap: var(--space-small); margin-block: var(--space) var(--space-small); }
+.search-scopes [aria-pressed="true"]:not(:disabled) { --control-fill: var(--workspace-current); color: var(--workspace-current-text); font-weight: 600; }
+.search-scopes [aria-pressed="true"]:hover:not(:disabled) { --control-fill: var(--workspace-current-hover); }
+.search-scopes [aria-pressed="true"]:active:not(:disabled) { --control-fill: var(--workspace-current-pressed); }
 
 /* Library browse controls retain labelled, normal-flow keyboard targets. */
 
@@ -658,6 +670,8 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   color: var(--workspace-current-text); font-size: 12px;
 }
 .shell-commands, .shell-nav-group { display: grid; }
+.search-shortcut { margin-inline-start: auto; color: var(--workspace-muted); font: inherit; font-size: 12px; white-space: nowrap; }
+@media (max-width: 700px) { .search-shortcut { display: none; } }
 .shell nav { margin: 14px 0 0; gap: 14px; }
 .shell :is(nav, .shell-commands) .ui-action {
   display: flex; align-items: center; justify-content: start; gap: 8px;
@@ -756,6 +770,22 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   .note-task-sheet :is(.ui-drawer-body, .ui-drawer-header, .ui-drawer-footer) { padding-inline: 16px; }
 }
 
+.quick-capture-sheet {
+  color: var(--workspace-ink);
+}
+.quick-capture-sheet :is(.ui-drawer-header, .ui-drawer-footer) {
+  border-color: var(--workspace-divider);
+}
+.quick-capture-sheet .note-task-form { gap: var(--space-section); }
+.quick-capture-sheet #capture-body { min-height: 96px; line-height: 1.7; }
+.quick-capture-sheet #note-task-status:not(:empty) {
+  padding: 8px 12px;
+  margin-block: 0 16px;
+  border-radius: var(--radius);
+  background: var(--canvas);
+  font-size: 13px;
+}
+
 /* Action collection and source evidence share the workspace's neutral surfaces. */
 .ui-action.action-list-row {
   display: grid;
@@ -803,8 +833,6 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   line-height: 1.6;
 }
 .action-revision h3 { margin: 0; }
-
-.search-meaning { display: grid; gap: 4px; }
 
 /* Library and Favorites share a bounded, page-first browsing column. */
 .library-view:not(.editing) > .collection {
