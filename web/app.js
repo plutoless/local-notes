@@ -31,26 +31,13 @@ const search = $('#search');
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
 const actions = new ActionScreen(notice);
 actions.owner = () => `${workspaceGeneration}:${pageGeneration}:${view}`;
-const initiatives = new InitiativeScreen(actions, notice, async path => {
-  if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
-  const sourceAction = !$('#action-editor').hidden ? actions.previous : null;
-  if (!await flush(false, true)) return;
-  const origin = {view, actionReturn: actions.returnToFocus, action: sourceAction, search: $('#search').value, scroll: $('.collection').scrollTop, detailScroll: $('#workspace-detail').scrollTop, opener: document.activeElement};
-  const generation = workspaceGeneration, request = ++noteLoadRequest;
-  let loaded;
-  try { loaded = await note('read', {path}); } catch (error) { if (generation === workspaceGeneration) { if (actions.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); else notice(error.message); } return; }
-  if (generation !== workspaceGeneration || request !== noteLoadRequest || view !== origin.view) return;
-  actions.closeDrawer();
-  sourceOrigin = origin;
-  focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
-  $('#action-tools').hidden = true; $('#action-editor').hidden = true;
-  await refresh(); if (generation !== workspaceGeneration || request !== noteLoadRequest) return; await load(path, loaded, request); $('#mode').focus();
-}, id => createNote(id), async () => {
+const initiatives = new InitiativeScreen(actions, notice, path => openLinkedNote(path), id => createNote(id), async () => {
   // Explicit missing-source recovery may build the reference index without visiting Notes.
   await libraryScreen.library.open(); await libraryScreen.library.sync();
   return libraryScreen.library.inventory();
 }, () => flush());
 actions.initiatives = initiatives;
+actions.openLinkedNote = openLinkedNote;
 const organize = new OrganizeScreen(async (path, opener) => {
   organize.captureCandidates();
   if (!await flush(false, false, true)) return;
@@ -229,6 +216,40 @@ async function prepareInitiatives(cached = false) { if (!initiatives.repository.
 async function note(cmd,args={}){const result=await native(cmd,{workspaceId:rootKey,...args});return cmd==='read'?noteReply(result):result;}
 function content(){return withTitle(reader.text('body'),reader.text('title')||'无标题');}
 function updateStar(){infoUI.set({starred:stars.has(current)});}
+async function openLinkedNote(path, actionSource) {
+  if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path, true, actionSource);
+  if (!actionSource && !await flush(false, true)) return;
+  const origin = {
+    view, actionReturn: actions.returnToFocus, action: actionSource?.action,
+    actionSource: actionSource && {index: actionSource.index, path},
+    search: $('#search').value, scroll: $('.collection').scrollTop,
+    listScroll: $('#items').scrollTop, detailScroll: $('#workspace-detail').scrollTop,
+    opener: document.activeElement
+  };
+  const generation = workspaceGeneration, request = ++noteLoadRequest;
+  const owns = () => generation === workspaceGeneration && request === noteLoadRequest && view === origin.view && (!actionSource || actionSource.owns());
+  let loaded;
+  try {
+    loaded = await note('read', {path});
+    actionSource?.verify(loaded.text);
+  } catch (error) {
+    if (owns()) {
+      if (actions.drawer.panel.open) errorFeedback($('#action-save-state'), error.message);
+      else notice(error.message);
+    }
+    return;
+  }
+  if (!owns() || !actions.closeDrawer()) return;
+  sourceOrigin = origin;
+  if (view === 'actions') actions.release();
+  if (view === 'focus') focus.release();
+  focus.active = false; $('#search').hidden = false; view = 'notes'; selectNavigation('notes'); $('#search').setAttribute('aria-label', '搜索笔记'); actions.active = false; initiatives.active = false; hideInitiatives();
+  $('#action-tools').hidden = true; $('#action-editor').hidden = true;
+  await refresh();
+  if (generation !== workspaceGeneration || request !== noteLoadRequest) return;
+  if (await load(path, loaded, request)) $('#mode').focus();
+}
+
 function state(msg){
   updateNoteToolbar();
   reader.set({status:msg,statusDetail:''});
@@ -270,19 +291,27 @@ function render(){if(['notes','favorites'].includes(view))libraryScreen.render()
 async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation){reader.set({capture:false});const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;rememberReading();readingOwner=null;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;reader.text('title', titleOf(r.text,path));reader.text('body', r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));reader.set({path});infoUI.set({path});updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=recover ? readDraft() : null;if(draft){reader.text('title', titleOf(draft.text,path));reader.text('body', draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}readerSelection = null;setNoteMode(!draft);for(const selector of readingScrollSelectors) $(selector).scrollTop=0;committed();
 readingOwner={workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
 rememberReading();render();await noteInitiatives(path);if(request!==noteLoadRequest)return false;await libraryScreen.noteTopics(path);return request===noteLoadRequest;}
-async function openContextNote(path, reading = true) {
+async function openContextNote(path, reading = true, actionSource) {
+  const owns = () => !actionSource || actionSource.owns();
   try {
-    if (!await flush(false, true)) return;
+    if (!await flush(false, true) || !owns()) return;
     const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId, request = ++noteLoadRequest;
     const loaded = await note('read', {path});
-    if (request !== noteLoadRequest || workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
-    actions.closeDrawer();
+    if (!owns() || request !== noteLoadRequest || workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
+    actionSource?.verify(loaded.text);
+    if (!actions.closeDrawer()) return;
     initiatives.rememberContext(); initiatives.detailKind = 'note'; $('.app').classList.add('workspace', 'detail-open', 'editing');
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
     if (!await load(path, loaded, request)) return; initiatives.selectContext(path); $('#workspace-detail').scrollTop = 0;
     if (!dirty && readMode !== reading) setNoteMode(reading);
     return true;
-  } catch (error) { notice(error.message); return false; }
+  } catch (error) {
+    if (owns()) {
+      if (actionSource) errorFeedback($('#action-save-state'), error.message);
+      else notice(error.message);
+    }
+    return false;
+  }
 }
 async function openNote(path){try{if(await flush()){if(await load(path)) { $('#mode').focus(); }}}catch(e){notice(e.message);}}
 async function save() {
@@ -725,7 +754,52 @@ libraryScreen.returnToNoteInfo = async (note, committed) => {
 
 async function chooseWorkspace(){try{if(!await flush())return;await organize.organization.cancel();$('#organize-tools').hidden=true;organize.organization.batches=null;organize.repository.ready=false;const r=await native('choose');if(r.cancelled)return;actionOrigin=null;$('#workspace-return-action').hidden=true;sourceOrigin=null;captureOrigin=null;reader.set({capture:false});workspaceGeneration++;libraryScreen.resetCollections();organize.resetSelection();wikiHistory=[];wikiIntent++;globalSearch.reset();for(const control of document.querySelectorAll('.search-return'))control.hidden=true;noteLoadRequest++;libraryScreen.library.generation++;libraryScreen.library.workspaceId=null;$('#library-tools').hidden=true;focus.active=false;clearTimeout(focus.backgroundTimer);initiatives.active=false;initiatives.repository.ready=false;initiatives.previous=null;hideInitiatives();current=null;currentWorkspace='';base='';rootKey='';legacyRoot='';notes=[];libraryScreen.release();focus.release();actions.release();initiatives.release();$('#items').replaceChildren();shellUpdate({root:'正在打开目录…'});$('#editor').hidden=true;$('#action-editor').hidden=true;$('#action-tools').hidden=true;$('#empty').hidden=false;$('.app').classList.remove('editing');await actions.openWorkspace();rootKey=actions.repository.workspaceId;await prepareInitiatives();await refresh();}catch(e){notice(e.message);}};
 infoUI.on('star',()=>{stars.has(current)?stars.delete(current):stars.add(current);localStorage.setItem('stars',JSON.stringify([...stars]));updateStar();render();});
-reader.on('back', async()=>{if(wikiHistory.length){await returnWiki();return;}wikiIntent++;if ($('.app').classList.contains('workspace')) { if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); } return; } if(await flush()){if(sourceOrigin){const origin=sourceOrigin; if(await navigate(origin.view)){$('#search').value=origin.search; if(origin.organization){const context=origin.organization;const card=[...document.querySelectorAll('[data-candidate]')].find(node=>node.dataset.candidate===context.candidate);const control=[...(card?.querySelectorAll('[aria-label]')||[])].find(node=>node.getAttribute('aria-label')===context.label);(control||card||$('#ai-preview')).focus({preventScroll:true});$('#organize-tools').scrollTop=context.scroll;return;} if(origin.action){await actions.edit(origin.action);actions.returnToFocus=origin.actionReturn;} (origin.view === 'focus' ? [...document.querySelectorAll('[data-reading-path]')].find(node=>node.dataset.readingPath===current) || $('.home-tools .primary') : origin.opener?.isConnected ? origin.opener : $('#action-description')).focus({preventScroll:true}); $('.collection').scrollTop=origin.scroll; if(origin.view==='focus') $('#items').scrollTop=origin.listScroll || 0; $('#workspace-detail').scrollTop=origin.detailScroll;}return;}$('.app').classList.remove('editing');$('#editor').hidden=true;$('#empty').hidden=false;await libraryScreen.restore();}});
+reader.on('back', async () => {
+  if (wikiHistory.length) { await returnWiki(); return; }
+  wikiIntent++;
+  if ($('.app').classList.contains('workspace')) {
+    if (await flush()) { await initiatives.edit(initiatives.previous); initiatives.restoreContext(); }
+    return;
+  }
+  if (!await flush()) return;
+  if (sourceOrigin) {
+    const origin = sourceOrigin;
+    if (!await navigate(origin.view)) return;
+    $('#search').value = origin.search;
+    if (origin.organization) {
+      const context = origin.organization;
+      const card = [...document.querySelectorAll('[data-candidate]')].find(node => node.dataset.candidate === context.candidate);
+      const control = [...(card?.querySelectorAll('[aria-label]') || [])].find(node => node.getAttribute('aria-label') === context.label);
+      (control || card || $('#ai-preview')).focus({preventScroll: true});
+      $('#organize-tools').scrollTop = context.scroll;
+      return;
+    }
+    if (origin.action) {
+      const opener = [...$('#items').querySelectorAll('[data-entity-id], [data-action-id]')]
+        .find(node => (node.dataset.entityId || node.dataset.actionId) === origin.action.entityId);
+      if (await actions.edit(origin.action, null, null, opener)) {
+        actions.returnToFocus = origin.actionReturn;
+        const request = actions.openRequest;
+        const receiver = document.activeElement;
+        await actions.sourceRefresh;
+        if (request === actions.openRequest && actions.drawer.panel.open && document.activeElement === receiver && origin.actionSource) {
+          actions.sourceControl(origin.actionSource.index, origin.actionSource.path)?.focus();
+        }
+      }
+    } else {
+      const opener = origin.view === 'focus'
+        ? [...document.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === current) || $('.home-tools .primary')
+        : origin.opener?.isConnected ? origin.opener : null;
+      opener?.focus({preventScroll: true});
+    }
+    $('.collection').scrollTop = origin.scroll;
+    if (origin.view === 'focus' || origin.view === 'actions') $('#items').scrollTop = origin.listScroll || 0;
+    $('#workspace-detail').scrollTop = origin.detailScroll;
+    return;
+  }
+  $('.app').classList.remove('editing'); $('#editor').hidden = true; $('#empty').hidden = false;
+  await libraryScreen.restore();
+});
 reader.on('mode', ()=>{setNoteMode(!readMode); if (!readMode) $('#body').focus();});
 infoUI.on('rename', async () => {
   if (!await flush()) return;

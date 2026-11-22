@@ -41,7 +41,7 @@ try {
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
 
-  const original = '# Original\n\n[[folder/Second|第二份]]\n\n- **确认** next\n\n| 名称 | 值 |\n| --- | --- |\n| 合成 | `a` |\n';
+  const original = '# Original\n\n[[folder/Second|第二份]]\n\n- **确认** next\n\n| 名称 | 值 |\n| --- | --- |\n| 合成 | `a` |\n\n- [ ] 历史待核对事项\n';
   await writeFile(sourcePath, original);
   await mkdir(join(fixture.root,'folder'),{recursive:true});
   await writeFile(join(fixture.root,'folder/Second.md'),'# Second\n\nNested source');
@@ -137,6 +137,32 @@ try {
   await page.locator('[data-view=focus]').click(); await page.getByRole('button',{name:'全部行动',exact:true}).click();
   await page.waitForFunction(()=>document.querySelectorAll('#items [data-entity-id]').length===7);
   console.log('PASS nested return and action management');
+  await page.getByRole('button',{name:'关闭提示',exact:true}).click();
+  const selected = (await count()).find(record => record.description === 'Confirmed list action');
+  await page.locator('#search').fill('Confirmed list');
+  await page.locator('#action-filter').selectOption('todo');
+  await page.locator(`#items [data-entity-id="${selected.entityId}"]`).click();
+  const openSource = page.getByRole('button',{name:'打开来源：reference.md',exact:true});
+  await page.locator('#action-description').fill('Confirmed list action edited before opening source');
+  await openSource.click();
+  await page.getByRole('button',{name:'保存并离开',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md' && document.querySelector('#reading').getClientRects().length);
+  const updated = (await count()).find(record => record.entityId === selected.entityId);
+  assert.notEqual(updated.revision,selected.revision);
+  assert.deepEqual(updated.sources,selected.sources);
+  await page.setViewportSize({width:393,height:340});
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.activeElement?.getAttribute('aria-label')==='打开来源：reference.md');
+  assert.equal(await openSource.evaluate(button=>{const rect=button.getBoundingClientRect();return rect.top>=0&&rect.bottom<=innerHeight;}),true);
+  assert.equal(await page.locator('#action-description').inputValue(),updated.description);
+  assert.equal(await page.locator('#search').inputValue(),'Confirmed list');
+  assert.equal(await page.locator('#action-filter').inputValue(),'todo');
+  assert.equal(await page.locator(`#items [data-entity-id="${selected.entityId}"]`).getAttribute('aria-current'),'true');
+  await page.locator('#action-back').click();
+  assert.equal(await page.evaluate(()=>document.activeElement?.dataset.entityId),selected.entityId);
+  assert.equal(await readFile(sourcePath,'utf8'),original);
+  await page.setViewportSize({width:1180,height:800});
+  console.log('PASS saved source detour, real identity and return focus');
   // Late source reads may not reopen a drawer after workspace switching.
   await page.locator('[data-view=notes]').click();
   if (await page.locator('#notice').isVisible()) await page.getByRole('button',{name:'关闭提示',exact:true}).click();
