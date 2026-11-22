@@ -10,7 +10,8 @@ export class SyncScreen {
     this.model={records:[],warnings:[],running:false,checked:false,active:'',message:'',detail:''};
     this.generation=0; this.dirty=false;
     this.panel=document.createElement('dialog');
-    this.panel.className='sync-panel ui-panel ui-modal'; this.panel.setAttribute('aria-label','同步检查');
+    this.panel.className='sync-panel ui-panel ui-modal';
+    this.panel.setAttribute('aria-labelledby','sync-title');
     document.body.append(this.panel);
     const imeOwnsEscape = escapeInComposition(this.panel);
     bindModal(this.panel, event => { if (!imeOwnsEscape(event)) this.close(); });
@@ -25,6 +26,7 @@ export class SyncScreen {
     }, true);
     // The modal may close before the check finishes. Its opener stays focusable.
     const opener=actionControl('同步检查',()=>{void this.refresh(true);},{icon:icon('sync'),density:'compact'}); this.opener=opener.control;
+    this.opener.setAttribute('aria-haspopup','dialog');
     document.querySelector('#shell-utilities').append(opener.host);
     const refresh=()=>this.refresh(false); window.addEventListener('focus',refresh);window.addEventListener('reference-change',refresh);
     this.render();
@@ -57,14 +59,17 @@ export class SyncScreen {
     const repos=[...this.repositories()],generation=++this.generation;
     this.boundRepositories=repos;this.workspaceIds=repos.map(repo=>repo.workspaceId);
     const restore=show||this.panel.contains(document.activeElement);
-    this.model.running=true;this.message('正在检查本地版本…');
+    this.model.running=true;this.model.checkFailed=false;this.message('正在检查本地版本…');
     try {
       const warnings=[];
       for(const repo of repos){if(!repo.ready)await repo.open();if(!this.owned(repos,generation))return;this.workspaceIds[repos.indexOf(repo)]=repo.workspaceId;const result=await repo.serialize(()=>repo.recover());if(!this.owned(repos,generation))return;warnings.push(...result.warnings);}
       const records=[];
       for(const repo of repos)for(const [id,conflict]of repo.conflicts||[]){const name=conflict.versions.find(v=>v.title||v.description);const value=structuredClone(conflict.tips[0]||conflict.versions[0]);records.push({key:`${repo.entityType}:${id}`,id,type:repo.entityType,repo,draftKey:syncDraftKey(repo.workspaceId,repo.entityType,id),hasDraft:Boolean(readSyncDraft(localStorage,syncDraftKey(repo.workspaceId,repo.entityType,id),{workspaceId:repo.workspaceId,entityType:repo.entityType,entityId:id})),...conflict,name:`${types[repo.entityType]}：${name?.title||name?.description||'未命名记录'}`,selected:'',value,json:JSON.stringify(value,null,2),invalid:false,committed:false,saving:false,message:'尚未选择解决版本。请先选择，再审核与编辑。',detail:''});}
       Object.assign(this.model,{records,warnings,checked:true,active:'',message:this.saved||'',detail:''});this.render();await this.changed();
-    }catch(error){if(this.owned(repos,generation))this.message('检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。',error.message);}
+    }catch(error){if(this.owned(repos,generation)){
+      this.model.checkFailed=true;
+      this.message('检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。',error.message);
+    }}
     finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(this.panel.open&&restore&&[document.body,this.panel].includes(document.activeElement))this.refreshButton.focus();}}
   }
   choose(key,revision){

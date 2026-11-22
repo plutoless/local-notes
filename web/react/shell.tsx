@@ -32,9 +32,36 @@ export function ShellContent({model:m, callbacks:c}:{model:ShellModel; callbacks
       <div className="shell-nav-group">{readingPages.map(pageButton)}</div>
       <div className="shell-nav-group">{managementPages.map(pageButton)}<span id="shell-utilities" className="contents"/></div>
     </nav>
-    <div className="workspace-identity"><span className="folder-label">当前目录</span><span id="root-name">{m.root==='Sample'?'样本笔记':m.root.split(/[\\/]/).filter(Boolean).pop()||'本地笔记'}</span></div>
-    <details className="directory-details"><summary>目录选项</summary><div id="root-label">{m.root}</div><Button className="quiet ui-compact" id="choose" onClick={c.choose}>选择本地目录</Button></details>
+    <DirectoryOptions root={m.root} choose={c.choose} folderIcon={c.icon('folder')}/>
   </>;
+}
+
+function DirectoryOptions({root, choose, folderIcon}: {root:string; choose:ShellCallbacks['choose']; folderIcon:string}) {
+  const name = root.split(/[\\/]/).filter(Boolean).pop() || '本地笔记';
+  return <div className="shell-directory">
+    <div className="workspace-identity">
+      <span className="folder-label">当前目录</span>
+      <span id="root-name">{root === 'Sample' ? '样本笔记' : name}</span>
+    </div>
+    <details className="directory-details" onKeyDown={event => {
+      if (event.key !== 'Escape' || event.nativeEvent.isComposing || !event.currentTarget.open) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.currentTarget.open = false;
+      event.currentTarget.querySelector('summary')?.focus();
+    }}>
+      <summary>目录选项</summary>
+      <div className="directory-options">
+        <dl>
+          <dt>目录位置</dt>
+          <dd id="root-label">{root === 'Sample' ? '样本笔记' : root}</dd>
+        </dl>
+        <Button className="quiet ui-compact" id="choose" onClick={choose}>
+          <span className="contents" dangerouslySetInnerHTML={{__html:folderIcon}}/>选择本地目录
+        </Button>
+      </div>
+    </details>
+  </div>;
 }
 // The application owns one shell for its document lifetime. Utility view hosts
 // occupy an explicit empty slot without mutating React-owned navigation.
