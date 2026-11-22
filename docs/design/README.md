@@ -105,6 +105,23 @@ Organization uses the staged family above, shared field/disclosure/feedback/acti
 
 The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, one 3px keyboard-only label outline (the child checkbox does not draw a second outline), and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
 
+### Selected workspace adoption (#129)
+
+The Organization page groups source selection, service and outbound preview, and
+saved Candidate review in document flow. Review pairs assessment with verbatim
+evidence where space permits, then follows with editable fields and explicit
+decisions. Source offsets remain beside the opener and fingerprints remain in
+record details. Device settings retain the shared contextual task.
+
+Organization consumes the existing shadcn/ui Input, Textarea and Field ports,
+with the existing semantic border, error and keyboard focus rules. See the
+[Input and Textarea adaptations](issue123/ADOPTION.md) and
+[Field provenance](form-entry-points.md). Native selects, checkboxes
+and disclosures retain their platform semantics and existing controller ports.
+The production catalogue includes selected scope, a populated preview, device
+credentials in their saved state, and an invalid Candidate edit with source
+evidence. Its request is synthetic and its callbacks perform no writes or sends.
+
 ## Integrated journeys (#37)
 
 Use the [screen/state/content inventory and contributor checklist](journeys.md) for cross-page changes. It maps real shared primitives and catalogue states to maintained journey suites, including unavailable-source recovery and the quiet return-to-original-action control. Visible navigation selection and accessible current-page announcements must change together.

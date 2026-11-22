@@ -20,7 +20,19 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const root=createRoot(container);
   const noop=()=>{};
   const callbacks:FocusCallbacks={openAction:noop,navigate:noop,createInitiative:noop,openInitiative:noop,recover:noop,remove:noop,move:noop,more:noop,page:noop,waiting:noop,resume:noop,removeReading:noop,status:()=> '待办',overdue:()=>false};
-  const organization:OrganizationModel={search:'',directory:'*',directories:['研究/长中文目录'],notes:[{path:'研究/中文长路径.md',title:'这是用于核对来源身份与长中文标题的实际生产选择行'}],selected:['研究/中文长路径.md'],inventory:'本页 1 篇。来自当前本机索引。',retry:false,previous:false,next:false,running:false,previewing:false,configured:false,covered:0,batches:[],request:'',status:'选择已更新，请重新预览后发送。',statusState:'idle',service:'尚未配置服务。',address:'',model:'',token:'',savedCredential:false,settingsPending:false,settingsError:'请填写服务地址与模型。'};
+  const organizationPath = '研究/中文长路径.md';
+  const organizationText = '历史计划需要逐条核对，当前适用性待确认。';
+  const organizationBatch = {path:organizationPath,start:0,end:organizationText.length,total:organizationText.length,text:organizationText,fragmentId:'synthetic-preview'};
+  const organization:OrganizationModel = {
+    search:'',directory:'*',directories:['研究/长中文目录'],
+    notes:[{path:organizationPath,title:'跨目录研究资料与长中文标题'}], selected:[organizationPath],
+    inventory:'本页 1 篇。来自当前本机索引。',retry:false,previous:false,next:false,
+    running:false,previewing:false,configured:true,covered:0,batches:[organizationBatch],
+    request:'服务地址：https://service.example/v1/chat/completions\n模型：示例模型\n\n' + JSON.stringify(organizationBatch),
+    status:'预览已就绪，请核对后发送。',statusState:'idle',
+    service:'已设置：示例模型',address:'https://service.example/v1/chat/completions',
+    model:'示例模型',token:'',savedCredential:true,settingsPending:false,settingsError:''
+  };
   const organizationCallbacks:OrganizationCallbacks={search:noop,directory:noop,select:noop,page:noop,retry:noop,preview:noop,send:noop,cancel:noop,configure:noop,setting:noop,save:noop};
   const revision={revision:'catalogue-revision',description:'逐字保留需要人工核对的长中文来源与行动内容'.repeat(3),status:'todo',modifiedAt:'2026-11-20'};
   const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,{...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'}],tips:[revision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
@@ -60,7 +72,8 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     </section>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
     <div className="app home"><aside className="shell"><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><div id="items"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[{entityId:'catalogue-waiting',description:'等待确认资料范围',status:'waiting',waitingOn:'等待对方回复',focusPosition:null}],hasMore:false},initiatives:{actions:[{entityId:'catalogue-current',title:'核对研究资料',progress:'已整理目录，下一步核对来源。'}],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}},{path:'归档/'+ '长文件名'.repeat(16)+'.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></div></section></div>
-    <h2>React 整理来源与设置</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
+    <h2>整理来源与发送预览</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/>
+    <h2>设备服务设置</h2><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
     <h2>React 建议证据审核</h2><CandidateReviewContent model={{busy:false,destinations:[{entityId:'example',title:'已有的长期研究事项'}],cards:[{record:{entityId:'catalogue-candidate',workspaceId:'synthetic',revision:'example',description:'逐条核对历史计划与长中文证据后再明确确认下一步'.repeat(3),candidateType:'action',placement:'独立行动',reasoning:'原文提到核对资料，未确认当前承诺。',relevance:'当前适用性无法确认',sources:[{path:'研究/长中文来源.md',quote:'- [ ] 历史计划仅供核对，不会自动转成行动',start:0,end:30,fingerprint:'synthetic-fingerprint',fragmentId:'synthetic'}]},description:'',target:'example',dirty:true,disclosures:{'确认前编辑建议':true}}]}} callbacks={{activate:noop,edit:noop,target:noop,disclosure:noop,source:noop,decide:noop,recover:noop}}/>
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
