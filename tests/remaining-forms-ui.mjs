@@ -7,6 +7,7 @@ import {storageFixture} from './action-adapter.js';
 const evidence = 'docs/validation/issue48';
 const fixture = await storageFixture();
 let failCreate = false, holdCreate = false, releaseCreate, holdAction = false, releaseAction;
+let holdInfoRead = false, infoReadStarted, releaseInfoRead;
 let createCalls = 0, holdReveal = false, releaseReveal, revealReached;
 const {TopicRepository} = await import('../web/library.js');
 const topics = new TopicRepository(fixture.adapter); await topics.open();
@@ -20,6 +21,11 @@ try {
 
   await page.exposeFunction('bridge', async request => {
     try {
+      if (request.cmd === 'referenceQuery' && request.exactPath === 'reference.md' && holdInfoRead) {
+        holdInfoRead = false;
+        infoReadStarted();
+        await new Promise(resolve => { releaseInfoRead = resolve; });
+      }
       if (request.cmd === 'metadata' && holdReveal) { holdReveal = false; revealReached(); await new Promise(resolve => { releaseReveal = resolve; }); }
       if (request.cmd === 'actionWrite' && holdAction) { holdAction = false; await new Promise(resolve=>{releaseAction=resolve;}); }
       if (request.cmd === 'create') { createCalls++; if (holdCreate) { holdCreate = false; await new Promise(resolve=>{releaseCreate=resolve;}); } }
@@ -291,6 +297,15 @@ try {
   await infoSheet.getByRole('button',{name:'重试载入'}).click();
   await page.getByLabel('专项验证主题',{exact:true}).waitFor();
   await infoSheet.getByRole('button',{name:'完成'}).click();
+  assert.equal(await referenceOpener.evaluate(node=>node===document.activeElement),true);
+  holdInfoRead = true;
+  const infoRead = new Promise(resolve => { infoReadStarted = resolve; });
+  await referenceOpener.click();
+  await infoRead;
+  await infoSheet.getByRole('button',{name:'完成'}).click();
+  assert.ok(await infoSheet.evaluate(node => node.open), 'Note information owns pending association loading');
+  releaseInfoRead();
+  await infoSheet.waitFor({state:'hidden'});
   assert.equal(await referenceOpener.evaluate(node=>node===document.activeElement),true);
   await referenceOpener.click();
   await page.locator('#rename').click();
