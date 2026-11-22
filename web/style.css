@@ -129,7 +129,6 @@ details { overflow-wrap: anywhere; }
 #organize-tools label { display: grid; gap: 6px; margin: 12px 0; }
 #organize-tools input:not([type="checkbox"]) { width: 100%; }
 #ai-selection label { display: flex; align-items: center; }
-#ai-input { max-height: 30dvh; overflow: auto; }
 #ai-results textarea { width: 100%; min-height: 5em; }
 #ai-results select { width: 100%; }
 /* Home presents bounded lists; contextual detail belongs in the workspace. */
@@ -201,16 +200,43 @@ details { overflow-wrap: anywhere; }
 .organization-view main { display: none; }
 .organization-view .list { min-width: 0; }
 .organization-view #search, .organization-view .collection > header > .ui-field { display: none; }
-#organize-tools { padding: 24px 32px; }
-#organize-tools section { border-top: 1px solid var(--divider); margin-top: 24px; padding-top: 16px; }
-#organize-tools h3 { font-size: 15px; line-height: 1.6; margin: 8px 0; }
-#organize-tools pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-#ai-readable pre { background: var(--canvas); padding: 16px; font: inherit; }
+#organize-tools { max-width: 960px; margin-inline: auto; padding: 24px 48px; }
+.organization-stage, .organization-settings, .suggestion-card { overflow-wrap: anywhere; }
+.organization-stage + .organization-stage, #organization-react + .organization-stage {
+  border-top: 1px solid var(--divider); margin-top: 24px; padding-top: 24px;
+}
+.organization-stage h2 { margin: 0 0 12px; }
+.organization-stage h3, .suggestion-card h3 { font-size: 16px; line-height: 1.6; margin: 0 0 8px; }
+.organization-stage h4, .suggestion-card h4 { font-size: 14px; margin: 0 0 8px; }
+.organization-stage :is(pre, ul), .suggestion-card :is(pre, ul) { white-space: pre-wrap; overflow-wrap: anywhere; }
+.organization-service, .organization-preview, .candidate-evidence {
+  background: var(--canvas); border-radius: var(--radius-panel); padding: 16px;
+}
+.organization-service { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.organization-service p { margin: 0; }
+.organization-preview article + article { border-top: 1px solid var(--divider); margin-top: 12px; padding-top: 12px; }
+.organization-preview pre { background: var(--surface); padding: 12px; font: inherit; }
+.organization-scope { margin-bottom: 12px; }
 .organization-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0; }
-.suggestion-card { margin: 16px 0; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
-.suggestion-card blockquote { border-left: 3px solid var(--line); margin: 16px 0 8px; padding: 0 16px; white-space: pre-wrap; }
-#organize-tools summary { cursor: pointer; padding: 12px 0; }
-#ai-input { max-height: 30dvh; }
+.organization-settings { display: grid; gap: 16px; }
+:is(.organization-stage, .organization-settings, .suggestion-card) [data-slot="field-label"] { color: var(--text); }
+.suggestion-card { margin: 16px 0; padding: 16px 0; border-block-start: 1px solid var(--divider); background: var(--surface); }
+.candidate-context { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+.candidate-assessment { display: grid; align-content: start; gap: 12px; margin: 0; }
+.candidate-assessment dt { font-weight: 650; }
+.candidate-assessment dd { margin: 0; }
+.candidate-relevance { border-inline-start: 3px solid var(--warning); padding-inline-start: 12px; }
+.candidate-evidence figure { margin: 0; }
+.candidate-evidence figure + figure { border-top: 1px solid var(--divider); margin-top: 8px; padding-top: 8px; }
+.candidate-evidence blockquote { border-inline-start: 3px solid var(--line); margin: 0; padding-inline-start: 12px; white-space: pre-wrap; }
+.candidate-evidence button { max-width: 100%; height: auto; white-space: normal; text-align: start; }
+.suggestion-card textarea { resize: vertical; }
+.organization-stage summary, .suggestion-card summary { cursor: pointer; padding: 12px 0; }
+#ai-input { max-height: 30dvh; overflow: auto; }
+#ai-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+@media (min-width: 1000px) {
+  .candidate-context { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
+}
 @media (max-width: 700px) {
   .app.organization-view { grid-template-columns: minmax(0, 1fr); }
   #organize-tools { padding: 16px; }
