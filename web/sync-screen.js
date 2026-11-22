@@ -24,7 +24,7 @@ export class SyncScreen {
       }
     }, true);
     // The modal may close before the check finishes. Its opener stays focusable.
-    const opener=actionControl('同步检查',()=>{void this.refresh(true);},{icon:icon('sync')}); this.opener=opener.control;
+    const opener=actionControl('同步检查',()=>{void this.refresh(true);},{icon:icon('sync'),density:'compact'}); this.opener=opener.control;
     document.querySelector('#shell-utilities').append(opener.host);
     const refresh=()=>this.refresh(false); window.addEventListener('focus',refresh);window.addEventListener('reference-change',refresh);
     this.render();

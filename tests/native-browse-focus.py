@@ -223,7 +223,7 @@ try:
   click('[data-view=notes]');w("document.querySelectorAll('#items [data-path]').length===50")
   c('__size:393,852')
   c("const row=document.querySelectorAll('#items [data-path]')[12];row.id='probe-note-row';row.scrollIntoView({block:'center'});window.browseBefore={path:row.dataset.path,scroll:document.querySelector('.collection').scrollTop,list:document.querySelector('#items').scrollTop}")
-  click('#probe-note-row');w("!document.querySelector('#editor').hidden");state('note-open');click('#note-info-open');w("document.querySelector('#note-info-drawer').open");click('#star');click('#note-info-drawer .ui-drawer-footer button');w("!document.querySelector('#note-info-drawer').open")
+  click('#probe-note-row');w("!document.querySelector('#editor').hidden");state('note-open');click('#note-reference-open');click('#note-info-open');w("document.querySelector('#note-info-drawer').open");click('#star');click('#note-info-drawer .ui-drawer-footer button');w("!document.querySelector('#note-info-drawer').open")
   click('#back');w("document.querySelector('#editor').hidden");state('library-pointer-return');assert c("return document.activeElement.dataset.path===window.browseBefore.path && document.querySelector('.collection').scrollTop===window.browseBefore.scroll && document.querySelector('#items').scrollTop===window.browseBefore.list")
   key('Tab');key('Shift+Tab');c("document.querySelector('#items [data-path]').focus()");key('Return');w("!document.querySelector('#editor').hidden");click('#back');state('library-return')
  else:
@@ -253,7 +253,7 @@ try:
    c('__size:393,852');c("document.querySelector('[data-view=notes]').click()")
    w("document.querySelectorAll('#items [data-path]').length===50")
    c("document.querySelector('#items [data-path=\"note-12.md\"]').click()")
-   w("!document.querySelector('#editor').hidden");c("document.querySelector('#note-info-open').click()")
+   w("!document.querySelector('#editor').hidden");c("if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-info-open').click()")
    w("document.querySelector('#note-info-drawer').open")
    c("if(document.querySelector('#star').getAttribute('aria-pressed')!=='true')document.querySelector('#star').click()")
    w("document.querySelector('#star').getAttribute('aria-pressed')==='true'")

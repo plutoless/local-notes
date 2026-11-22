@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 // Real app + isolated production Swift record/index adapter. HTTP transport only.
 import assert from 'node:assert/strict';
 import {readFile,writeFile,mkdir,readdir,rename} from 'node:fs/promises';
@@ -59,7 +60,7 @@ try {
       await page.locator('#items [data-path="synthetic-52.md"]').evaluate(n=>n.addEventListener('click',()=>{window.contextualScrollAtOpen=document.querySelector('.collection').scrollTop;},{capture:true,once:true}));
       await page.locator('#items [data-path="synthetic-52.md"]').click();
       const contextualScroll=await page.evaluate(()=>window.contextualScrollAtOpen);
-      await page.locator('#note-info-open').click();
+      await showReaderDetails(page); await page.locator('#note-info-open').click();
       await page.getByRole('checkbox',{name:'上下文跳转合成事项',exact:true}).check();
       await page.getByRole('button',{name:'打开事项：上下文跳转合成事项',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#workspace-title').textContent==='上下文跳转合成事项');
       await page.locator('[data-view=favorites]').click();await favoritesReady();

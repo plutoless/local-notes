@@ -17,6 +17,12 @@ export async function closeNoteInfo(page) {
   }
 }
 
+export async function showReaderDetails(page) {
+  const details = page.locator('#note-reference-open');
+  await details.waitFor({state:'visible'});
+  if (await details.getAttribute('aria-expanded') === 'false') await details.click();
+}
+
 export async function captureNote(page, title = '随手记测试', body = '') {
   await page.locator('#new').click();
   await page.locator('#capture-title').fill(title);
@@ -28,7 +34,10 @@ export async function captureNote(page, title = '随手记测试', body = '') {
 
 export async function moveNote(page, target) {
   await page.waitForFunction(() => document.querySelector('#note-info-drawer').open || !document.querySelector('#note-info-open').disabled);
-  if (!await page.locator('#note-info-drawer').evaluate(node => node.open)) await page.locator('#note-info-open').click();
+  if (!await page.locator('#note-info-drawer').evaluate(node => node.open)) {
+    await showReaderDetails(page);
+    await page.locator('#note-info-open').click();
+  }
   await page.locator('#rename').click();
   await page.locator('#note-location').fill(target);
   await page.locator('#note-task-drawer .ui-drawer-footer .primary').click();

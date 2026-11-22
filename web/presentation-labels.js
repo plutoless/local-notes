@@ -1,4 +1,5 @@
 // Presentation vocabulary never changes persisted enum values or user content.
+export const workspacePageLabels = {focus: '当前重点', notes: '笔记库', favorites: '收藏', actions: '行动', initiatives: '事项', organize: '整理'};
 export const actionLabels = {todo: '待办', 'in-progress': '进行中', waiting: '等待中', completed: '已完成', canceled: '已取消'};
 export const initiativeLabels = {active: '进行中', later: '以后再做', ended: '已结束'};
 export const sourceLabels = {unchanged: '来源未变', available: '来源可用', changed: '来源已修改，请核对引用', valid: '来源可用', unavailable: '来源不可用，请重新关联', missing: '来源缺失，请重新关联', moved: '来源已移动', ambiguous: '找到多个来源，请手动关联'};

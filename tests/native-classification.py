@@ -65,7 +65,7 @@ try:
     w("!document.querySelector('#reading').hidden")
     original = hashlib.sha256((root/target).read_bytes()).hexdigest()
     c("const {native}=await import('./bridge.js');const {InitiativeRepository}=await import('./initiatives.js');const r=new InitiativeRepository(native);await r.open();for(const title of ['合成目标甲','合成目标乙']) await r.save({title,goal:'离线目标',progress:'',status:'active'})")
-    c("document.querySelector('#workspace-detail').scrollTop=220;window.beforeScroll=document.querySelector('#workspace-detail').scrollTop;document.querySelector('#note-info-open').click()")
+    c("document.querySelector('#workspace-detail').scrollTop=220;window.beforeScroll=document.querySelector('#workspace-detail').scrollTop;if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-info-open').click()")
     w("document.querySelector('#note-info-drawer').open")
     c("document.querySelector('#note-create-topic').click()")
     w("document.activeElement.id==='topic-name'")

@@ -1,4 +1,4 @@
-import {captureNote,closeNoteInfo,closeSavedAction} from './form-journeys.js';
+import {showReaderDetails, captureNote,closeNoteInfo,closeSavedAction} from './form-journeys.js';
 import {ActionRepository} from '../web/actions.js';
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -32,7 +32,7 @@ try {
  await page.goto('https://notes.test/');await page.locator('.home-tools').waitFor();
  const started=performance.now();
  await captureNote(page,'汇合捕获','- [ ] 历史计划，需要逐条确认。\n\n[[source|核对来源]]');
- await page.locator('#note-info-open').click();await page.locator('#note-create-topic').click();
+ await showReaderDetails(page); await page.locator('#note-info-open').click();await page.locator('#note-create-topic').click();
  await page.locator('#topic-name').fill('汇合分类');await page.locator('#topic-form').evaluate(n=>n.requestSubmit());
  await page.locator('#note-info-drawer[open]').waitFor();
  assert.equal(await page.getByRole('checkbox',{name:'汇合分类',exact:true}).isChecked(),true);await closeNoteInfo(page);
@@ -45,7 +45,7 @@ try {
  await page.locator('#back').click();await page.locator('#reading').getByRole('button',{name:'打开本地笔记：下一份原文',exact:true}).waitFor();
  await page.locator('#back').click();await page.locator('#reading').getByRole('button',{name:'打开本地笔记：核对来源',exact:true}).waitFor();
  assert.equal(await page.locator('#file-path').textContent(),capturedPath);
- await page.locator('#note-create-action').click();await page.locator('#action-description').fill('汇合行动');await page.locator('#action-save').click();await page.locator('#action-drawer').waitFor({state:'hidden'});
+ await showReaderDetails(page); await page.locator('#note-create-action').click();await page.locator('#action-description').fill('汇合行动');await page.locator('#action-save').click();await page.locator('#action-drawer').waitFor({state:'hidden'});
  assert.equal(await page.locator('#file-path').textContent(),capturedPath);
  await page.locator('[data-view=initiatives]').click();await page.locator('#initiative-new').click();await page.locator('#initiative-title').fill('汇合事项');await page.locator('#initiative-goal').fill('核对跨页来源与明确决定');await page.locator('#initiative-save').click();await page.locator('#initiative-drawer').waitFor({state:'hidden'});
  await page.locator('#global-search-open').click();await page.locator('#global-search-input').fill('汇合捕获');await page.locator('[data-scope=note]').click();

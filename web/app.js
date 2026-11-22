@@ -1,7 +1,8 @@
 import {readerView, noteReply, shellView, shellUpdate, fileConflictView, noteFieldsView, classificationView, noteInformationView, actionControl, mountDocument, taskFormView} from './assets/react-host.js';
 import {ReadingHistory} from './reading-history.js';
 import {SearchScreen} from './search-screen.js';
-import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindModal, icon, drawer} from './presentation.js';
+import {bindDirectoryLabel, requestTaskLeave, taskLeavePending, feedback, errorFeedback, bindModal, escapeInComposition, icon, drawer} from './presentation.js';
+import {workspacePageLabels} from './presentation-labels.js';
 import {OrganizeScreen} from './organize-screen.js';
 import {SyncScreen} from './sync-screen.js';
 import {LibraryScreen} from './library-screen.js';
@@ -15,9 +16,18 @@ mountDocument(document.querySelector('#application-root'));
 const $=s=>document.querySelector(s);
 const noteConflict = $('#conflict');
 let rootKey='',legacyRoot='',currentWorkspace='',workspaceGeneration=0,pageGeneration=0,notes=[],current=null,base='',dirty=false,view='focus',timer,saving=null,noteConflictPending=null,blocked=false,readMode=false,noteGeneration=0,noteLoadRequest=0,noteBaseline='',savedText='';const stars=new Set(JSON.parse(localStorage.getItem('stars')||'[]'));
-const reader = readerView($('#editor'));
+const editor = $('#editor');
+const reader = readerView(editor);
+const readerComposing = escapeInComposition(editor);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && !event.defaultPrevented && !readerComposing(event) &&
+      visibleNote() && !document.querySelector('dialog[open]') && reader.dismissDetails()) {
+    event.preventDefault();
+  }
+});
 function notice(msg, success = false){success ? feedback($('#notice'),msg) : errorFeedback($('#notice'), msg);$('#notice').hidden=false;const close=actionControl('关闭提示',()=>$('#notice').hidden=true);$('#notice').append(close.host);}
-const shell = shellView($('#shell'), {navigate: next => navigate(next).catch(error => notice(error.message)), capture: () => openCapture(), choose: () => chooseWorkspace(), icon});
+shellView($('#shell'), {navigate: next => navigate(next).catch(error => notice(error.message)), capture: () => openCapture(),
+  search: () => globalSearch.open(), choose: () => chooseWorkspace(), icon});
 const releaseDirectoryLabel = bindDirectoryLabel(root => shellUpdate({root}));
 const globalSearch = new SearchScreen({
   capture: captureSearchInvocation,
@@ -27,7 +37,6 @@ const globalSearch = new SearchScreen({
   returnAvailable: available => { for (const control of document.querySelectorAll('.search-return')) control.hidden = !available; },
   error: notice
 });
-$('#global-search-open').onclick = () => globalSearch.open();
 const search = $('#search');
 
 const libraryScreen = new LibraryScreen(openNote, notice, () => ['notes', 'favorites'].includes(view), () => view === 'favorites' ? [...stars] : undefined);
@@ -83,6 +92,11 @@ function selectNavigation(next) {
 }
 let actionOrigin = null;
 let wikiHistory = [], wikiIntent = 0, readerSelection = null;
+function readerBackLabel() {
+  if (wikiHistory.length) return '上一篇笔记';
+  if (view === 'initiatives') return workspacePageLabels.initiatives;
+  return workspacePageLabels[sourceOrigin?.view || view];
+}
 async function navigate(next) {
   if (!await flush(true)) return false;
   selectNavigation(next);
@@ -210,15 +224,15 @@ async function restoreSearchInvocation(origin, valid) {
   $('#search').value = origin.search;
   wikiHistory = origin.wikiHistory || [];
   sourceOrigin = origin.sourceOrigin; captureOrigin = origin.captureOrigin; actionOrigin = origin.actionOrigin;
-  reader.set({capture:Boolean(captureOrigin)}); $('#workspace-return-action').hidden = !actionOrigin;
+  reader.set({capture:Boolean(captureOrigin),backLabel:readerBackLabel()}); $('#workspace-return-action').hidden = !actionOrigin;
   for (const [selector, selection] of Object.entries(origin.selection)) $(selector).setSelectionRange(...selection);
   for (const [selector, scroll] of Object.entries(origin.scroll)) $(selector).scrollTop = scroll;
   // A later explicit lookup captures its own owner after the restored navigation.
   globalSearch.invocation = {...origin, page: pageGeneration, request: noteLoadRequest};
   return true;
 }
-for (const container of [$('#global-search-open').parentElement, actions.drawer.footer]) {
-  const port = actionControl('返回搜索结果', () => globalSearch.returnToSearch()); const control = port.control;
+for (const container of [$('#shell-search-return'), actions.drawer.footer]) {
+  const port = actionControl('返回搜索结果', () => globalSearch.returnToSearch(), {density:'compact'}); const control = port.control;
   control.classList.add('search-return'); if (container !== actions.drawer.footer) control.classList.add('search-return-shell'); control.hidden = true; container.prepend(port.host);
 }
 function hideInitiatives() { $('#initiative-editor').hidden = true; $('#initiative-tools').hidden = true; }
@@ -339,6 +353,7 @@ async function load(path, loaded = null, request = ++noteLoadRequest, recover = 
   setNoteMode(!draft);
   for (const selector of readingScrollSelectors) $(selector).scrollTop = 0;
   committed();
+  reader.set({backLabel:readerBackLabel()});
   showNoteConflict();
   if (resolvingConflict && !noteConflict.open) $('#mode').focus({preventScroll:true});
   readingOwner = {workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
@@ -673,7 +688,7 @@ function closeShortTask() {
   if (shortSaving) return false;
   if (shortTask?.key) localStorage.removeItem(shortTask.key);
   shortTask = null; shortDrawer.hide();
-  if (!document.activeElement?.getClientRects().length || document.activeElement === document.body) ($('#note-info-open').getClientRects().length ? $('#note-info-open') : $('#new')).focus({preventScroll: true});
+  if (!document.activeElement?.getClientRects().length || document.activeElement === document.body) ($('#note-reference-open').getClientRects().length ? $('#note-reference-open') : $('#new')).focus({preventScroll: true});
   return true;
 }
 function shortTaskAdapter() {

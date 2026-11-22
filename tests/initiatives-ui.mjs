@@ -1,4 +1,4 @@
-import {enterNoteEditing} from './form-journeys.js';
+import {showReaderDetails, enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -46,7 +46,7 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
+    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'meaning-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
     await route.fulfill({body: await readFile(new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
   await page.goto('https://notes.test/');
@@ -211,7 +211,7 @@ try {
   await page.locator('#library-topic option', {hasText: 'Renamed topic'}).waitFor({state: 'attached'});
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading', {name: 'Working log', exact: true}).click();
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#note-topics input').check();
   await page.waitForFunction(() => document.querySelector('#note-topics input')?.checked && !document.querySelector('#note-topics input')?.disabled);
   await page.locator('#star').click();
@@ -254,7 +254,7 @@ try {
   await page.locator('#initiative-working-notes .source-open').click();
   await page.locator('#editor').waitFor({state: 'visible'});
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#note-initiatives button').click();
   await page.locator('#workspace-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);

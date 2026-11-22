@@ -1,9 +1,12 @@
 import {readFile, writeFile, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {storageFixture} from './action-adapter.js';
 const evidence = 'build/issue67-browser';
+const assets = process.env.LIBRARY_ASSETS_DIR || fileURLToPath(new URL('../build/web/', import.meta.url));
+const manifest = JSON.parse(await readFile(join(assets, 'asset-manifest.json'), 'utf8'));
 const fixture = await storageFixture();
 const secondFixture = await storageFixture();
 let activeFixture = fixture;
@@ -38,8 +41,8 @@ try {
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    if (!Object.hasOwn(manifest, name)) return route.abort();
+    await route.fulfill({path:join(assets, name), contentType:manifest[name]});
   });
 
   const originals = new Map([
@@ -167,6 +170,18 @@ try {
   assert.equal(await page.locator('#global-search-input').inputValue(),'Original');
   assert.equal(await page.locator('[data-scope=note]').getAttribute('aria-pressed'),'true');
   await page.getByRole('button',{name:'关闭搜索',exact:true}).click();
+  // Restoring a search invocation must restore its reader breadcrumb as well.
+  await page.locator('#items [data-path="reference.md"]').click();
+  await page.getByRole('button',{name:'打开本地笔记：别名第二份',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='folder/Second.md');
+  await page.locator('#global-search-open').click();
+  await page.getByRole('button',{name:'打开原文',exact:true}).first().click();
+  await page.locator('.search-return:visible').click();
+  await page.getByRole('button',{name:'关闭搜索',exact:true}).click();
+  assert.equal(await page.locator('#file-path').textContent(),'folder/Second.md');
+  assert.equal(await page.locator('#back').getAttribute('aria-label'),'返回：上一篇笔记');
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   // A bounded second Library page retains its query, topic filter, selection and scroll.
   for(let i=0;i<55;i++) await writeFile(join(fixture.root,`page-${String(i).padStart(2,'0')}.md`),`# Pageable ${i}\n\n[[folder/Second|第二份]]`);
   await page.locator('[data-view=notes]').click();
