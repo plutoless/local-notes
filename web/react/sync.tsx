@@ -26,11 +26,12 @@ export function syncValue(key:string,value:unknown):string {
   if(key==='deleted')return value?'已删除':'保留';
   return typeof value==='object'?JSON.stringify(value,null,2):String(value);
 }
-export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:ConflictRecord;callbacks:SyncCallbacks;inert?:boolean}) {
+export function ConflictComparison({record:r,callbacks:c,inert=false,stale=false}:{record:ConflictRecord;callbacks:SyncCallbacks;inert?:boolean;stale?:boolean}) {
   const blocked=r.incomplete||r.cyclic;
   const keys=r.type==='initiative'?['title','goal','progress','status']:r.type==='action'?['description','status','dueDate','waitingOn','initiativeId','focusPosition']:r.type==='topic'?['description']:['description','placement','reasoning','relevance'];
-  const editorDisabled=!r.selected||r.committed||r.saving;
-  const saveDisabled=blocked||!r.selected;
+  const editorDisabled=stale||!r.selected||r.committed||r.saving;
+  const saveDisabled=blocked||stale||!r.selected;
+  const deletesRecord = Boolean(r.selected && !r.committed && !r.invalid && r.value.deleted === true);
   const statusId=`sync-resolution-${r.type}-${r.id}`;
   const tips = new Set(r.tips.map(version => version.revision));
   const differences = new Set(Object.keys(syncFields).filter(key =>
@@ -46,7 +47,7 @@ export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:Co
         <div key={key} className="ui-comparison-row" data-different={tip && differences.has(key) || undefined}>
           <dt>{label}{tip && differences.has(key) && <span>有差异</span>}</dt><dd>{syncValue(key,version[key])}</dd>
         </div>)}</dl>
-      <Button className="secondary" disabled={blocked || r.committed || r.saving || Boolean(r.selected && !selected)}
+      <Button className="secondary" disabled={blocked || stale || r.committed || r.saving || Boolean(r.selected && !selected)}
         aria-label={`${r.name}：选择版本 ${index + 1}`} data-revision={version.revision} aria-pressed={selected}
         onClick={() => c.choose(r.key,version.revision)}>选择版本 {index + 1}</Button>
     </details>;
@@ -58,7 +59,7 @@ export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:Co
     <h4>比较版本</h4>
     <div className="sync-branches">{r.tips.map(versionDetails)}</div>
     {history.length > 0 && <div className="sync-history"><h5>历史版本</h5>{history.map(versionDetails)}</div>}
-    {r.hasDraft&&!r.selected&&<Button onClick={()=>c.recover(r.key)}>恢复未保存解决内容</Button>}
+    {r.hasDraft&&!r.selected&&<Button disabled={stale} onClick={()=>c.recover(r.key)}>恢复未保存解决内容</Button>}
     <h4>审核与编辑解决内容</h4><div id={statusId} role="status" data-state={r.saving?'saving':undefined}><Feedback message={r.invalid && !r.saving ? '' : r.message} diagnostic={r.detail}/></div>
     <div className="sync-editor grid min-w-0">{keys.map(key=><label className="ui-field" key={key}><span>{syncFields[key]}</span>{key==='status'?<select aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onChange={e=>c.edit(r.key,key,e.currentTarget.value)}>{Object.entries(r.type==='initiative'?initiativeLabels:actionLabels).map(([value,label])=><option value={value} key={value}>{label}</option>)}</select>:['dueDate','focusPosition'].includes(key)?<Input aria-label={syncFields[key]} type={key==='dueDate'?'date':'number'} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>:<Textarea rows={2} aria-label={syncFields[key]} data-field={key} value={String(r.value[key]??'')} disabled={editorDisabled||r.invalid} onInput={e=>c.edit(r.key,key,e.currentTarget.value)} onChange={()=>{}}/>}</label>)}</div>
     <details className="ui-disclosure" data-sync-json>
@@ -72,14 +73,15 @@ export function ConflictComparison({record:r,callbacks:c,inert=false}:{record:Co
       </div>
     </details>
     <footer className="sync-resolution-actions">
-      {r.selected && !r.committed && !r.invalid && r.value.deleted === true &&
-        <p className="sync-risk">保存后，此记录将标记为已删除。原始版本仍保留。</p>}
+      {deletesRecord && <p id={`${statusId}-risk`} className="sync-risk">保存后，此记录将标记为已删除。原始版本仍保留。</p>}
       <p>{r.committed
         ? '重试会恢复已保留的本机版本。'
         : '保存会创建引用全部待解决分支的新版本，原始历史和来源笔记均保留。请在高级详情核对删除状态、来源引用和审核决定。'}</p>
       <div className="sync-controls">
-        <Button className="quiet sync-discard" disabled={!r.selected||r.saving} onClick={()=>c.discard(r.key)}>放弃编辑</Button>
-        <Button className="primary" disabled={saveDisabled} aria-disabled={r.saving || undefined} onClick={()=>c.save(r.key)}>{r.committed ? '重试本地恢复' : '保存解决结果到本地'}</Button>
+        <Button className="quiet sync-discard" disabled={stale||!r.selected||r.saving} onClick={()=>c.discard(r.key)}>放弃编辑</Button>
+        <Button className={deletesRecord ? 'danger' : 'primary ui-compact'} disabled={saveDisabled}
+          aria-disabled={r.saving || undefined} aria-describedby={deletesRecord ? `${statusId}-risk` : undefined}
+          onClick={()=>c.save(r.key)}>{r.committed ? '重试本地恢复' : deletesRecord ? '标记删除并保存到本地' : '保存解决结果到本地'}</Button>
       </div>
     </footer>
   </article>;
@@ -100,6 +102,7 @@ export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:Syn
     <div role="status" data-sync-status>
       <p className="sync-inspection-label">{inspectionLabels[status]}{status === 'conflicts' && ` · ${m.records.length} 条`}</p>
       <Feedback message={m.message} diagnostic={m.detail}/>
+      {status === 'failed' && m.records.length > 0 && <p>下方为上次检查的结果。请重新检查后再选择版本。</p>}
     </div>
     {m.cacheWarning&&<p role="status" className="sync-risk">{m.cacheWarning}</p>}
     {m.warnings.length>0&&<Feedback message="部分版本需要核对；原文件和历史均保留。缺失历史请等待文件到达后重新检查；损坏文件请从保留的副本恢复。" diagnostic={m.warnings.join('\n')}/>}
@@ -109,7 +112,7 @@ export function SyncContent({model:m,callbacks:c}:{model:SyncModel;callbacks:Syn
     {m.records.map(r => <Button key={r.key} className="quiet ui-row" aria-current={m.active === r.key || undefined}
       disabled={m.running || Boolean(m.active && m.active !== r.key) || r.saving} onClick={() => c.jump(r.key)}>{r.name}</Button>)}
   </nav>}
-  {m.records.map(r=><ConflictComparison key={r.key} record={r} callbacks={c} inert={m.running||Boolean(m.active&&m.active!==r.key)}/>)}
+  {m.records.map(r=><ConflictComparison key={r.key} record={r} callbacks={c} stale={status === 'failed'} inert={m.running||Boolean(m.active&&m.active!==r.key)}/>)}
   </div>
 </>;}
 export function syncView(container:HTMLElement,callbacks:SyncCallbacks) {const root=createRoot(container);return {render(model:SyncModel){flushSync(()=>root.render(<SyncContent model={model} callbacks={callbacks}/>));}};}

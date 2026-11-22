@@ -42,10 +42,22 @@ export class SyncScreen {
   record(key){return this.model.records.find(r=>r.key===key);}
   message(message,detail=''){Object.assign(this.model,{message,detail});this.render();}
   canLeave(){if(!this.dirty&&!this.savePending)return true;this.message('还有解决内容未保存。请继续编辑并保存，或明确放弃编辑。');return false;}
-  task(){return {label:'冲突解决',committed:()=>Boolean(this.resolutionCommitted),dirty:()=>this.dirty,pending:()=>this.savePending,save:()=>this.saveResolution(this.model.active),discard:()=>this.discard(this.model.active,false),close:()=>{
-    this.panel.close();
-    this.opener.focus({preventScroll:true});
-  }};}
+  task(){
+    const record=this.record(this.model.active);
+    const deletesRecord=record && !record.committed && !record.invalid && record.value.deleted===true;
+    return {
+      label:deletesRecord ? '冲突解决（标记删除）' : '冲突解决',
+      committed:()=>Boolean(this.resolutionCommitted),
+      dirty:()=>this.dirty,
+      pending:()=>this.savePending,
+      save:()=>this.saveResolution(this.model.active),
+      discard:()=>this.discard(this.model.active,false),
+      close:()=>{
+        this.panel.close();
+        this.opener.focus({preventScroll:true});
+      },
+    };
+  }
   close(){return requestTaskLeave(this.task());}
   owned(repos,generation){return generation===this.generation&&repos.every((repo,i)=>repo===this.repositories()[i]&&(!this.workspaceIds[i]||repo.workspaceId===this.workspaceIds[i]));}
   async refresh(show, afterSave=false){
@@ -68,13 +80,14 @@ export class SyncScreen {
       Object.assign(this.model,{records,warnings,checked:true,active:'',message:this.saved||'',detail:''});this.render();await this.changed();
     }catch(error){if(this.owned(repos,generation)){
       this.model.checkFailed=true;
+      this.model.active='';
       this.message('检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。',error.message);
     }}
     finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(this.panel.open&&restore&&[document.body,this.panel].includes(document.activeElement))this.refreshButton.focus();}}
   }
   choose(key,revision){
     const r=this.record(key);
-    if(this.model.running||this.savePending||!r||r.incomplete||r.cyclic)return;
+    if(this.model.running||this.model.checkFailed||this.savePending||!r||r.incomplete||r.cyclic)return;
     if(this.dirty){
       if(this.model.active===key&&r.selected===revision)this.article(key)?.querySelector('textarea:not(:disabled),input:not(:disabled),select:not(:disabled)')?.focus();
       return;
@@ -87,7 +100,7 @@ export class SyncScreen {
   clearDraft(r){const cleared=updateSyncDraft(localStorage,r.draftKey,null);if(!cleared)this.model.cacheWarning='本机草稿暂不能移除。已保存的版本仍保留；再次恢复草稿前请核对历史。';return cleared;}
   recoverDraft(key){
     const r=this.record(key);
-    if(!r||this.model.running||this.dirty||this.savePending)return;
+    if(!r||this.model.running||this.model.checkFailed||this.dirty||this.savePending)return;
     const draft=readSyncDraft(localStorage,r.draftKey,{workspaceId:r.repo.workspaceId,entityType:r.type,entityId:r.id});
     if(!draft)return;
     r.selected=draft.selected;r.reviewedHeads=draft.tips;r.retryRecord=draft.retryRecord;
@@ -107,7 +120,7 @@ export class SyncScreen {
   discard(key,restore=true){if(!key||this.model.active!==key||this.savePending)return;const r=this.record(key),revision=r?.selected;this.dirty=false;this.resolutionCommitted=false;this.saved='';this.model.active='';if(r){r.hasDraft=!this.clearDraft(r);r.selected='';r.committed=false;r.retryRecord=null;r.invalid=false;r.message='尚未选择解决版本。请先选择，再审核与编辑。';r.detail='';r.value=structuredClone(r.tips[0]||r.versions[0]);r.json=JSON.stringify(r.value,null,2);}this.model.message='';this.model.detail='';this.render();if(restore){const opener=[...(this.article(key)?.querySelectorAll('[data-revision]')||[])].find(n=>n.dataset.revision===revision);if(opener){opener.closest('details').open=true;opener.focus();}else this.jump(key);}}
   saveResolution(key){
     if(this.savePending)return this.savePending;
-    const r=this.record(key);if(!r?.selected||this.model.active!==key||this.model.running||r.incomplete||r.cyclic)return false;
+    const r=this.record(key);if(!r?.selected||this.model.active!==key||this.model.running||this.model.checkFailed||r.incomplete||r.cyclic)return false;
     const repo=r.repo,workspaceId=repo.workspaceId,generation=this.generation;
     const owned=()=>generation===this.generation&&this.record(key)===r&&this.repositories().includes(repo)&&repo.workspaceId===workspaceId;
     const control=document.activeElement;

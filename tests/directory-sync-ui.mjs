@@ -86,6 +86,13 @@ try {
   await page.mouse.up();
   await page.mouse.move(900, 700);
   await waitForDirectoryFill('rgb(232, 237, 231)');
+  assert.equal(await directory.evaluate(node => getComputedStyle(node, '::before').content), 'none');
+  await directory.hover();
+  await waitForDirectoryFill('rgb(223, 231, 223)');
+  await page.mouse.down();
+  await waitForDirectoryFill('rgb(214, 224, 214)');
+  await page.mouse.move(900, 700);
+  await page.mouse.up();
   await testGeometry(directory);
   await testGeometry(choose);
   await choose.press('Escape');
@@ -108,6 +115,8 @@ try {
   await refresh.click();
   await inspection.getByText('检查未完成', {exact:true}).waitFor();
   assert.equal(await inspection.getByText('无待处理冲突', {exact:true}).count(), 0);
+  await inspection.getByText('下方为上次检查的结果。请重新检查后再选择版本。').waitFor();
+  assert.equal(await sync.locator('.sync-branches').getByRole('button', {name:/选择版本/}).first().isDisabled(), true);
   failInspection = false;
   await refresh.click();
   await inspection.getByText('有待解决的冲突 · 1 条').waitFor();
@@ -123,6 +132,12 @@ try {
   const deleted = branchFor(remote.description);
   await deleted.press('Enter');
   await sync.getByText('保存后，此记录将标记为已删除。原始版本仍保留。').waitFor();
+  const deleteSave = sync.getByRole('button', {name:'标记删除并保存到本地', exact:true});
+  assert.equal(await deleteSave.evaluate(node => getComputedStyle(node).borderColor), 'rgb(161, 38, 37)');
+  const guard = page.locator('#task-leave-decision');
+  await close.click();
+  await guard.getByRole('heading', {name:'离开冲突解决（标记删除）'}).waitFor();
+  await guard.getByRole('button', {name:'继续编辑', exact:true}).click();
   await sync.getByRole('button', {name:'放弃编辑', exact:true}).click();
   assert.equal(await focused(deleted), true);
   const branch = branchFor(local.description);
@@ -130,10 +145,18 @@ try {
   assert.equal(await branch.getAttribute('aria-pressed'), 'true');
   const content = sync.getByRole('textbox', {name:'内容', exact:true});
   assert.equal(await focused(content), true);
+  const waitForSelectedFill = color => page.waitForFunction(expected =>
+    getComputedStyle(document.querySelector('.sync-branches button[aria-pressed="true"]')).backgroundColor === expected, color);
+  await page.mouse.move(0, 0);
+  await waitForSelectedFill('rgb(232, 237, 231)');
+  await branch.hover();
+  await waitForSelectedFill('rgb(223, 231, 223)');
+  await page.mouse.down();
+  await waitForSelectedFill('rgb(214, 224, 214)');
+  await page.mouse.up();
   await content.fill('合并：保留资料，补齐缺项');
   await content.evaluate(node => node.setSelectionRange(1, 3));
   await page.keyboard.press('Escape');
-  const guard = page.locator('#task-leave-decision');
   const keep = guard.getByRole('button', {name:'继续编辑', exact:true});
   assert.equal(await focused(keep), true);
   const discard = guard.getByRole('button', {name:'放弃更改并离开'});
@@ -144,6 +167,8 @@ try {
   assert.deepEqual(await content.evaluate(node => [node.selectionStart, node.selectionEnd]), [1, 3]);
   assert.deepEqual(await oldBytes(), originalRevisions);
   assert.equal((await repo.history(ancestor.entityId)).length, 3);
+  const save = sync.getByRole('button', {name:'保存解决结果到本地'});
+  assert.equal(await save.evaluate(node => getComputedStyle(node, '::before').backgroundColor), 'rgb(36, 92, 172)');
 
   for (const viewport of [{width:393,height:852}, {width:1180,height:480}]) {
     await page.setViewportSize(viewport);
@@ -151,7 +176,7 @@ try {
     assert.equal(await sync.locator('.sync-body').evaluate(node => node.scrollWidth <= node.clientWidth), true);
     assert.equal(await sync.evaluate(node => node.scrollWidth <= node.clientWidth), true);
     assert.equal(await history.evaluate(node => getComputedStyle(node).transitionDuration), '0s');
-    await sync.getByRole('button', {name:'保存解决结果到本地'}).scrollIntoViewIfNeeded();
+    await save.scrollIntoViewIfNeeded();
   }
   await close.click();
   await guard.getByRole('button', {name:'保存并离开', exact:true}).click();

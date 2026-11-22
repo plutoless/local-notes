@@ -255,7 +255,7 @@ details { overflow-wrap: anywhere; }
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
 }
-.sync-panel { overflow-wrap: anywhere; color: var(--workspace-ink); }
+.sync-panel.ui-panel { overflow-wrap: anywhere; color: var(--workspace-ink); }
 .sync-header {
   display: flex;
   flex-wrap: wrap;
@@ -300,10 +300,10 @@ details { overflow-wrap: anywhere; }
 .sync-version button[aria-pressed="true"],
 .sync-records .ui-row[aria-current="true"] { background: var(--workspace-current); color: var(--workspace-current-text); font-weight: 600; }
 .sync-version[data-selected] > summary:hover,
-.sync-version button[aria-pressed="true"]:hover,
+.sync-panel .sync-version button[aria-pressed="true"]:hover:not(:disabled),
 .sync-records .ui-row[aria-current="true"]:hover { background: var(--workspace-current-hover); }
 .sync-version[data-selected] > summary:active,
-.sync-version button[aria-pressed="true"]:active,
+.sync-panel .sync-version button[aria-pressed="true"]:active:not(:disabled),
 .sync-records .ui-row[aria-current="true"]:active { background: var(--workspace-current-pressed); }
 .sync-history .sync-version { margin-block: 8px; }
 .sync-branches, .sync-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
@@ -319,9 +319,6 @@ details { overflow-wrap: anywhere; }
 .sync-records .ui-action { white-space: normal; text-align: start; min-width: 0; border-bottom-color: var(--workspace-divider); }
 @media (max-width: 650px) {
   .sync-branches, .sync-editor { grid-template-columns: 1fr; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .sync-panel summary { transition: none; }
 }
 
 .action-revision { border-top: 1px solid var(--divider); padding: 16px 0; }
@@ -735,6 +732,7 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
   transition: background-color 100ms;
 }
 .shell-directory summary::-webkit-details-marker { display: none; }
+.shell-directory .directory-details > summary::before { content: none; }
 .shell-directory summary::after {
   content: ""; flex: none; width: 6px; height: 6px; margin-inline-end: 2px;
   border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg);
@@ -752,9 +750,6 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 .directory-options dd { margin: 4px 0 0; white-space: pre-wrap; }
 .directory-options .ui-action { display: flex; width: 100%; justify-content: start; gap: 6px; padding-inline: 8px; text-align: start; white-space: normal; }
 .directory-options .icon { width: 16px; height: 16px; flex-basis: 16px; }
-@media (prefers-reduced-motion: reduce) {
-  .shell-directory summary { transition: none; }
-}
 .home #items { width: 100%; max-width: 1120px; margin-inline: auto; gap: 28px 40px; }
 .home-tools { align-items: center; }
 .home-tools > button, .home-tools > details { max-width: 100%; min-width: 0; }
