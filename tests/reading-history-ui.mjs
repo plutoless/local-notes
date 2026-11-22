@@ -5,9 +5,7 @@ import {chromium} from 'playwright';
 import {ActionRepository} from '../web/actions.js';
 import {storageFixture} from './action-adapter.js';
 const evidence = process.env.READING_EVIDENCE || 'build/validation/124/reading';
-const fixture = await storageFixture();
-const secondFixture = await storageFixture();
-let activeFixture = fixture;
+let fixture, secondFixture, activeFixture;
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 let delayPath, releaseRead, readBegan;
@@ -24,6 +22,9 @@ async function waitForGatedRead(started, path) {
 }
 const notices = [];
 try {
+  fixture = await storageFixture();
+  secondFixture = await storageFixture();
+  activeFixture = fixture;
   const page = await browser.newPage({viewport: {width: 1180, height: 800}});
   await page.exposeFunction('recordReadingNotice', message => notices.push(message));
   await page.addInitScript(() => addEventListener('DOMContentLoaded', () => {
@@ -153,4 +154,10 @@ try {
 } catch (error) {
   console.error('Reading notices:', notices);
   throw error;
-} finally { await browser.close(); await fixture.close(); await secondFixture.close(); }
+} finally {
+  try {
+    await browser.close();
+  } finally {
+    await Promise.all([fixture?.close(), secondFixture?.close()]);
+  }
+}

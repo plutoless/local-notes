@@ -13,6 +13,13 @@ try {
  await page.goto('https://catalogue.test/docs/design/catalogue.html');
  await page.locator('#react-library .card[data-path]').waitFor();
  await page.locator('#states [data-state=recovered]').waitFor();
+ const home=page.locator('#react-library .home #items');
+ assert.equal(await home.evaluate(node=>getComputedStyle(node).display),'grid');
+ const reading=home.getByRole('button',{name:'继续阅读：保留原文身份并继续阅读',exact:true});
+ assert.equal(await reading.count(),2);
+ const paths=await reading.evaluateAll(nodes=>nodes.map(node=>document.getElementById(node.getAttribute('aria-describedby')).textContent));
+ assert.equal(new Set(paths).size,2);
+ assert.deepEqual(await home.locator('.recent-reading summary').evaluateAll(nodes=>nodes.map(node=>document.getElementById(node.getAttribute('aria-describedby')).textContent)),paths);
  const input=page.locator('#fields input').first();
  assert.equal(await input.evaluate(n=>n.getBoundingClientRect().height),40);
  assert.equal(await input.evaluate(n=>n.parentElement.getBoundingClientRect().height),44);
@@ -41,6 +48,9 @@ try {
  assert.equal(await page.evaluate(()=>document.activeElement.textContent),'打开核对面板');
  await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-desktop.png` : 'docs/validation/issue31/catalogue-desktop.png',fullPage:true});
  await page.setViewportSize({width:393,height:852});
+ await home.locator('.recent-reading summary').last().click();
+ assert.equal(await home.evaluate(node=>node.scrollWidth<=node.clientWidth),true);
+ await home.locator('.recent-reading summary').last().click();
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
  await page.screenshot({path:process.env.CATALOGUE_EVIDENCE ? `${process.env.CATALOGUE_EVIDENCE}/catalogue-393.png` : 'docs/validation/issue31/catalogue-393.png',fullPage:true});
  await page.emulateMedia({reducedMotion:'reduce'});
