@@ -334,7 +334,11 @@ function activeTask() {
   if (initiatives.drawer.panel.open) return initiatives.task();
   if (!syncScreen.panel.hidden) return syncScreen.task();
   if (noteInfo.panel.open) return {label: '笔记信息', dirty: () => false,
-    pending: () => libraryScreen.noteTopicPending || noteInitiativePending, close: () => noteInfo.hide()};
+    pending: () => {
+      const work = [...(infoSession?.pending || []), libraryScreen.noteTopicPending, noteInitiativePending].filter(Boolean);
+      if (work.length) return Promise.all(work);
+    },
+    close: () => noteInfo.hide()};
   return organize.candidateTask() || (visibleNote() ? noteTask() : null);
 }
 async function flush(navigation = false, retainAction = false, sourceDetour = false) {
@@ -663,25 +667,31 @@ const infoAssociationReaders = {
   topics: (path, owns) => libraryScreen.noteTopics(path, null, owns),
   initiatives: (path, owns) => noteInitiatives(path, null, owns)
 };
-async function loadInfoAssociation(session, kind, restoreFocus = false) {
+function loadInfoAssociation(session, kind, restoreFocus = false) {
   const owns = () => session && noteInfo.panel.open && infoSession === session &&
     session.path === current && session.workspace === rootKey;
-  if (!owns()) return;
+  if (!owns() || taskLeavePending()) return;
   infoUI.set({[kind]:'loading'});
-  try {
-    await infoAssociationReaders[kind](session.path, owns);
-    if (owns()) infoUI.set({[kind]:'ready'});
-  } catch {
-    if (owns()) infoUI.set({[kind]:'failed'});
-  }
-  if (restoreFocus && owns() && document.activeElement === document.body) $('#rename').focus();
+  // Repository loading can recover an already-committed revision. Keep that
+  // work under the active task until it settles, including on a workspace leave.
+  const pending = (async () => {
+    try {
+      await infoAssociationReaders[kind](session.path, owns);
+      if (owns()) infoUI.set({[kind]:'ready'});
+    } catch {
+      if (owns()) infoUI.set({[kind]:'failed'});
+    }
+    if (restoreFocus && owns() && document.activeElement === document.body) $('#rename').focus();
+  })();
+  session.pending.add(pending);
+  return pending.finally(() => session.pending.delete(pending));
 }
 for (const kind of Object.keys(infoAssociationReaders)) {
   infoUI.on(kind, () => loadInfoAssociation(infoSession, kind, true));
 }
 reader.info(async opener => {
   if (noteInfo.panel.open) return;
-  const session = {opener, path:current, workspace:rootKey};
+  const session = {opener, path:current, workspace:rootKey, pending:new Set()};
   if (!await flush() || !visibleNote() || current !== session.path ||
       rootKey !== session.workspace || document.querySelector('dialog[open]')) return;
   infoSession = session;
@@ -693,8 +703,8 @@ noteInfo.footer.append(actionControl('完成', () => flush(), {variant: 'primary
 libraryScreen.createNoteTopic = async note => { if (await flush()) libraryScreen.editTopic(null, note); };
 libraryScreen.returnToNoteInfo = async (note, committed) => {
   const session = infoSession;
-  const owns = () => infoSession === session && visibleNote() && current === note.path &&
-    currentWorkspace === session?.workspace && rootKey === session.workspace && !document.querySelector('dialog[open]');
+  const owns = () => session && infoSession === session && visibleNote() && current === note.path &&
+    currentWorkspace === session.workspace && rootKey === session.workspace && !document.querySelector('dialog[open]');
   if (!owns()) return;
   const origin = session.opener;
   try { await libraryScreen.noteTopics(note.path, null, owns); }
@@ -707,7 +717,6 @@ libraryScreen.returnToNoteInfo = async (note, committed) => {
   if (!owns()) return;
   infoUI.set({topics:'ready'});
   noteInfo.open($('#note-create-topic'), origin);
-  await loadInfoAssociation(session, 'initiatives');
 };
 
 
