@@ -5,6 +5,7 @@ import {storageFixture} from './action-adapter.js';
 import {InitiativeRepository} from '../web/initiatives.js';
 await mkdir('build/issue98-review', {recursive:true});
 const fixture = await storageFixture();
+const outbound = [];
 const text = '历史计划需要确认。核对来源证据。'.repeat(450);
 await writeFile(fixture.root + '/reference.md', text);
 const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
@@ -20,6 +21,7 @@ try {
    if (request.cmd === 'aiCancel') { pending?.({error:'Canceled'}); pending = null; return {}; }
    if (request.cmd === 'aiAnalyze') {
     requests++;
+    outbound.push(request.messages);
     if (mode === 'hold') return await new Promise(resolve => pending = resolve);
     if (mode === 'offline') return {error:'Offline or connection failed; retry explicitly'};
     if (mode === 'invalid') return {text:'{invalid'};
@@ -54,9 +56,24 @@ try {
  assert.equal(await page.locator('#ai-readable pre').allTextContents().then(x => x.join('')), text);
  await page.locator('#ai-selection input').uncheck(); assert.equal(await page.locator('#ai-send').isDisabled(), true);
  assert.equal(await page.locator('#ai-input').textContent(), '');
- await preview(); await page.locator('#ai-send').click(); await status('服务暂时');
+ await preview();
+ await page.locator('#ai-request-details summary').click();
+ const exactPreview = await page.locator('#ai-input').textContent();
+ await page.keyboard.press('Tab');
+ assert.equal(await page.locator('#ai-input').evaluate(node => node === document.activeElement), true);
+ assert.equal(requests, 0, 'Opening and focusing the full outbound preview must not analyze');
+ await page.locator('#ai-send').click(); await status('服务暂时');
+ assert.equal(exactPreview, '服务地址：http://127.0.0.1/controlled\n模型：controlled\nstream: false\n\n系统消息：\n'
+  + outbound[0][0].content + '\n\n用户消息（每个片段一次请求）：\n'
+  + outbound.map(messages => messages[1].content).join('\n\n'));
  await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 6); assert.equal(await page.locator('.suggestion-card').count(), 6); assert.match(await page.locator('#ai-status').textContent(), /已完成 1\/2/);
- mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2'); await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12); assert.equal(await page.locator('.suggestion-card').count(), 12);
+ assert.match(await page.locator('#ai-help').textContent(), /只会向所设服务发送剩余 1 个片段/);
+ assert.deepEqual(await page.locator('#ai-readable article p').allTextContents(), ['已完成', '待完成']);
+ mode = 'ok'; await page.locator('#ai-send').click(); await status('已完成 2 / 2');
+ assert.equal(requests, 3);
+ assert.deepEqual(outbound[2], outbound[1], 'Continuing sends only the unfinished request');
+ await page.waitForFunction(() => document.querySelectorAll('.suggestion-card').length === 12);
+ assert.equal(await page.locator('.suggestion-card').count(), 12);
  await card(0).getByText('确认前编辑建议', {exact:true}).click();
  await card(0).getByLabel('编辑建议', {exact:true}).fill('');
  await card(0).getByRole('button', {name:/^确认此建议：/}).click(); await status('建议内容不能为空');
@@ -106,6 +123,19 @@ try {
  const colors = await page.evaluate(() => ['--text','--muted','--green','--line','--focus'].map(n => getComputedStyle(document.documentElement).getPropertyValue(n).trim()));
  const lum = hex => { const rgb = hex.match(/[\da-f]{2}/gi).map(v => parseInt(v,16)/255).map(v => v <= .04045 ? v/12.92 : ((v+.055)/1.055)**2.4); return rgb[0]*.2126+rgb[1]*.7152+rgb[2]*.0722; };
  const ratios = colors.map(c => (1.05)/(lum(c)+.05)); assert.ok(ratios[0]>=4.5 && ratios[1]>=4.5 && ratios[2]>=4.5 && ratios[3]>=3 && ratios[4]>=3);
+ // Open the confirmed record through the ordinary Action route after reload.
+ const confirmed = actions.actions.find(action => action.description === '已编辑的合成建议');
+ assert.ok(confirmed);
+ assert.equal(confirmed.sources[0].path, 'reference.md');
+ assert.equal(confirmed.sources[0].quote, text.slice(0, 16));
+ await page.reload();
+ await page.getByRole('button', {name:'全部行动', exact:true}).click();
+ const result = page.locator(`button[data-entity-id=${JSON.stringify(confirmed.entityId)}]`);
+ assert.equal(await result.locator('.action-list-title').textContent(), confirmed.description);
+ await result.click();
+ await page.locator('#action-drawer[open]').waitFor();
+ assert.equal(await page.locator('#action-description').inputValue(), confirmed.description);
+ assert.equal(await readFile(fixture.root + '/reference.md', 'utf8'), text);
  assert.deepEqual(errors, []);
  console.log('Organization review UI passed: exact preview, invalidation, partial retry, edited confirmation, later, attachment, reference, ignore, pending recovery, persistence, source-change rejection, cancellation, invalid response, offline retention, 393px, keyboard focus; contrast ratios on white:', ratios);
 } catch (error) { console.error('Organization review failure before cleanup:', error); throw error;

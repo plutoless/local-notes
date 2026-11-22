@@ -11,13 +11,14 @@ export class ActionScreen {
     this.previous = null; this.retry = null; this.offset = 0; this.status = ''; this.search = ''; this.saving = null;
     this.receipt=receiptView(()=>$('#action-save-state'));
     this.setupDrawer();
-    mountActionControls(this.drawer.body, $('#action-tools'), this.drawer.footer);
+    mountActionControls(this.drawer.body, $('#action-tools'), this.drawer.footer, () => this.dismissDrawer());
+    this.drawer.footer.querySelector('button[type=submit]').id = 'action-save';
     this.drawer.body.addEventListener('focusin', event => {
       if (event.target.matches('input, textarea, select, button, summary, [tabindex]')) this.editingFocus = event.target;
     });
     this.assignmentView = actionOptions($('#action-initiative'), '独立行动');
     this.filterView = actionOptions($('#action-initiative-filter'), '全部事项');
-    this.sourcesView = actionSources($('#action-sources'), () => this.changed(), path => this.initiatives.openNote(path));
+    this.sourcesView = actionSources($('#action-sources'), () => this.changed(), (path, index) => this.openSource(path, index));
     this.historyView = actionHistory($('#action-revisions'));
     $('#action-recover').onclick = async () => {
       if (!await this.leaveDrawer()) return;
@@ -32,8 +33,6 @@ export class ActionScreen {
     $('#action-previous').onclick = () => { this.offset = Math.max(0, this.offset - 30); this.list().catch(error => notice(error.message)); };
     $('#action-new').onclick = event => this.edit(null, null, null, event.currentTarget);
     $('#action-discard').onclick = () => this.leaveDrawer();
-    $('#action-back').textContent = '取消';
-    $('#action-back').onclick = () => this.dismissDrawer();
     $('#action-description').setAttribute('aria-describedby', 'action-save-state');
     $('#action-form').oninput = () => { $('#action-open-initiative').disabled = !$('#action-initiative').value; this.changed(); };
     $('#action-form').onsubmit = event => { event.preventDefault(); this.save(); };
@@ -46,7 +45,11 @@ export class ActionScreen {
         const records = await repository.history(entityId);
         if (repository !== this.repository || entityId !== this.previous?.entityId || request !== this.editRequest || !this.drawer.panel.open) return;
         this.historyView(records.sort((a, b) => new Date(b.modifiedAt) - new Date(a.modifiedAt)));
-      } catch (error) { if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); }
+      } catch (error) {
+        if (repository === this.repository && entityId === this.previous?.entityId && request === this.editRequest && this.drawer.panel.open) {
+          this.historyView('历史暂不可用，请重试。');
+        }
+      }
     };
   }
   async changeFocus() {
@@ -90,7 +93,7 @@ export class ActionScreen {
   // Typed ActionEntry port; legacy edit(...) remains supported for sibling consumers.
   async open(entry) {
     const request = (this.openRequest || 0) + 1;
-    if (await this.edit(entry.record, null, null, entry.opener) && request === this.openRequest && this.drawer.panel.open) this.returnToFocus = entry.returnToOrigin || null;
+    if (await this.edit(entry.record, null, null, entry.opener, entry.initiativeId) && request === this.openRequest && this.drawer.panel.open) this.returnToFocus = entry.returnToOrigin || null;
   }
   setupDrawer() {
     this.drawer = drawer({id: 'action-drawer', title: '新建行动', onDismiss: () => this.dismissDrawer()});
@@ -163,7 +166,7 @@ export class ActionScreen {
     if (!this.repository.ready && !await this.openWorkspace()) return;
     if (!this.active) return;
     if (this.previous && !this.dirty) {
-      const latest = (await allRecords(this.repository)).find(record => record.entityId === this.previous.entityId);
+      const latest = (await this.repository.query({entityId: this.previous.entityId, limit: 1})).actions[0];
       if (latest) this.previous = latest;
     }
     $('#action-tools').hidden = false; $('#view-title').textContent = '行动';
@@ -190,7 +193,7 @@ export class ActionScreen {
     this.rowsView ||= actionRows($('#items'));
     this.rowsView.render({rows: page.actions.map(action => ({...action, overdue: isOverdue(action), initiativeName: this.initiativeNames?.get(action.initiativeId) || (action.initiativeId ? '关联事项不可用' : '独立行动')})), selected: this.previous?.entityId,
       empty: this.search || this.status || this.initiativeFilter ? '没有符合条件的行动。请调整搜索词或筛选条件。' : this.offset ? '本页没有行动，请返回上一页。' : '还没有行动。决定要做什么后，点击「新建行动」。',
-      open: action => this.edit(action)});
+      open: (action, opener) => this.edit(action, null, null, opener)});
     if (focusedRow) [...$('#items').querySelectorAll('[data-entity-id]')].find(node => node.dataset.entityId === focusedRow)?.focus({preventScroll: true});
     $('#items').scrollTop = scroll;
     pageAvailability($('#action-previous'), $('#action-next'), this.offset > 0, page.hasMore);
@@ -252,9 +255,9 @@ export class ActionScreen {
 
     this.baseline = JSON.stringify(this.fields());
     // Source availability is advisory and must survive every form reconstruction.
-    if (!this.contextualProposal) this.refreshSources(fields).catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
+    if (!this.contextualProposal) this.sourceRefresh = this.refreshSources().catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
   }
-  async edit(action, recovered = null, proposal = null, origin = document.activeElement) {
+  async edit(action, recovered = null, proposal = null, origin = document.activeElement, initiativeId) {
     const request = this.openRequest = (this.openRequest || 0) + 1;
     const repository = this.repository;
 
@@ -271,13 +274,13 @@ export class ActionScreen {
       catch (error) { this.notice(error.message); return; }
     }
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.()) return;
-    this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
+    this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || (initiativeId ? `new:${initiativeId}` : 'new')}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     const context = this.captureContext(action); context.opener = origin;
     // The shared row is temporarily disabled during opening, which can move DOM focus to body.
     if (context.opener === document.body && action) context.opener = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === action.entityId) || context.opener;
     this.contextualProposal = proposal;
-    this.showForm(proposal?.fields || action || {}, action);
+    this.showForm(proposal?.fields || action || {initiativeId}, action);
     const baseline = this.baseline;
     if (draft) { this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; }
     this.drawerContext = context;
@@ -295,18 +298,45 @@ export class ActionScreen {
     // Opening already placed focus; late option loading must not move it again.
     return true;
   }
-  async refreshSources(action) {
+  async refreshSources() {
     this.editRequest = (this.editRequest || 0) + 1; const request = this.editRequest, repository = this.repository;
     const sources = this.sourcesView.get();
     for (const [index, source] of sources.entries()) {
-      if (!source.path || !source.fingerprint) continue;
+      if (!source.path) continue;
+      if (!source.fingerprint) {
+        this.sourcesView.status(index, '来源未经核对');
+        continue;
+      }
       const result = await sourceState(source, path => native('read', {path, workspaceId: repository.workspaceId}), this.initiatives.listReferences);
       if (request !== this.editRequest || repository !== this.repository) return;
       // An advisory reply cannot replace an edited quote or newly added source.
       if (JSON.stringify(this.sourcesView.get()[index]) !== JSON.stringify(source)) continue;
-      this.sourcesView.status(index, statusLabel(result.state), result.path, result.state === 'moved');
-      if (result.state === 'moved') this.changed();
+      this.sourcesView.status(index, statusLabel(result.state), result.path);
     }
+  }
+
+  async openSource(path, index) {
+    const repository = this.repository, owner = this.owner?.();
+    const originalSource = this.sourcesView.get()[index];
+    if (!originalSource || !this.sourceControl(index, path)) return;
+    if (!await requestTaskLeave({...this.task(), close: undefined})) return;
+    if (repository !== this.repository || owner !== this.owner?.() || !this.drawer.panel.open) return;
+    const source = this.sourcesView.get()[index];
+    if (!source || source.path !== originalSource.path || source.quote !== originalSource.quote || source.fingerprint !== originalSource.fingerprint) return;
+    const request = this.editRequest, action = this.previous;
+    const owns = () => repository === this.repository && owner === this.owner?.() &&
+      request === this.editRequest && this.drawer.panel.open && !this.dirty;
+    const verify = text => {
+      if (path !== source.path && fingerprint(text) !== source.fingerprint) {
+        throw Error('移动后的来源已更改，请重新打开行动并核对来源。');
+      }
+    };
+    await this.openLinkedNote(path, {action, index, owns, verify});
+  }
+
+  sourceControl(index, path) {
+    const control = this.drawer.body.querySelector(`[data-action-source-index="${index}"]`);
+    return control?.dataset.actionSourcePath === path ? control : null;
   }
 
   async save() {

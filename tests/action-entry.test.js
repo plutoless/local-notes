@@ -63,3 +63,29 @@ test('a durable focus revision with failed repair stays a committed private reco
     assert.match(failures[0].message,/版本已保存/);
   }finally{globalThis.document=previousDocument;globalThis.localStorage=previousStorage;}
 });
+
+test('a source detour is tied to the open Action and its accepted input', async () => {
+  const source = {path: 'reference.md', quote: 'Synthetic evidence', fingerprint: 'fingerprint'};
+  const screen = Object.create(ActionScreen.prototype);
+  const record = {entityId: 'action', revision: 'saved'};
+  screen.previous = record;
+  screen.repository = {};
+  screen.drawer = {panel: {open: true}};
+  screen.sourceControl = () => ({});
+  screen.sourcesView = {get: () => [source]};
+
+  let accepted;
+  screen.openLinkedNote = async (path, context) => {
+    assert.equal(path, 'moved.md');
+    accepted = context;
+  };
+  await screen.openSource('moved.md', 0);
+  assert.equal(accepted.action, record);
+  assert.throws(() => accepted.verify('Different note'), /移动后的来源已更改/);
+  assert.equal(accepted.owns(), true);
+  screen.dirty = true;
+  assert.equal(accepted.owns(), false);
+  screen.dirty = false;
+  screen.drawer.panel.open = false;
+  assert.equal(accepted.owns(), false);
+});

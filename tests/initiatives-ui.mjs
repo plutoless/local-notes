@@ -77,10 +77,13 @@ try {
   await page.locator('#items [data-initiative-id]').first().click();
   await page.locator('#initiative-new-action').click();
   await page.locator('#action-description').fill('Verify the release');
+  await page.locator('#action-add-source').evaluate(button => { button.closest('details').open = true; });
+  await page.locator('#action-add-source').click();
+  await page.locator('#action-sources .source-path').fill('reference.md');
   await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();
-  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('#items [data-initiative-id]').filter({hasText:'Release planning'}).click();
   await page.locator('#initiative-actions button').filter({hasText: 'Verify the release'}).waitFor();
   await metadata();
   await page.locator('#initiative-progress').fill('未保存的进展，跳转后仍保留');
@@ -138,14 +141,16 @@ try {
   await page.locator('#initiative-save-state').filter({hasText: /^已保存到本地$/}).waitFor({state:'attached'});
   await page.waitForFunction(()=>!document.querySelector('#initiative-drawer').open);
   await page.locator('#initiative-new-note').click();
-  await page.waitForFunction(()=>!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent.startsWith('Notes/') && document.querySelector('#title')===document.activeElement);
+  await page.locator('#capture-title').fill('Working log');
+  await page.locator('#note-task-drawer button[type=submit]').click();
+  await page.waitForFunction(()=>!document.querySelector('#editor').hidden && document.querySelector('#file-path').textContent.startsWith('Notes/') && document.querySelector('#mode')===document.activeElement);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
-  assert.equal(await page.locator('#title').evaluate(n=>n.readOnly),false); await page.locator('#title').fill('Working log');
+  assert.equal(await page.locator('#title').inputValue(),'Working log');
   await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Manual research update');
   await page.waitForFunction(() => document.querySelector('#save-state').textContent === '已保存到本地');
   failNoteSave = true;
   await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('Manual research update draft');
-  await page.locator('#workspace-overview').click();
+  await page.locator('#reader-edit-initiative').click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'保存并离开',exact:true}).click();
   await page.locator('#task-leave-decision').getByRole('button',{name:'继续编辑',exact:true}).click();
   await page.locator('#save-state').filter({hasText: /未保存/}).waitFor();
@@ -168,7 +173,7 @@ try {
   await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
   // Dismiss the injected save-failure receipt before opening the row beneath it.
   if (await page.locator('#notice').isVisible()) await page.locator('#notice').getByRole('button', {name:'关闭提示',exact:true}).click();
-  await page.getByRole('heading', {name: 'Verify the release', exact: true}).click();
+  await page.locator('#items [data-entity-id]').filter({hasText: 'Verify the release'}).click();
   const workspaceId = (await fixture.adapter('workspace')).workspaceId;
   const initiativeId = (await fixture.adapter('actionQuery', {workspaceId, entityType: 'initiative'})).actions[0].entityId;
   await page.locator('#action-options').evaluate(node => node.open = true);
@@ -184,6 +189,15 @@ try {
   await page.waitForFunction(()=>!document.querySelector('#workspace-overview').disabled);
   assert.equal(await page.locator('#initiative-title').inputValue(), 'Release planning');
   assert.equal(await page.locator('#initiative-progress').inputValue(), 'Progress after capture');
+  const linkedAction = page.locator('#initiative-actions button').filter({hasText: 'Verify the release'});
+  await linkedAction.click();
+  await page.getByRole('button',{name:'打开来源：reference.md',exact:true}).click();
+  await page.locator('#reading').waitFor({state:'visible'});
+  await page.locator('#back').click();
+  await page.waitForFunction(() => document.activeElement?.matches('#initiative-actions button'));
+  await page.locator('#workspace-return-action').click();
+  await page.locator('#action-drawer[open]').waitFor();
+  assert.equal(await page.locator('#action-description').inputValue(), 'Verify the release');
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="notes"]').click();
   await page.getByRole('heading', {name: 'Working log', exact: true}).waitFor();
   await page.locator('#library-create-topic').click();
@@ -218,7 +232,7 @@ try {
   await page.reload();
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   await closeSavedAction(page); await closeNoteInfo(page); await page.locator('[data-view="initiatives"]').click();
-  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('#items [data-initiative-id]').filter({hasText:'Release planning'}).click();
   await metadata();
   await page.locator('#initiative-link-details').evaluate(node=>node.open=true);
   assert.equal(await page.locator('.initiative-source input').first().inputValue(), 'moved-reference.md');
@@ -242,7 +256,7 @@ try {
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await page.locator('#note-info-open').click();
   await page.locator('#note-initiatives button').click();
-  await page.locator('#initiative-editor').waitFor({state: 'visible'});
+  await page.locator('#workspace-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
   await writeFile(join(fixture.root, 'moved-reference.md'), original + '\nExternal update');
@@ -274,7 +288,7 @@ try {
   await page.locator('#search').fill('不存在的事项');
   await page.getByText('没有找到匹配事项。请缩短关键词，或清空搜索。', {exact: true}).waitFor();
   await page.locator('#search').fill('Release planning');
-  await page.getByRole('heading', {name: 'Release planning', exact: true}).click();
+  await page.locator('#items [data-initiative-id]').filter({hasText:'Release planning'}).click();
   await metadata();
   await page.waitForFunction(() => document.querySelector('#initiative-title') === document.activeElement);
   await page.setViewportSize({width: 393, height: 852});
@@ -289,7 +303,10 @@ try {
   await page.setViewportSize({width: 393, height: 852});
   await page.locator('#initiative-title').focus(); await page.keyboard.press('Tab');
   assert.equal(await page.locator('#initiative-goal').evaluate(el => el === document.activeElement), true);
-  assert.deepEqual(await page.locator('#initiative-goal').evaluate(el => { const style = getComputedStyle(el); return [style.outlineStyle, style.borderColor, style.boxShadow]; }), ['none', 'rgb(36, 92, 172)', 'rgb(36, 92, 172) 0px 0px 0px 1px inset']);
+  assert.deepEqual(await page.locator('#initiative-goal').evaluate(el => {
+    const style = getComputedStyle(el);
+    return [style.outlineStyle, style.outlineWidth, style.outlineColor, style.outlineOffset, style.borderColor, style.boxShadow];
+  }), ['solid', '3px', 'rgb(36, 92, 172)', '2px', 'rgb(120, 120, 117)', 'none']);
   await page.screenshot({path: 'docs/validation/issue33/after-393px.png'});
   assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   // Hold real adapter calls to observe loading/saving rather than assuming transient states.

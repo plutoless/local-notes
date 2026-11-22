@@ -20,8 +20,8 @@ export function mountDocument(container:HTMLElement) {
         <div id="library-tools" hidden={true}></div>
         <div id="organize-tools" hidden={true}>
           <div id="organization-react"></div>
-          <section aria-labelledby="ai-review-title">
-            <h2 id="ai-review-title">3 · 核对已保存的建议</h2>
+          <section className="organization-stage" aria-labelledby="ai-review-title">
+            <h2 id="ai-review-title">核对已保存的建议</h2>
             <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
             <div id="ai-results"></div>
             <div className="organization-actions ui-pagination"><button id="ai-results-previous" className="ui-action secondary">上一页建议</button><button id="ai-results-next" className="ui-action secondary">下一页建议</button></div>
