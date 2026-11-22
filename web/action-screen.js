@@ -93,7 +93,7 @@ export class ActionScreen {
   // Typed ActionEntry port; legacy edit(...) remains supported for sibling consumers.
   async open(entry) {
     const request = (this.openRequest || 0) + 1;
-    if (await this.edit(entry.record, null, null, entry.opener) && request === this.openRequest && this.drawer.panel.open) this.returnToFocus = entry.returnToOrigin || null;
+    if (await this.edit(entry.record, null, null, entry.opener, entry.initiativeId) && request === this.openRequest && this.drawer.panel.open) this.returnToFocus = entry.returnToOrigin || null;
   }
   setupDrawer() {
     this.drawer = drawer({id: 'action-drawer', title: '新建行动', onDismiss: () => this.dismissDrawer()});
@@ -257,7 +257,7 @@ export class ActionScreen {
     // Source availability is advisory and must survive every form reconstruction.
     if (!this.contextualProposal) this.sourceRefresh = this.refreshSources().catch(error => { if (this.drawer.panel.open) errorFeedback($('#action-save-state'), error.message); });
   }
-  async edit(action, recovered = null, proposal = null, origin = document.activeElement) {
+  async edit(action, recovered = null, proposal = null, origin = document.activeElement, initiativeId) {
     const request = this.openRequest = (this.openRequest || 0) + 1;
     const repository = this.repository;
 
@@ -274,13 +274,13 @@ export class ActionScreen {
       catch (error) { this.notice(error.message); return; }
     }
     if (request !== this.openRequest || repository !== this.repository || owner !== this.owner?.()) return;
-    this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || 'new'}`;
+    this.draftKey = recovered?.key || proposal?.key || `action-draft:${this.repository.workspaceId}:${action?.entityId || (initiativeId ? `new:${initiativeId}` : 'new')}`;
     const draft = JSON.parse(localStorage.getItem(this.key()) || 'null');
     const context = this.captureContext(action); context.opener = origin;
     // The shared row is temporarily disabled during opening, which can move DOM focus to body.
     if (context.opener === document.body && action) context.opener = [...document.querySelectorAll('#items [data-entity-id]')].find(node => node.dataset.entityId === action.entityId) || context.opener;
     this.contextualProposal = proposal;
-    this.showForm(proposal?.fields || action || {}, action);
+    this.showForm(proposal?.fields || action || {initiativeId}, action);
     const baseline = this.baseline;
     if (draft) { this.showForm(draft.fields, draft.previous); this.baseline = baseline; this.retry = draft.retry; }
     this.drawerContext = context;
