@@ -74,11 +74,17 @@ export class Library {
       seen.add(note.path); const old = previous.get(note.path);
       if (!old || old.modified !== note.modified || old.size !== note.size || old.searchVersion !== 1 || old.summaryVersion !== 1) {
         try {
-          const {text} = await call('read', {path: note.path}); reads++;
+          const {text} = await call('read', {path: note.path});
+          if (generation !== this.generation) return;
+          reads++;
           const record = referenceRecord(note, text);
           await call('referencePut', {record, search: referenceSearchText(record.title, text)}); this.revision++;
-        } catch (error) { this.warnings.push(`${note.path}: ${error.message}`); }
+        } catch (error) {
+          if (generation !== this.generation) return;
+          this.warnings.push(`${note.path}: ${error.message}`);
+        }
       }
+      if (generation !== this.generation) return;
       const topics = this.records.filter(topic => topic.sources.some(source => source.path === note.path)).map(topic => topic.entityId).join(',');
       if ((await call('referenceTags', {path: note.path, topics})).changed) this.revision++;
       this.progress = `${position + 1}/${result.notes.length}; ${reads} bodies read`;
