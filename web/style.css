@@ -377,6 +377,7 @@ details { overflow-wrap: anywhere; }
   outline-offset: 2px;
   border-color: var(--line);
   box-shadow: none;
+  transition: none;
 }
 #initiative-form [aria-invalid="true"]:focus-visible { border-color: var(--danger); }
 
