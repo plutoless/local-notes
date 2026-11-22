@@ -58,6 +58,12 @@ try {
  assert.equal(await model.getAttribute('aria-describedby'), 'ai-model-error');
  assert.equal(await address.inputValue(), 'http://controlled.example/v1/chat/completions');
  assert.equal(await page.locator('#ai-token').inputValue(), 'entered-test-token');
+ await page.getByRole('button',{name:'取消设置',exact:true}).click();
+ await page.getByRole('button',{name:'保存并离开',exact:true}).click();
+ await page.getByText('保存尚未完成：请修正服务地址或模型后再保存。',{exact:true}).waitFor();
+ await page.getByRole('button',{name:'继续编辑',exact:true}).click();
+ assert.equal(await address.inputValue(), 'http://controlled.example/v1/chat/completions');
+ assert.equal(await model.inputValue(), '');
  assert.equal(calls.filter(c => c.cmd === 'aiConfigure' || c.cmd === 'aiAnalyze').length, 0);
  await address.fill('https://controlled.example/v1/chat/completions');
  await model.fill('controlled');

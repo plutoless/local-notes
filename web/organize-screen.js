@@ -4,6 +4,7 @@ import {native} from './bridge.js';
 import {CandidateRepository, Organization, CandidateReview, SYSTEM_PROMPT} from './organization.js';
 import {allRecords} from './initiatives.js';
 const $ = selector => document.querySelector(selector);
+const invalidSettings = '请修正服务地址或模型后再保存。';
 export class OrganizeScreen {
   constructor(openNote) {
     this.openNote = openNote; this.repository = new CandidateRepository(native); this.organization = new Organization(native, this.repository); this.offset = 0; this.review = new CandidateReview(native, this.repository); this.drafts = new Map(); this.selected = new Set();
@@ -134,7 +135,7 @@ export class OrganizeScreen {
       if (document.activeElement?.closest('dialog') === this.settingsDrawer.panel) {
         (fields.address ? address : model).focus();
       }
-      return Promise.reject(Error('Invalid configuration fields'));
+      return Promise.reject(Error(invalidSettings));
     }
     this.settingsSave.disabled = true;
     const session = this.session;
@@ -174,7 +175,7 @@ export class OrganizeScreen {
       else if (/Choose an existing initiative/i.test(diagnostic)) message = '请先选择一个已有事项，再保存这个决定。';
       else if (/suggestion needs text/i.test(diagnostic)) message = '建议内容不能为空，请填写后再确认。';
       else if (/conflict|changed|workspace/i.test(diagnostic)) message = '工作目录或内容已变化，请重新打开并核对。';
-      if (this.settingsDrawer.panel.open) this.state.settingsError = diagnostic === 'Invalid configuration fields' ? '' : message;
+      if (this.settingsDrawer.panel.open) this.state.settingsError = diagnostic === invalidSettings ? '' : message;
       this.status(message + (this.organization.covered ? ` 已完成 ${this.organization.covered}/${this.organization.batches?.length || 0} 个片段。` : ''), 'failed');
     } finally {
       this.controls();
