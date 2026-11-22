@@ -182,11 +182,12 @@ export class LibraryScreen {
     $('.collection').scrollTop = this.browseScroll || 0;
     $('#items').scrollTop = this.browseListScroll || 0;
   }
-  async noteTopics(path, focusId = null) {
+  async noteTopics(path, focusId = null, stillCurrent = () => true) {
     this.noteTopicPath = path;
     await this.library.open();
     const workspaceId = this.library.workspaceId;
-    const ownsNote = () => this.noteTopicPath === path && this.library.workspaceId === workspaceId;
+    const ownsNote = () => stillCurrent() && this.noteTopicPath === path && this.library.workspaceId === workspaceId;
+    if (!ownsNote()) return;
     const note = (await this.library.query({exactPath: path})).notes[0];
     if (!ownsNote()) return;
     const container = $('#note-topics');

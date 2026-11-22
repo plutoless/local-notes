@@ -92,11 +92,14 @@ try {
   });
   assert.ok(backgroundClick, 'The open task prevents pointer interaction with the browsing origin');
   await page.getByRole('button', {name: '创建笔记', exact: true}).click();
-  await page.locator('#note-task-drawer [role=status]').filter({hasText: '内容需要核对'}).waitFor();
+  await page.locator('#capture-title-error[role=alert]').filter({hasText: '请填写标题或正文'}).waitFor();
   const invalid = page.locator('#capture-title');
   await page.waitForFunction(() => document.activeElement.id === 'capture-title');
   assert.equal(await invalid.getAttribute('aria-invalid'),'true');
-  assert.ok((await invalid.getAttribute('aria-describedby')).split(' ').includes('note-task-status'));
+  assert.ok((await invalid.getAttribute('aria-describedby')).split(' ').includes('capture-title-error'));
+  await page.locator('#capture-body').fill('只填写正文');
+  assert.equal(await invalid.getAttribute('aria-invalid'),null);
+  assert.equal(await page.locator('#capture-title-error').count(),0);
   await page.locator('#capture-title').fill('短表单真实存储');
   await page.locator('#capture-body').fill('保留正文与草稿。'.repeat(80));
   const releaseReturn = async () => {
@@ -279,16 +282,34 @@ try {
   await page.locator('#note-info-drawer').waitFor({state:'visible'});
   await page.locator('#note-info-drawer .ui-drawer-footer button').click();
   assert.equal(await page.locator('#note-info-open').evaluate(node=>node===document.activeElement),true);
-  await page.locator('#note-info-open').click();
+  await page.locator('#note-reference-open').click();
+  const referenceOpener = page.locator('#note-reference').getByRole('button',{name:'笔记信息与整理'});
+  fixture.fail((cmd,args)=>cmd==='referenceQuery'&&args.exactPath==='reference.md');
+  await referenceOpener.click();
+  const infoSheet = page.locator('#note-info-drawer');
+  await infoSheet.getByRole('alert').filter({hasText:'关联暂不可用'}).waitFor();
+  await infoSheet.getByRole('button',{name:'重试载入'}).click();
+  await page.getByLabel('专项验证主题',{exact:true}).waitFor();
+  await infoSheet.getByRole('button',{name:'完成'}).click();
+  assert.equal(await referenceOpener.evaluate(node=>node===document.activeElement),true);
+  await referenceOpener.click();
+  await page.locator('#rename').click();
+  await page.keyboard.press('Escape');
+  await page.locator('#note-task-drawer').waitFor({state:'hidden'});
+  assert.equal(await referenceOpener.evaluate(node=>node===document.activeElement),true);
+  await referenceOpener.click();
   await page.locator('#rename').click();
   for (const [width,height] of [[1180,800],[393,800],[393,340]]) { await page.setViewportSize({width,height}); await screenshot(join(evidence,`location-${width}-${height}.png`)); }
   await page.locator('#note-location').fill('../invalid.md');
   await page.locator('#note-task-drawer .primary').click();
-  await page.locator('#note-task-drawer [role=status]').filter({hasText:'路径无效'}).waitFor();
+  await page.locator('#note-location-error[role=alert]').filter({hasText:'路径无效'}).waitFor();
   assert.equal(await readFile(join(fixture.root,'reference.md'),'utf8') !== '',true);
   await page.locator('#note-location').fill('moved.md'); await page.locator('#note-task-drawer .primary').click();
   await page.locator('#note-task-drawer').waitFor({state:'hidden'});
-  assert.equal(await readFile(join(fixture.root,'moved.md'),'utf8') !== '',true);
+  assert.equal(await readFile(join(fixture.root,'moved.md'),'utf8'),readerSource);
+  await topics.recover();
+  const movedTopic = (await topics.query()).actions.find(topic => topic.entityId === linkedTopic.entityId);
+  assert.deepEqual(movedTopic.sources.map(source => source.path),['moved.md']);
   const hashes = async (root, prefix = '') => {
     const entries = [];
     for (const name of await readdir(join(root, prefix))) {

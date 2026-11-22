@@ -30,8 +30,8 @@ association remains an individual persistence decision.
 
 The live catalogue uses the production fields and classification rows for
 optional capture fields, location help, required and invalid Topic fields,
-checked and unavailable associations, and the action to open a linked
-Initiative. The actual app exercises the drawer and its active-task decisions.
+checked and unavailable associations, the action to open a linked Initiative,
+and the quiet Cancel and primary Save footer. The actual app exercises the drawer and its active-task decisions.
 
 The [pinned shadcn/ui Field source](https://github.com/shadcn-ui/ui/blob/45bbf9ba23c9c0f63d38887947e5fb06f59c7da3/apps/v4/registry/new-york-v4/ui/field.tsx)
 supplies the Field, Label, Description, and Error composition. The local copy
