@@ -16,7 +16,8 @@ export interface SearchNavigation<Invocation = unknown> {
   returnAvailable:(available:boolean)=>void; error:(message:string)=>void;
 }
 export interface SearchRow {
-  note:SearchResult; query:string; text:string;
+  note:SearchResult; query:string; text:string; expanded?:boolean;
+  copying?:boolean; expanding?:Promise<string>;
   node?:HTMLElement|null; source?:HTMLButtonElement|null;
 }
 
@@ -25,6 +26,6 @@ export function searchRows(notes:SearchResult[], query:string, previous:SearchRo
   return notes.map(note=>{
     const old=previous.find(row=>row.note.identity===note.identity &&
       (row.note.fingerprint || row.note.revision)===(note.fingerprint || note.revision) && row.query===query);
-    return {note,query,text:old?old.text:note.passage};
+    return {note,query,text:old?old.text:note.passage,expanded:old?.expanded};
   });
 }
