@@ -43,7 +43,15 @@ try {
  await card('关联：确认的来源关联').getByLabel('已有事项',{exact:true}).selectOption(initiatives.actions[0].entityId);
  await card('关联：确认的来源关联').getByRole('button',{name:/^确认此建议：/}).click();await card('关联：确认的来源关联').getByText('处理决定：确认，已保存',{exact:true}).waitFor();
  await card('行动：明确拒绝的行动').getByRole('button',{name:/^忽略：/}).click();await card('行动：明确拒绝的行动').getByText('处理决定：忽略，已保存',{exact:true}).waitFor();
- await page.reload();await page.getByRole('button',{name:'全部行动',exact:true}).click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的行动',exact:true})}).click();await page.waitForFunction(()=>document.querySelector('#action-description').value==='确认的行动');
+ const persistedActions = (await fixture.adapter('actionQuery',{workspaceId:repo.workspaceId,entityType:'action'})).actions;
+ const confirmedAction = persistedActions.find(action => action.description === '确认的行动');
+ assert.ok(confirmedAction);
+ await page.reload();
+ await page.getByRole('button',{name:'全部行动',exact:true}).click();
+ const actionRow = page.locator(`button[data-entity-id=${JSON.stringify(confirmedAction.entityId)}]`);
+ assert.equal(await actionRow.locator('.action-list-title').textContent(), '确认的行动');
+ await actionRow.click();
+ await page.waitForFunction(()=>document.querySelector('#action-description').value==='确认的行动');
  await page.locator('#action-drawer').getByRole('button',{name:/^关闭/}).click();
  await page.locator('[data-view=initiatives]').click();await page.getByRole('button').filter({has:page.getByRole('heading',{name:'确认的事项',exact:true})}).click();
  await page.getByRole('button',{name:/source.md/}).first().waitFor();

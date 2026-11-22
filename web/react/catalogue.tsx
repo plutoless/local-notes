@@ -1,5 +1,5 @@
-import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
-import {ActionRows} from './actions';
+import {InitiativeRows, InitiativeLinks, InitiativeDecisions, InitiativeSummary, InitiativeEditor, type InitiativeRecord} from './initiatives';
+import {ActionHistory, ActionRows, ActionSourceEvidence} from './actions';
 import {useState} from 'react';
 import {createRoot} from 'react-dom/client';
 import {OrganizationContent, OrganizationSettings, type OrganizationModel, type OrganizationCallbacks} from './organization';
@@ -20,9 +20,22 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   const root=createRoot(container);
   const noop=()=>{};
   const callbacks:FocusCallbacks={openAction:noop,navigate:noop,createInitiative:noop,openInitiative:noop,recover:noop,remove:noop,move:noop,more:noop,page:noop,waiting:noop,resume:noop,removeReading:noop,status:()=> '待办',overdue:()=>false};
-  const organization:OrganizationModel={search:'',directory:'*',directories:['研究/长中文目录'],notes:[{path:'研究/中文长路径.md',title:'这是用于核对来源身份与长中文标题的实际生产选择行'}],selected:['研究/中文长路径.md'],inventory:'本页 1 篇。来自当前本机索引。',retry:false,previous:false,next:false,running:false,previewing:false,configured:false,covered:0,batches:[],request:'',status:'选择已更新，请重新预览后发送。',statusState:'idle',service:'尚未配置服务。',address:'',model:'',token:'',savedCredential:false,settingsPending:false,settingsError:'请填写服务地址与模型。'};
+  const organizationPath = '研究/中文长路径.md';
+  const organizationText = '历史计划需要逐条核对，当前适用性待确认。';
+  const organizationBatch = {path:organizationPath,start:0,end:organizationText.length,total:organizationText.length,text:organizationText,fragmentId:'synthetic-preview'};
+  const organization:OrganizationModel = {
+    search:'',directory:'*',directories:['研究/长中文目录'],
+    notes:[{path:organizationPath,title:'跨目录研究资料与长中文标题'}], selected:[organizationPath],
+    inventory:'本页 1 篇。来自当前本机索引。',retry:false,previous:false,next:false,
+    running:false,previewing:false,configured:true,covered:0,batches:[organizationBatch],
+    request:'服务地址：https://service.example/v1/chat/completions\n模型：示例模型\n\n' + JSON.stringify(organizationBatch),
+    status:'预览已就绪，请核对后发送。',statusState:'idle',
+    service:'已设置：示例模型',address:'https://service.example/v1/chat/completions',
+    model:'示例模型',token:'',savedCredential:true,settingsPending:false,settingsError:''
+  };
   const organizationCallbacks:OrganizationCallbacks={search:noop,directory:noop,select:noop,page:noop,retry:noop,preview:noop,send:noop,cancel:noop,configure:noop,setting:noop,save:noop};
   const revision={revision:'catalogue-revision',description:'逐字保留需要人工核对的长中文来源与行动内容'.repeat(3),status:'todo',modifiedAt:'2026-11-20'};
+  const initiative:InitiativeRecord={entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(4),goal:'核对原文',progress:'已核对来源路径。',status:'active',sources:[]};
   const alternateRevision={...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'};
   const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,alternateRevision],tips:[revision,alternateRevision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
@@ -48,14 +61,36 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
       </div>
       <div className="ui-drawer-footer"><TaskFormActions formId="catalogue-note-task" cancel={noop} submitLabel="保存"/></div>
     </section>
-    <h2>React 行动组件</h2><ActionRows rows={[{entityId:'catalogue-action',description:'这是用于检查很长中文行动描述换行与键盘选中状态的下一步',status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'}]} selected="catalogue-action" empty="" open={noop}/>
+    <h2>React 行动组件</h2>
+    <ActionRows rows={[
+      {entityId:'catalogue-action',description:'核对研究资料并记录下一步'.repeat(5),status:'waiting',dueDate:'2020-01-01',waitingOn:'等待对方确认完整的材料与研究方案',sources:[],overdue:true,initiativeName:'独立行动'},
+      {entityId:'catalogue-action-done',description:'核对来源路径',status:'completed',sources:[],overdue:false,initiativeName:'研究事项'}
+    ]} selected="catalogue-action" empty="" open={noop}/>
+    <section className="action-source" aria-label="行动来源示例">
+      <ActionSourceEvidence source={{path:'研究/长中文来源路径.md',quote:'- [ ] 核对 **原始研究资料**\n  再确认具体行动。',fingerprint:'synthetic'}}/>
+    </section>
+    <section aria-label="行动历史示例">
+      <ActionHistory records={[{...revision,entityId:'catalogue-action',workspaceId:'synthetic',focusPosition:null,sources:[],parents:[]}]}/>
+    </section>
     <h2>React 导航与当前重点</h2><p>实际生产组件；示例回调不会写入数据。选中与键盘焦点独立。</p>
     <div className="app home"><aside className="shell"><ShellContent model={{page:'focus',root:'样本笔记/用于检查很长中文目录名称与路径的目录',count:''}} callbacks={{navigate:noop,capture:noop,choose:noop,icon}}/></aside><section className="collection"><div id="items"><FocusContent model={{focused:{actions:[{entityId:'catalogue-focus',description:'这是用于检查中文长描述换行、键盘焦点与管理操作的当前重点行动',status:'todo',focusPosition:1}],hasMore:false},waiting:{actions:[{entityId:'catalogue-waiting',description:'等待确认资料范围',status:'waiting',waitingOn:'等待对方回复',focusPosition:null}],hasMore:false},initiatives:{actions:[{entityId:'catalogue-current',title:'核对研究资料',progress:'已整理目录，下一步核对来源。'}],hasMore:false},recent:[{path:'研究/长中文路径.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}},{path:'归档/'+ '长文件名'.repeat(16)+'.md',title:'保留原文身份并继续阅读',fingerprint:'demo',scroll:{}}],limit:7,offset:0}} callbacks={callbacks}/></div></section></div>
-    <h2>React 整理来源与设置</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
+    <h2>整理来源与发送预览</h2><OrganizationContent model={organization} callbacks={organizationCallbacks}/>
+    <h2>设备服务设置</h2><OrganizationSettings model={organization} callbacks={organizationCallbacks}/>
     <h2>React 建议证据审核</h2><CandidateReviewContent model={{busy:false,destinations:[{entityId:'example',title:'已有的长期研究事项'}],cards:[{record:{entityId:'catalogue-candidate',workspaceId:'synthetic',revision:'example',description:'逐条核对历史计划与长中文证据后再明确确认下一步'.repeat(3),candidateType:'action',placement:'独立行动',reasoning:'原文提到核对资料，未确认当前承诺。',relevance:'当前适用性无法确认',sources:[{path:'研究/长中文来源.md',quote:'- [ ] 历史计划仅供核对，不会自动转成行动',start:0,end:30,fingerprint:'synthetic-fingerprint',fragmentId:'synthetic'}]},description:'',target:'example',dirty:true,disclosures:{'确认前编辑建议':true}}]}} callbacks={{activate:noop,edit:noop,target:noop,disclosure:noop,source:noop,decide:noop,recover:noop}}/>
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
-    <h2>React 事项上下文</h2><InitiativeRows records={[{entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(6),goal:'核对原文',progress:'进行中',status:'active',sources:[]}]} selected="catalogue-initiative" empty="" open={noop}/><InitiativeLinks sources={[{path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'}]} selected="研究/长中文参考资料.md" open={noop}/><InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
+    <section aria-label="事项工作区示例">
+      <h2>React 事项上下文</h2>
+      <InitiativeRows records={[initiative]} selected={initiative.entityId} empty="" open={noop}/>
+      <InitiativeSummary record={initiative}/>
+      <InitiativeLinks sources={[
+        {path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'},
+        {path:'归档/迁移前资料.md',quote:'保留原文',fingerprint:'example',role:'reference',warning:'来源已移至 归档/迁移后资料.md，请核对后保存。',resolvedPath:'归档/迁移后资料.md'}
+      ]} selected="研究/长中文参考资料.md" open={noop}/>
+      <h3>事项编辑与结束</h3>
+      <div className="ui-drawer-body"><InitiativeEditor example/></div>
+      <InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
+    </section>
     <h2>React 全局搜索</h2><SearchCatalogue/>
   </>);
   return ()=>root.unmount();

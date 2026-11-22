@@ -54,7 +54,7 @@ A new variant requires a real consumer, an interaction/state need that existing 
 
 - **Lightweight home:** one title and primary next action, seven initial focused actions, subordinate waiting/initiative summaries, management in per-row disclosures. Home queries metadata/records, never every note body.
 - **List/detail browsing:** bounded list with search/filter/pagination; readable selected note in a separate detail surface. At narrow widths use list/back instead of compressing columns.
-- **Initiative context plus selected detail:** persistent initiative goal/progress/actions/reference context beside selected content; collapse to context/detail navigation at narrow widths. Preserve selection across saves.
+- **Initiative overview and linked reading:** show the goal, recorded progress, Actions and source links in one document column. Linked notes use the shared reader and return to the exact source row and prior scroll position. Narrow windows show the list, overview and reader in succession.
 - **Staged organization:** select → inspect exact sending scope → send → individually review. Privacy decisions, uncertainty and source evidence stay visible. Do not turn it into a generic editor column.
 - **Focused dialog/panel review:** local conflict/candidate decision with explicit close/back and draft guards. Details contain IDs, full paths, raw diagnostics and full versions. Keep source comparisons readable and scrollable.
 
@@ -104,6 +104,23 @@ catalogue renders this same component. Sync record-jump navigation consumes
 Organization uses the staged family above, shared field/disclosure/feedback/action classes and constructors, and shared pagination. Preview is primary until exact scope is ready; Send then becomes primary. Candidate confirmation is primary and other decisions are quiet; editable text, placement, uncertainty and evidence remain visible. No storage contract changes.
 
 The demonstrated `.ui-selection` extension supports multi-selection, where `selectionRow()` would incorrectly model a single navigation action. It retains native checkbox Space/Tab behavior, a 44px label target, selected tokens, one 3px keyboard-only label outline (the child checkbox does not draw a second outline), and disabled interaction through the existing inert selection container during preview/send. Long paths wrap. The catalogue demonstrates checked/unchecked states; organization exercises loading/disabled states.
+
+### Selected workspace adoption (#129)
+
+The Organization page groups source selection, service and outbound preview, and
+saved Candidate review in document flow. Review pairs assessment with verbatim
+evidence where space permits, then follows with editable fields and explicit
+decisions. Source offsets remain beside the opener and fingerprints remain in
+record details. Device settings retain the shared contextual task.
+
+Organization consumes the existing shadcn/ui Input, Textarea and Field ports,
+with the existing semantic border, error and keyboard focus rules. See the
+[Input and Textarea adaptations](issue123/ADOPTION.md) and
+[Field provenance](form-entry-points.md). Native selects, checkboxes
+and disclosures retain their platform semantics and existing controller ports.
+The production catalogue includes selected scope, a populated preview, device
+credentials in their saved state, and an invalid Candidate edit with source
+evidence. Its request is synthetic and its callbacks perform no writes or sends.
 
 ## Integrated journeys (#37)
 
@@ -170,7 +187,7 @@ The rendered catalogue imports the same constructor. Topic surfaces use 390px on
 
 The [finite entry-point inventory](form-entry-points.md) records the scope and concrete retained-layout exceptions. Action creation and metadata editing use the existing wide drawer; Home retains its contextual page behind the task. Source navigation waits for a successful read before hiding that task, so unavailable sources retain the editable origin. Quick capture now collects title/body before creating a file; its private draft retains the create path to recover an interrupted submission without creating a second note. After successful persistence, the existing document editor and return route remain available. The note-information drawer keeps existing individually persisted favorite/topic actions; its Done action returns to the document. Naming/location is a separate short task using the existing expected-text move and link-repair receipt, never a nested drawer.
 
-Long Markdown editing, initiative working-note creation, candidate review, privacy/request scope and multi-version conflict comparison remain in their documented layout families. The shared compact fields/actions and drawer-body rhythm cover short forms; source/history disclosures retain evidence. Finishing one task precedes opening another; modal tasks cannot stack background conflict review. Recovered action drafts are never implicitly confirmed just by navigating to another page.
+Long Markdown editing, candidate review, privacy/request scope and multi-version conflict comparison remain in their documented layout families. The shared compact fields/actions and drawer-body rhythm cover short forms, including working-note creation in an Initiative. Source/history disclosures retain evidence. Finishing one task precedes opening another; modal tasks cannot stack background conflict review. Recovered action drafts are never implicitly confirmed just by navigating to another page.
 
 The catalogue demonstrates the same wide constructor and field geometry without persistence. Keep browser/storage results, controlled native journeys and production close/quit evidence separate in PR summaries and retained artifacts. See [issue #48](https://github.com/plutoless/local-notes/issues/48) for the delivery discussion; the catalogue does not establish acceptance. Async openers can pass `drawer.open(first, origin)` explicitly when disabling the trigger would otherwise blur it in WKWebView.
 
