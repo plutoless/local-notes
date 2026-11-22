@@ -26,7 +26,13 @@ try {
    await page.mouse.wheel(0, above ? -35 : 35);
    await page.waitForTimeout(20);
   }
-  const geometry = await target.evaluate(element => ({target:element.getBoundingClientRect().toJSON(), panel:document.querySelector('#organize-tools').getBoundingClientRect().toJSON(), scroll:document.querySelector('#organize-tools').scrollTop}));
+  const geometry = await target.evaluate(element => {
+   const rect = element.getBoundingClientRect();
+   const hit = document.elementFromPoint(rect.x + Math.min(rect.width / 2, 40), rect.y + Math.min(rect.height / 2, 12));
+   return {target:rect.toJSON(), panel:document.querySelector('#organize-tools').getBoundingClientRect().toJSON(),
+    scroll:document.querySelector('#organize-tools').scrollTop, hit:hit && {tag:hit.tagName, id:hit.id, className:hit.className},
+    dialog:document.querySelector('dialog[open]')?.id};
+  });
   assert.fail(`${selector} is not visually reachable by ordinary wheel scrolling: ${JSON.stringify(geometry)}`);
  }
  const page=await browser.newPage({viewport:{width:1180,height:800}});const errors=[];page.on('pageerror',e=>errors.push(e.message));

@@ -19,12 +19,14 @@ export function mountDocument(container:HTMLElement) {
         </header>
         <div id="library-tools" hidden={true}></div>
         <div id="organize-tools" hidden={true}>
+          <Button id="ai-review-jump" className="quiet ui-compact">跳到已保存的建议</Button>
           <div id="organization-react"></div>
           <section className="organization-stage" aria-labelledby="ai-review-title">
-            <h2 id="ai-review-title">核对已保存的建议</h2>
+            <h2 id="ai-review-title" tabIndex={-1}>核对已保存的建议</h2>
             <p>建议需逐条确认。历史计划不代表当前承诺；请结合来源判断。</p>
+            <div id="ai-review-feedback" className="ui-feedback" data-state="failed" role="status"></div>
             <div id="ai-results"></div>
-            <div className="organization-actions ui-pagination"><Button id="ai-results-previous" className="secondary">上一页建议</Button><Button id="ai-results-next" className="secondary">下一页建议</Button></div>
+            <div className="organization-actions ui-pagination"><Button id="ai-results-previous" className="secondary" disabled>上一页建议</Button><Button id="ai-results-next" className="secondary" disabled>下一页建议</Button></div>
           </section>
         </div>
 

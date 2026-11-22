@@ -75,3 +75,31 @@ test('candidate recovery composes with merged revision recovery without changing
   assert.equal((await manual.open()).warnings.length,0);
  }finally{await f.close();}
 });
+
+test('request preview shows exactly the messages awaiting explicit send', async () => {
+ const outbound = [];
+ const organization = new Organization(async (cmd, args) => {
+  if (cmd === 'read') return {text: args.path === 'first.md' ? 'First synthetic fragment' : 'Second synthetic fragment'};
+  outbound.push(args.messages);
+  if (outbound.length === 2) throw Error('Rate limited');
+  return {text: '{"candidates":[]}'};
+ }, {workspaceId: 'synthetic'});
+ const service = {address: 'http://127.0.0.1/controlled', model: 'fixture', token: 'private-token'};
+ const batches = await organization.preview(['first.md', 'second.md']);
+ const expected = messages => '服务地址：http://127.0.0.1/controlled\n模型：fixture\nstream: false\n\n系统消息：\n'
+   + messages[0][0].content + '\n\n用户消息（每个片段一次请求）：\n'
+   + messages.map(message => message[1].content).join('\n\n');
+
+ const initial = organization.requestPreview(service);
+ assert.equal(outbound.length, 0);
+ await assert.rejects(organization.run(), /Rate limited/);
+ assert.equal(initial, expected(outbound));
+ const remaining = organization.requestPreview(service);
+ assert.equal(remaining, expected(outbound.slice(1)));
+ assert.ok(remaining.includes(batches[1].text));
+ assert.ok(!remaining.includes(batches[0].text));
+ assert.ok(!remaining.includes(service.token));
+ await organization.run();
+ assert.deepEqual(outbound[2], outbound[1]);
+ assert.equal(organization.requestPreview(service), '');
+});
