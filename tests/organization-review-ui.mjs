@@ -130,8 +130,8 @@ try {
  assert.equal(confirmed.sources[0].quote, text.slice(0, 16));
  await page.reload();
  await page.getByRole('button', {name:'全部行动', exact:true}).click();
- const result = page.getByRole('button').filter({has:page.getByRole('heading', {name:confirmed.description, exact:true})});
- assert.equal(await result.getAttribute('data-entity-id'), confirmed.entityId);
+ const result = page.locator(`button[data-entity-id=${JSON.stringify(confirmed.entityId)}]`);
+ assert.equal(await result.locator('.action-list-title').textContent(), confirmed.description);
  await result.click();
  await page.locator('#action-drawer[open]').waitFor();
  assert.equal(await page.locator('#action-description').inputValue(), confirmed.description);
