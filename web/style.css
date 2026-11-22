@@ -122,9 +122,6 @@ details { overflow-wrap: anywhere; }
 #conflict { position: fixed; inset: 0; background: #18233866; display: grid; place-items: center; z-index: 50; }
 .dialog { background: white; padding: 24px; border-radius: 14px; width: min(480px, 94vw); max-height: 90dvh; overflow: auto; box-shadow: 0 16px 60px #13294433; }
 .dialog button { display: block; width: 100%; margin-top: 12px; border-color: var(--divider); }
-.sync-panel { position: fixed; inset: 5%; overflow: auto; z-index: 50;  }
-.sync-panel article { border-top: 1px solid var(--divider); margin-top: 16px; padding-top: 16px; }
-.sync-panel textarea { width: 100%; }
 #organize-tools { flex: 1 1 0; min-height: 0; overflow: auto; padding: 20px; overflow-wrap: anywhere; }
 #organize-tools label { display: grid; gap: 6px; margin: 12px 0; }
 #organize-tools input:not([type="checkbox"]) { width: 100%; }
@@ -218,19 +215,57 @@ details { overflow-wrap: anywhere; }
 }
 
 /* Synchronization review uses the shared surfaces and field rhythm. */
-.sync-panel { background: var(--surface, #fff); overflow-wrap: anywhere; }
-.sync-panel h3 { font-size: 15px; }
-.sync-panel h4 { font-size: 15px; margin-top: 24px; }
+.sync-panel[role="dialog"]:not([hidden]) {
+  position: fixed;
+  inset: clamp(8px, 4vmin, 32px);
+  max-width: 1040px;
+  margin-inline: auto;
+  padding: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.sync-panel { overflow-wrap: anywhere; }
+.sync-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 24px;
+  border-bottom: 1px solid var(--divider);
+}
+.sync-header, .sync-body { padding: clamp(12px, 3vw, 24px); }
+.sync-header h2, .sync-header p { margin: 0; }
+.sync-header p, .sync-version-meta { color: var(--muted); }
+.sync-body { overflow: auto; scroll-padding: 8px; }
+.sync-panel article { min-width: 0; border-top: 1px solid var(--divider); padding-block: var(--space-section); }
+.sync-panel h3 { font-size: 18px; }
+.sync-panel h4 { font-size: 15px; margin-top: var(--space-section); }
+.sync-panel h5 { font-size: 14px; margin-block: 12px 4px; }
 .sync-panel pre, .sync-panel dd { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; }
-.sync-panel dt { color: var(--muted, #53645c); margin-top: 8px; font-weight: 600; }
-.sync-version { border: 1px solid var(--line); border-radius: 8px; padding: 12px; margin: 12px 0; }
-.sync-version summary { font-weight: 600; }
-/* Chosen source version is independent of the active keyboard control. */
+.sync-panel pre { max-block-size: 12rem; overflow: auto; }
+.sync-panel dt, .sync-version-meta { font-size: 13px; }
+.sync-panel dt { color: var(--muted); font-weight: 600; }
+.sync-record-state[data-blocked], .sync-json-error { color: var(--danger); }
+.sync-json-error:not(:empty) { margin-top: 8px; }
+.sync-version { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; min-width: 0; }
+.sync-panel summary { min-height: 44px; align-content: center; font-weight: 600; }
+.sync-version[data-selected], .sync-version button[aria-pressed="true"] { border-color: var(--focus); }
 .sync-version button[aria-pressed="true"] { background: var(--selected); color: var(--selected-text); font-weight: 600; }
-.sync-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.sync-history .sync-version { margin-block: 8px; }
+.sync-branches, .sync-editor { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .sync-editor .ui-field { margin-block: 0; }
-.sync-editor textarea, .sync-editor input, .sync-editor select { width: 100%; min-width: 0; }
-@media (max-width: 650px) { .sync-editor { grid-template-columns: 1fr; } .sync-panel { inset: 8px; padding: 16px; } }
+.sync-editor :is(textarea, input, select), .sync-json { width: 100%; min-width: 0; }
+.sync-panel textarea { field-sizing: fixed; }
+.sync-controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.sync-resolution-actions { border-top: 1px solid var(--divider); margin-top: 16px; }
+.sync-resolution-actions .sync-controls { justify-content: flex-end; }
+.sync-records { display: grid; justify-items: start; }
+.sync-records .ui-action { white-space: normal; text-align: start; }
+@media (max-width: 650px) {
+  .sync-branches, .sync-editor { grid-template-columns: 1fr; }
+}
+
 .action-revision { border-top: 1px solid var(--divider); padding: 16px 0; }
 /* Library and writing use the same quiet surfaces with a readable line length. */
 .app.library-view:not(.editing) { grid-template-columns: 196px minmax(0, 1fr); }
@@ -292,7 +327,6 @@ details { overflow-wrap: anywhere; }
   .workspace #workspace-context { padding-inline: 20px; }
   .workspace #workspace-detail { overflow: visible; }
   .library-view.editing .collection { display: none; }
-  .sync-panel { inset: 2%; padding: 16px; }
   #notice { bottom: 12px; }
 }
 @media (prefers-reduced-motion: reduce) { button { transition: none; } }
