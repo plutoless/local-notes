@@ -102,8 +102,10 @@ test('distant note passages stay independently selectable and formal title expan
     assert.equal(notes.length,2);assert.notEqual(notes[0].identity,notes[1].identity);
     assert.ok((await service.context(notes[1],'latency')).includes('second passage'));
     const overlap = {workspaceId:service.workspaceId, search:'latency', exactPath:'long.md', overlapLength:50};
-    const atSecond = await fixture.adapter('referenceSearch', {...overlap, overlapStart:notes[1].passageStart+100});
+    const atSecond = await fixture.adapter('referenceSearch', {...overlap, overlapStart:notes[1].passageStart+1});
     assert.equal(atSecond.notes[0].passageStart,notes[1].passageStart);
+    const afterSecond = notes[1].passageStart + Array.from(notes[1].passage).length;
+    assert.equal((await fixture.adapter('referenceSearch', {...overlap, overlapStart:afterSecond})).notes.length,0);
     assert.equal((await fixture.adapter('referenceSearch', {...overlap, overlapStart:1100})).notes.length,0);
     assert.equal((await fixture.adapter('referenceSearch', {...overlap, exactPath:'missing.md', overlapStart:1})).notes.length,0);
     const record=(await service.query('latency',0,'initiative')).notes[0];
