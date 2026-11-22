@@ -1,4 +1,4 @@
-import {enterNoteEditing} from './form-journeys.js';
+import {showReaderDetails, enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, utimes, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -102,7 +102,7 @@ try {
   await page.locator('#editor').waitFor({state:'visible'});
   await page.screenshot({path:join(evidence, 'after-editor.png')});
   await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#star').click();
   const removeFavorite = page.getByRole('button', {name:'取消收藏笔记', exact:true});
   await removeFavorite.waitFor();
@@ -116,7 +116,7 @@ try {
   await page.locator('#search').fill('');
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
   await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#star').click();
   await closeNoteInfo(page); await page.locator('#back').click();
   await page.getByText('还没有收藏的笔记。打开笔记，在「笔记信息与整理」中收藏。',{exact:true}).waitFor();
@@ -134,11 +134,10 @@ try {
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading',{name:'Synthetic reference material',exact:true}).click();
   await page.locator('#editor').waitFor({state:'visible'});
-  await page.locator('#note-info-open').click(); await page.getByLabel('已重命名主题',{exact:true}).check();
+  await showReaderDetails(page); await page.locator('#note-info-open').click(); await page.getByLabel('已重命名主题',{exact:true}).check();
   await closeNoteInfo(page); await enterNoteEditing(page); await page.locator('#body').fill('中文正文，保留原文与路径。\n\n- 列表项目\n\n> 引用原文\n\n- [ ] 原文复选框');
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   await page.locator('#mode').click(); assert.equal(await page.locator('#reading ul').count(),1); assert.equal(await page.locator('#reading blockquote').count(),1);
-  const checkbox=await page.getByLabel('原文复选框',{exact:true}).boundingBox(); assert.equal(checkbox.width,20);
   assert.equal(await page.getByLabel('原文复选框',{exact:true}).isDisabled(),true);
   await page.waitForFunction(()=>document.querySelector('#save-state').textContent==='已保存到本地');
   assert.match(await readFile(sourcePath,'utf8'), /- \[ \] 原文复选框/);

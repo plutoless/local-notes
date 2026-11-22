@@ -202,7 +202,7 @@ try:
         c("document.querySelector('[data-view=notes]').click()"); w("!!document.querySelector('#items [data-path]')")
         open_control('#items [data-path]'); w("!document.querySelector('#editor').hidden")
         c("window.nativeContext={search:document.querySelector('#search').value,scroll:document.querySelector('.collection').scrollTop}")
-        open_control('#note-info-open'); w("document.querySelector('#note-info-drawer').open")
+        open_control('#note-reference-open'); open_control('#note-info-open'); w("document.querySelector('#note-info-drawer').open")
         c("document.querySelector('#note-topics input').click()")
         w("!document.querySelector('#note-topics').inert && document.querySelector('#note-topics input').checked")
         views('note-info')

@@ -6,7 +6,6 @@ import {flushSync} from 'react-dom';
 export function mountDocument(container:HTMLElement) {
   const root=createRoot(container);
   flushSync(()=>root.render(<>
-    <header className="global-header"><Button id="global-search-open" className="quiet ui-compact" aria-haspopup="dialog" aria-controls="global-search" aria-keyshortcuts="Meta+K Control+K">搜索内容 <kbd aria-hidden="true">⌘K</kbd></Button></header>
     <div className="app home">
       <aside id="shell" className="shell"></aside>
       <section className="collection">

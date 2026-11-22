@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile, writeFile, mkdir, readdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -99,7 +100,7 @@ try {
   await page.getByRole('button',{name:'打开本地笔记：第二份',exact:true}).click();
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='folder/Second.md');
   assert.equal(await infoReceiver.evaluate(n=>n===document.querySelector('#note-info-open')),true,'note navigation preserves the controller-owned opener receiver');
-  await page.locator('#note-info-open').click();await page.locator('#note-info-drawer .ui-drawer-header button').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();await page.locator('#note-info-drawer .ui-drawer-header button').click();
   assert.equal(await page.locator('#note-info-open').evaluate(n=>n===document.activeElement),true,'information drawer restores its live opener');
   await page.locator('#back').click();await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   await page.locator('#mode').click();const body=page.locator('#body');

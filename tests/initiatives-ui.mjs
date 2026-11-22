@@ -1,4 +1,4 @@
-import {enterNoteEditing} from './form-journeys.js';
+import {showReaderDetails, enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename, rm} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -211,7 +211,7 @@ try {
   await page.locator('#library-topic option', {hasText: 'Renamed topic'}).waitFor({state: 'attached'});
   await page.locator('#library-topic').selectOption('');
   await page.getByRole('heading', {name: 'Working log', exact: true}).click();
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#note-topics input').check();
   await page.waitForFunction(() => document.querySelector('#note-topics input')?.checked && !document.querySelector('#note-topics input')?.disabled);
   await page.locator('#star').click();
@@ -254,7 +254,7 @@ try {
   await page.locator('#initiative-working-notes .source-open').click();
   await page.locator('#editor').waitFor({state: 'visible'});
   assert.equal(await page.locator('#search').getAttribute('aria-label'), '搜索事项');
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.locator('#note-initiatives button').click();
   await page.locator('#workspace-title').waitFor({state: 'visible'});
   assert.equal(await page.locator('.app').evaluate(node => node.classList.contains('library-view')), false);

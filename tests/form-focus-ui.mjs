@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -151,7 +152,7 @@ try {
   assert.equal(await page.locator('#action-description').inputValue(),'长中文行动描述'.repeat(30)); await capture('action-recovered','#action-description');
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
   await page.locator('[data-view=notes]').click(); await page.locator('#items [data-path="reference.md"]').click();
-  await page.locator('#note-info-open').click(); await page.waitForFunction(()=>document.activeElement.id==='star'); await cycle('#note-info-drawer');
+  await showReaderDetails(page); await page.locator('#note-info-open').click(); await page.waitForFunction(()=>document.activeElement.id==='rename'); await cycle('#note-info-drawer');
   await page.getByLabel('专项验证主题',{exact:true}).check(); await page.waitForFunction(()=>!document.querySelector('#note-topics').inert);
   await keyboardOpen('#note-info-drawer input[type=checkbox]','Space');
   await page.keyboard.press('Space'); await page.waitForFunction(()=>!document.querySelector('#note-topics').inert);
@@ -164,12 +165,14 @@ try {
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'继续编辑',exact:true}).click();
   assert.equal(await page.locator('#note-location').inputValue(),'../invalid.md');
   await page.keyboard.press('Escape'); await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
-  await keyboardOpen('#note-info-open'); await page.waitForFunction(()=>document.activeElement.id==='star');
+  await showReaderDetails(page); await keyboardOpen('#note-info-open'); await page.waitForFunction(()=>document.activeElement.id==='rename');
   await keyboardOpen('#rename'); assert.equal(await active(),'note-location');
   await page.keyboard.press('Escape');
   assert.equal(await active(),'note-info-open','location returns to the surviving note-information opener');
-  await keyboardOpen('#note-info-open','Space'); await page.waitForFunction(()=>document.activeElement.id==='star');
-  await page.keyboard.press('Escape'); assert.equal(await active(),'note-info-open');
+  await showReaderDetails(page); await keyboardOpen('#note-info-open','Space'); await page.waitForFunction(()=>document.activeElement.id==='rename');
+  await page.keyboard.press('Escape');
+  await page.locator('#note-info-drawer').waitFor({state:'hidden'});
+  assert.equal(await active(),'note-info-open');
   assert.equal(await readFile(join(fixture.root,'reference.md'),'utf8') !== '',true);
   assert.deepEqual(errors,[]); await writeFile(join(evidence,'transcript.json'),JSON.stringify(report,null,2));
   console.log((process.env.FORM_BASELINE ? 'CAPTURE baseline (cycles recorded, not passed)' : 'PASS')+' contextual form focus: real-storage bridge, modality, cycles, invalid, recovery, selection, return and responsive states');

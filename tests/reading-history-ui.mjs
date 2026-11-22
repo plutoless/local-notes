@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile, writeFile, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -140,7 +141,7 @@ try {
   releaseRead();
   await page.getByRole('button',{name:'继续阅读：Long synthetic note',exact:true}).click();
   await page.waitForFunction(()=>!document.querySelector('#reading').hidden && document.querySelector('#file-path').textContent==='reference.md');
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   await page.getByRole('button',{name:'新建并关联主题',exact:true}).waitFor();
   await page.locator('#note-info-drawer').getByRole('button',{name:'完成',exact:true}).click();
   const {workspaceId} = await fixture.adapter('workspace');

@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile, writeFile, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -49,7 +50,7 @@ try {
   await page.locator('[data-view=notes]').click();
   await page.locator('#items [data-path="reference.md"]').click();
   const count = async () => (await activeFixture.adapter('actionQuery',{limit:100, workspaceId:(await activeFixture.adapter('workspace')).workspaceId})).actions;
-  const open = async () => { await page.locator('#note-create-action').click(); await page.locator('#action-drawer[open]').waitFor(); };
+  const open = async () => { await showReaderDetails(page); await page.locator('#note-create-action').click(); await page.locator('#action-drawer[open]').waitFor(); };
   await open(); assert.equal((await count()).length,0);
   await page.setViewportSize({width:393,height:550});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
@@ -67,14 +68,14 @@ try {
   assert.equal((await count())[0].sources[0].path,'reference.md');
   // Formatted list evidence is original Markdown, with selection retained on return.
   await page.evaluate(()=>{const r=document.createRange();r.selectNodeContents(document.querySelector('#reading li'));getSelection().removeAllRanges();getSelection().addRange(r);});
-  await page.locator('#passage-create-action').click(); await page.locator('#action-drawer[open]').waitFor();
+  await showReaderDetails(page); await page.locator('#passage-create-action').click(); await page.locator('#action-drawer[open]').waitFor();
   assert.match(await page.locator('.source-quote').inputValue(),/\*\*确认\*\*/);
   await page.locator('#action-description').fill('Confirmed list action');
   await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});
   assert.equal((await count()).length,2);
   assert.equal(await page.evaluate(()=>getSelection().toString()),'确认 next');
   await page.evaluate(()=>{const r=document.createRange();r.selectNodeContents(document.querySelector('#reading table'));getSelection().removeAllRanges();getSelection().addRange(r);});
-  await page.locator('#passage-create-action').click(); await page.locator('#action-drawer[open]').waitFor();
+  await showReaderDetails(page); await page.locator('#passage-create-action').click(); await page.locator('#action-drawer[open]').waitFor();
   assert.match(await page.locator('.source-quote').inputValue(),/\| 合成 \| `a` \|/);
   await page.locator('#action-description').fill('Table source action');
   // Changed source rejects confirmation without losing user input.
@@ -132,7 +133,7 @@ try {
   await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   assert.equal(await readFile(sourcePath,'utf8'),original);
   await page.locator('#mode').click(); await page.locator('#mode').click();
-  await page.locator('#passage-create-action').click();
+  await showReaderDetails(page); await page.locator('#passage-create-action').click();
   assert.equal(await page.locator('#action-drawer').evaluate(n=>n.open),false);
   await page.locator('[data-view=focus]').click(); await page.getByRole('button',{name:'全部行动',exact:true}).click();
   await page.waitForFunction(()=>document.querySelectorAll('#items [data-entity-id]').length===7);

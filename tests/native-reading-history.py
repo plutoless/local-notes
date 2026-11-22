@@ -168,7 +168,7 @@ try:
     assert c("return document.querySelector('#title').value")=='Original'
     journeys.append('two synthetic roots each retained independent private entries and nonzero positions across process restart')
     # Known application move uses its real contextual form and native move repository.
-    c("document.querySelector('#note-info-open').click()")
+    c("if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-info-open').click()")
     w("!!document.querySelector('#rename') && !document.querySelector('#rename').disabled")
     c("document.querySelector('#rename').click()")
     w("!!document.querySelector('#note-location')")
@@ -183,7 +183,7 @@ try:
     assert removed
     launch(root);resume('resume after disposable index removal')
     assert c("return document.querySelector('#file-path').textContent")=='folder/Renamed.md'
-    c("document.querySelector('#note-info-open').click()")
+    c("if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-info-open').click()")
     w("document.querySelector('#note-info-drawer').open && !!document.querySelector('#note-create-topic')")
     c("[...document.querySelectorAll('#note-info-drawer button')].find(n=>n.textContent==='完成').click()")
     w("!document.querySelector('#note-info-drawer').open")

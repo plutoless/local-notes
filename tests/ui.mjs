@@ -1,4 +1,4 @@
-import {enterNoteEditing} from './form-journeys.js';
+import {showReaderDetails, enterNoteEditing} from './form-journeys.js';
 import {closeSavedAction, closeNoteInfo, captureNote, moveNote} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
@@ -186,7 +186,7 @@ try {
   assert.equal(actionPage.actions.length, 1);
   await closeSavedAction(page); await page.locator('[data-view="notes"]').click(); await page.locator('.card').filter({has: page.locator('small').filter({hasText: /^reference\.md$/})}).click();
   await page.locator('#editor').waitFor({state: 'visible'});
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   const beforeInvalidRename = await readFile(sourcePath, 'utf8');
   await moveNote(page, '../outside.md');
   await page.getByText('路径无效。请填写以 .md 结尾的相对路径。', {exact: true}).waitFor();

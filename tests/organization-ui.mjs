@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile} from 'node:fs/promises';
 import {chromium} from 'playwright';
 import assert from 'node:assert/strict';
@@ -101,7 +102,7 @@ try {
  const evidence = await wheelReach('#ai-results button');
  await page.mouse.click(evidence.x + evidence.width / 2, evidence.y + evidence.height / 2);await page.locator('#editor').waitFor();assert.equal(await page.locator('#file-path').textContent(),'reference.md');
  // Favorite the explicitly opened evidence through the delivered metadata owner.
- await page.locator('#note-info-open').click(); await page.locator('#star').click();
+ await showReaderDetails(page); await page.locator('#note-info-open').click(); await page.locator('#star').click();
  assert.equal(await page.locator('#star').getAttribute('aria-pressed'),'true');
  await page.getByRole('button',{name:'关闭笔记信息与整理',exact:true}).click();
  await page.locator('#back').click(); await page.locator('#ai-results').waitFor();
@@ -116,7 +117,7 @@ try {
  await page.getByRole('button',{name:'取消',exact:true}).click();
  await page.getByRole('button',{name:'放弃更改并离开',exact:true}).click();
  await page.locator('#items [data-path="reference.md"]').click();
- await page.locator('#note-create-action').click();
+ await showReaderDetails(page); await page.locator('#note-create-action').click();
  await page.locator('#action-drawer[open]').waitFor();
  await page.locator('#action-description').fill('合成收藏来源行动');
  await page.locator('#action-save').click(); await page.locator('#action-drawer').waitFor({state:'hidden'});

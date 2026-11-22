@@ -75,7 +75,7 @@ try:
         flags='.maskShift' if modifier else '[]'
         subprocess.run(['swift','-e',f'import Cocoa; import CoreGraphics; let down=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:true)!; down.flags = {flags}; down.postToPid({process.pid}); usleep(100000); let up=CGEvent(keyboardEventSource:nil,virtualKey:{code},keyDown:false)!;up.flags = {flags};up.postToPid({process.pid})'],check=True)
     original = hashlib.sha256((root/'reader.md').read_bytes()).hexdigest()
-    c("document.querySelector('#note-create-action').focus()")
+    c("document.querySelector('#note-reference-open').click();document.querySelector('#note-create-action').focus()")
     key(36)
     w("document.querySelector('#action-drawer').open && document.activeElement.id==='action-description'")
     assert len(records())==0
@@ -120,7 +120,7 @@ try:
     key(36)
     w("!document.querySelector('#action-drawer').open && document.activeElement.id==='passage-create-action'")
     assert len(records())==2 and c('return getSelection().toString()')==table_selection
-    c("document.querySelector('#note-create-action').click()")
+    c("if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-create-action').click()")
     w("document.querySelector('#action-drawer').open")
     c("document.querySelector('#action-description').value='Discard native draft';document.querySelector('#action-description').dispatchEvent(new Event('input',{bubbles:true}))")
     key(53)
@@ -131,7 +131,7 @@ try:
     assert len(records())==2
     c("document.querySelector('#reading .wiki-link').click()")
     w("document.querySelector('#file-path').textContent==='folder/Second.md'")
-    c("document.querySelector('#note-create-action').click()")
+    c("if (document.querySelector('#note-reference').hidden) document.querySelector('#note-reference-open').click();document.querySelector('#note-create-action').click()")
     w("document.querySelector('#action-drawer').open")
     c("document.querySelector('#action-save').click()")
     w("!document.querySelector('#action-drawer').open")

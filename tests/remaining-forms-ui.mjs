@@ -1,3 +1,4 @@
+import {showReaderDetails} from './form-journeys.js';
 import {readFile, writeFile, readdir, stat, mkdir, rename} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -81,7 +82,7 @@ try {
     await page.keyboard.press('Escape');
     await page.locator('#note-task-drawer').waitFor({state:'hidden'});
     await page.locator('#items [data-path="reference.md"]').click();
-    await page.locator('#note-info-open').click();
+    await showReaderDetails(page); await page.locator('#note-info-open').click();
     for (const width of [1180,393]) { await page.setViewportSize({width,height:800}); await screenshot(join(evidence,`before-note-info-${width}.png`)); }
     console.log('PASS baseline real-storage browser captures at starting SHA');
   } else {
@@ -245,7 +246,7 @@ try {
     if (intent === 'Tab') await page.keyboard.press('Tab');
     else await page.locator('#body').click();
     const destination = await page.evaluate(() => { window.leaveDestination = document.activeElement; return leaveDestination.id; });
-    assert.equal(destination, intent === 'Tab' ? 'note-save' : 'body');
+    assert.equal(destination, intent === 'Tab' ? 'mode' : 'body');
     await releaseReturn();
     assert.equal(await page.evaluate(() => document.activeElement === leaveDestination), true, `Reader Continue preserves newer ${intent}`);
   }
@@ -257,7 +258,7 @@ try {
   await page.locator('#reading').waitFor({state:'visible'});
   assert.equal(await readFile(join(fixture.root, 'reference.md'), 'utf8'), readerSource);
   console.log('PASS real reader consumer: held Continue cannot steal newer Tab/pointer; discard and reopen preserve source');
-  await page.locator('#note-info-open').click();
+  await showReaderDetails(page); await page.locator('#note-info-open').click();
   fixture.fail((cmd,args)=>cmd==='actionWrite'&&args.entityType==='topic'&&args.path.startsWith('revisions/'));
   await page.getByLabel('专项验证主题',{exact:true}).check();
   await page.locator('#note-topics [role=alert]').filter({hasText:'未保存的编辑仍保留'}).waitFor();
@@ -291,7 +292,7 @@ try {
   await page.locator('#note-info-drawer').waitFor({state:'visible'});
   await page.locator('#note-info-drawer .ui-drawer-footer button').click();
   assert.equal(await page.locator('#note-info-open').evaluate(node=>node===document.activeElement),true);
-  await page.locator('#note-reference-open').click();
+  await showReaderDetails(page);
   const referenceOpener = page.locator('#note-reference').getByRole('button',{name:'笔记信息与整理'});
   fixture.fail((cmd,args)=>cmd==='referenceQuery'&&args.exactPath==='reference.md');
   await referenceOpener.click();

@@ -167,6 +167,18 @@ try {
   assert.equal(await page.locator('#global-search-input').inputValue(),'Original');
   assert.equal(await page.locator('[data-scope=note]').getAttribute('aria-pressed'),'true');
   await page.getByRole('button',{name:'关闭搜索',exact:true}).click();
+  // Restoring a search invocation must restore its reader breadcrumb as well.
+  await page.locator('#items [data-path="reference.md"]').click();
+  await page.getByRole('button',{name:'打开本地笔记：别名第二份',exact:true}).click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='folder/Second.md');
+  await page.locator('#global-search-open').click();
+  await page.getByRole('button',{name:'打开原文',exact:true}).first().click();
+  await page.locator('.search-return:visible').click();
+  await page.getByRole('button',{name:'关闭搜索',exact:true}).click();
+  assert.equal(await page.locator('#file-path').textContent(),'folder/Second.md');
+  assert.equal(await page.locator('#back').getAttribute('aria-label'),'返回：上一篇笔记');
+  await page.locator('#back').click();
+  await page.waitForFunction(()=>document.querySelector('#file-path').textContent==='reference.md');
   // A bounded second Library page retains its query, topic filter, selection and scroll.
   for(let i=0;i<55;i++) await writeFile(join(fixture.root,`page-${String(i).padStart(2,'0')}.md`),`# Pageable ${i}\n\n[[folder/Second|第二份]]`);
   await page.locator('[data-view=notes]').click();
