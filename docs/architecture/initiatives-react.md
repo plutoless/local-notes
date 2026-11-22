@@ -11,9 +11,9 @@ exists at the starting head.
 | --- | --- | --- |
 | Initiative browse `#items` | React `InitiativeRows` | Bounded repository page, selected identity, callback; `release()` unmounts and fences pending list replies before another owner mounts |
 | Metadata, tools and context structure | React mount-once `InitiativeEditor`, `InitiativeTools`, `InitiativeContext` | Explicit uncontrolled IDs; InitiativeScreen owns values, events and receipt slots; no rerender over edits |
-| Working/reference context links | React `InitiativeLinks` | Typed source identity, selected state, warning/resolved path and open callback |
+| Working/reference context links | React `InitiativeLinks` | Source-row identity includes the relationship role. Opening uses the resolved path, and return restores the relationship row and scroll. |
 | Context Action entries | React `InitiativeActions` | Delivered `ActionEntryPort.open` opens the shared editor with a persisted record or the Initiative ID as the initial assignment for a new Action |
-| Working-note entry | Shared note task and reader | Per-Initiative capture draft, existing note create and Initiative repository writes, then the shared reader with contextual return |
+| Working-note entry | Shared note task and reader | Per-Initiative capture draft, existing note create and Initiative repository writes, then the shared reader when the original navigation still owns the result. Once created, the saved input is read-only during association retry. |
 | Ending choices | React `InitiativeDecisions` | Public pure projection of unfinished members, eligible destinations and retained decisions; controller reads explicit choices |
 | Editable source shell | React `mountInitiativeSource` per row | Mount-once uncontrolled fields; controller owns fingerprint/name/status/role placement; unmount before remove/reset |
 | Metadata detour snapshot | InitiativeScreen | Snapshot view data and restore via React ports, never detach React-owned children |
