@@ -217,12 +217,11 @@ async function note(cmd,args={}){const result=await native(cmd,{workspaceId:root
 function content(){return withTitle(reader.text('body'),reader.text('title')||'无标题');}
 function updateStar(){infoUI.set({starred:stars.has(current)});}
 async function openLinkedNote(path, actionSource) {
-  if (!actionSource && $('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path);
+  if ($('.app').classList.contains('workspace') && initiatives.previous) return openContextNote(path, true, actionSource);
   if (!actionSource && !await flush(false, true)) return;
   const origin = {
     view, actionReturn: actions.returnToFocus, action: actionSource?.action,
     actionSource: actionSource && {index: actionSource.index, path},
-    initiative: actionSource && view === 'initiatives' ? initiatives.previous : null,
     search: $('#search').value, scroll: $('.collection').scrollTop,
     listScroll: $('#items').scrollTop, detailScroll: $('#workspace-detail').scrollTop,
     opener: document.activeElement
@@ -230,8 +229,10 @@ async function openLinkedNote(path, actionSource) {
   const generation = workspaceGeneration, request = ++noteLoadRequest;
   const owns = () => generation === workspaceGeneration && request === noteLoadRequest && view === origin.view && (!actionSource || actionSource.owns());
   let loaded;
-  try { loaded = await note('read', {path}); }
-  catch (error) {
+  try {
+    loaded = await note('read', {path});
+    actionSource?.verify(loaded.text);
+  } catch (error) {
     if (owns()) {
       if (actions.drawer.panel.open) errorFeedback($('#action-save-state'), error.message);
       else notice(error.message);
@@ -290,19 +291,27 @@ function render(){if(['notes','favorites'].includes(view))libraryScreen.render()
 async function load(path, loaded = null, request = ++noteLoadRequest, recover = true, committed = resetWikiNavigation){reader.set({capture:false});const workspaceId=rootKey;const r=loaded || await note('read',{path});if(workspaceId!==rootKey||request!==noteLoadRequest)return false;rememberReading();readingOwner=null;clearTimeout(timer);noteGeneration++;currentWorkspace=workspaceId;current=path;base=r.text;savedText=r.text;dirty=false;blocked=false;$('#conflict').hidden=true;reader.text('title', titleOf(r.text,path));reader.text('body', r.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));reader.set({path});infoUI.set({path});updateStar();libraryScreen.selectedPath=path;$('#empty').hidden=true;$('#editor').hidden=false;$('.app').classList.add('editing');state('已保存到本地');noteBaseline=content();const draft=recover ? readDraft() : null;if(draft){reader.text('title', titleOf(draft.text,path));reader.text('body', draft.text.replace(/^# .+\r?\n?/m,'').replace(/^\r?\n/,''));dirty=content()!==noteBaseline;base=draft.base;if(base!==r.text){blocked=true;$('#conflict').hidden=false;state('发现未保存草稿和外部修改');}else{state('已恢复未保存草稿');}}readerSelection = null;setNoteMode(!draft);for(const selector of readingScrollSelectors) $(selector).scrollTop=0;committed();
 readingOwner={workspace:workspaceId,path,fingerprint:fingerprint(r.text),title:titleOf(r.text,path)};
 rememberReading();render();await noteInitiatives(path);if(request!==noteLoadRequest)return false;await libraryScreen.noteTopics(path);return request===noteLoadRequest;}
-async function openContextNote(path, reading = true) {
+async function openContextNote(path, reading = true, actionSource) {
+  const owns = () => !actionSource || actionSource.owns();
   try {
-    if (!await flush(false, true)) return;
+    if (!await flush(false, true) || !owns()) return;
     const workspaceId = rootKey, initiativeId = initiatives.previous?.entityId, request = ++noteLoadRequest;
     const loaded = await note('read', {path});
-    if (request !== noteLoadRequest || workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
-    actions.closeDrawer();
+    if (!owns() || request !== noteLoadRequest || workspaceId !== rootKey || initiativeId !== initiatives.previous?.entityId || view !== 'initiatives') return;
+    actionSource?.verify(loaded.text);
+    if (!actions.closeDrawer()) return;
     initiatives.rememberContext(); initiatives.detailKind = 'note'; $('.app').classList.add('workspace', 'detail-open', 'editing');
     $('#action-editor').hidden = true; $('#initiative-editor').hidden = true;
     if (!await load(path, loaded, request)) return; initiatives.selectContext(path); $('#workspace-detail').scrollTop = 0;
     if (!dirty && readMode !== reading) setNoteMode(reading);
     return true;
-  } catch (error) { notice(error.message); return false; }
+  } catch (error) {
+    if (owns()) {
+      if (actionSource) errorFeedback($('#action-save-state'), error.message);
+      else notice(error.message);
+    }
+    return false;
+  }
 }
 async function openNote(path){try{if(await flush()){if(await load(path)) { $('#mode').focus(); }}}catch(e){notice(e.message);}}
 async function save() {
@@ -766,7 +775,6 @@ reader.on('back', async () => {
       return;
     }
     if (origin.action) {
-      if (origin.initiative) await initiatives.edit(origin.initiative);
       const opener = [...$('#items').querySelectorAll('[data-entity-id], [data-action-id]')]
         .find(node => (node.dataset.entityId || node.dataset.actionId) === origin.action.entityId);
       if (await actions.edit(origin.action, null, null, opener)) {
@@ -775,7 +783,7 @@ reader.on('back', async () => {
         const receiver = document.activeElement;
         await actions.sourceRefresh;
         if (request === actions.openRequest && actions.drawer.panel.open && document.activeElement === receiver && origin.actionSource) {
-          actions.sourceControl(origin.actionSource.index, origin.actionSource.path)?.focus({preventScroll: true});
+          actions.sourceControl(origin.actionSource.index, origin.actionSource.path)?.focus();
         }
       }
     } else {

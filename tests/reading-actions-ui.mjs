@@ -41,7 +41,7 @@ try {
     await route.fulfill({body: await readFile(process.env.LIBRARY_ASSETS_DIR ? join(process.env.LIBRARY_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
 
-  const original = '# Original\n\n[[folder/Second|第二份]]\n\n- [ ] **确认** next\n\n| 名称 | 值 |\n| --- | --- |\n| 合成 | `a` |\n';
+  const original = '# Original\n\n[[folder/Second|第二份]]\n\n- **确认** next\n\n| 名称 | 值 |\n| --- | --- |\n| 合成 | `a` |\n\n- [ ] 历史待核对事项\n';
   await writeFile(sourcePath, original);
   await mkdir(join(fixture.root,'folder'),{recursive:true});
   await writeFile(join(fixture.root,'folder/Second.md'),'# Second\n\nNested source');
