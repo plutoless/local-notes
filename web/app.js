@@ -701,9 +701,10 @@ function shortTaskAdapter() {
     discard: () => !owns() || closeShortTask(), close: () => !owns() || closeShortTask()};
 }
 function leaveShortTask() { return shortTask ? requestTaskLeave(shortTaskAdapter()) : Promise.resolve(true); }
-function openShortTask({title, controls, key, values, save, opener, submit = '保存'}) {
+function openShortTask({title, controls, key, values, save, opener, submit = '保存', quickCapture = false}) {
   if (shortTask || document.querySelector('dialog[open]')) return;
   shortTaskOpening++;
+  shortDrawer.panel.classList.toggle('quick-capture-sheet', quickCapture);
   shortFields.show(controls);
   shortStatus.replaceChildren();
   shortStatus.removeAttribute('data-state');
@@ -782,7 +783,7 @@ async function openCapture(initiative = null, opener = $('#new')) {
   const title = () => $('#capture-title'), body = () => $('#capture-body'), path = () => $('#capture-path');
   const repository = initiatives.repository;
   let linkedRevision = null;
-  openShortTask({title: initiative ? '新建工作笔记' : '随手记', opener, key: initiative ? `capture-draft:${workspaceId}:${initiative.entityId}` : `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',optional:true,help:'标题或正文至少填一项。',describedBy:'note-task-status'},{id:'capture-body',label:'正文',optional:true,multiline:true,describedBy:'note-task-status'}],
+  openShortTask({title: initiative ? '新建工作笔记' : '随手记', opener, quickCapture: !initiative, key: initiative ? `capture-draft:${workspaceId}:${initiative.entityId}` : `capture-draft:${workspaceId}`, controls: [{id:'capture-path',hidden:true,value:`Notes/note-${Date.now()}.md`},{id:'capture-title',label:'标题',optional:true,help:'标题或正文至少填一项。',describedBy:'note-task-status'},{id:'capture-body',label:'正文',optional:true,multiline:true,describedBy:'note-task-status'}],
     values: () => ({'capture-title': title().value, 'capture-body': body().value, 'capture-path': path().value}), submit: '创建笔记', save: async () => {
       if (!title().value.trim() && !body().value.trim()) { shortFields.set('capture-title',{invalid:true,error:'请填写标题或正文。'}); return false; }
       if (workspaceId !== rootKey) throw Error('工作区已切换，请重新打开。');
