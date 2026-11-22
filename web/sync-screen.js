@@ -92,13 +92,19 @@ export class SyncScreen {
         const workspace=this.workspaceIds[0];
         // Other screens can retain repositories from the previous directory.
         if(!repo.ready || (workspace && repo.workspaceId!==workspace)){
-          await repo.open();
-          if(!this.owned(repos,generation,index))return;
-          this.workspaceIds[index]=repo.workspaceId;
-          if(workspace && repo.workspaceId!==workspace){
-            if(index===0){this.model=emptyInspection();this.saved='';}
-            throw Error('Workspace changed during synchronization check');
+          try { await repo.open(); }
+          finally {
+            // Opening assigns the workspace before it can fail to read history.
+            if(this.owned(repos,generation,index)){
+              this.workspaceIds[index]=repo.workspaceId;
+              if(index===0 && workspace && repo.workspaceId!==workspace){
+                this.model=emptyInspection();
+                this.saved='';
+              }
+            }
           }
+          if(!this.owned(repos,generation))return;
+          if(workspace && repo.workspaceId!==workspace)throw Error('Workspace changed during synchronization check');
         }
         const result=await repo.serialize(()=>repo.recover());
         if(!this.owned(repos,generation))return;
@@ -117,7 +123,17 @@ export class SyncScreen {
       this.model.active='';
       this.message('检查未完成。请确认目录可用，然后点击「重新检查」；原文件仍保留。',error.message);
     }}
-    finally{if(this.owned(repos,generation)){this.model.running=false;this.render();if(this.panel.open&&restore&&[document.body,this.panel].includes(document.activeElement))this.refreshButton.focus();}}
+    finally{
+      if(generation===this.generation){
+        if(!this.owned(repos,generation)){
+          this.model=emptyInspection();
+          this.saved='';
+        }
+        this.model.running=false;
+        this.render();
+        if(this.panel.open&&restore&&[document.body,this.panel].includes(document.activeElement))this.refreshButton.focus();
+      }
+    }
   }
   choose(key,revision){
     const r=this.record(key);

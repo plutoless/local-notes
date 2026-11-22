@@ -4,6 +4,7 @@ import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {chromium} from 'playwright';
 import {ActionRepository} from '../web/actions.js';
+import {TopicRepository} from '../web/library.js';
 import {storageFixture} from './action-adapter.js';
 
 const assets = 'build/web';
@@ -12,7 +13,8 @@ const browser = await chromium.launch({executablePath:process.env.CHROME_PATH});
 const fixture = await storageFixture();
 const other = await storageFixture();
 try {
-  let active = fixture, cancel = true, failInspection = false, failFocusRefresh = false;
+  let active = fixture, cancel = true, failInspection = false, failFocusRefresh = false, failTopicsReopen = false;
+  let pendingTopics;
   const repo = new ActionRepository(fixture.adapter);
   await repo.open();
   const ancestor = (await repo.save({description:'核对同步样本', status:'todo'})).record;
@@ -28,6 +30,9 @@ try {
   const otherRepo = new ActionRepository(other.adapter);
   await otherRepo.open();
   await otherRepo.save({description:'仅在另一个目录的行动', focusPosition:1});
+  const topics = new TopicRepository(fixture.adapter);
+  await topics.open();
+  const previousTopic = (await topics.save({description:'仅在原目录的主题'})).record;
   const page = await browser.newPage({viewport:{width:1180, height:800}});
   const errors = [];
   page.on('pageerror', error => errors.push(error.message));
@@ -39,8 +44,20 @@ try {
         return {};
       }
       if (request.cmd === 'actionFiles' && failInspection) throw Error('Controlled inspection failure');
+      if (request.cmd === 'actionFiles' && request.entityType === 'topic' && active === other && failTopicsReopen) {
+        assert.equal(request.workspaceId, otherRepo.workspaceId);
+        throw Error('Controlled Topics reopen failure');
+      }
       if (request.cmd === 'actionQuery' && request.focus && failFocusRefresh) throw Error('Controlled page refresh failure');
-      return await active.adapter(request.cmd, request);
+      const backend = active;
+      const result = await backend.adapter(request.cmd, request);
+      if (request.cmd === 'actionFiles' && request.entityType === 'topic' && backend === fixture && pendingTopics) {
+        const pending = pendingTopics;
+        pendingTopics = undefined;
+        pending.started.resolve();
+        await pending.release.promise;
+      }
+      return result;
     } catch (error) {
       return {error:error.message};
     }
@@ -207,6 +224,10 @@ try {
   await inspection.getByText('部分版本需要核对', {exact:true}).waitFor();
   assert.equal(await readFile(broken, 'utf8'), '{invalid');
   await unlink(broken);
+  const pending = {started:Promise.withResolvers(), release:Promise.withResolvers()};
+  pendingTopics = pending;
+  await refresh.click();
+  await pending.started.promise;
   await close.click();
   await page.setViewportSize({width:393,height:852});
   await directory.click();
@@ -216,14 +237,20 @@ try {
   await choose.click();
   await page.getByText('仅在另一个目录的行动', {exact:true}).waitFor();
   assert.equal(await page.locator('#root-label').textContent(), other.root);
-  failInspection = true;
+  failTopicsReopen = true;
   await opener.click();
-  await inspection.getByText('检查未完成', {exact:true}).waitFor();
+  pending.release.resolve();
+  await inspection.getByText('检查未完成', {exact:true}).waitFor({timeout:5000});
+  assert.match(await inspection.textContent(), /Controlled Topics reopen failure/);
   assert.equal(await sync.getByText(/部分版本需要核对/).count(), 0);
-  failInspection = false;
+  assert.ok(!(await sync.textContent()).includes(previousTopic.entityId));
+  assert.equal(await refresh.isEnabled(), true);
+  failTopicsReopen = false;
   await refresh.click();
   await page.waitForFunction(() => document.querySelector('.sync-panel').getAttribute('aria-busy') === 'false');
   assert.match(await inspection.textContent(), /无待处理冲突/);
+  assert.equal(await page.locator('#root-label').textContent(), other.root);
+  assert.ok(!(await sync.textContent()).includes(previousTopic.entityId));
   assert.deepEqual(errors, []);
   console.log('Directory disclosure and chooser cancel/switch, Sync status, keyboard guarded cancel/confirm, and real adapter readback passed.');
 } finally {

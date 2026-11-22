@@ -1,12 +1,75 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {writeFile, mkdir} from 'node:fs/promises';
+import {writeFile, mkdir, rename, unlink} from 'node:fs/promises';
 import {join} from 'node:path';
 import {randomUUID} from 'node:crypto';
 import {ActionRepository} from '../web/actions.js';
 import {TopicRepository} from '../web/library.js';
 import {InitiativeRepository} from '../web/initiatives.js';
 import {storageFixture} from './action-adapter.js';
+
+test('a reopened Topics repository only uses recovery data from its current workspace', async () => {
+  const first = await storageFixture();
+  const second = await storageFixture();
+  try {
+    let active = first;
+    let delayed;
+    const topics = new TopicRepository(async (cmd, args) => {
+      const result = await active.adapter(cmd, args);
+      if (active === first && delayed?.commands.has(cmd)) {
+        const gate = delayed;
+        gate.arrived.get(cmd).resolve();
+        await gate.release.promise;
+      }
+      return result;
+    });
+    await topics.open();
+    const previous = (await topics.save({description:'First workspace topic'})).record;
+    await topics.recover();
+    const unavailable = async fixture => {
+      const directory = join(fixture.root, 'LocalNotesData', 'topics');
+      await rename(directory, directory + '-held');
+      await writeFile(directory, 'Fixture makes the record directory unavailable');
+      return async () => {
+        await unlink(directory);
+        await rename(directory + '-held', directory);
+      };
+    };
+    const restoreFirst = await unavailable(first);
+    const sameWorkspace = await topics.open();
+    assert.ok(sameWorkspace.warnings.some(warning => warning.startsWith('topics/:')));
+    assert.equal((await topics.query()).actions[0].entityId, previous.entityId);
+    await restoreFirst();
+
+    const otherTopics = new TopicRepository(second.adapter);
+    await otherTopics.open();
+    const current = (await otherTopics.save({description:'Second workspace topic'})).record;
+    const restoreSecond = await unavailable(second);
+    const commands = new Set(['actionFiles', 'actionQuery']);
+    delayed = {
+      commands,
+      arrived: new Map([...commands].map(cmd => [cmd, Promise.withResolvers()])),
+      release: Promise.withResolvers(),
+    };
+    const previousInspection = assert.rejects(topics.recover(), /Workspace changed during record recovery/);
+    const previousQuery = assert.rejects(topics.query(), /Workspace changed during record query/);
+    await Promise.all([...delayed.arrived.values()].map(gate => gate.promise));
+    active = second;
+    let reopened;
+    try { reopened = await topics.open(); }
+    finally { delayed.release.resolve(); }
+    await Promise.all([previousInspection, previousQuery]);
+    assert.equal(reopened.workspaceId, current.workspaceId);
+    assert.ok(reopened.warnings.some(warning => warning.startsWith('topics/:')));
+    assert.ok(!reopened.warnings.join('\n').includes(previous.entityId), reopened.warnings);
+    assert.deepEqual((await topics.query()).actions.map(record => record.entityId), [current.entityId]);
+    await restoreSecond();
+    assert.deepEqual((await topics.open()).warnings, []);
+    assert.deepEqual((await topics.query()).actions, [current]);
+  } finally {
+    await Promise.all([first.close(), second.close()]);
+  }
+});
 
 for (const Repository of [ActionRepository, InitiativeRepository, TopicRepository]) test(`${Repository.name}: forks, conflict copies, delayed parents, tombstones and rebuild`, async () => {
   const fixture = await storageFixture();
