@@ -4,13 +4,15 @@ import {useState} from 'react';
 import {Input} from './ui/input';
 import {Textarea} from './ui/textarea';
 import {Button} from './components';
-export interface ReaderModel {path:string; title:string; body:string; reading:boolean; html:string; status:string; statusKind:string; statusDetail:string; saveHidden:boolean; statusHidden:boolean; capture:boolean; searchFallback:boolean}
+export interface ReaderModel {path:string; title:string; body:string; reading:boolean; html:string; status:string; statusKind:string; statusDetail:string; saveHidden:boolean; statusHidden:boolean; capture:boolean; searchFallback:boolean; initiative:boolean}
 type ReaderAction = 'back'|'capture'|'save'|'mode'|'noteAction'|'passageAction'|'changed'|'remember';
 export function readerView(container:HTMLElement) {
   const callbacks:Partial<Record<ReaderAction,()=>void>>={};
   let openInfo: (opener: HTMLButtonElement) => void = () => {};
+  let editInitiative: (opener: HTMLButtonElement) => void = () => {};
+  let newInitiativeAction: typeof editInitiative = () => {};
   let wiki:(target:string, opener:HTMLElement)=>void=()=>{};
-  let model:ReaderModel={path:'',title:'',body:'',reading:false,html:'',status:'已保存到本地',statusKind:'saved',statusDetail:'',saveHidden:false,statusHidden:false,capture:false,searchFallback:false};
+  let model:ReaderModel={path:'',title:'',body:'',reading:false,html:'',status:'已保存到本地',statusKind:'saved',statusDetail:'',saveHidden:false,statusHidden:false,capture:false,searchFallback:false,initiative:false};
   function Reader() {
     const [reference,setReference]=useState({path:model.path,open:false});
     const context=reference.path===model.path && reference.open;
@@ -18,7 +20,9 @@ export function readerView(container:HTMLElement) {
     const invoke=(action:ReaderAction)=>()=>callbacks[action]?.();
     const input=(key:'title'|'body', value:string)=>{model={...model,[key]:value}; render(); callbacks.changed?.();};
     return <><div className="toolbar">
-      <Button id="back" className="quiet" onClick={invoke('back')}>‹ 返回列表</Button>
+      <Button id="back" className="quiet" onClick={invoke('back')}>{model.initiative?'‹ 返回事项':'‹ 返回列表'}</Button>
+      <Button id="reader-edit-initiative" hidden={!model.initiative} onClick={event=>editInitiative(event.currentTarget)}>编辑事项</Button>
+      <Button id="reader-new-initiative-action" hidden={!model.initiative} onClick={event=>newInitiativeAction(event.currentTarget)}>新建事项行动</Button>
       <Button id="capture-return" className="quiet" hidden={!model.capture} onClick={invoke('capture')}>保存并返回原任务</Button>
       <Button id="note-save" className="secondary" hidden={model.saveHidden} onClick={invoke('save')}>保存笔记</Button>
       <Button id="note-info-open" onClick={event => openInfo(event.currentTarget)}>笔记信息与整理</Button>
@@ -43,6 +47,7 @@ export function readerView(container:HTMLElement) {
   return {
     on(action:ReaderAction, callback:()=>void){callbacks[action]=callback;},
     info(callback: typeof openInfo){openInfo=callback;},
+    initiative(edit: typeof editInitiative, createAction: typeof newInitiativeAction){editInitiative=edit;newInitiativeAction=createAction;},
     wiki(callback:typeof wiki){wiki=callback;},
     set(patch:Partial<ReaderModel>){model={...model,...patch,...(patch.html!==undefined?{searchFallback:false}:{})};render();},
     text(key:'title'|'body',value?:string){if(value!==undefined){model={...model,[key]:value};render();}return model[key];},
