@@ -6,6 +6,7 @@ import {Button} from './components';
 import {TaskFormActions} from './note-forms';
 import {Input} from './ui/input';
 import {Textarea} from './ui/textarea';
+import './action-workspace.css';
 
 export interface ActionSource {path:string; quote:string; fingerprint:string}
 export interface ActionFields {description:string; status:string; initiativeId?:string|null; dueDate?:string|null; waitingOn?:string|null; sources:ActionSource[]}
@@ -15,10 +16,12 @@ export interface ActionEntry {record:ActionRecord|null; initiativeId?:string; op
 export interface ActionEntryPort {open:(entry:ActionEntry)=>Promise<void>}
 export interface ActionRow extends ActionFields {entityId:string; overdue:boolean; initiativeName:string}
 const labels:Record<string,string>=actionLabels;
+export function ActionStatus({status, label = labels[status]}:{status:string; label?:string}) {
+  return <span className="action-status" data-status={status}>{label}</span>;
+}
 export function ActionField({label,children}:{label:string;children:ReactNode}) {return <label className="ui-field ui-compact"><span>{label}</span><span className="ui-field-target">{children}</span></label>;}
 export function ActionEditor() {
   return <form id="action-form" className="document text-content bg-surface" noValidate>
-      <details className="ui-disclosure"><summary>记录详情</summary><span id="action-id"/></details>
       <ActionField label="行动描述"><Textarea id="action-description" required rows={3} aria-describedby="action-save-state"/></ActionField>
       <ActionField label="状态"><select id="action-status">{Object.entries(labels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></ActionField>
       <details id="action-options" className="ui-disclosure"><summary>事项、日期与等待条件（可选）</summary>
@@ -28,15 +31,30 @@ export function ActionEditor() {
       </details>
       <details id="action-source-options" className="ui-disclosure"><summary>来源引用（可选）</summary><div id="action-sources"/><Button id="action-add-source">添加来源引用</Button></details>
       <div id="action-save-state" role="status" aria-live="polite"/>
-      <section className="action-utilities" aria-label="行动管理"><details className="ui-disclosure"><summary>当前重点与历史</summary><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p><Button id="action-focus" aria-describedby="focus-help">加入当前重点</Button><p id="history-help">保存行动后可查看版本历史。</p><Button id="action-history" aria-describedby="history-help">查看历史</Button><div id="action-revisions" aria-live="polite"/></details><details className="ui-disclosure"><summary>放弃编辑</summary><Button id="action-discard" className="danger ui-compact">放弃未保存的草稿</Button></details></section>
+      <section className="action-utilities" aria-label="行动管理"><details className="ui-disclosure"><summary>记录详情</summary><span id="action-id"/></details><details className="ui-disclosure"><summary>当前重点与历史</summary><p id="focus-help">保存后，待办或进行中的行动可加入当前重点。</p><Button id="action-focus" aria-describedby="focus-help">加入当前重点</Button><p id="history-help">保存行动后可查看版本历史。</p><Button id="action-history" aria-describedby="history-help">查看历史</Button><div id="action-revisions" aria-live="polite"/></details><details className="ui-disclosure"><summary>放弃编辑</summary><Button id="action-discard" className="danger ui-compact">放弃未保存的草稿</Button></details></section>
     </form>;
 }
-export function ActionTools() {return <><Button id="action-new" className="primary">＋ 新建行动</Button><ActionField label="状态"><select id="action-filter"><option value="">全部状态</option>{Object.entries(labels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></ActionField><ActionField label="事项"><select id="action-initiative-filter"/></ActionField><div className="action-pagination ui-pagination"><Button id="action-previous">上一页</Button><span id="action-page"/><Button id="action-next">下一页</Button></div><Button id="action-recover">恢复行动草稿</Button></>;}
+export function ActionTools() {
+  return <>
+    <div className="action-list-filters">
+      <ActionField label="状态"><select id="action-filter"><option value="">全部状态</option>{Object.entries(labels).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></ActionField>
+      <ActionField label="事项"><select id="action-initiative-filter"/></ActionField>
+    </div>
+    <div className="action-list-controls">
+      <Button id="action-new" className="primary ui-compact">新建行动</Button>
+      <Button id="action-recover" className="quiet ui-compact">恢复行动草稿</Button>
+      <div className="action-pagination ui-pagination">
+        <Button id="action-previous" className="quiet ui-compact">上一页</Button><span id="action-page"/>
+        <Button id="action-next" className="quiet ui-compact">下一页</Button>
+      </div>
+    </div>
+  </>;
+}
 export function ActionRows({rows,selected,empty,open}:{rows:ActionRow[];selected?:string;empty:string;open:(row:ActionRow,opener:HTMLButtonElement)=>unknown}) {
   return <>{rows.map(row=><Button key={row.entityId} className="quiet ui-row action-list-row" data-entity-id={row.entityId}
     aria-current={selected===row.entityId?'true':undefined} onClick={event=>open(row,event.currentTarget)}>
     <span className="action-list-title">{row.description}</span>
-    <span className="action-list-meta"><strong>{labels[row.status]}</strong><span>{row.initiativeName}</span></span>
+    <span className="action-list-meta"><ActionStatus status={row.status}/><span>{row.initiativeName}</span></span>
     {(row.dueDate || row.waitingOn) && <span className="action-list-meta">
       {row.dueDate && <span className={row.overdue?'action-overdue':undefined}>{row.overdue?'已逾期':'截止'}：{row.dueDate}</span>}
       {row.waitingOn && <span>等待：{row.waitingOn}</span>}
