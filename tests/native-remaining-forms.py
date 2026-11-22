@@ -161,7 +161,7 @@ try:
         w("!document.querySelector('#note-task-drawer').open")
         assert not list((output/'Sync').rglob('*.md'))
         click('随手记'); w("document.querySelector('#note-task-drawer').open")
-        click('创建笔记'); w("document.querySelector('#note-task-status').textContent.includes('内容需要核对')")
+        click('创建笔记'); w("document.querySelector('#capture-title-error')?.textContent.includes('请填写标题或正文')")
         fill('#capture-title','原生笔记48'); fill('#capture-body','保留原生正文与恢复保护。'*80)
         # WebKit flushes localStorage asynchronously. Observe the private backing
         # row before testing recovery; an immediate forced kill is not durable.
@@ -213,7 +213,7 @@ try:
         c("document.querySelector('#rename').click()"); w("document.querySelector('#note-task-drawer').open && !document.querySelector('#note-info-drawer').open")
         views('location')
         fill('#note-location','../invalid.md'); c("document.querySelector('#note-task-form').requestSubmit()")
-        w("document.querySelector('#note-task-status').textContent.includes('路径无效')")
+        w("document.querySelector('#note-location-error')?.textContent.includes('路径无效')")
         fill('#note-location','Notes/原生移动48.md'); c("document.querySelector('#note-task-form').requestSubmit()")
         w("!document.querySelector('#note-task-drawer').open")
         assert (output/'Sync/Notes/原生移动48.md').exists()
