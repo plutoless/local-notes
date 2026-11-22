@@ -92,7 +92,7 @@ try {
   await page.locator('#action-status').selectOption('todo'); await page.locator('#action-save').click();
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
-  await page.getByText('还没有重点行动。', {exact: false}).waitFor();
+  await page.getByText('暂无重点行动。', {exact: false}).waitFor();
   // Seed nine explicit focused actions through the same production adapter.
   const {ActionRepository} = await import('../web/actions.js');
   const repository = new ActionRepository(fixture.adapter); await repository.open();

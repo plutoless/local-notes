@@ -1,4 +1,3 @@
-import {execFileSync} from 'node:child_process';
 import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
@@ -51,15 +50,17 @@ try {
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
     if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'library.js', 'library-screen.js', 'focus-screen.js', 'reading-history.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: process.env.PHASE === 'before' ? execFileSync('git', ['show', 'eeabc7ea6ef7e386caa944ffcd156ee8a49c55b3:web/'+name]) : await readFile(new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    await route.fulfill({body: await readFile(process.env.HOME_ASSETS_DIR ? join(process.env.HOME_ASSETS_DIR, name) : new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
   });
-  await mkdir('docs/validation/issue45', {recursive: true});
+  const evidence = process.env.HOME_EVIDENCE || 'build/validation/124/home';
+  await mkdir(evidence, {recursive: true});
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   assert.equal(await page.getByRole('heading', {name: '当前重点', exact: true}).count(), 1);
+  assert.ok(!bridgeCalls.includes('read'),'Home never reads corpus bodies');
   assert.equal(await page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true}).count(), 1);
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
-  const phase = process.env.PHASE || 'after';
+  const phase = process.env.HOME_PHASE || 'after';
   for (const width of [1180,393]) {
     await page.setViewportSize({width,height:852});
     await page.waitForTimeout(200);
@@ -77,10 +78,10 @@ try {
       await page.keyboard.press('Tab');
       assert.equal(await page.evaluate(()=>getComputedStyle(document.activeElement).outlineWidth),'3px');
     }
-    await page.screenshot({path:`docs/validation/issue45/${phase}-${width}.png`});
+    await page.screenshot({path:`${evidence}/${phase}-${width}.png`});
     const primary = page.locator('.home-tools > .primary');
     await primary.evaluate(n=>n.textContent='新建需要核对资料来源与当前上下文的行动，并保留所有相关事项、原始引用和后续跟进说明，确认保存后继续处理下一步');
-    await page.screenshot({path:`docs/validation/issue45/${phase}-long-${width}.png`});
+    await page.screenshot({path:`${evidence}/${phase}-long-${width}.png`});
     if (width === 393 && phase !== 'before') {
       const geometry = await primary.evaluate(n=>({height:n.getBoundingClientRect().height,surface:parseFloat(getComputedStyle(n,'::before').height),scroll:n.scrollHeight,client:n.clientHeight}));
       assert.ok(geometry.height>44 && geometry.surface>32,JSON.stringify(geometry));
@@ -94,6 +95,38 @@ try {
       }
     }
     await primary.evaluate(n=>n.textContent='新建行动');
+  }
+  if (phase !== 'before') {
+    const homeTab = page.locator('[data-view=focus]');
+    const actionsTab = page.locator('[data-view=actions]');
+    assert.equal(await actionsTab.getAttribute('aria-current'), 'false');
+    assert.equal(await homeTab.getAttribute('aria-current'), 'page');
+    await page.mouse.move(0, 0);
+    const fill = button => button.evaluate(node => getComputedStyle(node).getPropertyValue('--control-fill').trim());
+    const selectedFill = await fill(homeTab);
+    assert.notEqual(selectedFill, await fill(actionsTab));
+    await homeTab.hover();
+    assert.notEqual(await fill(homeTab), selectedFill);
+    await page.mouse.move(0, 0);
+    await actionsTab.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    assert.equal(await actionsTab.evaluate(node => document.activeElement === node && getComputedStyle(node).outlineWidth === '3px'), true);
+    assert.equal(await homeTab.getAttribute('aria-current'), 'page');
+    await page.locator('.home-tools > .primary').focus();
+    await page.keyboard.press('Tab'); await page.keyboard.press('Tab');
+    assert.equal(await page.evaluate(()=>document.activeElement.textContent),'更多操作');
+    for(const width of [1180,393]) {
+      await page.setViewportSize({width,height:420});
+      await page.locator('#root-name').evaluate(n=>n.textContent='用于核对工作区身份与长中文目录换行的名称'.repeat(4));
+      await page.locator('.directory-details summary').click();
+      await page.locator('#choose').focus();
+      assert.ok(await page.locator('#choose').evaluate(n=>{const r=n.getBoundingClientRect();return r.top>=52 && r.bottom<=innerHeight;}),'Directory entry reachable in short layout');
+      await page.locator('.directory-details summary').click();
+      assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+      await page.screenshot({path:`${evidence}/${phase}-short-${width}.png`});
+    }
+    assert.ok(await page.locator('#global-search-open').isVisible());
   }
   await page.setViewportSize({width:1180,height:852});
   await page.locator('.row-menu summary').first().focus(); await page.keyboard.press('Enter');

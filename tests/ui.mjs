@@ -56,10 +56,10 @@ try {
   });
   await page.goto('https://notes.test/');
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
-  await page.locator('nav [data-view=focus]').click(); await page.getByRole('button', {name: '全部行动', exact: true}).click();
+  await page.getByRole('navigation', {name: '主导航'}).getByRole('button', {name: '行动', exact: true}).click();
   await page.getByText('还没有行动。', {exact: false}).waitFor();
-  assert.equal(await page.locator('nav [data-view=actions]').count(), 0);
-  assert.equal(await page.locator('nav [aria-current=page]').count(), 0);
+  assert.equal(await page.locator('nav [aria-current=page]').count(), 1);
+  assert.equal(await page.locator('nav [aria-current=page]').getAttribute('data-view'), 'actions');
   assert.equal(await page.locator('#view-title').textContent(), '行动');
   assert.equal(await page.locator('#view-title').evaluate(node => node === document.activeElement), true);
   await page.keyboard.press('Tab');

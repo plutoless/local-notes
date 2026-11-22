@@ -53,3 +53,21 @@ failures and unrun native/minimum-version boundaries in the PR. Keep raw evidenc
 outside Git under [the validation policy](../agents/validation.md).
 
 See [synchronization ownership](sync-react.md) for #101 panel, draft and bridge boundaries.
+
+## Selected composition adoption (#124)
+
+The shell uses the same pinned official Button facade and semantic theme adopted
+by #123 (see [component provenance](../design/issue123/ADOPTION.md)). No new
+primitive family or overlay owner is introduced. Workspace identity stays visible;
+its full path and chooser remain in the native disclosure. Actions has a direct
+navigation entry alongside Notes and Initiatives. Compact controls preserve real
+44px targets, wrapping, independent selected/hover/focus treatments, and scrollable
+navigation on short or narrow windows.
+
+Home keeps one visible heading, primary creation and collection actions before
+secondary management in both DOM and visual order. Reading entries display full
+relative paths to distinguish same-named sources. The existing continuation return
+context now retains both collection and inner list scroll positions. Existing
+workspace/request fences, active-task leave decisions, bounded queries, and reader
+ownership remain authoritative. The optional right Reference desk is unchanged
+and remains collapsed by default. The catalogue imports these production consumers.

@@ -104,7 +104,17 @@ export class LibraryScreen {
     $('#library-tools').hidden = false;
     await this.render();
     $('.collection').scrollTop = this.browseScroll || 0; $('#items').scrollTop = this.browseListScroll || 0;
-    this.library.sync().then(() => { this.failed = false; return this.render(); }).catch(error => { this.failed = true; this.render(); this.notice(error.message); });
+    const generation = this.library.generation;
+    this.library.sync().then(() => {
+      if (generation !== this.library.generation) return;
+      this.failed = false;
+      return this.render();
+    }).catch(error => {
+      if (generation !== this.library.generation) return;
+      this.failed = true;
+      this.render();
+      this.notice(error.message);
+    });
   }
   async render() {
     if (!this.isActive()) return;
