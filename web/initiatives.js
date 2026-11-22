@@ -9,10 +9,10 @@ export function validateInitiative(record) {
 export class InitiativeRepository extends ActionRepository {
   constructor(adapter, options = {}) { super(adapter, {...options, entityType: 'initiative', validate: validateInitiative}); }
 }
-export async function allRecords(repository) {
+export async function allRecords(repository, filter = {}) {
   const records = [];
   for (let offset = 0; ; offset += 50) {
-    const page = await repository.query({limit: 50, offset}); records.push(...page.actions);
+    const page = await repository.query({...filter, limit: 50, offset}); records.push(...page.actions);
     if (!page.hasMore) return records;
   }
 }

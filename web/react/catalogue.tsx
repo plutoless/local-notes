@@ -1,4 +1,4 @@
-import {InitiativeRows, InitiativeLinks, InitiativeDecisions} from './initiatives';
+import {InitiativeRows, InitiativeLinks, InitiativeDecisions, InitiativeSummary, InitiativeEditor, type InitiativeRecord} from './initiatives';
 import {ActionHistory, ActionRows, ActionSourceEvidence} from './actions';
 import {useState} from 'react';
 import {createRoot} from 'react-dom/client';
@@ -35,6 +35,7 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
   };
   const organizationCallbacks:OrganizationCallbacks={search:noop,directory:noop,select:noop,page:noop,retry:noop,preview:noop,send:noop,cancel:noop,configure:noop,setting:noop,save:noop};
   const revision={revision:'catalogue-revision',description:'逐字保留需要人工核对的长中文来源与行动内容'.repeat(3),status:'todo',modifiedAt:'2026-11-20'};
+  const initiative:InitiativeRecord={entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(4),goal:'核对原文',progress:'已核对来源路径。',status:'active',sources:[]};
   const conflict:ConflictRecord={key:'catalogue-conflict',id:'catalogue',type:'action',name:'行动：人工核对来源与版本',versions:[revision,{...revision,revision:'catalogue-other',description:'另一个待核对的完整分支'}],tips:[revision],incomplete:false,cyclic:false,selected:revision.revision,value:revision,json:'{待修正',invalid:true,committed:false,saving:false,message:'JSON 格式无效。请修正后保存，编辑仍保留。',detail:''};
   const syncCallbacks:SyncCallbacks={close:noop,refresh:noop,jump:noop,choose:noop,edit:noop,discard:noop,save:noop,recover:noop};
   root.render(<><h2>React 笔记库组件</h2><p>实际生产按钮、列表行与语义样式；不访问笔记或保存记录。</p>
@@ -77,7 +78,18 @@ export function mountLibraryCatalogue(container:HTMLElement, icon:(name:string)=
     <h2>React 建议证据审核</h2><CandidateReviewContent model={{busy:false,destinations:[{entityId:'example',title:'已有的长期研究事项'}],cards:[{record:{entityId:'catalogue-candidate',workspaceId:'synthetic',revision:'example',description:'逐条核对历史计划与长中文证据后再明确确认下一步'.repeat(3),candidateType:'action',placement:'独立行动',reasoning:'原文提到核对资料，未确认当前承诺。',relevance:'当前适用性无法确认',sources:[{path:'研究/长中文来源.md',quote:'- [ ] 历史计划仅供核对，不会自动转成行动',start:0,end:30,fingerprint:'synthetic-fingerprint',fragmentId:'synthetic'}]},description:'',target:'example',dirty:true,disclosures:{'确认前编辑建议':true}}]}} callbacks={{activate:noop,edit:noop,target:noop,disclosure:noop,source:noop,decide:noop,recover:noop}}/>
     <h2>React 同步版本比较</h2><section className="sync-panel" style={{position:'static',inset:'auto',zIndex:'auto'}}><ConflictComparison record={conflict} callbacks={syncCallbacks}/></section>
 
-    <h2>React 事项上下文</h2><InitiativeRows records={[{entityId:'catalogue-initiative',revision:'example',workspaceId:'synthetic',title:'长期中文事项目标与进展以及下一步安排'.repeat(6),goal:'核对原文',progress:'进行中',status:'active',sources:[]}]} selected="catalogue-initiative" empty="" open={noop}/><InitiativeLinks sources={[{path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'}]} selected="研究/长中文参考资料.md" open={noop}/><InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
+    <section aria-label="事项工作区示例">
+      <h2>React 事项上下文</h2>
+      <InitiativeRows records={[initiative]} selected={initiative.entityId} empty="" open={noop}/>
+      <InitiativeSummary record={initiative}/>
+      <InitiativeLinks sources={[
+        {path:'研究/长中文参考资料.md',quote:'逐字保留原文',fingerprint:'example',role:'reference'},
+        {path:'归档/迁移前资料.md',quote:'保留原文',fingerprint:'example',role:'reference',warning:'来源已移至 归档/迁移后资料.md，请核对后保存。',resolvedPath:'归档/迁移后资料.md'}
+      ]} selected="研究/长中文参考资料.md" open={noop}/>
+      <h3>事项编辑与结束</h3>
+      <div className="ui-drawer-body"><InitiativeEditor example/></div>
+      <InitiativeDecisions choices={[{action:{...revision,entityId:'example',workspaceId:'synthetic',focusPosition:null,sources:[]},value:''}]} targets={[]}/>
+    </section>
     <h2>React 全局搜索</h2><SearchCatalogue/>
   </>);
   return ()=>root.unmount();

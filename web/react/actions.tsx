@@ -11,7 +11,7 @@ export interface ActionSource {path:string; quote:string; fingerprint:string}
 export interface ActionFields {description:string; status:string; initiativeId?:string|null; dueDate?:string|null; waitingOn?:string|null; sources:ActionSource[]}
 export interface ActionRecord extends ActionFields {entityId:string; workspaceId:string; revision:string; parents?:string[]; modifiedAt:string; focusPosition:number|null}
 /** Stable entry contract shared by legacy callers and migrated Initiative consumers. */
-export interface ActionEntry {record:ActionRecord|null; opener?:HTMLElement; returnToOrigin?:()=>unknown}
+export interface ActionEntry {record:ActionRecord|null; initiativeId?:string; opener?:HTMLElement; returnToOrigin?:()=>unknown}
 export interface ActionEntryPort {open:(entry:ActionEntry)=>Promise<void>}
 export interface ActionRow extends ActionFields {entityId:string; overdue:boolean; initiativeName:string}
 const labels:Record<string,string>=actionLabels;

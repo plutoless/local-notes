@@ -9,7 +9,8 @@ This inventory defines the retained layout families for the short-form rollout i
 | Existing action metadata | Same drawer | Description/state, optional assignment/date/waiting/source disclosure; immutable history remains read-only |
 | Library / initiative note information | 460px drawer | Existing favorite, topic and initiative associations; associations commit individually, Done returns to document |
 | Note naming/location | Separate 460px drawer | Expected-text guarded move, followed by existing retryable link repair; no nested drawer |
-| Note title/body and initiative new working note | Document exception | Arbitrarily long Markdown, autosave/source conflict/recovery; existing context and return route remain |
+| Note title/body | Document exception | Arbitrarily long Markdown, autosave/source conflict/recovery; existing context and return route remain |
+| Initiative working-note creation | Shared note task | Save the Markdown and its working-note relationship, then open the reader with a return to the originating Initiative |
 | Topic creation/rename | Contextual task sheet | Existing Topic revision and recovery controller |
 | Initiative metadata, lifecycle, source links | Existing #47 drawer | Retain ending decisions and contextual workspace |
 | Organization service settings and source selection | Staged layout exception | Credentials/privacy and exact request scope need contiguous context |
