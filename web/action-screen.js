@@ -122,7 +122,7 @@ export class ActionScreen {
     }
     $('#action-editor').hidden = true;
     const selected = [...document.querySelectorAll('[data-entity-id], [data-action-id]')].find(node => (node.dataset.entityId || node.dataset.actionId) === this.previous?.entityId && node.getClientRects().length);
-    const fallback = [opener, selected, $('#action-new'), $('#workspace-overview'), $('.home-tools .primary')].find(node => node?.isConnected && !node.disabled && node.getClientRects().length);
+    const fallback = [opener, selected, $('#action-new'), $('#workspace-overview'), $('.home-tools .focus-new-action')].find(node => node?.isConnected && !node.disabled && node.getClientRects().length);
     fallback?.focus({preventScroll: true});
     proposal?.restore();
     return true;

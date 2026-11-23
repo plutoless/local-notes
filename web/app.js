@@ -75,7 +75,7 @@ focus.resumeReading = resumeReading;
 focus.removeReading = async path => {
   const workspace = rootKey;
   readingHistory.remove(workspace, path); await focus.show();
-  if (view === 'focus' && workspace === rootKey) ($('#items [data-reading-path]') || $('.home-tools .primary')).focus({preventScroll:true});
+  if (view === 'focus' && workspace === rootKey) ($('#items [data-reading-path]') || $('.home-tools .focus-new-action')).focus({preventScroll:true});
 };
 const syncScreen = new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
   if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
@@ -927,7 +927,7 @@ reader.on('back', async () => {
       }
     } else {
       const opener = origin.view === 'focus'
-        ? [...document.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === current) || $('.home-tools .primary')
+        ? [...document.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === current) || $('.home-tools .focus-new-action')
         : origin.opener?.isConnected ? origin.opener : null;
       opener?.focus({preventScroll: true});
     }

@@ -143,11 +143,11 @@ try:
         subprocess.run(['osascript','-e',f'tell application "System Events" to tell (first application process whose unix id is {process.pid}) to click button "取消" of window 1'],check=True)
     else:
         # Home -> new action -> real save -> return -> reopen from the action list.
-        open_control('.home-tools .primary'); w("document.querySelector('#action-drawer').open")
+        open_control('.home-tools .focus-new-action'); w("document.querySelector('#action-drawer').open")
         fill('#action-description','原生首页行动48'); c("document.querySelector('#action-form').requestSubmit()")
         w("document.querySelector('#action-save-state').textContent==='已保存到本地'")
         c("document.querySelector('#action-back').click()"); w("!document.querySelector('#action-drawer').open")
-        assert c("return document.activeElement===document.querySelector('.home-tools .primary')")
+        assert c("return document.activeElement===document.querySelector('.home-tools .focus-new-action')")
         c("[...document.querySelectorAll('.home-tools button')].find(n=>n.textContent==='全部行动').click()")
         w("!!document.querySelector('#items [data-entity-id]')")
         open_control('#items [data-entity-id]'); w("document.querySelector('#action-drawer').open")
