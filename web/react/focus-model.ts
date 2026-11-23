@@ -1,3 +1,15 @@
+export function focusDirections(index:number, visibleCount:number, hasPrevious:boolean, hasNext:boolean) {
+  return [
+    ...(index > 0 || hasPrevious ? [-1] : []),
+    ...(index < visibleCount - 1 || hasNext ? [1] : [])
+  ];
+}
+
+export function focusReturnIndex(keys:readonly string[], key:string, previousIndex:number) {
+  const match = keys.indexOf(key);
+  return match >= 0 ? match : Math.min(previousIndex, keys.length - 1);
+}
+
 /** Calculate a bounded reorder without changing identity or rewriting neighbors. */
 export function focusPosition(actions:readonly {focusPosition:number}[], index:number, direction:number):number {
   const neighbor=actions[index+direction];

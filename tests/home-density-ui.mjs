@@ -1,4 +1,4 @@
-import {readFile, writeFile, readdir, stat, mkdir} from 'node:fs/promises';
+import {readFile, writeFile, mkdir} from 'node:fs/promises';
 import {join} from 'node:path';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
@@ -9,46 +9,51 @@ const fixture = await storageFixture();
 const browser = await chromium.launch({headless: true, ...(process.env.CHROME_PATH ? {executablePath: process.env.CHROME_PATH} : {})});
 await mkdir('build', {recursive: true});
 try {
-  const page = await browser.newPage({viewport: {width: 1180, height: 800}});
+  const context = await browser.newContext({viewport: {width: 1180, height: 800}});
   const bridgeCalls = [];
-  const errors = []; page.on('pageerror', error => errors.push(error.message));
+  let priorityWrite;
+  const errors = []; context.on('weberror', error => errors.push(error.error().message));
   const sourcePath = join(fixture.root, 'reference.md');
-  const original = '# 资料整理约定\n\n保留原文，只整理入口。\n\n先确认本周需要推进的内容，再补充关联资料。\n';
+  const original = '# 资料整理约定\n\n保留原文，只整理入口。\n\n' + '先确认本周需要推进的内容，再补充关联资料。\n\n'.repeat(120);
   await writeFile(sourcePath, original);
+  const otherPath = join(fixture.root, 'companion.md');
+  await writeFile(otherPath, '# 对照资料\n\n用于验证返回最近阅读入口。\n');
   const initiatives = new InitiativeRepository(fixture.adapter); await initiatives.open();
   const actions = new ActionRepository(fixture.adapter); await actions.open();
-  await page.exposeFunction('bridge', async request => {
-    try {
-      bridgeCalls.push(request.cmd);
-      if (request.cmd === 'workspace' || request.cmd === 'metadata' || (request.cmd.startsWith('action') || request.cmd.startsWith('reference'))) {
-        const result = await fixture.adapter(request.cmd, request);
-        return result;
-      }
-      const workspace = await fixture.adapter('workspace');
-      if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
-      const path = join(fixture.root, request.path || '');
-      switch (request.cmd) {
-        case 'metadata':
-        case 'list': {
-          const notes = [];
-          for (const name of await readdir(fixture.root)) if (name.endsWith('.md')) notes.push({path: name, size: (await stat(join(fixture.root, name))).size, modified: (await stat(join(fixture.root, name))).mtimeMs / 1000});
-          return {notes, root: fixture.root};
+  async function serve(context) {
+    context.setDefaultTimeout(15_000);
+    await context.exposeFunction('bridge', async request => {
+      try {
+        bridgeCalls.push(request.cmd);
+        if (priorityWrite && request.cmd === 'actionWrite' && request.path.startsWith('revisions/')) {
+          const gate = priorityWrite;
+          priorityWrite = null;
+          gate.started();
+          await gate.release;
         }
-        case 'read': return {text: await readFile(path, 'utf8')};
-        case 'save': if (await readFile(path, 'utf8') !== request.expected) throw Error('CONFLICT'); await writeFile(path, request.text); return {};
-        case 'create': await mkdir(join(path, '..'), {recursive: true}); await writeFile(path, request.text, {flag: 'wx'}); return {};
-        default: throw Error('Unhandled bridge command');
+        if (request.cmd === 'workspace' || request.cmd === 'metadata' || request.cmd.startsWith('action') || request.cmd.startsWith('reference')) {
+          return await fixture.adapter(request.cmd, request);
+        }
+        const workspace = await fixture.adapter('workspace');
+        if (request.workspaceId !== workspace.workspaceId) throw Error('Workspace changed; reopen the note');
+        if (request.cmd === 'read') return {text: await readFile(join(fixture.root, request.path), 'utf8')};
+        throw Error('Unhandled bridge command');
+      } catch (error) {
+        return {error: error.message};
       }
-    } catch (error) { return {error: error.message}; }
-  });
-  await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
-  const assets = process.env.HOME_ASSETS_DIR || 'build/web';
-  const manifest = JSON.parse(await readFile(join(assets, 'asset-manifest.json'), 'utf8'));
-  await page.route('https://notes.test/**', async route => {
-    const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!Object.hasOwn(manifest, name)) return route.abort();
-    await route.fulfill({path:join(assets, name), contentType:manifest[name]});
-  });
+    });
+    await context.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); }}; });
+    const assets = process.env.HOME_ASSETS_DIR || 'build/web';
+    const manifest = JSON.parse(await readFile(join(assets, 'asset-manifest.json'), 'utf8'));
+    await context.route('https://notes.test/**', async route => {
+      const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
+      if (!Object.hasOwn(manifest, name)) return route.abort();
+      await route.fulfill({path:join(assets, name), contentType:manifest[name]});
+    });
+  }
+  await serve(context);
+  const page = await context.newPage();
+  const waitForFocus = (control, owner = page) => control.and(owner.locator(':focus')).waitFor();
   const evidence = process.env.HOME_EVIDENCE || 'build/validation/124/home';
   await mkdir(evidence, {recursive: true});
   await page.goto('https://notes.test/');
@@ -69,7 +74,12 @@ try {
   const first = (await initiatives.save({title: '整理工作资料', goal: '让常用资料有清晰的入口', progress: '资料目录已整理，正在确定本周行动。', status: 'active', sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: fingerprint(original), role: 'reference'}]})).record;
   const second = (await initiatives.save({title: '准备下次评审', goal: '确认需要讨论的问题', progress: '等待评审时间确认。', status: 'active', sources: []})).record;
   const descriptions = ['确定本周最重要的两件事', '把阅读摘录整理成一页笔记', '补充资料目录的使用说明'];
-  for (const [i, description] of descriptions.entries()) await actions.save({description, initiativeId: first.entityId, focusPosition: i + 1, status: i === 1 ? 'in-progress' : 'todo', dueDate: i === 0 ? '2001-01-01' : null});
+  const priorities = [];
+  for (const [i, description] of descriptions.entries()) priorities.push((await actions.save({
+    description, initiativeId: first.entityId, focusPosition: i + 1,
+    status: i === 1 ? 'in-progress' : 'todo', dueDate: i === 0 ? '2001-01-01' : null,
+    sources: [{path: 'reference.md', quote: '保留原文，只整理入口。', fingerprint: fingerprint(original)}]
+  })).record);
   await actions.save({description: '确认评审时间', waitingOn: '等待对方回复可用时间', status: 'waiting', initiativeId: second.entityId});
   await page.reload();
   const firstPriority = page.getByRole('button', {name: '打开行动：确定本周最重要的两件事', exact: true});
@@ -78,12 +88,58 @@ try {
   assert.equal(await firstPriority.getByText('2001-01-01 · 已逾期', {exact:true}).isVisible(), true);
   assert.ok(!bridgeCalls.includes('read'),'Home never reads corpus bodies');
   assert.equal(await page.getByRole('button', {name: '移出重点', exact: true}).isVisible(), false);
+  // Opening and return use the real Action drawer, Initiative workspace and reader.
+  const waitingRow = page.getByRole('button', {name:'打开行动：确认评审时间', exact:true});
+  assert.ok(await waitingRow.getByText('等待对方回复可用时间').isVisible());
+  for (const [row, description] of [[firstPriority, descriptions[0]], [waitingRow, '确认评审时间']]) {
+    await row.focus();
+    await page.keyboard.press('Enter');
+    await waitForFocus(page.locator('#action-description'));
+    assert.equal(await page.locator('#action-description').inputValue(), description);
+    await page.keyboard.press('Escape');
+    await waitForFocus(row);
+  }
+  const initiativeRow = page.getByRole('button', {name:'打开事项：整理工作资料', exact:true});
+  await initiativeRow.getByText('资料目录已整理，正在确定本周行动。').click();
+  await waitForFocus(page.locator('#workspace-title'));
+  assert.equal(await page.locator('#workspace-title').textContent(), first.title);
+  await page.getByRole('button', {name:'‹ 当前重点', exact:true}).click();
+  await waitForFocus(initiativeRow);
+  const otherInitiative = page.getByRole('button', {name:'打开事项：准备下次评审', exact:true});
+  await otherInitiative.click();
+  await waitForFocus(page.locator('#workspace-title'));
+  await initiatives.save({...second, status:'later'}, second);
+  await page.getByRole('button', {name:'‹ 当前重点', exact:true}).click();
+  await waitForFocus(initiativeRow);
+  assert.equal(await otherInitiative.count(), 0);
+
+  await page.locator('[data-view=notes]').click();
+  await page.locator('#items [data-path="companion.md"]').click();
+  await page.locator('#reading').getByText('用于验证返回最近阅读入口。').waitFor();
   await page.locator('[data-view=notes]').click();
   await page.locator('#items [data-path="reference.md"]').click();
   await page.locator('#reading').getByText('保留原文，只整理入口。', {exact:true}).waitFor();
+  await waitForFocus(page.locator('#mode'));
+  const readingScroll = await page.locator('main').evaluate(node => {
+    node.scrollTop = 700;
+    return node.scrollTop;
+  });
+  assert.ok(readingScroll > 0, 'Fixture can be scrolled in the reader');
+  await page.waitForFunction(({workspace, scroll}) => {
+    const entries = JSON.parse(localStorage.getItem(`reading-history:v1:${workspace}`) || '[]');
+    return entries.some(entry => entry.path === 'reference.md' && entry.scroll.main === scroll);
+  }, {workspace: actions.workspaceId, scroll: readingScroll});
   await page.locator('[data-view=focus]').click();
   const reading = page.getByRole('button', {name:'继续阅读：资料整理约定', exact:true});
   await reading.waitFor();
+  await page.reload();
+  await reading.focus();
+  await page.keyboard.press('Enter');
+  await waitForFocus(page.locator('#mode'));
+  assert.equal(await page.locator('#file-path').textContent(), 'reference.md');
+  await page.waitForFunction(scroll => document.querySelector('main').scrollTop === scroll, readingScroll);
+  await page.locator('#back').click();
+  await waitForFocus(reading);
   assert.equal(await reading.getByText('reference.md', {exact:true}).isVisible(), true);
   const newAction = page.getByRole('button', {name:'新建行动', exact:true});
   for (const width of widths) {
@@ -165,17 +221,92 @@ try {
   }
   assert.ok(await page.locator('#global-search-open').isVisible());
   await page.setViewportSize({width:1180,height:852});
-  await page.locator('.row-menu summary').first().focus(); await page.keyboard.press('Enter');
-  assert.ok(await page.locator('.row-menu').first().evaluate(n=>n.open));
-  await page.locator('.row-menu').first().getByRole('button',{name:'下移',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelector('.focus-row-open h3').textContent==='把阅读摘录整理成一页笔记');
-  await page.locator('.row-menu summary').first().click();
-  await page.locator('.row-menu').first().getByRole('button',{name:'移出重点',exact:true}).click();
-  await page.waitForFunction(()=>document.querySelectorAll('.focus-priorities .row-menu').length===2);
-  const storedFirst = (await actions.query({focus:true, limit:1})).actions[0];
+  // Manage one row by keyboard, then verify the same controls work by touch.
+  const firstTrigger = page.locator('.row-menu summary[aria-label="管理：确定本周最重要的两件事"]');
+  const firstMenu = firstTrigger.locator('..');
+  await newAction.focus();
+  await page.mouse.move(0, 0);
+  assert.equal(await firstTrigger.evaluate(node => getComputedStyle(node).opacity), '0');
+  await firstPriority.hover();
+  assert.equal(await firstTrigger.evaluate(node => getComputedStyle(node).opacity), '1');
+  await page.mouse.move(0, 0);
+  await firstPriority.focus();
+  await page.keyboard.press('Tab');
+  await waitForFocus(firstTrigger);
+  assert.equal(await firstTrigger.evaluate(node => getComputedStyle(node).opacity), '1');
+  assert.equal(await firstTrigger.evaluate(node => getComputedStyle(node).outlineWidth), '3px');
+  await page.keyboard.press('Enter');
+  assert.equal(await firstMenu.getByRole('button', {name:'上移', exact:true}).count(), 0);
+  await page.keyboard.press('Tab');
+  await waitForFocus(firstMenu.getByRole('button', {name:'下移', exact:true}));
+  await page.keyboard.press('Escape');
+  await waitForFocus(firstTrigger);
+  assert.equal(await firstMenu.evaluate(node => node.open), false);
+  const writeStarted = Promise.withResolvers();
+  const releaseWrite = Promise.withResolvers();
+  priorityWrite = {started: writeStarted.resolve, release: releaseWrite.promise};
+  const thirdTrigger = page.locator('.row-menu summary[aria-label="管理：补充资料目录的使用说明"]');
+  let timeout;
+  try {
+    await page.keyboard.press('Enter');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Enter');
+    await Promise.race([writeStarted.promise, new Promise((_, reject) => {
+      timeout = setTimeout(() => reject(Error('Expected the priority write to reach the bridge')), 15_000);
+    })]);
+    await thirdTrigger.click();
+    assert.equal(await thirdTrigger.locator('..').getByRole('button', {name:'上移', exact:true}).isDisabled(), true);
+    assert.equal(await thirdTrigger.locator('..').getByRole('button', {name:'移出重点', exact:true}).isDisabled(), true);
+    await page.keyboard.press('Escape');
+  } finally {
+    clearTimeout(timeout);
+    releaseWrite.resolve();
+  }
+  assert.equal(await firstMenu.evaluate(node => node.open), false);
+  const nextPriority = page.getByRole('button', {name:'打开行动：把阅读摘录整理成一页笔记', exact:true});
+  await nextPriority.getByText('下一步', {exact:true}).waitFor();
+  await waitForFocus(thirdTrigger);
+  await page.reload();
+  await nextPriority.getByText('下一步', {exact:true}).waitFor();
+  const reloaded = new ActionRepository(fixture.adapter); await reloaded.open();
+  assert.deepEqual((await reloaded.query({focus:true})).actions.map(record => record.entityId),
+    [priorities[1], priorities[0], priorities[2]].map(record => record.entityId));
+
+  const touchContext = await browser.newContext({viewport:{width:393,height:852}, hasTouch:true, isMobile:true});
+  await serve(touchContext);
+  const touch = await touchContext.newPage();
+  await touch.goto('https://notes.test/');
+  const touchOpener = touch.getByRole('button', {name:'打开行动：把阅读摘录整理成一页笔记', exact:true});
+  const touchTrigger = touch.locator('.row-menu summary[aria-label="管理：把阅读摘录整理成一页笔记"]');
+  await touchOpener.waitFor();
+  assert.equal(await touchTrigger.evaluate(node => matchMedia('(pointer: coarse)').matches && getComputedStyle(node).opacity === '1'), true);
+  const openerBounds = await touchOpener.boundingBox(), triggerBounds = await touchTrigger.boundingBox();
+  assert.ok(openerBounds.width >= 44 && openerBounds.height >= 44 && triggerBounds.width >= 44 && triggerBounds.height >= 44);
+  assert.ok(openerBounds.x + openerBounds.width <= triggerBounds.x);
+  await touchTrigger.tap();
+  assert.equal(await touch.locator('.row-menu[open]').count(), 1);
+  await touch.screenshot({path:join(evidence, 'touch-menu.png')});
+  await touch.getByRole('button', {name:'移出重点', exact:true}).tap();
+  await waitForFocus(touch.getByRole('button', {name:'打开行动：确定本周最重要的两件事', exact:true}), touch);
+  const removed = (await reloaded.query({entityId:priorities[1].entityId})).actions[0];
+  assert.equal(removed.focusPosition, null);
+  assert.equal(removed.description, priorities[1].description);
+  assert.deepEqual(removed.sources, priorities[1].sources);
+  assert.equal(removed.initiativeId, priorities[1].initiativeId);
+  assert.equal(removed.deleted, priorities[1].deleted);
+  await touchContext.close();
+
+  await page.locator('.recent-reading summary[aria-label="管理阅读入口：资料整理约定"]').click();
+  await page.getByRole('button', {name:'移除此阅读入口', exact:true}).click();
+  const otherReading = page.getByRole('button', {name:'继续阅读：对照资料', exact:true});
+  await waitForFocus(otherReading);
+  await page.reload();
+  await otherReading.waitFor();
+  assert.equal(await reading.count(), 0);
+  const storedFirst = (await reloaded.query({focus:true, limit:1})).actions[0];
   assert.equal(storedFirst.description, descriptions[0]);
   const longTitle = '确认交付前的数据与来源并核对每一条引用。'.repeat(5) + 'A'.repeat(90);
-  await actions.save({...storedFirst, description:longTitle}, storedFirst);
+  await reloaded.save({...storedFirst, description:longTitle}, storedFirst);
   await page.reload();
   const longPriority = page.getByRole('button', {name:'打开行动：' + longTitle, exact:true});
   await longPriority.waitFor();
@@ -191,5 +322,5 @@ try {
   }
   assert.equal(await readFile(sourcePath, 'utf8'), original);
   assert.equal(errors.length,0,errors.join('\n'));
-  console.log('PASS empty, populated and long-title Current Focus at 1180/393px, centered section flow, continuation, quiet toolbar, keyboard and existing management.');
+  console.log('PASS Current Focus open/return and management, keyboard and touch targets, persisted order and reading position, source preservation and 1180/393px layouts.');
 } finally {await browser.close();await fixture.close();}

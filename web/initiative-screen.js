@@ -40,6 +40,10 @@ export class InitiativeScreen {
     $('#initiative-back').textContent = '‹ 行动与资料';
     $('#initiative-back').onclick = () => this.returnContext();
     $('#workspace-back').onclick = async () => {
+      if (this.focusReturn && this.focusReturn.entityId === this.previous?.entityId) {
+        try { await this.focusReturn.restore(); } catch (error) { this.notice(error.message); }
+        return;
+      }
       if (!await this.beforeEdit()) return;
       this.editGeneration = (this.editGeneration || 0) + 1;
       $('.app').classList.remove('editing', 'detail-open');
@@ -207,6 +211,10 @@ export class InitiativeScreen {
   async returnContext() {
     if (await this.beforeEdit() && await this.flush() && await this.actions.flush()) this.restoreContext();
   }
+  setFocusReturn(origin) {
+    this.focusReturn = origin;
+    $('#workspace-back').textContent = origin ? '‹ 当前重点' : '‹ 事项列表';
+  }
   restoreList() {
     const row = [...$('#items').querySelectorAll('[data-initiative-id]')].find(node => node.dataset.initiativeId === this.previous?.entityId);
     (row || $('#initiative-new')).focus({preventScroll: true});
@@ -215,6 +223,7 @@ export class InitiativeScreen {
   key() { return this.draftKey || `initiative-draft:${this.repository.workspaceId}:${this.previous?.entityId || 'new'}`; }
   async openWorkspace(cached = false) {
     this.recoveredDraft = false;
+    this.setFocusReturn(null);
     this.contextReturn = null; this.listScroll = undefined;
     this.active = false; this.previous = null; this.recoveredDraft = false; this.dirty = false; this.retry = null; this.offset = 0;
     $('#initiative-editor').hidden = true;
@@ -330,7 +339,10 @@ export class InitiativeScreen {
     if (!await this.beforeEdit() || !await this.flush() || !await this.actions.flush() || !ownsOpen() || intent !== this.editGeneration) return;
     if (record && record.entityId === leaving?.entityId && this.previous?.revision !== leaving.revision) record = this.previous;
     if (!metadata && !$('.app').classList.contains('editing')) this.listScroll = $('#items').scrollTop;
-    if (!metadata && record?.entityId !== leaving?.entityId) this.contextReturn = null;
+    if (!metadata && record?.entityId !== leaving?.entityId) {
+      this.contextReturn = null;
+      if (this.focusReturn && this.focusReturn.entityId !== record?.entityId) this.setFocusReturn(null);
+    }
     if (metadata) this.drawerContext = {
       actionId: record && this.actions.previous?.initiativeId === record.entityId ? this.actions.previous.entityId : null,
       ...layout, previous: this.previous,

@@ -54,9 +54,14 @@
   border-color: var(--workspace-divider);
 }
 
-.home #items .focus-initiative { padding-inline: var(--space); }
+.home #items .focus-row {
+  display: flex;
+  align-items: start;
+  gap: var(--space);
+}
 
-.home #items :is(.focus-row-open, .recent-reading .ui-row) {
+.home #items .focus-row > .ui-row {
+  flex: 1;
   min-width: 0;
   justify-content: flex-start;
   padding: 10px 8px;
@@ -66,7 +71,9 @@
 }
 
 .home #items .card h3 { font-size: 15px; font-weight: 600; }
-.home #items :is(.row-meta, .waiting-condition, .focus-initiative p) { color: var(--workspace-muted); }
+.home #items :is(.row-meta, .waiting-condition) { color: var(--workspace-muted); }
+.focus-record-content { display: block; min-width: 0; overflow-wrap: anywhere; }
+.focus-initiative .row-meta { white-space: pre-wrap; }
 
 .focus-action-content {
   display: flex;
@@ -103,7 +110,6 @@
   margin-inline-start: auto;
 }
 .focus-action-content > .waiting-condition { flex-basis: 100%; margin: 0; }
-.home #items .focus-initiative > .ui-action { margin-inline-start: -12px; }
 
 .home #items .focus-disclosure > summary {
   min-width: var(--target-height);
@@ -127,6 +133,32 @@
 }
 
 .home #items .focus-disclosure-actions .ui-action { text-align: start; }
+
+.home #items .row-menu { position: relative; flex: 0 0 auto; }
+.home #items .row-menu > summary {
+  display: grid;
+  place-items: center;
+  width: var(--target-height);
+  padding: 0;
+  list-style: none;
+  opacity: 1;
+}
+.home #items .row-menu > summary::-webkit-details-marker { display: none; }
+.home #items .row-menu > .focus-disclosure-actions {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: 100%;
+  inset-inline-end: 0;
+  width: max-content;
+  box-shadow: var(--shadow-panel);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .home #items .focus-row:not(:hover, :focus-within) .row-menu:not([open]) > summary { opacity: 0; }
+}
+@media (any-pointer: coarse) {
+  .home #items .focus-row:not(:hover, :focus-within) .row-menu:not([open]) > summary { opacity: 1; }
+}
 
 @media (max-width: 700px) {
   .home .home-tools > h2 { flex-basis: 100%; min-height: 0; margin-bottom: var(--space); }

@@ -7,7 +7,7 @@ export {mountLibraryCatalogue} from './catalogue';
 export {noteReply} from './library-model';
 
 export {focusView} from './focus';
-export {focusPosition} from './focus-model';
+export {focusPosition, focusReturnIndex} from './focus-model';
 export {shellView, shellUpdate} from './shell';
 export {organizationView} from './organization';
 export {syncView, fileConflictView} from './sync';

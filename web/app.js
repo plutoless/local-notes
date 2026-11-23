@@ -72,11 +72,7 @@ const readingScrollSelectors = ['#reading', '#workspace-detail', 'main'];
 const focus = new FocusScreen(actions, initiatives, navigate, notice);
 focus.recentReading = () => readingHistory.list(rootKey);
 focus.resumeReading = resumeReading;
-focus.removeReading = async path => {
-  const workspace = rootKey;
-  readingHistory.remove(workspace, path); await focus.show();
-  if (view === 'focus' && workspace === rootKey) ($('#items [data-reading-path]') || $('.home-tools .focus-new-action')).focus({preventScroll:true});
-};
+focus.removeReading = path => readingHistory.remove(rootKey, path);
 const syncScreen = new SyncScreen(() => [actions.repository, initiatives.repository, libraryScreen.library.topics, organize.repository], notice, async () => {
   if (view === 'organize') { if (organize.repository.ready) await organize.candidates(); }
   else await refresh();
@@ -85,6 +81,7 @@ function selectNavigation(next) {
   libraryScreen.switchCollection(next);
   if (!['notes','favorites'].includes(next)) libraryScreen.release();
   pageGeneration++;
+  initiatives.setFocusReturn(null);
   if (next !== 'focus') focus.release();
   if (next !== 'actions') actions.release();
   if (next !== 'initiatives') initiatives.release();
@@ -160,7 +157,7 @@ $('#workspace-return-action').onclick = async () => {
 };
 // The search continuation owns a bounded navigation snapshot, never a second draft store.
 function captureSearchInvocation() {
-  return {classes: $('.app').className, contextReturn: initiatives.contextReturn, workspace: workspaceGeneration, page: pageGeneration, request: noteLoadRequest, view,
+  return {classes: $('.app').className, contextReturn: initiatives.contextReturn, initiativeFocusReturn: initiatives.focusReturn, workspace: workspaceGeneration, page: pageGeneration, request: noteLoadRequest, view,
     browse: libraryScreen.captureContext(), search: $('#search').value,
     note: visibleNote() ? current : null, reading: readMode,
     initiative: view === 'initiatives' ? initiatives.previous : null,
@@ -221,6 +218,7 @@ async function restoreSearchInvocation(origin, valid) {
   if (origin.view === 'actions') { Object.assign(actions, origin.actionList); await actions.list(); if (!owns()) return false; }
   if (origin.view === 'initiatives') { Object.assign(initiatives, origin.initiativeList); await initiatives.list(); if (!owns()) return false; }
   $('.app').className = origin.classes; initiatives.contextReturn = origin.contextReturn; initiatives.detailKind = origin.detailKind;
+  initiatives.setFocusReturn(origin.initiativeFocusReturn);
   $('#search').value = origin.search;
   wikiHistory = origin.wikiHistory || [];
   sourceOrigin = origin.sourceOrigin; captureOrigin = origin.captureOrigin; actionOrigin = origin.actionOrigin;
@@ -605,7 +603,7 @@ function rememberReading() {
 }
 reader.on('remember', rememberReading);
 for (const selector of readingScrollSelectors.filter(selector => selector !== '#reading')) $(selector).addEventListener('scroll', rememberReading, {passive:true});
-async function resumeReading(entry) {
+async function resumeReading(entry, focusRow) {
   const workspace = workspaceGeneration, page = pageGeneration, key = rootKey, request = ++noteLoadRequest;
   const owns = () => workspace === workspaceGeneration && page === pageGeneration && key === rootKey && request === noteLoadRequest && view === 'focus';
   try {
@@ -617,11 +615,10 @@ async function resumeReading(entry) {
     // Initialize only source context repositories; do not start Library body indexing.
     await libraryScreen.library.open(); if (!owns()) return;
     await libraryScreen.library.indexSource(metadata.notes.find(item => item.path === entry.path), loaded.text); if (!owns()) return;
-    const homeScroll = $('.collection').scrollTop, homeListScroll = $('#items').scrollTop;
     focus.active=false; actions.active=false; initiatives.active=false;
     view='notes'; selectNavigation('notes'); $('.app').classList.remove('home'); $('.app').classList.add('library-view','reading-continuation');
     $('#search').hidden=false; $('#search').setAttribute('aria-label','搜索笔记');
-    sourceOrigin={view:'focus',search:'',scroll:homeScroll,listScroll:homeListScroll,detailScroll:0};
+    sourceOrigin={view:'focus',search:'',focusRow};
     await load(entry.path, loaded, request, true, () => {
       resetWikiNavigation();
       const unchanged = fingerprint(loaded.text) === entry.fingerprint;
@@ -925,12 +922,10 @@ reader.on('back', async () => {
           actions.sourceControl(origin.actionSource.index, origin.actionSource.path)?.focus();
         }
       }
-    } else {
-      const opener = origin.view === 'focus'
-        ? [...document.querySelectorAll('[data-reading-path]')].find(node => node.dataset.readingPath === current) || $('.home-tools .focus-new-action')
-        : origin.opener?.isConnected ? origin.opener : null;
-      opener?.focus({preventScroll: true});
-    }
+    } else if (origin.focusRow) {
+      focus.restoreRow(origin.focusRow);
+      return;
+    } else if (origin.opener?.isConnected) origin.opener.focus({preventScroll: true});
     $('.collection').scrollTop = origin.scroll;
     if (origin.view === 'focus' || origin.view === 'actions') $('#items').scrollTop = origin.listScroll || 0;
     $('#workspace-detail').scrollTop = origin.detailScroll;

@@ -129,14 +129,9 @@ details { overflow-wrap: anywhere; }
 .home .collection { border: 0; background: var(--surface); }
 .home-utilities { position: relative; color: var(--muted); font-size: 13px; }
 .home-utilities button { display: block; width: 100%; text-align: left; }
-.focus-row { position: relative; display: flex; align-items: start; gap: 8px; }
-.focus-row-open { flex: 1; text-align: left; }
 .action-marker { width: 17px; height: 17px; border: 1.5px solid var(--line); border-radius: 50%; flex: 0 0 17px; margin-top: 4px; }
 .row-meta, .waiting-condition { display: block; color: var(--muted); font-size: 12px; font-weight: 400; }
 .waiting-condition { margin-top: 5px; }
-.row-menu { flex: 0 0 auto; color: var(--muted); font-size: 12px; text-align: right; }
-.row-menu summary { padding: 4px 8px; min-height: 44px; }
-.row-menu button { display: block; width: 100%; text-align: left; }
 /* Initiative overview and linked reading use the same document column. */
 .app.workspace { grid-template-columns: 180px 218px minmax(0, 1fr); }
 .workspace > .collection { background: var(--canvas); }
@@ -432,8 +427,6 @@ dialog::backdrop { background: var(--backdrop); }
 
 .ui-field:has(> input[hidden]) { display: none; }
 
-.focus-row-open.ui-row { display: flex; border: 0; color: var(--text); }
-
 /* Confirmed action rows use the shared selection state, including metadata. */
 #items .card.ui-row.selected { background: var(--selected); color: var(--selected-text); }
 #items .card.ui-row.selected :is(p, small) { color: var(--selected-text); }
@@ -490,7 +483,6 @@ dialog::backdrop { background: var(--backdrop); }
 .ui-action.ui-compact:active, .home aside button:active { --control-fill: var(--pressed); }
 .ui-action.ui-compact.primary:active { --control-fill: var(--accent-hover); }
 .ui-action.ui-compact:disabled { --control-fill: var(--sidebar); --control-line: var(--divider); }
-.home .row-menu > summary { padding: 12px 8px; }
 /* The label reserves the 44px click area around a 40px native field. */
 .ui-field-target { display: grid; padding-block: 2px; min-height: var(--target-height); }
 .ui-field-target > :is(input, select) { min-height: var(--field-surface); padding-block: 7px; width: 100%; }
@@ -755,10 +747,6 @@ body:has(#action-drawer[open]) .search-return-shell { display: none; }
 .directory-options dd { margin: 4px 0 0; white-space: pre-wrap; }
 .directory-options .ui-action { display: flex; width: 100%; justify-content: start; gap: 6px; padding-inline: 8px; text-align: start; white-space: normal; }
 .directory-options .icon { width: 16px; height: 16px; flex-basis: 16px; }
-.home .recent-reading .card { display: flex; align-items: start; gap: 8px; }
-.home .recent-reading .ui-row { flex: 1; min-width: 0; }
-.home .recent-reading .row-menu { flex: 0 1 auto; min-width: 0; max-width: 45%; }
-.home .recent-reading .row-meta { overflow-wrap: anywhere; }
 @media (max-width: 700px) {
   .app > .shell { padding: 8px 10px; }
   .shell .brand { display: none; }
