@@ -166,7 +166,9 @@ try {
   const menuB=page.locator(`summary[data-focus-key="action:${duplicateB.entityId}"]`);
   await menuA.click();
   const duplicateStarted=new Promise(resolve=>{queryBegan=resolve;});queryGate=new Promise(resolve=>{release=resolve;});
-  await page.locator('[data-view=focus]').click();await duplicateStarted;await menuA.focus();release();
+  await page.locator('[data-view=focus]').click();await duplicateStarted;
+  assert.equal(await menuA.evaluate(n=>n.parentElement.open),false,'Leaving the menu dismisses it');
+  await menuA.click();release();
   await page.waitForFunction(()=>document.querySelector('#index-state').textContent==='');
   assert.equal(await menuA.evaluate(n=>n.parentElement.open),true);
   assert.equal(await menuB.evaluate(n=>n.parentElement.open),false);

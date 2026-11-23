@@ -1,6 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {focusPosition} from '../web/react/focus-model.ts';
+import {focusDirections, focusPosition, focusReturnIndex} from '../web/react/focus-model.ts';
+
+test('priority operations follow the full ordering across visible page boundaries', () => {
+  assert.deepEqual(focusDirections(0, 1, false, false), []);
+  assert.deepEqual(focusDirections(0, 7, false, true), [1]);
+  assert.deepEqual(focusDirections(6, 7, false, true), [-1, 1]);
+  assert.deepEqual(focusDirections(0, 1, true, false), [-1]);
+  assert.deepEqual(focusDirections(0, 1, true, true), [-1, 1]);
+});
+
+test('row return follows identity after reordering and uses the nearest slot after removal', () => {
+  assert.equal(focusReturnIndex(['b', 'a', 'c'], 'a', 0), 1);
+  assert.equal(focusReturnIndex(['a', 'c'], 'b', 1), 1);
+  assert.equal(focusReturnIndex(['a', 'b'], 'c', 2), 1);
+  assert.equal(focusReturnIndex([], 'a', 0), -1);
+});
 
 test('focus reordering preserves neighbor positions and chooses the requested bounded slot',()=>{
   const actions=[{focusPosition:1},{focusPosition:3},{focusPosition:8},{focusPosition:10}];
