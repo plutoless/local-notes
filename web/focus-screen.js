@@ -45,7 +45,7 @@ export class FocusScreen {
         const repository = this.actions.repository, request = this.request;
         await repository.save({...action, focusPosition:null}, action);
         if (!this.active || repository !== this.actions.repository || request !== this.request) return;
-        if (await this.refreshOwned(repository)) $('#items .focus-row-open, .home-tools .primary')?.focus();
+        if (await this.refreshOwned(repository)) $('#items .focus-row-open, .home-tools .focus-new-action')?.focus();
       }),
       move: (action, index, direction) => this.run(async () => {
         const repository = this.actions.repository, request = this.request;
@@ -121,7 +121,7 @@ export class FocusScreen {
       else if (!await this.show()) return;
       if (!owns() || !this.active) return;
       const opener = [...document.querySelectorAll('.focus-row-open')].find(node => node.dataset.entityId === action?.entityId);
-      (opener || $('.home-tools .primary')).focus({preventScroll: true});
+      (opener || $('.home-tools .focus-new-action')).focus({preventScroll: true});
       $('.collection').scrollTop = scroll; $('#items').scrollTop = listScroll;
       if (this.actions.returnToFocus === returnToFocus) this.actions.returnToFocus = null;
     };

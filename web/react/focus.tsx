@@ -40,11 +40,15 @@ export function FocusContent({model:m, callbacks:c}:{model:FocusModel; callbacks
   const readingPathId = useId();
   const actionRow = (action:FocusAction, index?:number) => {
     const overdue = Boolean(action.dueDate && c.overdue(action));
+    const isNext = m.offset === 0 && index === 0;
     return <div className="card focus-row" key={action.entityId}>
-      <Button busyOnAction className="quiet ui-row focus-row-open" data-entity-id={action.entityId} aria-label={`打开行动：${action.description}`} onClick={() => c.openAction(action)}>
-        <span>
-          <h3>{action.description}</h3>
-          <span className="row-meta">
+      <Button busyOnAction className="quiet ui-row focus-row-open" data-entity-id={action.entityId} aria-label={`打开行动：${action.description}`} aria-description={isNext ? '下一步' : undefined} onClick={() => c.openAction(action)}>
+        <span className="focus-action-content">
+          <span className="focus-action-title">
+            <h3>{action.description}</h3>
+            {isNext && <span className="focus-next">下一步</span>}
+          </span>
+          <span className="row-meta focus-action-meta">
             <ActionStatus status={action.status} label={c.status(action.status)}/>
             {action.dueDate && <span className={overdue ? 'action-overdue' : undefined}>{action.dueDate}{overdue && ' · 已逾期'}</span>}
           </span>
@@ -59,16 +63,16 @@ export function FocusContent({model:m, callbacks:c}:{model:FocusModel; callbacks
     </div>;
   };
   return <>
-    <div className="home-tools">
+    <header className="home-tools">
       <h2 className="ui-heading">当前重点</h2>
-      <Button busyOnAction className="primary ui-compact" onClick={() => c.openAction(null)}>新建行动</Button>
+      <Button busyOnAction className="quiet ui-compact focus-new-action" onClick={() => c.openAction(null)}>新建行动</Button>
       <Button busyOnAction className="quiet ui-compact" onClick={() => c.navigate('actions')}>全部行动</Button>
       <FocusDisclosure className="home-utilities" focusKey="utilities" title="更多操作">
         <Button busyOnAction className="quiet ui-compact" onClick={c.createInitiative}>新建事项</Button>
         <Button busyOnAction className="quiet ui-compact" onClick={() => c.navigate('organize')}>整理所选笔记</Button>
         <Button busyOnAction className="quiet ui-compact" onClick={c.recover}>刷新本地记录</Button>
       </FocusDisclosure>
-    </div>
+    </header>
     <section className="focus-priorities">
       <h2 className="ui-heading">优先处理</h2>
       {!m.focused.actions.length && <div className="focus-empty">
@@ -81,25 +85,23 @@ export function FocusContent({model:m, callbacks:c}:{model:FocusModel; callbacks
         <Button busyOnAction disabled={!(m.limit === 99 && (m.focused.hasMore || m.focused.actions.length > m.limit))} onClick={() => c.page(m.offset + 99)}>下一页</Button>
       </div>}
     </section>
-    <div className="home-side">
-      <section>
-        <h2 className="ui-heading">等待与跟进</h2>
-        {!m.waiting.actions.length && <p className="focus-empty">没有等待中的行动。</p>}
-        {m.waiting.actions.map(action => actionRow(action))}
-        {m.waiting.hasMore && <Button busyOnAction onClick={c.waiting}>全部等待行动</Button>}
-      </section>
-      <section>
-        <h2 className="ui-heading">继续推进</h2>
-        {!m.initiatives.actions.length && <div className="focus-empty">
-          <p>暂无进行中的事项。</p><Button busyOnAction className="quiet ui-compact" onClick={c.createInitiative}>新建事项</Button>
-        </div>}
-        {m.initiatives.actions.map(initiative => <div className="card focus-initiative" key={initiative.entityId}>
-          <h3>{initiative.title}</h3><p>{initiative.progress || '暂无进展记录。'}</p>
-          <Button busyOnAction className="quiet ui-compact" aria-description={initiative.title} onClick={() => c.openInitiative(initiative)}>打开事项</Button>
-        </div>)}
-        {m.initiatives.hasMore && <Button busyOnAction onClick={() => c.navigate('initiatives')}>全部事项</Button>}
-      </section>
-    </div>
+    <section>
+      <h2 className="ui-heading">等待与跟进</h2>
+      {!m.waiting.actions.length && <p className="focus-empty">没有等待中的行动。</p>}
+      {m.waiting.actions.map(action => actionRow(action))}
+      {m.waiting.hasMore && <Button busyOnAction onClick={c.waiting}>全部等待行动</Button>}
+    </section>
+    <section>
+      <h2 className="ui-heading">继续推进</h2>
+      {!m.initiatives.actions.length && <div className="focus-empty">
+        <p>暂无进行中的事项。</p><Button busyOnAction className="quiet ui-compact" onClick={c.createInitiative}>新建事项</Button>
+      </div>}
+      {m.initiatives.actions.map(initiative => <div className="card focus-initiative" key={initiative.entityId}>
+        <h3>{initiative.title}</h3><p>{initiative.progress || '暂无进展记录。'}</p>
+        <Button busyOnAction className="quiet ui-compact" aria-description={initiative.title} onClick={() => c.openInitiative(initiative)}>打开事项</Button>
+      </div>)}
+      {m.initiatives.hasMore && <Button busyOnAction onClick={() => c.navigate('initiatives')}>全部事项</Button>}
+    </section>
     {m.recent.length > 0 && <section className="recent-reading">
       <h2 className="ui-heading">继续阅读</h2>
       {m.recent.map((entry, index) => {

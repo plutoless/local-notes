@@ -52,7 +52,7 @@ try {
 
     await page.goto('https://notes.test/');
     await page.getByText('暂无重点行动。', {exact:true}).waitFor();
-    assert.equal(await page.locator('#items .primary').count(), 1);
+    assert.equal(await page.locator('#items').getByRole('button', {name:'新建行动', exact:true}).count(), 1);
     await page.screenshot({path:join(evidence, 'focus-empty.png')});
 
     const initiative = (await initiatives.save({title, goal:'发布可复现的样本', progress:'已整理来源笔记。', status:'active',

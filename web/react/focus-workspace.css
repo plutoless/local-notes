@@ -1,30 +1,46 @@
-.app.home .collection #items {
-  padding: 36px clamp(20px, 5%, 56px) 48px;
-  gap: var(--space-section) 36px;
+.app.home {
+  grid-template-columns: minmax(196px, 20%) minmax(0, 1fr);
+}
+
+.home #items {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  gap: var(--space-section);
+  width: 100%;
+  margin-inline: auto;
   color: var(--workspace-ink);
 }
 
 .home .home-tools {
-  margin: 0;
-  padding-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 0 var(--space-small);
+  padding: 0 0 16px;
   border-bottom: 1px solid var(--workspace-divider);
 }
 
 .home .home-tools > h2 {
-  font-size: clamp(25px, 4.35vw, 39px);
-  line-height: 1.18;
-  font-weight: 680;
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  min-height: var(--target-height);
+  margin: 0;
 }
 
-.home #items > :is(.focus-priorities, .recent-reading) > h2,
-.home #items .home-side h2 {
+.home .home-tools > :is(button, details) {
+  max-width: 100%;
+  color: var(--workspace-muted);
+}
+
+.home #items > section > h2 {
   margin: 0 0 8px;
   color: var(--workspace-ink);
   font-size: 18px;
   font-weight: 650;
 }
 
-.home #items .home-side { border-color: var(--workspace-divider); }
 .home #items .focus-empty {
   margin-block: 0;
   padding-block: 10px;
@@ -33,10 +49,12 @@
 .home .focus-empty p { margin: 0; }
 .home .focus-empty .ui-action { margin-inline-start: -12px; }
 
-.home #items :is(.focus-row, .recent-reading .card, .focus-initiative) {
-  padding-block: 4px;
+.home #items .card {
+  padding: 4px 0;
   border-color: var(--workspace-divider);
 }
+
+.home #items .focus-initiative { padding-inline: var(--space); }
 
 .home #items :is(.focus-row-open, .recent-reading .ui-row) {
   min-width: 0;
@@ -47,9 +65,44 @@
   color: var(--workspace-ink);
 }
 
-.home #items .card h3 { font-weight: 600; }
+.home #items .card h3 { font-size: 15px; font-weight: 600; }
 .home #items :is(.row-meta, .waiting-condition, .focus-initiative p) { color: var(--workspace-muted); }
-.home .focus-row-open .row-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+
+.focus-action-content {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-small) var(--space);
+}
+.focus-action-title { flex: 1 1 13em; min-width: 0; }
+.focus-action-title > h3 { display: inline; }
+.focus-next {
+  display: inline-block;
+  margin-inline-start: var(--space);
+  padding: 0 var(--space-small);
+  border-radius: var(--radius);
+  background: var(--workspace-current);
+  color: var(--workspace-current-text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.focus-action-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-small) var(--space);
+  font-variant-numeric: tabular-nums;
+}
+.focus-priorities .focus-action-meta {
+  display: grid;
+  grid-template-columns: 4em minmax(0, 1fr);
+  justify-items: start;
+  width: min(100%, 15em);
+  margin-inline-start: auto;
+}
+.focus-action-content > .waiting-condition { flex-basis: 100%; margin: 0; }
 .home #items .focus-initiative > .ui-action { margin-inline-start: -12px; }
 
 .home #items .focus-disclosure > summary {
@@ -73,10 +126,10 @@
   background: #fcfbf8;
 }
 
-/* In-flow disclosures keep the last menu in a scrolling list reachable. */
-.home #items .home-utilities[open] { background: transparent; }
 .home #items .focus-disclosure-actions .ui-action { text-align: start; }
 
-@media (min-width: 701px) {
-  .app.home { grid-template-columns: minmax(196px, 20%) minmax(0, 1fr); }
+@media (max-width: 700px) {
+  .home .home-tools > h2 { flex-basis: 100%; min-height: 0; margin-bottom: var(--space); }
+  .focus-action-title { flex-basis: 100%; }
+  .focus-priorities .focus-action-meta { margin-inline-start: 0; }
 }

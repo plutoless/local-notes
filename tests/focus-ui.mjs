@@ -42,17 +42,23 @@ try {
     } catch (error) { return {error: error.message}; }
   });
   await page.addInitScript(() => { window.NotesNative = {request: async message => { const request = JSON.parse(message); window.nativeReply(request.id, await window.bridge(request)); if (request.cmd === 'actionQuery' && request.search === 'Only in workspace B') window.__heldQueryDelivered = true; }}; });
+  const assets = new URL('../build/web/', import.meta.url);
+  const manifest = JSON.parse(await readFile(new URL('asset-manifest.json', assets), 'utf8'));
   await page.route('https://notes.test/**', async route => {
     const name = new URL(route.request().url()).pathname.slice(1) || 'index.html';
-    if (!['assets/react-host.js', 'assets/react-host.css', 'index.html', 'style.css', 'app.js', 'global-search.js', 'search-screen.js', 'presentation-labels.js', 'directory-label.js', 'presentation.js', 'task-drafts.js', 'core.js', 'bridge.js', 'actions.js', 'action-screen.js', 'initiatives.js', 'initiative-screen.js', 'focus-screen.js', 'reading-history.js', 'library.js', 'library-screen.js', 'revision-graph.js', 'sync-screen.js', 'organization.js', 'organize-screen.js'].includes(name)) return route.abort();
-    await route.fulfill({body: await readFile(new URL('../build/web/' + name, import.meta.url)), contentType: name.endsWith('.js') ? 'text/javascript' : name.endsWith('.css') ? 'text/css' : 'text/html'});
+    if (!Object.hasOwn(manifest, name)) return route.abort();
+    await route.fulfill({body: await readFile(new URL(name, assets)), contentType: manifest[name]});
   });
   await page.goto('https://notes.test/');
   await page.getByText('正在打开目录…', {exact:true}).waitFor(); releaseLoading();
   await page.getByRole('heading', {name: '当前重点', exact: true, level: 2}).waitFor();
   assert.equal(await page.locator('main').isVisible(), false);
   assert.equal(await page.locator('.collection').evaluate(node => node.getBoundingClientRect().width > 800), true);
-  assert.equal(await page.locator('.home-tools .primary').count(), 1);
+  assert.equal(await page.locator('.home-tools').getByRole('button', {name:'新建行动', exact:true}).count(), 1);
+  await page.getByRole('button', {name:'选择重点行动', exact:true}).click();
+  await page.locator('#action-tools').waitFor();
+  await page.locator('[data-view=focus]').click();
+  await page.getByText('暂无重点行动。', {exact:true}).waitFor();
   await page.keyboard.press('Tab');
   assert.equal(await page.evaluate(() => document.activeElement.matches('button')), true);
   assert.equal(await page.evaluate(() => getComputedStyle(document.activeElement).outlineStyle), 'solid');
@@ -71,7 +77,8 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await page.getByText('当前重点与历史', {exact: true}).evaluate(node => node.parentElement.open = true); await page.locator('#action-focus').click();
   await page.getByRole('button', {name: '移出当前重点'}).waitFor();
-  await closeSavedAction(page); await page.locator('[data-view=focus]').click();
+  await closeSavedAction(page);
+  await page.waitForFunction(() => document.activeElement.matches('.home-tools .focus-new-action'));
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
   await page.reload();
   await page.getByRole('heading', {name: 'Chosen next step'}).waitFor();
@@ -93,25 +100,53 @@ try {
   await page.locator('#action-save-state').filter({hasText: /^已保存到本地$/}).waitFor();
   await closeSavedAction(page); await page.locator('[data-view=focus]').click();
   await page.getByText('暂无重点行动。', {exact: false}).waitFor();
-  // Seed nine explicit focused actions through the same production adapter.
+  // Seed one priority beyond the first full page through the production adapter.
   const {ActionRepository} = await import('../web/actions.js');
   const repository = new ActionRepository(fixture.adapter); await repository.open();
-  for (let i = 0; i < 9; i++) await repository.save({description: `Focus item ${i}`, focusPosition: i});
+  for (let i = 99; i >= 0; i--) await repository.save({description: `Focus item ${i}`, focusPosition: i});
   await page.reload();
   await page.getByRole('heading', {name: 'Focus item 0', exact: true}).waitFor();
-  assert.equal(await page.locator('#items section').first().locator('h3').count(), 7);
-  await page.getByRole('button', {name: '展开更多重点行动'}).click();
-  await page.getByRole('heading', {name: 'Focus item 8', exact: true}).waitFor();
-  assert.equal(await page.locator('#items section').first().locator('h3').count(), 9);
+  const priorities = page.locator('#items section').first();
+  const cue = page.getByText('下一步', {exact:true});
+  const assertNext = async description => {
+    assert.equal(await cue.count(), 1);
+    assert.equal(await priorities.getByRole('button', {name:'打开行动：' + description, exact:true}).getByText('下一步', {exact:true}).count(), 1);
+  };
+  assert.equal(await priorities.locator('h3').count(), 7);
+  await assertNext('Focus item 0');
+  const more = page.getByRole('button', {name: '展开更多重点行动'});
+  await more.click();
+  await page.getByRole('heading', {name: 'Focus item 56', exact: true}).waitFor();
+  assert.equal(await priorities.locator('h3').count(), 57);
+  await more.click();
+  await page.getByRole('heading', {name: 'Focus item 98', exact: true}).waitFor();
+  assert.equal(await priorities.locator('h3').count(), 99);
+  await assertNext('Focus item 0');
+  await page.getByRole('button', {name:'下一页', exact:true}).click();
+  const laterAction = priorities.getByRole('button', {name:'打开行动：Focus item 99', exact:true});
+  await laterAction.waitFor();
+  assert.equal(await priorities.locator('h3').count(), 1);
+  assert.equal(await cue.count(), 0);
+  await laterAction.click();
+  await page.locator('#action-drawer').waitFor();
+  assert.equal(await page.locator('#action-description').inputValue(), 'Focus item 99');
+  await closeSavedAction(page);
+  await page.getByRole('button', {name:'上一页', exact:true}).click();
+  await page.getByRole('heading', {name:'Focus item 0', exact:true}).waitFor();
+  await assertNext('Focus item 0');
   await page.locator('#items section').first().locator('.card').nth(1).locator('summary').click();
   await page.locator('#items section').first().locator('.card').nth(1).getByRole('button', {name: '上移'}).click();
   await page.waitForFunction(() => document.querySelector('#items section h3').textContent === 'Focus item 1');
+  await assertNext('Focus item 1');
+  assert.equal((await repository.query({focus:true, limit:1})).actions[0].description, 'Focus item 1');
   assert.equal(await page.locator('#items section').first().locator('.card').first().locator('details').evaluate(n=>n.open),true,'management disclosure stays open across row rerender');
   await page.locator('#items section').first().locator('.card').first().getByRole('button', {name: '移出重点', exact: true}).click();
   await page.getByRole('heading', {name: 'Focus item 1', exact: true}).waitFor({state: 'detached'});
   await page.reload();
   await page.getByRole('heading', {name: 'Focus item 0', exact: true}).waitFor();
+  await assertNext('Focus item 0');
   assert.equal(await page.getByRole('heading', {name: 'Focus item 1', exact: true}).count(), 0);
+  assert.equal((await repository.query({search:'Focus item 1'})).actions.find(action => action.description === 'Focus item 1').focusPosition, null);
   const {InitiativeRepository} = await import('../web/initiatives.js');
   const initiativeRepository = new InitiativeRepository(fixture.adapter); await initiativeRepository.open();
   const initiative = (await initiativeRepository.save({title: 'Ongoing work', goal: 'Recover context', progress: 'Saved user progress', status: 'active', sources: []})).record;
@@ -179,5 +214,5 @@ try {
   console.log('Contrast ratios:', contrast);
   assert.deepEqual(errors, []);
   assert.equal(bridgeCalls.filter(c => ['list', 'read'].includes(c)).length, 1);
-  console.log('PASS: default focus, empty creation/organization, same-action focus selection, restart, waiting condition/no false overdue, reopening clears selection, seven/expand, reorder/remove, mobile viewport; home reads no note bodies and explicit source validation reads one.');
+  console.log('PASS: default Focus, empty selection, Action entry points, persisted order and next-step cue across expansion, paging, reorder, removal and reload, waiting condition without false overdue, source validation, and existing utilities.');
 } finally { await browser.close(); await fixture.close(); }
